@@ -1,0 +1,33 @@
+[package]
+name = "presage"
+description = "Presage - assistente de draft e macro para League of Legends"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lib]
+name = "presage_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+presage-core = { path = "../core" }
+tauri = { version = "2", features = [] }
+tauri-plugin-global-shortcut = "2"
+# O atualizador: sem ele cada correção de patch vira "baixe e reinstale à mão".
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }
+reqwest = { version = "0.12", features = ["json"] }
+base64 = "0.22"
+# Só para achar o executável do cliente da Riot quando ele está em pasta
+# fora do padrão. Substitui o lançamento de PowerShell, que é comportamento
+# que antivírus heurístico trata como malware — e com razão.
+sysinfo = { version = "0.33", default-features = false, features = ["system"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }

@@ -1,0 +1,42 @@
+# Dependências e saída de compilação
+node_modules/
+dist/
+dist-demo/
+
+# O target do workspace fica na raiz, não em src-tauri/ — é um workspace
+# Cargo, e o membro não tem target próprio. Ignorar só o de dentro deixava
+# alguns gigabytes passarem.
+target/
+src-tauri/target/
+src-tauri/gen/
+
+# Arquivos gerados a partir do código. Versionar o resultado junto com a
+# fonte garante que os dois vão divergir.
+Presage-demo.html
+Presage-site.html
+Presage-entrega/
+ferramentas/
+latest.json
+
+# Instalador nenhum vai para o repositório: eles saem da release, geradas
+# pelo workflow. Commitar binário de 2 MB a cada versão incha o histórico
+# para sempre, porque o git nunca esquece.
+*.exe
+*.msi
+*.sig
+
+# A chave que assina as atualizações vive em %USERPROFILE%\.presage e nunca
+# deveria chegar perto daqui. A rede está aqui por segurança: se alguém um dia
+# copiar a chave para dentro do projeto, o git não a aceita em silêncio.
+*.key
+*.pfx
+.presage/
+
+# Riot
+# A chave da API sai de variável de ambiente, nunca de arquivo. Mesma ideia.
+.env
+.env.*
+
+*.local
+.DS_Store
+Thumbs.db

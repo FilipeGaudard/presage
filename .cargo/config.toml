@@ -1,0 +1,13 @@
+# CRT estática no Windows.
+#
+# Dois motivos. O prático: o MSVC portátil que montamos traz só as libs
+# estáticas (libcmt.lib), não as de importação dinâmica (msvcrt.lib), então
+# sem isto o link falha com LNK1104.
+#
+# O bom: estática também é o que queremos para distribuir. O executável deixa
+# de depender do Visual C++ Redistributable estar instalado na máquina de quem
+# baixa, e esse é um dos motivos clássicos de "o app não abre" em desktop
+# Windows.
+
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]

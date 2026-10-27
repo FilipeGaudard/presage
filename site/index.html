@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <title>Presage — assistente de draft e macro para League of Legends</title>
+    <meta
+      name="description"
+      content="Recomendações de draft em tempo real, build que reage aos itens que o inimigo compra, e timers de objetivo. Para Windows."
+    />
+    <meta property="og:title" content="Presage" />
+    <meta
+      property="og:description"
+      content="Decida melhor no draft, na build e no mapa. Contra o time que está na sua frente, não contra a média."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="nav">
+      <a class="brand" href="#top">
+        <svg viewBox="0 0 64 64" class="mark" aria-hidden="true">
+          <g stroke="currentColor" stroke-width="5" stroke-linecap="round">
+            <path d="M32 38 16.5 25" opacity="0.5" />
+            <path d="M32 38 47.5 25" opacity="0.5" />
+            <path d="M32 57V17" />
+          </g>
+          <circle cx="14" cy="22" r="4.5" fill="currentColor" opacity="0.5" />
+          <circle cx="50" cy="22" r="4.5" fill="currentColor" opacity="0.5" />
+          <circle cx="32" cy="11" r="6" fill="currentColor" />
+        </svg>
+        <span class="wordmark">PRESAGE</span>
+      </a>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <h1>
+          Decida melhor no draft, na build e no mapa.<br />
+          <em>Contra o time que está na sua frente, não contra a média.</em>
+        </h1>
+        <div class="cta-row">
+          <a class="button" href="#baixar">Baixar para Windows</a>
+          <!-- demo.html fica ao lado do index quando a pasta é publicada. -->
+          <a class="button button-ghost" href="demo.html">Ver a interface</a>
+        </div>
+
+        <div class="shot">
+          <div class="shot-bar">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="shot-title">Presage — seleção de campeões</span>
+          </div>
+          <div class="shot-body">
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3>Seleção de campeões</h3>
+                  <!-- B5: o último pick do draft. Nessa altura os dois lados
+                       têm quatro travados, que é o estado real da segunda fase
+                       (R4 → B4 → B5 → R5). -->
+                  <p class="muted">BAN_PICK · ESCOLHENDO · você: MID · último pick</p>
+                </div>
+                <span class="clock">21<small>s</small></span>
+              </div>
+              <div class="turn">Você escolhe por último, com os cinco deles à vista.</div>
+              <div class="roster">
+                <div>
+                  <p class="label">Seu time</p>
+                  <div class="slot"><span class="face" data-champ="Garen"></span><span>Garen<small>TOP</small></span></div>
+                  <div class="slot"><span class="face" data-champ="LeeSin"></span><span>Lee Sin<small>JG</small></span></div>
+                  <div class="slot slot-on"><span class="face" data-champ="Ahri"></span><span>Ahri<small>MID · VOCÊ</small></span></div>
+                  <div class="slot"><span class="face" data-champ="Ashe"></span><span>Ashe<small>ADC</small></span></div>
+                  <div class="slot"><span class="face" data-champ="Thresh"></span><span>Thresh<small>SUP</small></span></div>
+                </div>
+                <div>
+                  <p class="label">Inimigos</p>
+                  <div class="slot slot-foe"><span class="face" data-champ="Malphite"></span><span>Malphite<small>TOP</small></span></div>
+                  <div class="slot slot-foe"><span class="face" data-champ="Viego"></span><span>Viego<small>JG</small></span></div>
+                  <div class="slot slot-foe"><span class="face" data-champ="Zed"></span><span>Zed<small>MID</small></span></div>
+                  <div class="slot slot-foe"><span class="face" data-champ="Caitlyn"></span><span>Caitlyn<small>ADC</small></span></div>
+                  <div class="slot slot-foe"><span class="face"></span><span>?<small>AGUARDANDO</small></span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3>Recomendações</h3>
+                  <p class="muted">melhores picks · 6 candidatos</p>
+                </div>
+              </div>
+              <p class="label">Sua pool</p>
+              <div class="chips">
+                <span class="chip"><i class="face xs" data-champ="Ahri"></i><b class="good">+3.4</b> Ahri</span>
+                <span class="chip"><i class="face xs" data-champ="Orianna"></i><b class="good">+2.1</b> Orianna</span>
+                <span class="chip"><i class="face xs" data-champ="Syndra"></i><b class="warn">+0.9</b> Syndra</span>
+              </div>
+              <p class="label">Melhores no geral</p>
+              <div class="chips">
+                <span class="chip"><i class="face xs" data-champ="Annie"></i><b class="good">+4.2</b> Annie</span>
+                <span class="chip"><i class="face xs" data-champ="Veigar"></i><b class="good">+3.0</b> Veigar</span>
+                <span class="chip"><i class="face xs" data-champ="Zoe"></i><b class="warn">+1.5</b> Zoe</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="steps">
+        <article class="step">
+          <div class="mini">
+            <div class="mini-bar">
+              <span class="live"></span>Seleção de campeões
+              <em>crit is back#split</em>
+            </div>
+            <div class="mini-queue">
+              <div class="ring"><span>1:56</span></div>
+              <div class="accept">ACEITAR</div>
+            </div>
+          </div>
+          <p class="step-cap">
+            <b>Entre na fila.</b> O Presage encontra o cliente sozinho. Nada
+            para configurar, nada para digitar.
+          </p>
+        </article>
+
+        <article class="step">
+          <div class="mini">
+            <div class="mini-bar"><span class="live"></span>Recomendações</div>
+            <div class="mini-body">
+              <p class="mini-h">Sua pool</p>
+              <div class="mini-grid">
+                <span class="tile"><i data-champ="Ahri"></i><b class="good">3.4</b></span>
+                <span class="tile"><i data-champ="Orianna"></i><b class="good">2.1</b></span>
+                <span class="tile"><i data-champ="Syndra"></i><b class="warn">0.9</b></span>
+              </div>
+              <p class="mini-h">Melhores no geral</p>
+              <div class="mini-grid">
+                <span class="tile"><i data-champ="Annie"></i><b class="good">4.2</b></span>
+                <span class="tile"><i data-champ="Veigar"></i><b class="good">3.0</b></span>
+                <span class="tile"><i data-champ="Zoe"></i><b class="warn">1.5</b></span>
+              </div>
+            </div>
+          </div>
+          <p class="step-cap">
+            <b>Escolha com o draft inteiro à vista.</b> Sua pool ranqueado
+            primeiro, os melhores do jogo logo abaixo, e o motivo de cada um em
+            uma linha.
+          </p>
+        </article>
+
+        <article class="step">
+          <div class="mini">
+            <div class="mini-bar"><span class="live"></span>Build adaptativa</div>
+            <div class="mini-body">
+              <p class="mini-h">Dano que vem contra você</p>
+              <div class="split"><span style="width: 81%"></span></div>
+              <div class="split-legend">
+                <span class="warn">81% físico</span><span class="muted">19% mágico</span>
+              </div>
+              <p class="mini-h">Próximo item</p>
+              <div class="mini-row"><i data-item="3157"></i>Ampulheta de Zhonya<b class="good">6.8</b></div>
+              <div class="mini-row"><i data-item="3116"></i>Rylai<b class="good">5.4</b></div>
+            </div>
+          </div>
+          <p class="step-cap">
+            <b>Jogue com a build certa.</b> Cada item que aparece no inventário
+            deles refaz a sua lista de compra.
+          </p>
+        </article>
+      </section>
+
+      <!-- Esteira do que o app percebe durante uma partida. O conteúdo é
+           duplicado inteiro: a animação anda até -50% e volta ao início sem
+           emenda visível. -->
+      <section class="ticker" aria-label="Exemplos do que o Presage percebe durante a partida">
+        <p class="ticker-label">O que ele percebe enquanto você joga</p>
+        <div class="ticker-mask">
+          <div class="ticker-track">
+            <span class="tick"><b>Zed</b> fechou Lord Dominik's<i>→</i>Zhonya subiu para 1º</span>
+            <span class="tick"><b>Jungler inimigo</b> caiu<i>→</i>BOT virou a rota de maior valor</span>
+            <span class="tick"><b>Dragão</b> em 40s<i>→</i>prioridade desceu para o pit</span>
+            <span class="tick"><b>Malphite</b> comprou Couraça<i>→</i>sua penetração rende mais</span>
+            <span class="tick"><b>3º dragão deles</b><i>→</i>o próximo virou obrigatório</span>
+            <span class="tick"><b>Jhin</b> trocou botas<i>→</i>o dano deles ficou 7% mais físico</span>
+            <span class="tick"><b>Barão</b> abatido às 24:10<i>→</i>volta às 30:10, confirmado</span>
+            <span class="tick"><b>Você</b> está 2 níveis atrás<i>→</i>evite o 1v1 até o 11</span>
+            <span class="tick" aria-hidden="true"><b>Zed</b> fechou Lord Dominik's<i>→</i>Zhonya subiu para 1º</span>
+            <span class="tick" aria-hidden="true"><b>Jungler inimigo</b> caiu<i>→</i>BOT virou a rota de maior valor</span>
+            <span class="tick" aria-hidden="true"><b>Dragão</b> em 40s<i>→</i>prioridade desceu para o pit</span>
+            <span class="tick" aria-hidden="true"><b>Malphite</b> comprou Couraça<i>→</i>sua penetração rende mais</span>
+            <span class="tick" aria-hidden="true"><b>3º dragão deles</b><i>→</i>o próximo virou obrigatório</span>
+            <span class="tick" aria-hidden="true"><b>Jhin</b> trocou botas<i>→</i>o dano deles ficou 7% mais físico</span>
+            <span class="tick" aria-hidden="true"><b>Barão</b> abatido às 24:10<i>→</i>volta às 30:10, confirmado</span>
+            <span class="tick" aria-hidden="true"><b>Você</b> está 2 níveis atrás<i>→</i>evite o 1v1 até o 11</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="draft" class="feature">
+        <div class="feature-copy">
+          <p class="eyebrow">Draft</p>
+          <h2>Sua pool primeiro. O resto do jogo logo abaixo.</h2>
+          <p>
+            A lista abre com os campeões que você declarou no Construtor de
+            Pool, ranqueados entre si. Logo abaixo vêm os melhores da partida,
+            inclusive os que você não joga. Saber que existe um pick 4pp melhor
+            continua valendo, mesmo quando você não vai nele.
+          </p>
+          <ul class="ticks">
+            <li>Score com intervalo de confiança e tamanho da amostra visíveis</li>
+            <li>Motivo em texto: matchup, composição, seu próprio histórico</li>
+            <li>Runas e item set aplicados no cliente com um clique</li>
+          </ul>
+        </div>
+        <div class="feature-art">
+          <div class="panel">
+            <p class="label">Menos expostos ao contra-pick</p>
+            <div class="rows">
+              <div class="row">
+                <span class="face sm" data-champ="Orianna"></span>
+                <span class="row-name">Orianna</span>
+                <span class="row-val good">−0.7</span>
+              </div>
+              <div class="row">
+                <span class="face sm" data-champ="Annie"></span>
+                <span class="row-name">Annie</span>
+                <span class="row-val good">−1.9</span>
+              </div>
+              <div class="row">
+                <span class="face sm" data-champ="Ahri"></span>
+                <span class="row-name">Ahri</span>
+                <span class="row-val warn">−2.2</span>
+              </div>
+            </div>
+            <div class="note">
+              Depois de você travar, eles escolhem contra você. O Presage olha
+              uma camada à frente e ordena pelo valor <b>depois</b> da melhor
+              resposta deles.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="build" class="feature feature-flip">
+        <div class="feature-copy">
+          <p class="eyebrow">Build adaptativa</p>
+          <h2>Eles compraram penetração. Sua armadura acabou de valer menos.</h2>
+          <p>
+            Aqui não tem estimativa. O que eles compraram está no inventário, e
+            com isso a conta fecha: quanto da sua armadura ainda vale, quanto
+            dano passa, quanto você aguenta contra aquele time e não contra a
+            média.
+          </p>
+          <p>
+            Build de patch é a média de milhões de partidas. A sua é esta,
+            neste minuto.
+          </p>
+          <ul class="ticks">
+            <li>Divisão real do dano que vem contra você, item a item</li>
+            <li>Alerta quando a penetração deles derruba seu próximo item</li>
+            <li>Ouro investido por time, soma exata e não estimativa</li>
+          </ul>
+        </div>
+        <!-- Demo de verdade: a partida corre sozinha, como no jogo. Cada compra
+             do time inimigo recalcula o ranking com a mesma matemática do
+             motor. Ninguém clica em nada. Ver site/app.js. -->
+        <div class="feature-art">
+          <div class="panel panel-demo">
+            <p class="label">
+              Eles compraram
+              <span class="hint hint-live"><i class="live"></i>ao vivo · <b id="demo-relogio">12:40</b></span>
+            </p>
+            <div class="chips chips-live" id="demo-inimigo"></div>
+
+            <p class="label">Dano que vem contra você</p>
+            <div class="split"><span id="demo-split"></span></div>
+            <div class="split-legend">
+              <span class="warn" id="demo-fis"></span>
+              <span class="muted" id="demo-mag"></span>
+            </div>
+
+            <div class="facts" id="demo-fatos"></div>
+
+            <p class="label">Seu próximo item</p>
+            <div class="rows" id="demo-itens"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="rotas" class="feature">
+        <div class="feature-copy">
+          <p class="eyebrow">Antes do primeiro minuto</p>
+          <h2>A chance de cada rota — e de cada briga que ainda vai acontecer.</h2>
+          <p>
+            Assim que os dez campeões estão na mesa, o Presage resolve os cinco
+            duelos e diz quanto cada um vale. Resistência, dano, penetração,
+            alcance: a conta do jogo, não um chute de tier list.
+          </p>
+          <p>
+            E vai além da rota. Se o seu jungle descer no topo, quem ganha o
+            2v2? E se virar 3v3 no dragão? O número está lá antes de alguém
+            apertar o botão.
+          </p>
+          <ul class="ticks">
+            <li>Cinco rotas com o motivo de cada uma em texto</li>
+            <li>2v2 e 3v3 nos agrupamentos que realmente acontecem</li>
+            <li>
+              A mesma conta no nível 3, 6, 11 e 16 — de quem é a rota cedo, e
+              de quem ela vira depois
+            </li>
+            <li>Durante a partida, com os itens e níveis reais dos dez</li>
+          </ul>
+        </div>
+        <!-- Os números saem de dados; as barras e a alternância são da página.
+             Ver site/app.js. -->
+        <div class="feature-art">
+          <div class="panel">
+            <p class="label">Chance de você ganhar cada rota</p>
+            <div class="rotas" id="demo-rotas"></div>
+
+            <p class="label">
+              Se a briga acontecer
+              <span class="hint hint-live"><i class="live"></i>alternando</span>
+            </p>
+            <div class="briga" id="demo-briga"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="partida" class="feature">
+        <div class="feature-copy">
+          <p class="eyebrow">Partida</p>
+          <h2>Timers que dizem quando têm certeza — e quando não têm.</h2>
+          <p>
+            Se o Presage viu o abate, o respawn é soma exata. Se ninguém matou
+            ainda, o número vem da regra do patch e aparece marcado como
+            <b>estimado</b>. Outras ferramentas mostram os dois do mesmo jeito.
+          </p>
+          <p>
+            Ao lado, o ranking de prioridade: qual rota vale mais agora, com a
+            simulação de escaramuça por trás e o motivo em uma linha.
+          </p>
+          <ul class="ticks">
+            <li>Dragão, Barão, Arauto e Grubs a partir dos eventos da partida</li>
+            <li>Alma de dragão, torres e abates por time</li>
+            <li>Chance de ganhar o 2v2 ou 3v3 com os itens e níveis reais</li>
+          </ul>
+        </div>
+        <div class="feature-art">
+          <div class="panel">
+            <p class="label">Objetivos</p>
+            <div class="timers">
+              <div class="timer">
+                <span>Dragão</span>
+                <b data-contagem="43" data-reinicia="300">0:43</b>
+              </div>
+              <div class="timer">
+                <span>Barão</span>
+                <b data-contagem="53" data-reinicia="360">0:53</b>
+                <span class="tag">estimado</span>
+              </div>
+            </div>
+            <p class="label">Prioridade agora</p>
+            <div class="lanes">
+              <div class="lane">
+                <div class="lane-head"><span>BOT</span><b>78</b></div>
+                <div class="bar"><span style="width: 78%"></span></div>
+                <small>3v2 a seu favor em 61% · Jungler inimigo morto por 23s</small>
+              </div>
+              <div class="lane">
+                <div class="lane-head"><span>TOP</span><b>61</b></div>
+                <div class="bar"><span style="width: 61%"></span></div>
+                <small>2v1 a seu favor em 49%</small>
+              </div>
+              <div class="lane">
+                <div class="lane-head"><span>MID</span><b>55</b></div>
+                <div class="bar"><span style="width: 55%"></span></div>
+                <small>1v1 a seu favor em 43%</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="overlay" class="overlay-sec">
+        <div class="feature-copy">
+          <p class="eyebrow">Sobreposições</p>
+          <h2>O que importa por cima do jogo, e só isso.</h2>
+          <p>
+            Overlay cheio de painel é overlay que ninguém lê no meio de uma luta.
+            O do Presage mostra três coisas: quanto falta para o próximo
+            objetivo, qual rota vale mais agora, e o que comprar no próximo
+            recall.
+          </p>
+          <p>
+            Ele nasce atravessável pelo mouse, então não come clique. Um atalho
+            mostra e esconde, outro deixa a janela clicável quando você quiser
+            mexer nela.
+          </p>
+          <p>
+            <b>E cada seção liga e desliga no painel.</b> Quem joga de suporte
+            olha objetivo e ignora build; quem joga de ADC quer o próximo item e
+            acha o ouro do time ruído. Não existe configuração certa, então quem
+            escolhe é você — e vale na hora, mesmo com a partida rodando.
+          </p>
+          <ul class="ticks">
+            <li>Diferença de ouro em itens, soma exata dos dez inventários</li>
+            <li>Quanto do dano que vem contra você é físico, agora</li>
+            <li>
+              A escaramuça que importa neste minuto — escolhida pelo objetivo
+              que está nascendo
+            </li>
+            <li>Timers de dragão, barão, arauto e grubs</li>
+            <li>Duas opções de próximo item, contra o inventário atual deles</li>
+            <li>Cada seção liga e desliga, do jeito que você joga</li>
+            <li>Mostrar e esconder sem sair do jogo</li>
+          </ul>
+        </div>
+
+        <div class="overlay-art">
+          <div class="hud">
+            <div class="hud-head">
+              <span class="hud-brand">PRESAGE</span><span class="hud-clock">19:07</span>
+            </div>
+            <div class="hud-row"><span>Ouro em itens</span><b class="bad">−2.950</b></div>
+            <div class="hud-block">
+              <div class="hud-row"><span>Dano contra você</span><b>81% físico</b></div>
+              <div class="hud-split"><span style="width: 81%"></span></div>
+              <div class="hud-row"><span>Sua vida efetiva</span><b>3.240</b></div>
+              <div class="hud-row">
+                <span>Pen. de armadura deles</span><b class="bad">35%</b>
+              </div>
+            </div>
+            <div class="hud-row"><span>Dragão</span><b class="warn">0:43</b></div>
+            <div class="hud-row">
+              <span>Barão</span><b>0:53</b><span class="tag">est</span>
+            </div>
+            <div class="hud-block">
+              <div class="hud-row">
+                <span>JG+ADC+SUP x JG+ADC+SUP</span><b class="good">61%</b>
+              </div>
+              <p class="hud-note">vocês · Dragão em 0:43</p>
+            </div>
+            <div class="hud-block">
+              <div class="hud-row"><span>Próximo item</span></div>
+              <p class="hud-note strong">
+                Ampulheta de Zhonya<span class="hud-ouro">3.250</span>
+              </p>
+              <p class="hud-note">Contra 18 de letalidade, vida rende mais</p>
+              <p class="hud-note">Rylai<span class="hud-ouro">2.600</span></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="posjogo" class="feature feature-flip">
+        <div class="feature-copy">
+          <p class="eyebrow">Depois do nexus cair</p>
+          <h2>A partida acabou. Agora dá para saber o que custou.</h2>
+          <p>
+            Enquanto você joga, o Presage grava a partida na sua máquina. No
+            fim, lê a gravação inteira e aponta o que foi bem e o que foi mal —
+            com número, minuto e ouro, não com conselho genérico.
+          </p>
+          <p>
+            Nada de "jogue mais seguro". Quatro mortes entre 21:40 e 24:10 é uma
+            frase que você pode conferir sozinho.
+          </p>
+          <ul class="ticks">
+            <li>Tropas, participação em abates e nível contra o seu oponente</li>
+            <li>As janelas em que as mortes vieram em sequência</li>
+            <li>Vantagem de ouro que existiu e foi devolvida</li>
+            <li>Roda sem chave de API: a gravação é sua e não sai do PC</li>
+          </ul>
+        </div>
+        <div class="feature-art">
+          <div class="panel">
+            <div class="pg-head">
+              <b>Ahri</b><span class="tag bad">derrota</span>
+              <span class="muted">36:24 · 3 a corrigir, 2 a manter</span>
+            </div>
+
+            <p class="label">A corrigir</p>
+            <div class="pg-card bad">
+              <b>4 mortes entre 21:40 e 24:10</b>
+              <p>4 das suas 7 mortes saíram nessa janela.</p>
+            </div>
+            <div class="pg-card bad">
+              <b>5,4 tropas por minuto contra 7,1</b>
+              <p>Zed fechou 62 tropas a mais. São ~1.302 de ouro.</p>
+            </div>
+
+            <p class="label">A manter</p>
+            <div class="pg-card good">
+              <b>71% dos abates do time</b>
+              <p>Você entrou em 17 dos 24 abates.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pitch">
+        <p class="eyebrow">Personalização</p>
+        <h2>
+          Ele não te dá a resposta média.<br />
+          <em>Te dá a resposta desta partida.</em>
+        </h2>
+        <p class="lede">
+          A maioria das ferramentas responde "o que funciona no patch". O
+          Presage parte de outra pergunta: o que funciona contra estes cinco,
+          com os itens que eles têm agora, nas mãos de alguém que joga como
+          você. Sua pool, seu histórico e o inventário deles entram na mesma
+          conta — e ela se refaz enquanto a partida acontece.
+        </p>
+      </section>
+
+      <section id="diferenca" class="compare">
+        <p class="eyebrow">Diferença</p>
+        <h2>O que o Presage faz e os outros não</h2>
+        <div class="cards">
+          <article class="card">
+            <h3>A build muda no meio da partida</h3>
+            <p>
+              Toda ferramenta te mostra a build do patch. O Presage olha o que
+              o time deles comprou e segue dali. Quando eles se adaptam a você,
+              a sua lista se adapta de volta.
+            </p>
+          </article>
+          <article class="card">
+            <h3>O pick que aguenta o contra-pick</h3>
+            <p>
+              Escolher o melhor campeão do momento é a parte fácil. Difícil é
+              escolher um que continue bom depois que eles respondem. Você vê os
+              dois números antes de travar.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Número com margem</h3>
+            <p>
+              Score sozinho é chute com cara de dado. Aqui ele vem com o tamanho
+              da amostra do lado, e você sabe quando confiar e quando não.
+            </p>
+          </article>
+          <article class="card">
+            <h3>O que é certeza e o que é palpite</h3>
+            <p>
+              Timer confirmado e timer calculado aparecem diferentes na tela.
+              Você decide se vale contestar sabendo qual dos dois está olhando.
+            </p>
+          </article>
+          <article class="card">
+            <h3>A briga que ainda não aconteceu</h3>
+            <p>
+              Ninguém mais te diz se o 2v2 no topo é seu antes de você descer.
+              O Presage resolve os agrupamentos com os itens e níveis reais dos
+              dois lados, e o número fica na tela.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Pós-jogo com número e minuto</h3>
+            <p>
+              Não é "jogue mais seguro". É quatro mortes entre 21:40 e 24:10, e
+              62 tropas a menos que o seu oponente. Coisa que você confere.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Pool do seu jeito</h3>
+            <p>
+              Ele te guia: a rota, depois os core, depois os situacionais. Mas
+              nada é obrigatório, e na revisão você muda tudo o que quiser.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Leve de verdade</h3>
+            <p>
+              Instalador pequeno e consumo de memória que não briga com o jogo.
+              Não dá para ajudar alguém a jogar melhor custando FPS.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="baixar" class="download">
+        <svg viewBox="0 0 64 64" class="mark mark-big" aria-hidden="true">
+          <g stroke="currentColor" stroke-width="5" stroke-linecap="round">
+            <path d="M32 38 16.5 25" opacity="0.5" />
+            <path d="M32 38 47.5 25" opacity="0.5" />
+            <path d="M32 57V17" />
+          </g>
+          <circle cx="14" cy="22" r="4.5" fill="currentColor" opacity="0.5" />
+          <circle cx="50" cy="22" r="4.5" fill="currentColor" opacity="0.5" />
+          <circle cx="32" cy="11" r="6" fill="currentColor" />
+        </svg>
+        <h2>Presage para Windows</h2>
+        <!-- Nome fixo de propósito: o arquivo publicado se chama sempre
+             `Presage-setup.exe`, independente da versão que ele carrega
+             dentro. Assim o link não quebra a cada release, e quem salvou a
+             página continua baixando a versão nova. A versionada fica em
+             `instalador/`. -->
+        <a class="button button-big" href="Presage-setup.exe" download>
+          Baixar instalador
+        </a>
+        <p class="fine">Windows 10 ou 11 · cerca de 2 MB · grátis</p>
+      </section>
+
+      <section class="faq">
+        <h2>FAQ</h2>
+        <details>
+          <summary>Isso pode me dar banimento?</summary>
+          <p>
+            O Presage lê apenas as APIs que a própria Riot oferece. Não injeta
+            nada no jogo, não lê memória e nunca clica por você — sem dodge
+            automático, sem smite automático, sem nada que mexa na sua partida
+            sem você mandar.
+          </p>
+        </details>
+        <details>
+          <summary>A leitura pós-partida manda minha partida para algum lugar?</summary>
+          <p>
+            Não. O Presage grava a partida numa pasta sua, lê ali mesmo e
+            mostra o resultado. Nada é enviado, nada é guardado fora do seu PC.
+            É também por isso que essa parte funciona sem chave de API nenhuma.
+          </p>
+        </details>
+        <details>
+          <summary>Preciso de alguma chave ou conta?</summary>
+          <p>
+            Não. O Presage reconhece sua conta pelo próprio cliente do League,
+            sem você digitar nada. O histórico pessoal é opcional.
+          </p>
+        </details>
+        <details>
+          <summary>Funciona em tela cheia?</summary>
+          <p>
+            A janela principal sim, sempre. O overlay precisa do jogo em
+            <b>janela sem bordas</b> — em tela cheia exclusiva o Windows não
+            desenha nenhuma janela externa por cima, e isso vale para qualquer
+            overlay, não só o nosso.
+          </p>
+        </details>
+        <details>
+          <summary>Tem versão para Mac?</summary>
+          <p>
+            Ainda não. O Presage depende de APIs específicas do Windows para
+            encontrar o cliente, e o League em Mac é um público pequeno demais
+            para justificar a reescrita por enquanto.
+          </p>
+        </details>
+        <details>
+          <summary>Por que o Windows avisa sobre o instalador?</summary>
+          <p>
+            Enquanto o certificado de assinatura não estiver em vigor, o
+            SmartScreen mostra um aviso para qualquer programa novo. Clique em
+            "Mais informações" e depois em "Executar assim mesmo".
+          </p>
+        </details>
+      </section>
+    </main>
+
+    <footer>
+      <div class="foot-brand">
+        <svg viewBox="0 0 64 64" class="mark" aria-hidden="true">
+          <g stroke="currentColor" stroke-width="5" stroke-linecap="round">
+            <path d="M32 38 16.5 25" opacity="0.5" />
+            <path d="M32 38 47.5 25" opacity="0.5" />
+            <path d="M32 57V17" />
+          </g>
+          <circle cx="14" cy="22" r="4.5" fill="currentColor" opacity="0.5" />
+          <circle cx="50" cy="22" r="4.5" fill="currentColor" opacity="0.5" />
+          <circle cx="32" cy="11" r="6" fill="currentColor" />
+        </svg>
+        <span class="wordmark">PRESAGE</span>
+      </div>
+      <p class="fine">
+        Presage não é endossado pela Riot Games e não reflete as opiniões da Riot
+        Games ou de quem participa oficialmente da produção ou gestão de League
+        of Legends. League of Legends e Riot Games são marcas registradas da Riot
+        Games, Inc.
+      </p>
+    </footer>
+  </body>
+</html>

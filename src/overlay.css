@@ -1,0 +1,145 @@
+﻿:root {
+  --bone: #e6e9f2;
+  --dim: #8b94a7;
+  --halo: #7b6cff;
+  --mint: #3ddc97;
+  --hot: #ff5c7a;
+  --ember: #ffb454;
+
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  background: transparent;
+}
+
+body {
+  color: var(--bone);
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+.hud {
+  margin: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(8, 10, 14, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.hud-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 7px;
+  margin-bottom: 7px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hud-brand {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--halo);
+  font-weight: 700;
+}
+
+.hud-clock {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--dim);
+}
+
+.hud-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.hud-label {
+  flex: 1;
+  color: var(--dim);
+}
+
+.hud-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.hud-value.hot {
+  color: var(--hot);
+}
+
+.hud-value.accent {
+  color: var(--halo);
+}
+
+.hud-tag {
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 3px;
+  padding: 0 4px;
+}
+
+.hud-block {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hud-note {
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.hud-note.strong {
+  color: var(--bone);
+  font-weight: 500;
+}
+
+.hud-value.up {
+  color: var(--mint, #3ddc97);
+}
+
+.hud-value.down {
+  color: var(--hot);
+}
+
+/* A divisão do dano que chega. A barra é a parte física; o que sobra, mágica. */
+.hud-split {
+  height: 3px;
+  border-radius: 2px;
+  margin: 4px 0 6px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.hud-split span {
+  display: block;
+  height: 100%;
+  background: var(--ember);
+  transition: width 0.3s ease;
+}
+
+/* Preco ao lado do item, discreto: ajuda a escolher entre as duas opcoes. */
+.hud-ouro {
+  float: right;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}

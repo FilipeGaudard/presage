@@ -1,0 +1,17 @@
+[package]
+name = "presage-ingest"
+description = "Coletor que produz a base de partidas lida pelo Presage"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+# As chaves da base saem daqui, então o formato não pode divergir do leitor.
+presage-core = { path = "../../core" }
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }
+reqwest = { version = "0.12", features = ["json"] }
