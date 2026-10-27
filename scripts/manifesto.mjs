@@ -94,5 +94,10 @@ const saida = resolve(raiz, "latest.json");
 writeFileSync(saida, `${JSON.stringify(manifesto, null, 2)}\n`, "utf8");
 
 console.log(`latest.json gerado para a versão ${versao}`);
-console.log(`  o app vai baixar de: ${manifesto.platforms["windows-x86_64"].url}`);
-console.log(`  publique em:         ${base}/latest.json`);
+console.log(`  instalador: ${manifesto.platforms["windows-x86_64"].url}`);
+console.log(
+  "\nAnexe os dois à release. O app não lê pela URL da tag — ele lê por\n" +
+    "`/releases/latest/download/latest.json`, que o GitHub resolve sempre\n" +
+    "para a release mais recente. Por isso a release precisa sair publicada:\n" +
+    "um rascunho não é servido por esse endereço, e ninguém atualiza."
+);
