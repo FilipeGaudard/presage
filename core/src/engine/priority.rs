@@ -299,6 +299,7 @@ mod tests {
             turrets: Sides::default(),
             kills: Sides::default(),
             upcoming,
+            respawns: vec![],
         }
     }
 

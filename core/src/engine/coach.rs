@@ -38,17 +38,17 @@ const MIN_DURATION: f64 = 300.0;
 /// Escrito à mão: regra, não estatística. Os limiares de participação seguem o
 /// que cada rota costuma ter — o suporte e a selva vivem de entrar nas brigas, o
 /// topo passa boa parte do jogo sozinho na rota.
-struct Cobranca {
+pub(crate) struct Cobranca {
     /// Farm contra o oponente direto é trabalho da rota.
-    farm: bool,
+    pub(crate) farm: bool,
     /// Visão contra o oponente direto é trabalho da rota.
-    vision: bool,
+    pub(crate) vision: bool,
     /// Participação abaixo disto é ponto fraco; acima de `kp_good`, forte.
-    kp_bad: f64,
-    kp_good: f64,
+    pub(crate) kp_bad: f64,
+    pub(crate) kp_good: f64,
 }
 
-fn cobranca(role: Role) -> Cobranca {
+pub(crate) fn cobranca(role: Role) -> Cobranca {
     let (farm, vision, kp_bad, kp_good) = match role {
         Role::Support => (false, true, 0.50, 0.75),
         Role::Jungle => (true, false, 0.45, 0.70),

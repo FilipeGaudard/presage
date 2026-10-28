@@ -12,6 +12,7 @@ pub mod minimax;
 pub mod poolgap;
 pub mod profile;
 pub mod report;
+pub mod rival;
 pub mod roles;
 pub mod priority;
 pub mod runes;
