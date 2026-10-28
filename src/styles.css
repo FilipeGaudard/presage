@@ -387,6 +387,19 @@ h3 {
   gap: 16px;
 }
 
+/* A rota escolhida na tela, quando o cliente nao informa. */
+.reco-role {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 12px 0 4px;
+}
+
+.reco-role .faint {
+  margin-top: 0;
+}
+
 .nav {
   display: flex;
   gap: 2px;

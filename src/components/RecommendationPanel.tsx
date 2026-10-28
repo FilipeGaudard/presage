@@ -1,11 +1,13 @@
 import { useState } from "react";
 import type { StaticData } from "../lib/ddragon";
-import type {
-  BanSuggestion,
-  DraftState,
-  EngineStatus,
-  MinimaxPick,
-  ScoredChampion,
+import {
+  ROLES,
+  type BanSuggestion,
+  type DraftState,
+  type EngineStatus,
+  type MinimaxPick,
+  type Role,
+  type ScoredChampion,
 } from "../lib/types";
 
 interface Props {
@@ -15,6 +17,9 @@ interface Props {
   staticData: StaticData | null;
   draft: DraftState | null;
   engine: EngineStatus | null;
+  /** A rota escolhida na tela, para quando o cliente não informa. */
+  role?: Role | null;
+  onRole?: (role: Role) => void;
 }
 
 const OVERALL_COUNT = 15;
@@ -32,6 +37,8 @@ export default function RecommendationPanel({
   staticData,
   draft,
   engine,
+  role = null,
+  onRole,
 }: Props) {
   const [selected, setSelected] = useState<number | null>(null);
 
@@ -62,6 +69,27 @@ export default function RecommendationPanel({
           </span>
         </div>
       </div>
+
+      {/* Na ranqueada o cliente diz a rota. Em blind e normal não diz, e sem
+          rota a lista viraria o jogo inteiro. */}
+      {!draft.localPosition && onRole && (
+        <div className="reco-role">
+          <span className="muted">Sua rota:</span>
+          <div className="role-tabs">
+            {ROLES.map((item) => (
+              <button
+                type="button"
+                key={item.id}
+                className={role === item.id ? "on" : ""}
+                onClick={() => onRole(item.id)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          {!role && <span className="faint">sem rota, a lista inclui todos</span>}
+        </div>
+      )}
 
       {!engine?.ready && (
         <div className="banner banner-warn">Carregando dados de campeões…</div>

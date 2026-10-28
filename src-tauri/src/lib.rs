@@ -16,7 +16,9 @@ use tauri::{Emitter, Manager};
 use analysis::LaneReport;
 use lcu::models::{ConnStatus, DraftState};
 use presage_core::engine::build::{self, BuildContext, ItemSuggestion};
-use presage_core::engine::champion::Role;
+use presage_core::engine::champion::{ChampionIndex, Role};
+use presage_core::engine::context::{self, DraftContext};
+use presage_core::engine::stats::StatsStore;
 use presage_core::engine::coach::Report;
 use presage_core::engine::dataset::{Dataset, Layered};
 use presage_core::engine::gold::{self, GoldReport};
@@ -101,6 +103,20 @@ fn engine_status(shared: tauri::State<'_, Arc<Shared>>) -> EngineStatus {
     engine_status_of(&shared)
 }
 
+/// O contexto do draft com a rota resolvida: a do cliente, a escolhida na tela,
+/// ou a da pool. Ranking, minimax e análise de rota leem o mesmo.
+fn draft_context(
+    shared: &Shared,
+    draft: &DraftState,
+    champions: &ChampionIndex,
+    stats: &dyn StatsStore,
+) -> DraftContext {
+    let pool = shared.pool.read().unwrap();
+    let chosen = *shared.draft_role.lock().unwrap();
+    let role = context::resolve_role(&draft.local_position, chosen, &pool);
+    DraftContext::new(draft, champions, stats, &pool.ids_for_role(role), role)
+}
+
 #[tauri::command]
 fn rank_draft(shared: tauri::State<'_, Arc<Shared>>) -> Vec<Scored> {
     let draft = shared.draft.lock().unwrap().clone();
@@ -108,12 +124,18 @@ fn rank_draft(shared: tauri::State<'_, Arc<Shared>>) -> Vec<Scored> {
         return Vec::new();
     };
 
-    let role = Role::from_lcu(&draft.local_position);
-    let ids = shared.pool.read().unwrap().ids_for_role(role);
-
     let champions = shared.champions.read().unwrap();
     let stats = shared.stats.read().unwrap();
-    engine::rank(&draft, &champions, &**stats, &ids)
+    let ctx = draft_context(&shared, &draft, &champions, &**stats);
+    engine::rank_with(&ctx, &champions, &**stats)
+}
+
+/// A rota para quando o cliente não informa. `None` volta para a da pool.
+#[tauri::command]
+fn set_draft_role(role: Option<String>, shared: tauri::State<'_, Arc<Shared>>) {
+    *shared.draft_role.lock().unwrap() = role
+        .map(|r| Role::from_lcu(&r))
+        .filter(|r| *r != Role::Unknown);
 }
 
 /// Quanto você tira do oponente direto, do seu histórico. `None` sem chave da
@@ -131,11 +153,10 @@ fn minimax_draft(shared: tauri::State<'_, Arc<Shared>>) -> Vec<minimax::MinimaxP
         return Vec::new();
     };
 
-    let role = Role::from_lcu(&draft.local_position);
-    let ids = shared.pool.read().unwrap().ids_for_role(role);
     let champions = shared.champions.read().unwrap();
-
-    minimax::minimax(&draft, &champions, &ids, 12, 4)
+    let stats = shared.stats.read().unwrap();
+    let ctx = draft_context(&shared, &draft, &champions, &**stats);
+    minimax::minimax_with(&ctx, &champions, &**stats, 12)
 }
 
 #[tauri::command]
@@ -563,6 +584,7 @@ fn montar(com_atualizador: bool) -> tauri::Builder<tauri::Wry> {
             engine_status,
             lane_profile,
             rank_draft,
+            set_draft_role,
             minimax_draft,
             ban_suggestions,
             get_pool,

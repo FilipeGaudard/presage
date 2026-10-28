@@ -2,6 +2,7 @@ pub mod build;
 pub mod champion;
 pub mod coach;
 pub mod comp;
+pub mod context;
 pub mod damage;
 pub mod dataset;
 pub mod gold;
@@ -17,10 +18,10 @@ pub mod stats;
 pub mod timeline;
 
 use serde::Serialize;
-use std::collections::HashSet;
 
-use crate::draft::{DraftSlot, DraftState};
+use crate::draft::DraftState;
 use champion::{Champion, ChampionIndex, Role};
+use context::DraftContext;
 use stats::{
     expected_against, expected_together, posterior_sd, shrink, shrunk_delta, strength_for_sd,
     StatsStore,
@@ -61,31 +62,47 @@ pub struct Scored {
     pub reasons: Vec<String>,
 }
 
+/// O ranking com a rota que o cliente informa. O app usa `rank_with`, que
+/// recebe a rota já resolvida (cliente, escolha na tela ou pool).
 pub fn rank(
     draft: &DraftState,
     index: &ChampionIndex,
     store: &dyn StatsStore,
     pool: &[i64],
 ) -> Vec<Scored> {
+    let role = Role::from_lcu(&draft.local_position);
+    rank_with(&DraftContext::new(draft, index, store, pool, role), index, store)
+}
+
+/// Só os candidatos do contexto entram: disponíveis, e que jogam a sua rota
+/// ou estão na sua pool.
+pub fn rank_with(ctx: &DraftContext, index: &ChampionIndex, store: &dyn StatsStore) -> Vec<Scored> {
     if index.is_empty() {
         return Vec::new();
     }
 
-    let role = Role::from_lcu(&draft.local_position);
-    let pool: HashSet<i64> = pool.iter().copied().collect();
-    let unavailable: HashSet<i64> = draft.unavailable.iter().copied().collect();
-
-    let allies = team_champions(&draft.my_team, true);
-    let team = comp::profile(&allies, index);
-    let ally_bases = ally_bases(&draft.my_team, store);
-    let lane_opponent = lane_opponent(draft, index, store);
+    let role = ctx.my_role;
+    let team = comp::profile(&ctx.ally_ids(), index);
+    // Cada aliado com a winrate base dele na rota dele — a referência contra a
+    // qual a sinergia é medida.
+    let ally_bases: Vec<(i64, f64)> = ctx
+        .allies
+        .iter()
+        .map(|p| (p.champion_id, base_rate(store, p.champion_id, p.role)))
+        .collect();
+    let lane_opponent = ctx.lane_opponent().and_then(|p| {
+        index.get(p.champion_id).map(|champion| LaneOpponent {
+            id: p.champion_id,
+            name: champion.name.clone(),
+            base: base_rate(store, p.champion_id, role),
+        })
+    });
     let lanes = store.lane_profile();
 
-    let mut scored: Vec<Scored> = index
-        .ids()
-        .into_iter()
-        .filter(|id| !unavailable.contains(id))
-        .filter_map(|id| index.get(id).map(|champion| (id, champion)))
+    let mut scored: Vec<Scored> = ctx
+        .candidates
+        .iter()
+        .filter_map(|&id| index.get(id).map(|champion| (id, champion)))
         .map(|(id, champion)| {
             score_one(
                 champion,
@@ -94,7 +111,7 @@ pub fn rank(
                 &ally_bases,
                 lane_opponent.as_ref(),
                 store,
-                pool.contains(&id),
+                ctx.pool.contains(&id),
                 lanes.as_ref().and_then(|profile| profile.champion(id)),
             )
         })
@@ -270,38 +287,8 @@ fn build_reasons(
     reasons
 }
 
-fn slot_champion(slot: &DraftSlot) -> i64 {
-    if slot.champion_id > 0 {
-        slot.champion_id
-    } else {
-        slot.intent_id
-    }
-}
-
-fn team_champions(slots: &[DraftSlot], skip_local: bool) -> Vec<i64> {
-    slots
-        .iter()
-        .filter(|slot| !(skip_local && slot.is_local))
-        .map(slot_champion)
-        .filter(|id| *id > 0)
-        .collect()
-}
-
 fn base_rate(store: &dyn StatsStore, champion: i64, role: Role) -> f64 {
     shrink(store.base(champion, role), PRIOR_RATE, BASE_STRENGTH).rate
-}
-
-/// Cada aliado com a winrate base dele na rota dele — a referência contra a
-/// qual a sinergia é medida. Rota desconhecida cai no prior de 50%, e a
-/// sinergia volta a ser medida só contra a sua base.
-fn ally_bases(slots: &[DraftSlot], store: &dyn StatsStore) -> Vec<(i64, f64)> {
-    slots
-        .iter()
-        .filter(|slot| !slot.is_local)
-        .map(|slot| (slot_champion(slot), Role::from_lcu(&slot.position)))
-        .filter(|(id, _)| *id > 0)
-        .map(|(id, role)| (id, base_rate(store, id, role)))
-        .collect()
 }
 
 struct LaneOpponent {
@@ -311,33 +298,12 @@ struct LaneOpponent {
     base: f64,
 }
 
-fn lane_opponent(
-    draft: &DraftState,
-    index: &ChampionIndex,
-    store: &dyn StatsStore,
-) -> Option<LaneOpponent> {
-    if draft.local_position.is_empty() {
-        return None;
-    }
-    let role = Role::from_lcu(&draft.local_position);
-    draft
-        .their_team
-        .iter()
-        .find(|slot| slot.position == draft.local_position && slot.champion_id > 0)
-        .and_then(|slot| {
-            index.get(slot.champion_id).map(|champion| LaneOpponent {
-                id: slot.champion_id,
-                name: champion.name.clone(),
-                base: base_rate(store, slot.champion_id, role),
-            })
-        })
-}
-
 #[cfg(test)]
 mod tests {
     use super::champion::fake;
     use super::stats::Record;
     use super::*;
+    use crate::draft::DraftSlot;
     use std::collections::HashMap;
 
     fn slot(cell_id: i64, position: &str, champion_id: i64, is_local: bool) -> DraftSlot {
@@ -360,8 +326,15 @@ mod tests {
             fake(2, "Lutador", "Fighter", 8.0, 3.0, 5.0),
             fake(3, "Assassino", "Assassin", 9.0, 3.0, 3.0),
             fake(4, "Mago", "Mage", 2.0, 9.0, 4.0),
-            fake(5, "Tanque", "Tank", 5.0, 6.0, 9.0),
+            // Tanque de meio, com Mage como segunda classe — sem ela, a regra de
+            // rota o tiraria da lista do meio.
+            {
+                let mut tanque = fake(5, "Tanque", "Tank", 5.0, 6.0, 9.0);
+                tanque.tags.push("Mage".into());
+                tanque
+            },
             fake(6, "Inimigo", "Mage", 3.0, 8.0, 4.0),
+            fake(7, "AtiradorLivre", "Marksman", 9.0, 2.0, 3.0),
         ];
         ChampionIndex {
             version: "test".into(),
@@ -408,6 +381,34 @@ mod tests {
         fn has_global(&self) -> bool {
             true
         }
+    }
+
+    #[test]
+    fn quem_nao_joga_a_rota_fica_de_fora() {
+        // O atirador está disponível, mas o seu lugar é o meio.
+        let scored = rank(&draft(), &index(), &stats::NoStats, &[]);
+        assert!(!scored.iter().any(|s| s.champion_id == 7), "{scored:?}");
+    }
+
+    #[test]
+    fn a_pool_passa_por_cima_da_regra_de_rota() {
+        let scored = rank(&draft(), &index(), &stats::NoStats, &[7]);
+        assert!(scored.iter().any(|s| s.champion_id == 7 && s.in_pool));
+    }
+
+    #[test]
+    fn o_oponente_de_rota_e_achado_sem_posicao() {
+        // Na ranqueada o cliente não diz a posição do inimigo. O mago deles
+        // é inferido no meio, e o matchup passa a valer.
+        let mut d = draft();
+        d.their_team[0].position = String::new();
+        let scored = rank(&d, &index(), &FakeStats, &[]);
+        let mago = scored.iter().find(|s| s.champion_id == 4).unwrap();
+        assert!(
+            mago.reasons.iter().any(|r| r.starts_with("Vence Inimigo")),
+            "{:?}",
+            mago.reasons
+        );
     }
 
     #[test]

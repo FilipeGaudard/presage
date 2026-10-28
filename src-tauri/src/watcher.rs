@@ -13,7 +13,7 @@ use std::sync::{Arc, Mutex, RwLock};
 use std::time::Duration;
 use tauri::{AppHandle, Emitter};
 
-use presage_core::engine::champion::ChampionIndex;
+use presage_core::engine::champion::{ChampionIndex, Role};
 use presage_core::engine::coach::{Recording, Report};
 use presage_core::engine::dataset::Dataset;
 use presage_core::engine::items::ItemIndex;
@@ -74,6 +74,9 @@ pub struct Shared {
     /// Base de partidas agregada. `None` até existir um pipeline que a produza
     /// — e `None` é o estado honesto, não um defeito.
     pub dataset: RwLock<Option<Dataset>>,
+    /// A rota escolhida na tela, para quando o cliente não informa (blind,
+    /// normal). A informada pelo cliente sempre vence.
+    pub draft_role: Mutex<Option<Role>>,
 }
 
 impl Shared {
@@ -92,6 +95,7 @@ impl Shared {
             recording: Mutex::new(Recording::default()),
             last_review: Mutex::new(None),
             dataset: RwLock::new(None),
+            draft_role: Mutex::new(None),
         }
     }
 }

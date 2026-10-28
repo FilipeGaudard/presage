@@ -62,6 +62,7 @@ export default function App() {
   const [lanes, setLanes] = useState<LaneReport | null>(null);
   const [goldReport, setGoldReport] = useState<GoldReport | null>(null);
   const [review, setReview] = useState<CoachReport | null>(null);
+  const [draftRole, setDraftRole] = useState<Role | null>(null);
   const [laneProfile, setLaneProfile] = useState<LaneProfile | null>(null);
   const [runas, setRunas] = useState<RunePlan | null>(null);
   const [overlayPrefs, setOverlayPrefs] = useState<OverlayPrefs>({ hidden: [] });
@@ -155,7 +156,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [draft, engine?.ready, pool]);
+  }, [draft, engine?.ready, pool, draftRole]);
 
   useEffect(() => {
     if (!live) {
@@ -217,6 +218,15 @@ export default function App() {
       }),
     []
   );
+
+  // A rota só muda na tela depois que o backend guardou: a lista que volta já
+  // é a da rota nova.
+  const escolherRota = useCallback((proxima: Role) => {
+    if (proxima === "Unknown") return;
+    invoke("set_draft_role", { role: ROLE_TO_LCU[proxima] })
+      .then(() => setDraftRole(proxima))
+      .catch(() => void 0);
+  }, []);
 
   const secondsLeft = useMemo(() => {
     const anchor = clockAnchor.current;
@@ -387,6 +397,8 @@ export default function App() {
               staticData={staticData}
               draft={draft}
               engine={engine}
+              role={draftRole}
+              onRole={escolherRota}
             />
           </section>
         </main>
