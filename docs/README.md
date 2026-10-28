@@ -50,6 +50,8 @@ docs/
     09-licoes-do-prototipo.md            defeito → causa → prevenção
   adr/
     0000-template.md … 0019-contra-em-qualquer-rota-e-chance-do-time.md
+  referencia/
+    itero/                               o iTero por dentro, cruzado com o Presage (I-*, G-*)
 ```
 
 ## Convenções
@@ -71,6 +73,8 @@ docs/
 | `ADR-00NN` | Decisão de arquitetura | [adr/](adr/) |
 | `P-n` | Pergunta em aberto | [perguntas](produto/perguntas-em-aberto.md) |
 | `L-n` | Lição do protótipo | [09](arquitetura/09-licoes-do-prototipo.md) |
+| `I-n` | Funcionalidade do iTero | [referência](referencia/itero/05-funcionalidades.md) |
+| `G-n` | Lacuna do Presage frente ao iTero | [cruzamento](referencia/itero/07-cruzamento.md#6-as-lacunas-que-cabem-por-valor) |
 
 Testes são citados pelo nome da função (`popularidade_nao_vira_matchup`): o nome
 é o identificador, e `cargo test <nome>` roda só ele.
