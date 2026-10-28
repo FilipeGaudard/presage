@@ -51,7 +51,15 @@ O que entra na conta de cada partida aceita:
   de A, `B:A:rota` a de B. É direcional de propósito, porque é assim que a chave é
   lida no app;
 - **sinergia**: todo par de companheiros, sem direção (o menor id primeiro), dez
-  por time, vinte por partida.
+  por time, vinte por partida;
+- **contra** (`versus`): todo par de adversários, em qualquer rota, nas duas
+  direções — `A:B` conta a vitória de A com B no time inimigo. Vinte e cinco
+  pares, cinquenta entradas por partida. É o que pesa o candidato contra o time
+  inimigo inteiro, já que na ranqueada a rota do inimigo não se sabe;
+- **duração** (`length`): uma linha por participante, `campeão:rota:faixa`, pela
+  duração da partida (até 25:00, até 32:30, depois). É a única fonte honesta para
+  a fase do jogo em que um campeão rende
+  ([ADR-0018](../adr/0018-o-que-a-condicao-de-vitoria-pode-afirmar.md)).
 
 ## 3. Três decisões que mudam o resultado
 
@@ -71,6 +79,11 @@ modo que não é a Fenda, rota em branco, rotas que não fecham cinco por time, 
 de cinco minutos: tudo descartado com motivo (`Skip`), antes de qualquer
 contagem. Meia partida contada é pior que partida nenhuma, e uma base que engole
 remake mede taxa de remake.
+
+Um estado salvo por uma versão do coletor anterior às tabelas de contra e
+duração não é retomado: as tabelas novas ficariam com menos partidas do que o
+cabeçalho diz (`Counts::resumable`, `versus_matches`). O coletor recusa e pede
+para recomeçar.
 
 Os motivos de descarte sobrevivem a uma retomada: um crawl de horas que recomeça
 não pode perder a conta do que recusou.
@@ -122,6 +135,16 @@ Personal resolve isso para o protótipo, por ser não comercial e não expirar
 - **Nada disso é tudo ou nada.** O motor encolhe o que tem amostra pequena até o
   ponto de não mexer no ranking, então uma base parcial recomenda tão bem quanto a
   parte dela que já tem amostra.
+
+- **Contra** é a tabela mais larga — ~170 × 170 pares — e a mais rala: com ~200
+  mil partidas sai uma média de ~170 jogos por par, e cada termo de contra move o
+  ranking em no máximo ~0,3pp. O efeito aparece somado sobre os cinco inimigos.
+
+O `--verificar` também **mede o espalhamento do contra**: o resíduo de cada par
+contra o que as duas forças explicam, menos o ruído de amostragem (`τ² =
+Var(resíduos) − média(p(1 − p)/n)`). É o número que deve ir para o
+`VERSUS_PRIOR_SD` do motor — medido, não chutado. Com menos de 30 pares úteis ele
+diz que ainda não dá para medir.
 
 `--min-jogos` (padrão 20) corta as entradas magras na hora de gravar. Com a força
 de prior do motor, um matchup de dez partidas pesa ~3,5% contra o prior: ocupa

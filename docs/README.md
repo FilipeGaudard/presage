@@ -49,7 +49,7 @@ docs/
     08-desenvolvimento-e-testes.md       rodar, toolchain, testes, demo
     09-licoes-do-prototipo.md            defeito → causa → prevenção
   adr/
-    0000-template.md … 0018-o-que-a-condicao-de-vitoria-pode-afirmar.md
+    0000-template.md … 0019-contra-em-qualquer-rota-e-chance-do-time.md
 ```
 
 ## Convenções

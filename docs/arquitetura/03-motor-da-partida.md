@@ -87,9 +87,11 @@ chance da rota = 0,5 + W_DUEL × (duelo − 0,5) + Δmatchup     cortada em [0,2
 - `W_DUEL = 0,60`: poder de combate não é vitória de rota — quem ganha o 1v1 em
   tela aberta ainda perde a rota por onda, por gank e por nível. Com 0,60 um
   duelo de 60/40 vira 56% de rota. Escolhido, não ajustado ([P-7](../produto/perguntas-em-aberto.md)).
-- `Δmatchup` vem da base, encolhido para 50% com a mesma força de matchup do draft.
+- `Δmatchup` vem da base, encolhido para o que as duas forças já explicam
+  (`expected_against`, a mesma referência do draft) com a mesma força de matchup.
   Sem base é exatamente zero, e `from_data = false` faz a interface escrever "só a
-  conta do duelo".
+  conta do duelo"; com base, a força de cada um já entra no número e `from_data`
+  fica verdadeiro.
 - Nenhuma rota está decidida antes de começar: daí o piso e o teto.
 - Rotas sem oponente identificado ficam de fora em vez de virarem 50%: um palpite
   com cara de medida é pior que silêncio.
@@ -130,10 +132,12 @@ sugerir. A interface diz isso.
 - **onde a conta de atributos pende:** rotas e escaramuças a mais de 5 pontos de
   50%, cada uma marcada como `atributos`.
 
-**Sem fase do jogo.** A conta não vê habilidade e por isso não vê quem escala: "seu
-time é de fim de jogo" a partir dela poderia sair ao contrário. A fase entra com a
-base, pela winrate em partidas curtas e longas. Tudo é descrição, nunca ordem
-(C-5).
+**A fase do jogo só pelos dados.** A conta de atributos não vê habilidade e por
+isso não vê quem escala: "seu time é de fim de jogo" a partir dela poderia sair ao
+contrário. Com a base, a fase sai da tabela `length`: a winrate de cada um, na rota
+dele, em partidas longas contra curtas, encolhida para a força dele na rota. A
+diferença entre os dois times vira uma frase com o selo `dados` e o n. Sem a base,
+não há linha de fase. Tudo é descrição, nunca ordem (C-5).
 
 ### A prévia no draft
 

@@ -35,16 +35,49 @@ com intervalo de confiança. Ela sai da soma de cinco componentes:
 |---|---|---|
 | Winrate base do campeão na rota | **sem dado** | base de partidas |
 | Matchup contra o laner inimigo | **sem dado** | base de partidas |
+| Contra cada inimigo, em qualquer rota | **sem dado** | base de partidas (`versus`) |
 | Sinergia com os picks aliados | **sem dado** | base de partidas |
 | Seu histórico pessoal | ativo com a chave da Riot | sua conta |
 | Fit de composição | **ativo** | Data Dragon |
 
 ```text
-winrate = base + Δmatchup + Σ Δsinergia + Δpessoal + Δcomposição     cortada em [0,25; 0,75]
+z = logit(base) + w·Δmatchup + Σ peso·Δcontra + Σ Δsinergia + Δpessoal + Δcomposição
+winrate = σ(z)     cortada em [0,25; 0,75]
 ```
 
-A soma é em probabilidade, não em log-odds ([P-10](../produto/perguntas-em-aberto.md)).
-A ordem é por `winrate`, depois pool, depois id — determinística, e há teste.
+A soma é em **log-odds**, onde forças independentes se somam. Cada efeito
+encolhido entra como o quanto ele move o log-odds a partir da própria referência,
+`logit(referência + δ) − logit(referência)`; a composição, pela mesma conversão a
+partir de 50%. A ordem é por `winrate`, depois pool, depois id — determinística,
+e há teste.
+
+### Contra o time inimigo inteiro
+
+O candidato é pesado contra cada inimigo travado, em qualquer rota (tabela
+`versus`, [ADR-0019](../adr/0019-contra-em-qualquer-rota-e-chance-do-time.md)):
+
+- **A referência** é a força de cada um somada nas cinco rotas: na ranqueada a
+  rota do inimigo não se sabe, e usar 50% para ele traria de volta o vazamento de
+  popularidade.
+- **O oponente de rota** entra pelo matchup na proporção `w` em que é mesmo da sua
+  rota — 1 com a posição informada, a fração do encaixe dele quando inferida
+  (`lane_share`) — e pelo contra no resto (`1 − w`). O mesmo par nunca conta duas
+  vezes (`o_oponente_de_rota_nao_conta_duas_vezes`).
+- **O espalhamento** `VERSUS_PRIOR_SD = 1pp` é palpite até a base existir; o
+  `--verificar` do coletor mede o de verdade ([05 §7](05-coletor.md#7-o-que-esperar-da-base)).
+- O contra que mais pesa vira razão: "Bate em X, em qualquer rota (+1.2pp, n=…)".
+
+### A chance do time
+
+`engine/team.rs` soma, em log-odds, os dez campeões: a força de cada um na rota, o
+confronto de rota na proporção em que os dois são mesmo da mesma rota, o contra de
+cada par de adversários no resto, e a sinergia de cada par de companheiros. As
+mesmas referências e forças do ranking.
+
+Só com a base (`None` sem ela), presa entre 35% e 65%, com o `±` da soma das
+incertezas e as parcelas que mais pesam, com n — de onde vem a vantagem. A prévia
+do draft mostra a chance do time com o candidato. Um teste trava
+`P(A, B) + P(B, A) = 1`.
 
 O que `Scored` leva para a tela:
 
@@ -90,6 +123,7 @@ strength_for_sd(sd) = 0,25 / sd² − 1
 | `MATCHUP_PRIOR_SD` | 3,0pp | ≈ 277 |
 | `SYNERGY_PRIOR_SD` | 1,2pp | ≈ 1735 |
 | `PERSONAL_PRIOR_SD` | 3,5pp | ≈ 203 |
+| `VERSUS_PRIOR_SD` | 1,0pp | ≈ 2499 |
 | `BASE_STRENGTH` | — | 400 (o `±` da base sai de `Estimate::se`, já coerente com ela) |
 | `COMP_SD` | 1,0pp | — |
 
@@ -270,7 +304,7 @@ O encaixe está pronto: `engine/dataset.rs` define o formato, implementa
 procura `%LOCALAPPDATA%\Presage\base-de-partidas.json` ao subir; não achando,
 segue sem — e `has_global` fica `false`, que é o que a interface mostra.
 
-O formato é um JSON com cabeçalho e três mapas:
+O formato é um JSON com cabeçalho e cinco mapas:
 
 ```json
 {
@@ -281,9 +315,16 @@ O formato é um JSON com cabeçalho e três mapas:
   "matches": 1200000,
   "base":    { "103:Mid": { "games": 40000, "wins": 21000 } },
   "matchup": { "103:238:Mid": { "games": 1840, "wins": 1050 } },
-  "synergy": { "64:103": { "games": 900, "wins": 480 } }
+  "synergy": { "64:103": { "games": 900, "wins": 480 } },
+  "versus":  { "103:64": { "games": 700, "wins": 330 } },
+  "length":  { "103:Mid:Longa": { "games": 9000, "wins": 4900 } }
 }
 ```
+
+`versus` é direcional — `A:B` é o resultado de A com B no time inimigo, em
+qualquer rota. `length` é o resultado por duração da partida (`Curta` até 25:00,
+`Media` até 32:30, `Longa` depois). As duas são opcionais: base de antes delas
+continua carregando.
 
 A chave de sinergia guarda sempre o menor id primeiro, para Lee+Ahri e Ahri+Lee
 caírem na mesma entrada. `is_usable()` recusa arquivo truncado: sem `matches` ou

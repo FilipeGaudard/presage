@@ -65,7 +65,7 @@ resposta honesta é que eles **não têm todos a mesma qualidade**.
 | Recomendação da pool (lugares 4 a 8) | composição da pool + resistências, pesos à mão por rota | **regra, não estatística** |
 | Score de draft (`+3.4`) | encaixe de composição, pesos à mão | **fraca** |
 | Perfil de rota (`+6 tropas aos 10`) | suas partidas contra o oponente direto, encolhidas por nível | **medição**, com `±`; mistura você e o campeão |
-| Winrate, matchup, sinergia | — | **não existe ainda** |
+| Winrate, matchup, contra, sinergia, chance do time, fase do jogo | base de partidas (coletor) | **não existe ainda** — o encaixe está pronto, os dados não |
 
 ### O que é medição
 

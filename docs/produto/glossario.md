@@ -53,6 +53,10 @@ código. Quando o doc diz "confronto", o código diz `matchup`.
 | termo de experiência | — | O que falta para corrigir o vazamento: campeão nunca jogado rende abaixo da sua média ([P-4](perguntas-em-aberto.md)) |
 | camada global, camada pessoal | `Layered { global, personal }` | A base de partidas e o histórico da conta, independentes |
 | base de partidas | `Dataset`, `base-de-partidas.json` | O arquivo agregado que o coletor produz |
+| contra | `StatsStore::versus`, `versus_key` (`"103:64"`) | O resultado de um campeão com outro em qualquer rota do time inimigo. Direcional |
+| peso de rota | `Foe::lane_weight`, `lane_share` | O quanto um inimigo é mesmo o seu oponente de rota: 1 informado, a fração do encaixe quando inferido |
+| duração | `Length`, `length_key` | Partida curta (até 25:00), média ou longa (depois de 32:30) |
+| chance do time | `team::TeamEstimate` | Os dez campeões num modelo só, em log-odds. Só com a base |
 | contexto do draft | `DraftContext` | A leitura única do champ select: sua rota, candidatos, aliados com hover, inimigos com rota inferida |
 | rota inferida | `infer`, `roles_assumed` | A rota do inimigo que o cliente não informa, pela atribuição mais plausível |
 | quem joga a rota | `roles::plays`, `role_fit` | A base (5% das partidas), as classes, ou o seu próprio histórico |

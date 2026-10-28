@@ -80,12 +80,12 @@ o documento afetado no mesmo commit.
 - **Por que importa:** `0,5 + W_DUEL × (duelo − 0,5) + matchup`. O duelo vem dos
   atributos; o matchup, de partidas. Quando a base existir, parte do que o duelo
   mede já estará no matchup. E o `W_DUEL = 0,60` foi escolhido, não ajustado.
-- **Também:** `lanes.rs` encolhe o matchup para 50%, não para o que as bases dos
-  dois preveem. Corrigir faz a base sozinha mexer no número, e aí `from_data =
-  false` ("só a conta do duelo") deixa de ser verdade — é decisão de interface,
-  não só de conta.
-- **Default:** fórmula atual, com a força de matchup compartilhada com o draft.
-  Ajustar contra dado quando a base existir.
+- **Resolvido em parte (2026-10-28):** `lanes.rs` encolhia o matchup para 50%;
+  agora encolhe para o que as duas forças explicam, e `from_data` fica verdadeiro
+  quando a base entra no número.
+- **Default:** fórmula atual, com a força e a referência de matchup do draft.
+  `W_DUEL` e a sobreposição entre duelo e matchup se ajustam contra dado quando a
+  base existir.
 
 ## P-8 — Pinning do root CA da Riot no loopback 🟡
 
@@ -100,15 +100,13 @@ o documento afetado no mesmo commit.
   todo mundo é a mesma; para pick flexível, mistura duas coisas.
 - **Default:** soma.
 
-## P-10 — Somar os componentes em log-odds? 🟡
+## P-10 — Somar os componentes em log-odds? 🟢
 
-- **Por que importa:** o ranking soma base, matchup, sinergia, pessoal e
-  composição em probabilidade e corta em [0,25; 0,75]. O certo seria log-odds,
-  como a referência já é ([ADR-0008](../adr/0008-matchup-e-sinergia-contra-a-soma-das-forcas.md)).
-- **Por que não ainda:** os pesos de composição estão calibrados em pontos
-  percentuais (~1,5pp numa correção forte). Mudar a soma muda a escala deles.
-- **Default:** probabilidade, enquanto a composição for o único componente com
-  valor.
+- **Resposta (2026-10-28):** sim. O ranking soma em log-odds; cada efeito entra
+  como `logit(referência + δ) − logit(referência)`, e a composição pela mesma
+  conversão a partir de 50%, o que preserva a escala em pontos dos pesos dela.
+  Os testes anteriores passaram sem mudança
+  ([02 §1](../arquitetura/02-motor-de-draft.md#1-rank)).
 
 ## P-12 — O cliente preenche o seu `championId` antes de travar? 🟡
 
