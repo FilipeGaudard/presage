@@ -241,22 +241,51 @@ export interface CoachReport {
   series: Series;
 }
 
-export type Gap = "magico" | "fisico" | "frontline" | "alcance";
+/** A pool completa, e quantos dela o jogador escolhe: `POOL_SIZE` e
+ *  `CORE_SIZE` no core. */
+export const POOL_SIZE = 8;
+export const CORE_SIZE = 3;
 
-export const GAP_TEXTO: Record<Gap, string> = {
-  magico: "sua pool é quase toda de dano físico",
-  fisico: "sua pool é quase toda de dano mágico",
-  frontline: "nenhum dos seus segura a linha de frente",
-  alcance: "todos os seus são corpo a corpo",
-};
+/** O que a pool cobre ou não: os mesmos nomes de `Trait` no core. */
+export type PoolTrait =
+  | "fisico"
+  | "magico"
+  | "frontline"
+  | "alcance"
+  | "corpoACorpo"
+  | "robusto"
+  | "lutador"
+  | "tanque"
+  | "mago"
+  | "assassino"
+  | "atirador"
+  | "suporte";
+
+export interface PoolFinding {
+  trait: PoolTrait;
+  text: string;
+}
+
+/** Pontos fortes e fracos dos core. */
+export interface PoolAnalysis {
+  strengths: PoolFinding[];
+  weaknesses: PoolFinding[];
+}
 
 export interface PoolCandidate {
   championId: number;
   name: string;
   /** Índice de encaixe, de 0 a 1. Não é winrate. */
   score: number;
-  fills: Gap[];
+  /** O que ninguém da pool tinha, e ele traz. */
+  fills: PoolTrait[];
   reasons: string[];
+}
+
+export interface PoolPlan {
+  analysis: PoolAnalysis;
+  /** Para o próximo lugar, dada a pool como está. */
+  candidates: PoolCandidate[];
 }
 
 export interface RuneSuggestion {

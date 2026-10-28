@@ -49,7 +49,7 @@ docs/
     08-desenvolvimento-e-testes.md       rodar, toolchain, testes, demo
     09-licoes-do-prototipo.md            defeito → causa → prevenção
   adr/
-    0000-template.md … 0015-atributos-de-item-pela-descricao.md
+    0000-template.md … 0016-pool-de-oito-tres-escolhidos-cinco-por-cobertura.md
 ```
 
 ## Convenções

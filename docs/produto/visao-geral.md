@@ -11,8 +11,10 @@ tela dele ([C-4](requisitos.md#1-regras-da-riot-c)):
 | **Partida** | build adaptativa contra os itens que eles têm agora, chance por rota e escaramuça, ouro dos dez, timers de objetivo, onde está o valor no mapa | Live Client Data API |
 | **Pós-jogo** | leitura da partida gravada; perfil de rota contra o oponente direto ao longo das suas partidas | gravação local, Riot Web API |
 
-E fora deles, o **construtor de pool**: o jogador escolhe os campeões por rota,
-e o draft ranqueia primeiro o pool e depois o resto
+E fora deles, o **construtor de pool**: por rota, o jogador escolhe três
+campeões, o Presage aponta os pontos fortes e fracos deles e recomenda, um lugar
+por vez, os cinco que completam a pool de oito cobrindo o que faltava. No draft,
+a pool aparece ranqueada antes do resto
 ([02 §7](../arquitetura/02-motor-de-draft.md#7-pool)).
 
 ### O diferencial
@@ -59,7 +61,7 @@ resposta honesta é que eles **não têm todos a mesma qualidade**.
 | Chance por rota e escaramuça | razão de poder de combate × peso escolhido à mão | **fraca como probabilidade** |
 | Curva por nível (3, 6, 11, 16) | crescimento de atributos por nível | real, mas **não vê habilidades** |
 | Runa do confronto | regras mecânicas escritas à mão | **regra, não estatística** |
-| Último pick da pool | composição da pool + resistências | **regra, não estatística** |
+| Recomendação da pool (lugares 4 a 8) | composição da pool + resistências, pesos à mão por rota | **regra, não estatística** |
 | Score de draft (`+3.4`) | encaixe de composição, pesos à mão | **fraca** |
 | Perfil de rota (`+6 tropas aos 10`) | suas partidas contra o oponente direto, encolhidas por nível | **medição**, com `±`; mistura você e o campeão |
 | Winrate, matchup, sinergia | — | **não existe ainda** |
@@ -91,7 +93,7 @@ relativo, não um ganho medido de DPS.
 
 ### O que é regra escrita à mão
 
-As runas e o último pick da pool saem de regras sobre a mecânica do confronto,
+As runas e a recomendação da pool saem de regras sobre a mecânica do confronto,
 não de frequência de vitória. Uma regra acerta o caso comum e erra o campeão
 excêntrico. A interface diz isso em texto, e `from_data` no resultado é `false`
 justamente para a tela não escrever "segundo N partidas" quando não há N.

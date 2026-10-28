@@ -10,7 +10,6 @@ import type {
   ConnStatus,
   DraftState,
   EngineStatus,
-  Gap,
   GoldReport,
   ItemSuggestion,
   LaneProfile,
@@ -19,7 +18,7 @@ import type {
   MinimaxPick,
   OverlayPrefs,
   Pool,
-  PoolCandidate,
+  PoolPlan,
   Role,
   RunePlan,
   ScoredChampion,
@@ -212,9 +211,9 @@ export default function App() {
   // O construtor pergunta o que falta só quando chega no último passo.
   const pedirSugestoes = useCallback(
     (role: Role | null) =>
-      invoke<[Gap[], PoolCandidate[]]>("pool_suggestions", {
+      invoke<PoolPlan>("pool_suggestions", {
         role: role && role !== "Unknown" ? ROLE_TO_LCU[role] : null,
-        limit: 8,
+        limit: 6,
       }),
     []
   );

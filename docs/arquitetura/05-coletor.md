@@ -131,7 +131,9 @@ espaço sem dizer nada. Cortar não perde informação; só deixa de carregar ru
 
 Na ordem: variância de matchup (exposição a counter-pick de verdade no minimax),
 ban personalizado por pool ([ADR-0013](../adr/0013-ban-nao-personalizado-enquanto-aditivo.md)),
-detector de fraqueza pessoal, a referência por campeão do perfil de rota
+detector de fraqueza pessoal, a rota de cada campeão e a cobertura de
+confronto na pool ([02 §7](02-motor-de-draft.md#7-pool)), a referência por
+campeão do perfil de rota
 ([04 §6](04-perfil-de-rota.md#6-o-que-ele-não-separa)), os espalhamentos do
 shrinkage medidos em vez de escolhidos
 ([02 §2](02-motor-de-draft.md#força-e-desvio)) e o split real de dano físico

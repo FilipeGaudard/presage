@@ -53,7 +53,11 @@ código. Quando o doc diz "confronto", o código diz `matchup`.
 | termo de experiência | — | O que falta para corrigir o vazamento: campeão nunca jogado rende abaixo da sua média ([P-4](perguntas-em-aberto.md)) |
 | camada global, camada pessoal | `Layered { global, personal }` | A base de partidas e o histórico da conta, independentes |
 | base de partidas | `Dataset`, `base-de-partidas.json` | O arquivo agregado que o coletor produz |
-| pool | `Pool`, `PoolEntry`, `Tier` | Os campeões que o jogador escolheu, por rota |
+| pool | `Pool`, `PoolEntry`, `Tier` | Os campeões do jogador por rota: oito, três escolhidos e cinco recomendados |
+| core | `Tier::Core`, `CORE_SIZE` | Os três que o jogador escolhe; a pool é montada em volta deles |
+| situacionais | `Tier::Situational` | Os cinco que cobrem o que os core não cobrem |
+| característica | `poolgap::Trait` | Dano físico ou mágico, linha de frente, alcance, corpo a corpo, resistências equilibradas, estilo. A pool cobre ou não |
+| cobertura | `poolgap::suggest` | `1 − ½ⁿ` por característica; o próximo lugar é quem mais a sobe |
 
 ## Perfil de rota
 

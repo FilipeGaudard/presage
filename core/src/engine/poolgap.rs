@@ -1,74 +1,203 @@
-//! O que falta na sua pool, e quem preenche.
+//! A pool de oito: três que você escolhe, cinco para cobrir o que eles não
+//! cobrem.
 //!
-//! O terceiro passo do Construtor de Pool: depois dos dois core e dos três
-//! situacionais, o sexto pick não é escolhido por gosto — é escolhido para
-//! cobrir o buraco que os cinco primeiros deixaram.
+//! Os três primeiros dizem como você joga a rota. Deles sai o retrato — pontos
+//! fortes e fracos — e, um por vez, os cinco que completam a pool: cada um
+//! escolhido pelo que os anteriores ainda não cobrem, e recalculado depois de
+//! cada escolha. Cinco recomendações calculadas de uma vez sairiam todas para o
+//! mesmo buraco.
 //!
 //! **De onde saem estes números.** Daqui não sai winrate. Sai a composição da
-//! sua pool (tipo de dano, frontline, alcance) e a matemática de resistências
-//! do jogo. Um campeão "robusto" aqui é um campeão cuja vida efetiva varia
-//! pouco conforme o dano que vem contra ele — isso é aritmética sobre armadura
-//! e resistência mágica, não estatística de partidas. A diferença importa, e a
-//! interface tem de dizer isso.
+//! pool — tipo de dano, linha de frente, alcance, estilo de jogo — e a
+//! matemática de resistências do jogo. O que conta em cada rota, e quanto, são
+//! pesos escritos à mão: regra, não estatística, e a interface diz isso. Com a
+//! base de partidas entra o que esta conta não vê: contra quem os seus três
+//! perdem, e quem ganha desses.
 
 use serde::Serialize;
 
 use super::champion::{Champion, ChampionIndex, Role};
 use super::damage::damage_multiplier;
+use super::stats::StatsStore;
+
+/// O tamanho da pool completa, e quantos dela você escolhe.
+pub const POOL_SIZE: usize = 8;
+pub const CORE_SIZE: usize = 3;
 
 /// Nível de referência para comparar campeões entre si.
 const LEVEL: u8 = 11;
 
-/// Acima disto a pool é considerada de um tipo de dano só.
-const SKEW: f64 = 0.72;
+/// Acima disto de robustez, as resistências contam como equilibradas.
+const ROBUST: f64 = 0.55;
 
-/// Peso de cada buraco preenchido contra a robustez.
-const W_GAP: f64 = 1.0;
-const W_ROBUST: f64 = 0.45;
+/// Abaixo disto de peso, a característica não vira ponto forte nem fraco na
+/// rota — só desempata a escolha.
+const RELEVANT: f64 = 0.5;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+/// Com a base de partidas, joga a rota quem tem nela ao menos esta fração das
+/// próprias partidas.
+const ROLE_SHARE: f64 = 0.05;
+
+const MAX_REASONS: usize = 3;
+
+/// Uma característica que um campeão tem ou não tem, e que a pool cobre ou não.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub enum Gap {
-    /// A pool é quase toda física; falta uma opção mágica.
-    Magico,
-    /// E o contrário.
+pub enum Trait {
     Fisico,
-    /// Nenhum dos seus aguenta a linha de frente.
+    Magico,
     Frontline,
-    /// Todos corpo a corpo.
     Alcance,
+    CorpoACorpo,
+    /// Vida efetiva parecida contra dano físico e mágico.
+    Robusto,
+    // Os estilos são as classes do Data Dragon.
+    Lutador,
+    Tanque,
+    Mago,
+    Assassino,
+    Atirador,
+    Suporte,
 }
 
-impl Gap {
-    pub fn texto(self) -> &'static str {
+impl Trait {
+    pub const ALL: [Trait; 12] = [
+        Trait::Fisico,
+        Trait::Magico,
+        Trait::Frontline,
+        Trait::Alcance,
+        Trait::CorpoACorpo,
+        Trait::Robusto,
+        Trait::Lutador,
+        Trait::Tanque,
+        Trait::Mago,
+        Trait::Assassino,
+        Trait::Atirador,
+        Trait::Suporte,
+    ];
+
+    /// A classe do Data Dragon, para os estilos.
+    fn tag(self) -> Option<&'static str> {
         match self {
-            Gap::Magico => "sua pool é quase toda de dano físico",
-            Gap::Fisico => "sua pool é quase toda de dano mágico",
-            Gap::Frontline => "nenhum dos seus segura a linha de frente",
-            Gap::Alcance => "todos os seus são corpo a corpo",
+            Trait::Lutador => Some("Fighter"),
+            Trait::Tanque => Some("Tank"),
+            Trait::Mago => Some("Mage"),
+            Trait::Assassino => Some("Assassin"),
+            Trait::Atirador => Some("Marksman"),
+            Trait::Suporte => Some("Support"),
+            _ => None,
         }
     }
 
-    /// A frase que explica por que *este* campeão entra.
-    pub fn preenche(self) -> &'static str {
+    fn is_style(self) -> bool {
+        self.tag().is_some()
+    }
+
+    pub fn has(self, champion: &Champion) -> bool {
         match self {
-            Gap::Magico => "traz o dano mágico que falta",
-            Gap::Fisico => "traz o dano físico que falta",
-            Gap::Frontline => "é o frontline que a pool não tem",
-            Gap::Alcance => "é a opção à distância que falta",
+            Trait::Fisico => champion.physical_share() >= 0.65,
+            Trait::Magico => champion.physical_share() <= 0.35,
+            Trait::Frontline => champion.is_frontline(),
+            Trait::Alcance => champion.is_ranged(),
+            Trait::CorpoACorpo => !champion.is_ranged(),
+            Trait::Robusto => robustness(champion) >= ROBUST,
+            style => champion.tags.iter().any(|t| Some(t.as_str()) == style.tag()),
+        }
+    }
+
+    fn noun(self) -> &'static str {
+        match self {
+            Trait::Fisico => "dano físico",
+            Trait::Magico => "dano mágico",
+            Trait::Frontline => "linha de frente",
+            Trait::Alcance => "alcance",
+            Trait::CorpoACorpo => "corpo a corpo",
+            Trait::Robusto => "resistências equilibradas",
+            Trait::Lutador => "lutador",
+            Trait::Tanque => "tanque",
+            Trait::Mago => "mago",
+            Trait::Assassino => "assassino",
+            Trait::Atirador => "atirador",
+            Trait::Suporte => "suporte",
+        }
+    }
+
+    fn plural(self) -> &'static str {
+        match self {
+            Trait::Lutador => "lutadores",
+            Trait::Tanque => "tanques",
+            Trait::Mago => "magos",
+            Trait::Assassino => "assassinos",
+            Trait::Atirador => "atiradores",
+            Trait::Suporte => "suportes",
+            other => other.noun(),
+        }
+    }
+
+    fn strength(self, count: usize, total: usize) -> String {
+        let n = format!("{count} de {total}");
+        let um = count == 1;
+        match self {
+            Trait::Fisico => format!("{n} com dano físico"),
+            Trait::Magico => format!("{n} com dano mágico"),
+            Trait::Frontline => format!("{n} {} a linha de frente", if um { "segura" } else { "seguram" }),
+            Trait::Alcance => format!("{n} {} à distância", if um { "ataca" } else { "atacam" }),
+            Trait::CorpoACorpo => format!("{n} corpo a corpo"),
+            Trait::Robusto => format!(
+                "{n} {} dano físico e mágico parecido",
+                if um { "aguenta" } else { "aguentam" }
+            ),
+            style => format!("{n} {}", if um { style.noun() } else { style.plural() }),
+        }
+    }
+
+    fn weakness(self) -> String {
+        match self {
+            Trait::Fisico => "nenhum com dano físico: o inimigo empilha resistência mágica".into(),
+            Trait::Magico => "nenhum com dano mágico: o inimigo empilha armadura".into(),
+            Trait::Frontline => "nenhum segura a linha de frente".into(),
+            Trait::Alcance => "nenhum ataca à distância: quem tem alcance troca de graça na rota".into(),
+            Trait::CorpoACorpo => "nenhum corpo a corpo".into(),
+            Trait::Robusto => "todos frágeis contra um dos dois tipos de dano".into(),
+            style => format!("nenhum {}", style.noun()),
+        }
+    }
+
+    /// Por que um candidato entra, dado quantos da pool já têm isto.
+    fn reason(self, count: usize) -> String {
+        match (self, count) {
+            (Trait::Fisico, 0) => "traz o dano físico que falta".into(),
+            (Trait::Magico, 0) => "traz o dano mágico que falta".into(),
+            (Trait::Frontline, 0) => "é a linha de frente que a pool não tem".into(),
+            (Trait::Alcance, 0) => "é a opção à distância que falta".into(),
+            (Trait::CorpoACorpo, 0) => "é a opção corpo a corpo que falta".into(),
+            (Trait::Robusto, 0) => "aguenta dano físico e mágico parecido".into(),
+            (style, 0) => format!("traz um estilo que a pool não tem: {}", style.noun()),
+            (t, 1) => format!("segunda opção de {}", t.noun()),
+            (t, _) => format!("reforça {}", t.noun()),
         }
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct Candidate {
-    pub champion_id: i64,
-    pub name: String,
-    /// Quanto ele resolve, de 0 a 1. É um índice de encaixe, não uma winrate.
-    pub score: f64,
-    pub fills: Vec<Gap>,
-    pub reasons: Vec<String>,
+/// Quanto cada característica conta na rota. Escritos à mão.
+///
+/// O que não existe na rota pesa zero: todo atirador tem alcance e nenhum
+/// segura a frente, então cobrar isso da pool de atirador seria ruído.
+fn weight(role: Role, t: Trait) -> f64 {
+    use Trait::*;
+    match (role, t) {
+        (Role::Bot, Frontline | Alcance | CorpoACorpo) => 0.0,
+        (Role::Bot, Fisico | Magico) => 0.6,
+        (Role::Mid, Frontline) => 0.4,
+        (Role::Jungle, Alcance) => 0.3,
+        (Role::Support, Fisico | Magico) => 0.5,
+        (_, Fisico | Magico | Frontline) => 1.0,
+        (_, Alcance) => 0.6,
+        (_, CorpoACorpo) => 0.4,
+        (_, Robusto) => 0.5,
+        // Estilo diversifica a pool, mas falta de estilo não é fraqueza.
+        (_, _) => 0.35,
+    }
 }
 
 /// Vida efetiva contra uma mistura de dano, sem itens.
@@ -112,99 +241,190 @@ pub fn robustness(champion: &Champion) -> f64 {
     menor / maior
 }
 
-/// Os buracos da pool.
+/// Quem joga a rota.
 ///
-/// Pool vazia não tem buraco: sem nada escolhido não há o que faltar, e
-/// apontar "falta dano mágico" para quem não escolheu ninguém seria ruído.
-pub fn gaps(pool: &[i64], champions: &ChampionIndex) -> Vec<Gap> {
-    let membros: Vec<&Champion> = pool.iter().filter_map(|id| champions.get(*id)).collect();
-    if membros.is_empty() {
-        return Vec::new();
+/// Com a base de partidas, quem tem nela ao menos 5% das próprias partidas.
+/// Sem a base, as classes do Data Dragon — grosseiro, porque classe não é rota
+/// e o topo de alcance fica de fora, mas é o que impede sugerir tanque para a
+/// pool de atirador. A escolha manual não passa por aqui: qualquer campeão
+/// entra na pool se o jogador quiser.
+pub fn plays(champion: &Champion, role: Role, store: &dyn StatsStore) -> bool {
+    if store.has_global() {
+        let games = |r: Role| store.base(champion.id, r).map_or(0, |rec| rec.games);
+        let total: u32 = [Role::Top, Role::Jungle, Role::Mid, Role::Bot, Role::Support]
+            .into_iter()
+            .map(games)
+            .sum();
+        return total > 0 && games(role) as f64 / total as f64 >= ROLE_SHARE;
     }
-
-    let mut out = Vec::new();
-
-    let fisico: f64 =
-        membros.iter().map(|c| c.physical_share()).sum::<f64>() / membros.len() as f64;
-    if fisico >= SKEW {
-        out.push(Gap::Magico);
-    } else if fisico <= 1.0 - SKEW {
-        out.push(Gap::Fisico);
-    }
-
-    if !membros.iter().any(|c| c.is_frontline()) {
-        out.push(Gap::Frontline);
-    }
-    if !membros.iter().any(|c| c.is_ranged()) {
-        out.push(Gap::Alcance);
-    }
-
-    out
+    let tags: &[&str] = match role {
+        Role::Top => &["Fighter", "Tank"],
+        Role::Jungle => &["Fighter", "Tank", "Assassin"],
+        Role::Mid => &["Mage", "Assassin"],
+        Role::Bot => &["Marksman"],
+        Role::Support => &["Support", "Tank"],
+        Role::Unknown => return true,
+    };
+    champion.tags.iter().any(|t| tags.contains(&t.as_str()))
 }
 
-fn fills(champion: &Champion, gaps: &[Gap]) -> Vec<Gap> {
-    gaps.iter()
-        .copied()
-        .filter(|gap| match gap {
-            Gap::Magico => champion.physical_share() <= 0.35,
-            Gap::Fisico => champion.physical_share() >= 0.65,
-            Gap::Frontline => champion.is_frontline(),
-            Gap::Alcance => champion.is_ranged(),
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Finding {
+    #[serde(rename = "trait")]
+    pub kind: Trait,
+    pub text: String,
+}
+
+/// O retrato dos três primeiros.
+#[derive(Debug, Clone, Default, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Analysis {
+    pub strengths: Vec<Finding>,
+    pub weaknesses: Vec<Finding>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Candidate {
+    pub champion_id: i64,
+    pub name: String,
+    /// Quanto ele cobre do que falta, de 0 a 1. É um índice de encaixe, não uma
+    /// winrate.
+    pub score: f64,
+    /// O que ninguém da pool tinha, e ele traz.
+    pub fills: Vec<Trait>,
+    pub reasons: Vec<String>,
+}
+
+/// Pontos fortes e fracos dos campeões que você escolheu.
+///
+/// Forte é o que a rota valoriza e ao menos um deles tem; fraco é o que a rota
+/// valoriza e nenhum tem, ou os três terem o mesmo estilo — a mesma resposta
+/// serve contra todos. Sem campeão, sem retrato.
+pub fn analyze(core: &[i64], champions: &ChampionIndex, role: Role) -> Analysis {
+    let membros: Vec<&Champion> = core.iter().filter_map(|id| champions.get(*id)).collect();
+    let total = membros.len();
+    if total == 0 {
+        return Analysis::default();
+    }
+
+    let mut relevantes: Vec<(Trait, usize)> = Trait::ALL
+        .iter()
+        .filter(|t| !t.is_style() && weight(role, **t) >= RELEVANT)
+        .map(|&t| (t, membros.iter().filter(|c| t.has(c)).count()))
+        .collect();
+    relevantes.sort_by(|a, b| {
+        weight(role, b.0)
+            .total_cmp(&weight(role, a.0))
+            .then(b.1.cmp(&a.1))
+    });
+
+    let strengths = relevantes
+        .iter()
+        .filter(|(_, n)| *n > 0)
+        .map(|&(kind, n)| Finding {
+            kind,
+            text: kind.strength(n, total),
         })
-        .collect()
+        .collect();
+
+    let mut weaknesses: Vec<Finding> = relevantes
+        .iter()
+        .filter(|(_, n)| *n == 0)
+        .map(|&(kind, _)| Finding {
+            kind,
+            text: kind.weakness(),
+        })
+        .collect();
+
+    if total >= 2 {
+        let estilo = membros[0].primary_tag();
+        let mesmo = membros.iter().all(|c| c.primary_tag() == estilo);
+        if let Some(kind) = Trait::ALL.iter().find(|t| t.tag() == Some(estilo)) {
+            if mesmo {
+                weaknesses.push(Finding {
+                    kind: *kind,
+                    text: format!(
+                        "os {total} são {}: um estilo só, e a mesma resposta serve contra todos",
+                        kind.plural()
+                    ),
+                });
+            }
+        }
+    }
+
+    Analysis {
+        strengths,
+        weaknesses,
+    }
 }
 
-/// Candidatos para o último lugar da pool.
+/// Candidatos para o próximo lugar da pool.
 ///
-/// Ordenados por quanto resolvem. Quem já está na pool fica de fora, e com a
-/// pool vazia não há recomendação — não há buraco para preencher, e sugerir
-/// "os melhores" sem dado de partidas seria inventar.
+/// A cobertura de cada característica é `1 − ½ⁿ`, com n quantos da pool a têm:
+/// a primeira vale metade, a segunda um quarto, e assim por diante. O candidato
+/// vale o quanto sobe essa cobertura, `Σ peso × ½ⁿ⁺¹` sobre o que ele tem — o
+/// buraco maior primeiro, o segundo exemplar de algo raro depois, o reforço do
+/// que já sobra por último.
+///
+/// Pool vazia não tem buraco, e pool cheia não tem lugar: nos dois casos não há
+/// recomendação.
 pub fn suggest(
     pool: &[i64],
     champions: &ChampionIndex,
+    role: Role,
+    store: &dyn StatsStore,
     limit: usize,
 ) -> Vec<Candidate> {
-    let buracos = gaps(pool, champions);
-    if buracos.is_empty() {
+    let membros: Vec<&Champion> = pool.iter().filter_map(|id| champions.get(*id)).collect();
+    if membros.is_empty() || pool.len() >= POOL_SIZE {
         return Vec::new();
     }
+
+    let conta = |t: Trait| membros.iter().filter(|c| t.has(c)).count();
+    let contagens: Vec<(Trait, usize)> = Trait::ALL.iter().map(|&t| (t, conta(t))).collect();
+    let marginal = |t: Trait, n: usize| weight(role, t) * 0.5f64.powi(n as i32 + 1);
+    let teto: f64 = contagens.iter().map(|&(t, n)| marginal(t, n)).sum();
 
     let mut candidatos: Vec<Candidate> = champions
         .by_id
         .values()
-        .filter(|c| !pool.contains(&c.id))
-        .map(|champion| {
-            let preenchidos = fills(champion, &buracos);
-            let robusto = robustness(champion);
-
-            let cobertura = preenchidos.len() as f64 / buracos.len() as f64;
-            let score = (W_GAP * cobertura + W_ROBUST * robusto) / (W_GAP + W_ROBUST);
-
-            let mut reasons: Vec<String> = preenchidos
+        .filter(|c| !pool.contains(&c.id) && plays(c, role, store))
+        .filter_map(|champion| {
+            let mut ganhos: Vec<(Trait, usize, f64)> = contagens
                 .iter()
-                .map(|g| g.preenche().to_string())
+                .filter(|(t, _)| t.has(champion))
+                .map(|&(t, n)| (t, n, marginal(t, n)))
+                .filter(|(_, _, g)| *g > 0.0)
                 .collect();
-            if robusto >= 0.55 {
-                reasons.push("aguenta dano físico e mágico parecido".into());
+            let ganho: f64 = ganhos.iter().map(|(_, _, g)| g).sum();
+            if ganho <= 0.0 {
+                return None;
             }
+            ganhos.sort_by(|a, b| b.2.total_cmp(&a.2).then(a.0.cmp(&b.0)));
 
-            Candidate {
+            let reasons = ganhos
+                .iter()
+                .take(MAX_REASONS)
+                .map(|&(t, n, _)| t.reason(n))
+                .collect();
+
+            Some(Candidate {
                 champion_id: champion.id,
                 name: champion.name.clone(),
-                score,
-                fills: preenchidos,
+                score: (ganho / teto).clamp(0.0, 1.0),
+                fills: ganhos
+                    .iter()
+                    .filter(|(_, n, _)| *n == 0)
+                    .map(|(t, _, _)| *t)
+                    .collect(),
                 reasons,
-            }
+            })
         })
-        // Quem não preenche nada não é candidato: a pergunta é o que falta.
-        .filter(|c| !c.fills.is_empty())
         .collect();
 
-    candidatos.sort_by(|a, b| {
-        b.score
-            .total_cmp(&a.score)
-            .then_with(|| a.name.cmp(&b.name))
-    });
+    candidatos.sort_by(|a, b| b.score.total_cmp(&a.score).then_with(|| a.name.cmp(&b.name)));
     candidatos.truncate(limit);
     candidatos
 }
@@ -218,6 +438,7 @@ pub fn role_label(role: Role) -> &'static str {
 mod tests {
     use super::*;
     use crate::engine::champion::{fake, BaseStats};
+    use crate::engine::stats::{NoStats, Record};
     use std::collections::HashMap;
 
     fn com_base(mut c: Champion, hp: f64, armor: f64, mr: f64) -> Champion {
@@ -234,16 +455,37 @@ mod tests {
         c
     }
 
+    fn com_tags(mut c: Champion, tags: &[&str]) -> Champion {
+        c.tags = tags.iter().map(|t| t.to_string()).collect();
+        c
+    }
+
     fn indice() -> ChampionIndex {
         let mut by_id = HashMap::new();
         // 1-3: magos à distância, frágeis.
         for id in 1..=3 {
             by_id.insert(id, fake(id, &format!("Mago{id}"), "Mage", 2.0, 9.0, 3.0));
         }
-        // 11-13: marksmen à distância.
+        // 4: assassino mágico corpo a corpo.
+        by_id.insert(
+            4,
+            com_tags(fake(4, "AssassinoAP", "Assassin", 3.0, 8.0, 3.0), &["Assassin", "Mage"]),
+        );
+        // 5-6: assassinos físicos corpo a corpo, de meio.
+        for id in 5..=6 {
+            by_id.insert(id, fake(id, &format!("Assassino{id}"), "Assassin", 9.0, 2.0, 3.0));
+        }
+        // 11-13: atiradores.
         for id in 11..=13 {
             by_id.insert(id, fake(id, &format!("Atirador{id}"), "Marksman", 9.0, 2.0, 3.0));
         }
+        // 14: atirador de dano mágico. A classe principal é Mage, como nos
+        // campeões reais desse tipo — com Marksman na frente, o prior de classe
+        // puxaria o dano para físico.
+        by_id.insert(
+            14,
+            com_tags(fake(14, "AtiradorAP", "Mage", 2.0, 9.0, 3.0), &["Mage", "Marksman"]),
+        );
         // 21-23: lutadores corpo a corpo.
         for id in 21..=23 {
             by_id.insert(id, fake(id, &format!("Lutador{id}"), "Fighter", 8.0, 3.0, 5.0));
@@ -258,11 +500,16 @@ mod tests {
             32,
             com_base(fake(32, "SoArmadura", "Tank", 5.0, 6.0, 9.0), 650.0, 80.0, 20.0),
         );
-        // 33: tanque de dano físico — cobre frontline e dano físico de uma vez.
+        // 33: tanque de dano mágico que também é mago.
         by_id.insert(
             33,
-            com_base(fake(33, "TanqueAD", "Tank", 9.0, 2.0, 9.0), 650.0, 40.0, 40.0),
+            com_tags(
+                com_base(fake(33, "TanqueAP", "Tank", 2.0, 9.0, 9.0), 650.0, 40.0, 40.0),
+                &["Tank", "Mage"],
+            ),
         );
+        // 41: suporte.
+        by_id.insert(41, fake(41, "Suporte", "Support", 3.0, 7.0, 5.0));
 
         ChampionIndex {
             version: "test".into(),
@@ -270,42 +517,138 @@ mod tests {
         }
     }
 
-    #[test]
-    fn pool_vazia_nao_tem_buraco() {
-        assert!(gaps(&[], &indice()).is_empty());
-        assert!(suggest(&[], &indice(), 10).is_empty());
+    fn ids(c: &[Candidate]) -> Vec<i64> {
+        c.iter().map(|c| c.champion_id).collect()
     }
 
     #[test]
-    fn pool_toda_magica_pede_dano_fisico() {
-        let buracos = gaps(&[1, 2, 3], &indice());
-        assert!(buracos.contains(&Gap::Fisico), "{buracos:?}");
-        assert!(!buracos.contains(&Gap::Magico));
+    fn pool_vazia_nao_tem_retrato_nem_sugestao() {
+        let a = analyze(&[], &indice(), Role::Mid);
+        assert!(a.strengths.is_empty() && a.weaknesses.is_empty());
+        assert!(suggest(&[], &indice(), Role::Mid, &NoStats, 10).is_empty());
     }
 
     #[test]
-    fn pool_toda_fisica_pede_dano_magico() {
-        let buracos = gaps(&[11, 12, 13], &indice());
-        assert!(buracos.contains(&Gap::Magico), "{buracos:?}");
+    fn tres_magos_mostram_o_que_tem_e_o_que_falta() {
+        let a = analyze(&[1, 2, 3], &indice(), Role::Top);
+        let forte: Vec<Trait> = a.strengths.iter().map(|f| f.kind).collect();
+        let fraco: Vec<Trait> = a.weaknesses.iter().map(|f| f.kind).collect();
+
+        assert!(forte.contains(&Trait::Magico), "{a:?}");
+        assert!(forte.contains(&Trait::Alcance), "{a:?}");
+        assert!(fraco.contains(&Trait::Fisico), "{a:?}");
+        assert!(fraco.contains(&Trait::Frontline), "{a:?}");
+        assert!(
+            a.weaknesses.iter().any(|f| f.text.contains("um estilo só")),
+            "três magos é um estilo só: {a:?}"
+        );
     }
 
     #[test]
-    fn pool_misturada_nao_reclama_de_dano() {
-        let buracos = gaps(&[1, 11, 21], &indice());
-        assert!(!buracos.contains(&Gap::Magico));
-        assert!(!buracos.contains(&Gap::Fisico));
+    fn o_que_a_rota_nao_cobra_nao_vira_fraqueza() {
+        // Três atiradores: nenhum segura a frente, e isso é a rota, não defeito.
+        let a = analyze(&[11, 12, 13], &indice(), Role::Bot);
+        assert!(!a.weaknesses.iter().any(|f| f.kind == Trait::Frontline), "{a:?}");
+        assert!(!a.strengths.iter().any(|f| f.kind == Trait::Alcance), "{a:?}");
     }
 
     #[test]
-    fn pool_sem_tanque_pede_frontline() {
-        assert!(gaps(&[1, 11], &indice()).contains(&Gap::Frontline));
-        assert!(!gaps(&[1, 31], &indice()).contains(&Gap::Frontline));
+    fn so_entra_quem_joga_a_rota() {
+        // A pool de atirador nunca recebe tanque, por mais que falte frente.
+        for c in suggest(&[11, 12, 13], &indice(), Role::Bot, &NoStats, 50) {
+            let campeao = indice().get(c.champion_id).unwrap().clone();
+            assert!(
+                campeao.tags.iter().any(|t| t == "Marksman"),
+                "{} não joga de atirador",
+                c.name
+            );
+        }
     }
 
     #[test]
-    fn pool_toda_corpo_a_corpo_pede_alcance() {
-        assert!(gaps(&[21, 22, 31], &indice()).contains(&Gap::Alcance));
-        assert!(!gaps(&[21, 11], &indice()).contains(&Gap::Alcance));
+    fn com_a_base_a_rota_sai_das_partidas() {
+        // O Lutador21 tem 30% das partidas no meio; pela classe não entraria.
+        struct Base;
+        impl StatsStore for Base {
+            fn base(&self, champion: i64, role: Role) -> Option<Record> {
+                match (champion, role) {
+                    (21, Role::Mid) => Some(Record::new(300, 150)),
+                    (21, Role::Top) => Some(Record::new(700, 350)),
+                    (1, Role::Mid) => Some(Record::new(1000, 500)),
+                    _ => None,
+                }
+            }
+            fn matchup(&self, _: i64, _: i64, _: Role) -> Option<Record> {
+                None
+            }
+            fn synergy(&self, _: i64, _: i64) -> Option<Record> {
+                None
+            }
+            fn personal(&self, _: i64) -> Option<Record> {
+                None
+            }
+            fn has_global(&self) -> bool {
+                true
+            }
+        }
+        let idx = indice();
+        assert!(plays(idx.get(21).unwrap(), Role::Mid, &Base));
+        assert!(!plays(idx.get(21).unwrap(), Role::Mid, &NoStats));
+        assert!(!plays(idx.get(2).unwrap(), Role::Mid, &Base), "sem partidas, não joga");
+    }
+
+    #[test]
+    fn o_primeiro_tapa_o_buraco_maior() {
+        // Três magos no topo: faltam dano físico e frente. Quem cobre os dois
+        // vem antes de quem cobre um.
+        let sugestoes = suggest(&[1, 2, 3], &indice(), Role::Top, &NoStats, 20);
+        let primeiro = &sugestoes[0];
+        assert!(primeiro.fills.contains(&Trait::Frontline), "{primeiro:?}");
+        assert!(primeiro.fills.len() >= 2, "{primeiro:?}");
+    }
+
+    #[test]
+    fn cada_escolha_muda_a_proxima() {
+        // Depois que um tanque entra, a frente deixa de ser buraco e o próximo
+        // sai para outra coisa. É isso que impede cinco respostas iguais.
+        let antes = suggest(&[1, 2, 3], &indice(), Role::Top, &NoStats, 20);
+        let depois = suggest(&[1, 2, 3, 31], &indice(), Role::Top, &NoStats, 20);
+
+        let frente = |c: &Candidate| c.fills.contains(&Trait::Frontline);
+        assert!(frente(&antes[0]));
+        assert!(!depois.iter().any(frente), "a frente já está coberta: {depois:?}");
+        assert_ne!(antes[0].champion_id, depois[0].champion_id);
+    }
+
+    #[test]
+    fn pool_equilibrada_ainda_recebe_sugestao_ate_oito() {
+        // Mago, lutador e tanque cobrem dano, frente e corpo a corpo — mas a
+        // pool tem três, e o passo é chegar a oito.
+        let sugestoes = suggest(&[1, 21, 31], &indice(), Role::Top, &NoStats, 10);
+        assert!(!sugestoes.is_empty());
+    }
+
+    #[test]
+    fn pool_de_oito_esta_completa() {
+        let oito = [1, 2, 3, 21, 22, 23, 31, 32];
+        assert!(suggest(&oito, &indice(), Role::Top, &NoStats, 10).is_empty());
+    }
+
+    #[test]
+    fn quem_ja_esta_na_pool_nao_e_sugerido() {
+        let pool = [21, 22, 31];
+        for c in suggest(&pool, &indice(), Role::Top, &NoStats, 50) {
+            assert!(!pool.contains(&c.champion_id), "{} já está na pool", c.name);
+        }
+    }
+
+    #[test]
+    fn segunda_copia_vale_menos_que_a_primeira() {
+        // Pool de atirador no bot: o atirador de dano mágico traz o que falta e
+        // vem antes dos atiradores físicos, que só reforçam.
+        let sugestoes = suggest(&[11, 12], &indice(), Role::Bot, &NoStats, 10);
+        assert_eq!(sugestoes[0].champion_id, 14, "{:?}", ids(&sugestoes));
+        assert!(sugestoes[0].fills.contains(&Trait::Magico));
     }
 
     #[test]
@@ -313,117 +656,27 @@ mod tests {
         let idx = indice();
         let equilibrado = robustness(idx.get(31).unwrap());
         let so_armadura = robustness(idx.get(32).unwrap());
-
-        assert!(
-            equilibrado > so_armadura,
-            "equilibrado {equilibrado} deveria passar de {so_armadura}"
-        );
+        assert!(equilibrado > so_armadura, "{equilibrado} vs {so_armadura}");
         assert!(equilibrado <= 1.0 && so_armadura >= 0.0);
     }
 
     #[test]
-    fn quem_nao_preenche_nada_fica_de_fora() {
-        // Pool toda mágica e corpo a corpo: o buraco é dano físico.
-        let sugestoes = suggest(&[1, 2, 3], &indice(), 10);
-
-        assert!(!sugestoes.is_empty());
-        for c in &sugestoes {
-            assert!(!c.fills.is_empty(), "{} não preenche nada", c.name);
-        }
-    }
-
-    #[test]
-    fn quem_ja_esta_na_pool_nao_e_sugerido() {
-        let pool = [1, 2, 3];
-        for c in suggest(&pool, &indice(), 10) {
-            assert!(!pool.contains(&c.champion_id), "{} já está na pool", c.name);
-        }
-    }
-
-    #[test]
-    fn quem_preenche_mais_buracos_vem_antes() {
-        // Pool de magos à distância: faltam dano físico e frontline. O tanque
-        // de dano físico cobre os dois, e tem de vir na frente de quem cobre
-        // só um.
-        let buracos = gaps(&[1, 2, 3], &indice());
-        assert_eq!(buracos.len(), 2, "{buracos:?}");
-
-        let sugestoes = suggest(&[1, 2, 3], &indice(), 10);
-        let primeiro = &sugestoes[0];
-
-        assert_eq!(primeiro.champion_id, 33, "{primeiro:?}");
-        assert_eq!(primeiro.fills.len(), 2);
-
-        let so_um = sugestoes.iter().find(|c| c.fills.len() == 1).unwrap();
-        assert!(primeiro.score > so_um.score);
-    }
-
-    #[test]
-    fn cobrir_dois_buracos_vale_mais_que_ser_robusto() {
-        // O risco do jeito que a conta é montada: um campeão muito equilibrado
-        // nas resistências passar na frente de quem realmente tapa o buraco.
-        let sugestoes = suggest(&[1, 2, 3], &indice(), 20);
-        let dois = sugestoes.iter().find(|c| c.fills.len() == 2).unwrap();
-        let mais_robusto_de_um = sugestoes
-            .iter()
-            .filter(|c| c.fills.len() == 1)
-            .max_by(|a, b| a.score.total_cmp(&b.score))
-            .unwrap();
-
-        assert!(
-            dois.score > mais_robusto_de_um.score,
-            "{} ({}) deveria passar de {} ({})",
-            dois.name,
-            dois.score,
-            mais_robusto_de_um.name,
-            mais_robusto_de_um.score
-        );
-    }
-
-    #[test]
-    fn a_lista_sai_ordenada_do_maior_para_o_menor() {
-        let sugestoes = suggest(&[1, 2, 3], &indice(), 10);
+    fn a_lista_sai_ordenada_limitada_e_com_motivo() {
+        let sugestoes = suggest(&[1, 2, 3], &indice(), Role::Top, &NoStats, 4);
+        assert!(sugestoes.len() <= 4);
         for par in sugestoes.windows(2) {
             assert!(par[0].score >= par[1].score);
         }
-    }
-
-    #[test]
-    fn o_limite_e_respeitado() {
-        assert!(suggest(&[1, 2, 3], &indice(), 2).len() <= 2);
-        assert!(suggest(&[1, 2, 3], &indice(), 100).len() <= 100);
-    }
-
-    #[test]
-    fn o_score_fica_entre_zero_e_um() {
-        for c in suggest(&[1, 2, 3], &indice(), 20) {
-            assert!(
-                (0.0..=1.0).contains(&c.score),
-                "{} saiu com {}",
-                c.name,
-                c.score
-            );
-        }
-    }
-
-    #[test]
-    fn toda_sugestao_vem_com_motivo_escrito() {
-        // Número sem frase é número que ninguém confere.
-        for c in suggest(&[1, 2, 3], &indice(), 10) {
+        for c in &sugestoes {
+            assert!((0.0..=1.0).contains(&c.score), "{} saiu com {}", c.name, c.score);
+            // Número sem frase é número que ninguém confere.
             assert!(!c.reasons.is_empty(), "{} veio sem motivo", c.name);
         }
     }
 
     #[test]
     fn campeao_fora_do_indice_nao_derruba_a_conta() {
-        let buracos = gaps(&[1, 999], &indice());
-        assert!(!buracos.is_empty());
-    }
-
-    #[test]
-    fn pool_completa_e_equilibrada_nao_recomenda_nada() {
-        // Mago, atirador, tanque: dano misto, frontline e alcance cobertos.
-        assert!(gaps(&[1, 11, 31], &indice()).is_empty());
-        assert!(suggest(&[1, 11, 31], &indice(), 10).is_empty());
+        assert!(!analyze(&[1, 999], &indice(), Role::Mid).strengths.is_empty());
+        let _ = suggest(&[1, 999], &indice(), Role::Mid, &NoStats, 5);
     }
 }

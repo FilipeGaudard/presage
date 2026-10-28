@@ -29,7 +29,6 @@ import type {
   DraftSlot,
   DraftState,
   EngineStatus,
-  Gap,
   GoldReport,
   ItemSuggestion,
   LaneProfile,
@@ -40,7 +39,7 @@ import type {
   MinimaxPick,
   OverlayPrefs,
   Pool,
-  PoolCandidate,
+  PoolPlan,
   RunePlan,
   ScoredChampion,
 } from "./lib/types";
@@ -653,41 +652,93 @@ const review: CoachReport = {
 // interessante para mostrar. Com a pool pronta ela abriria direto na revisão.
 const initialPool: Pool = { entries: [] };
 
-// Na demonstração não há backend, então o último passo recebe uma lista fixa
-// — mas com as mesmas frases que o motor produz.
-const sugestoesDemo: [Gap[], PoolCandidate[]] = [
-  ["magico", "frontline"],
-  [
+// Na demonstração não há backend, então o passo de completar recebe um plano
+// fixo — o retrato de três lutadores de dano físico no topo e uma lista de quem
+// cobre o que eles não cobrem, com as mesmas frases que o motor produz. O
+// construtor tira da lista quem já entrou.
+const planoDemo: PoolPlan = {
+  analysis: {
+    strengths: [{ trait: "fisico", text: "3 de 3 com dano físico" }],
+    weaknesses: [
+      { trait: "magico", text: "nenhum com dano mágico: o inimigo empilha armadura" },
+      { trait: "frontline", text: "nenhum segura a linha de frente" },
+      {
+        trait: "alcance",
+        text: "nenhum ataca à distância: quem tem alcance troca de graça na rota",
+      },
+      {
+        trait: "lutador",
+        text: "os 3 são lutadores: um estilo só, e a mesma resposta serve contra todos",
+      },
+    ],
+  },
+  candidates: [
     {
       championId: MALPHITE,
       name: "Malphite",
-      score: 0.91,
+      score: 0.71,
+      fills: ["magico", "frontline", "tanque"],
+      reasons: [
+        "é a linha de frente que a pool não tem",
+        "traz o dano mágico que falta",
+        "traz um estilo que a pool não tem: tanque",
+      ],
+    },
+    {
+      championId: 79,
+      name: "Gragas",
+      score: 0.66,
       fills: ["magico", "frontline"],
-      reasons: ["traz o dano mágico que falta", "é o frontline que a pool não tem"],
+      reasons: ["é a linha de frente que a pool não tem", "traz o dano mágico que falta"],
     },
     {
       championId: 516,
       name: "Ornn",
-      score: 0.88,
-      fills: ["magico", "frontline"],
-      reasons: ["é o frontline que a pool não tem", "aguenta dano físico e mágico parecido"],
+      score: 0.63,
+      fills: ["frontline", "robusto", "tanque"],
+      reasons: [
+        "é a linha de frente que a pool não tem",
+        "aguenta dano físico e mágico parecido",
+        "traz um estilo que a pool não tem: tanque",
+      ],
+    },
+    {
+      championId: 85,
+      name: "Kennen",
+      score: 0.52,
+      fills: ["magico", "alcance", "mago"],
+      reasons: ["traz o dano mágico que falta", "é a opção à distância que falta"],
+    },
+    {
+      championId: 82,
+      name: "Mordekaiser",
+      score: 0.41,
+      fills: ["magico"],
+      reasons: ["traz o dano mágico que falta"],
+    },
+    {
+      championId: 14,
+      name: "Sion",
+      score: 0.38,
+      fills: ["frontline"],
+      reasons: ["é a linha de frente que a pool não tem"],
+    },
+    {
+      championId: 17,
+      name: "Teemo",
+      score: 0.35,
+      fills: ["magico", "alcance"],
+      reasons: ["traz o dano mágico que falta", "é a opção à distância que falta"],
     },
     {
       championId: 517,
       name: "Sylas",
-      score: 0.62,
-      fills: ["magico"],
-      reasons: ["traz o dano mágico que falta"],
-    },
-    {
-      championId: 1,
-      name: "Annie",
-      score: 0.58,
+      score: 0.31,
       fills: ["magico"],
       reasons: ["traz o dano mágico que falta"],
     },
   ],
-];
+};
 
 const runasDemo: RunePlan = {
   matchup: "Ahri contra Zed",
@@ -848,7 +899,7 @@ function Demo() {
               pool={pool}
               staticData={staticData}
               onChange={setPool}
-              onSuggest={async () => sugestoesDemo}
+              onSuggest={async () => planoDemo}
             />
           </section>
         </main>

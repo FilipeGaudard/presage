@@ -1582,6 +1582,41 @@ h3 {
   line-height: 1.6;
 }
 
+/* ---- completar a pool ate oito ---- */
+
+.wizard-slot-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Separa os tres que o jogador escolheu dos cinco que a pool recomendou. */
+.wizard-sep {
+  width: 1px;
+  height: 34px;
+  background: var(--line);
+  margin: 0 4px;
+}
+
+.wizard-slot.core {
+  border-color: var(--halo);
+}
+
+.wizard-nav .primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: none;
+}
+
+.retrato {
+  margin-bottom: 18px;
+}
+
+.builder-actions {
+  display: flex;
+  gap: 8px;
+}
+
 /* ---- sugestao do ultimo pick da pool ---- */
 
 .grid-sugestao {

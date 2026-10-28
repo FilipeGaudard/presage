@@ -25,7 +25,7 @@ core/src/                    presage-core — sem Tauri, sem rede, sem disco
   engine/coach.rs            leitura da partida a partir da gravação
   engine/comp.rs             perfil de composição de time
   engine/minimax.rs          draft com resposta e sugestão de ban
-  engine/poolgap.rs          buracos da pool e último pick
+  engine/poolgap.rs          retrato dos core e os cinco que completam a pool
   engine/stats.rs            shrinkage, referência, StatsStore, PersonalStats
   engine/dataset.rs          formato da base de partidas, Layered
   engine/profile.rs          perfil de rota em três níveis

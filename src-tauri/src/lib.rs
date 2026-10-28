@@ -28,7 +28,7 @@ use presage_core::engine::minimax;
 use presage_core::engine::stats::PersonalStats;
 use presage_core::engine::{self, Scored};
 use live::LiveSnapshot;
-use presage_core::pool::Pool;
+use presage_core::pool::{Pool, Tier};
 use presage_core::prefs::OverlayPrefs;
 use watcher::Shared;
 
@@ -240,24 +240,36 @@ fn last_review(shared: tauri::State<'_, Arc<Shared>>) -> Option<Report> {
     shared.last_review.lock().unwrap().clone()
 }
 
-/// O que falta na pool desta rota, e quem preenche.
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PoolPlan {
+    /// Pontos fortes e fracos dos core da rota.
+    analysis: poolgap::Analysis,
+    /// Quem entra no próximo lugar, dada a pool inteira como está.
+    candidates: Vec<poolgap::Candidate>,
+}
+
+/// O retrato dos core desta rota e os candidatos para o próximo lugar.
 ///
-/// É o terceiro passo do Construtor: depois dos core e dos situacionais, o
-/// último lugar é escolhido por cobertura, não por gosto.
+/// O front chama de novo a cada campeão aceito: cada lugar é escolhido pelo
+/// que os anteriores ainda não cobrem.
 #[tauri::command]
 fn pool_suggestions(
     role: Option<String>,
     limit: Option<usize>,
     shared: tauri::State<'_, Arc<Shared>>,
-) -> (Vec<poolgap::Gap>, Vec<poolgap::Candidate>) {
+) -> PoolPlan {
     let role = role.map(|r| Role::from_lcu(&r)).unwrap_or(Role::Unknown);
-    let ids = shared.pool.read().unwrap().ids_for_role(role);
+    let pool = shared.pool.read().unwrap();
+    let ids = pool.ids_for_role(role);
+    let core = pool.ids_for_role_tier(role, Tier::Core);
     let champions = shared.champions.read().unwrap();
+    let stats = shared.stats.read().unwrap();
 
-    (
-        poolgap::gaps(&ids, &champions),
-        poolgap::suggest(&ids, &champions, limit.unwrap_or(8)),
-    )
+    PoolPlan {
+        analysis: poolgap::analyze(&core, &champions, role),
+        candidates: poolgap::suggest(&ids, &champions, role, &**stats, limit.unwrap_or(6)),
+    }
 }
 
 /// Runa principal para o confronto da sua rota.

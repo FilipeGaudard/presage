@@ -178,27 +178,65 @@ ruído como conselho.
 
 ## 7. Pool
 
-Nada é obrigatório e não há cota por tier — os limites do iTero (3 core, 3
-situacionais, até 4 extras) viram sugestão, não trava. O jogador escolhe por
-rota, e um campeão sem rota vale em todas. A pool fica em
-`%LOCALAPPDATA%\Presage\pool.json`.
+A pool é por rota e tem oito: **três que o jogador escolhe** (core) e **cinco
+que o Presage recomenda** para cobrir o que os três não cobrem (situacionais)
+([ADR-0016](../adr/0016-pool-de-oito-tres-escolhidos-cinco-por-cobertura.md)). Nada
+trava: na revisão o jogador põe e tira quem quiser, e um campeão sem rota vale em
+todas. A pool fica em `%LOCALAPPDATA%\Presage\pool.json`.
 
 No draft, as recomendações saem em duas seções: primeiro a pool ranqueada entre
 si, depois os melhores no geral. A pool marca o campeão (`in_pool`) mas **não
 mexe na ordem** (`pool_e_marcado_sem_alterar_a_ordem`).
 
-### O último pick da pool
+### Os três e o retrato deles
 
-`poolgap.rs` responde o terceiro passo do construtor: depois dos dois core e dos
-três situacionais, o sexto pick não é escolhido por gosto — é escolhido para
-cobrir o buraco que os cinco primeiros deixaram (`gaps`: tipo de dano,
-frontline, alcance).
+`poolgap::analyze` lê os três core em características que saem do Data Dragon
+(`Trait`): dano físico, dano mágico, linha de frente, alcance, corpo a corpo,
+resistências equilibradas, e os seis estilos (as classes). **Ponto forte** é o
+que a rota valoriza e ao menos um deles tem; **ponto fraco** é o que a rota
+valoriza e nenhum tem — ou os três terem o mesmo estilo, porque aí a mesma
+resposta serve contra todos.
 
-Daqui não sai winrate. Sai a composição da pool e a matemática de resistências.
-Um campeão "robusto" (`robustness`) é um campeão cuja vida efetiva varia pouco
+O que a rota valoriza vem de pesos escritos à mão (`weight`): todo atirador tem
+alcance e nenhum segura a frente, então nada disso conta para a pool de bot.
+
+### Os cinco, um lugar por vez
+
+`poolgap::suggest` recomenda o próximo lugar, e o front chama de novo a cada
+campeão aceito. A cobertura de cada característica é `1 − ½ⁿ`, com n quantos da
+pool a têm; o candidato vale o quanto sobe a cobertura:
+
+```text
+ganho = Σ peso(rota, característica) × ½ⁿ⁺¹     sobre o que o candidato tem
+```
+
+A primeira ocorrência de algo vale metade do peso, a segunda um quarto. Então o
+quarto lugar tapa o buraco maior, o quinto o que sobrou, e assim por diante —
+recalcular a cada escolha é o que impede cinco respostas ao mesmo buraco
+(`cada_escolha_muda_a_proxima`). O `score` é o ganho dividido pelo maior ganho
+possível: índice de encaixe de 0 a 1, não winrate. Com oito, a pool está completa
+e não há mais sugestão.
+
+O jogador escolhe entre as alternativas de cada lugar; nada se preenche sozinho
+(C-5).
+
+### Quem joga a rota
+
+Sem a base, a rota sai das classes do Data Dragon (`plays`): topo é lutador ou
+tanque, selva lutador, tanque ou assassino, meio mago ou assassino, bot atirador,
+suporte suporte ou tanque. É grosseiro — classe não é rota, e o topo de alcance
+fica de fora —, mas é o que impede sugerir tanque para a pool de atirador
+([L-22](09-licoes-do-prototipo.md)). Com a base, joga a rota quem tem nela ao
+menos 5% das próprias partidas. A escolha manual não passa por aqui.
+
+### O que não é
+
+Daqui não sai winrate. Sai a composição da pool e a matemática de resistências:
+um campeão "robusto" (`robustness`) é um campeão cuja vida efetiva varia pouco
 conforme o dano que vem contra ele — aritmética sobre armadura e resistência
-mágica no nível 11, não estatística de partidas. É **regra, não estatística**, e
-a interface diz isso.
+mágica no nível 11. É **regra, não estatística**, e a interface diz isso. O que
+esta conta não vê — contra quem os seus três perdem, e quem ganha desses — é
+tabela de matchup, e entra com a base ([05 §8](05-coletor.md#8-o-que-a-base-destrava)).
 
 ## 8. A base de partidas
 

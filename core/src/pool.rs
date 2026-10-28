@@ -1,6 +1,10 @@
 //! O pool do jogador. Ele escolhe o que quiser: nada é obrigatório e não há
 //! cota por tier. Os tiers servem para o jogador se organizar e para o draft
 //! desempatar, não para travar a tela.
+//!
+//! O construtor monta a pool em volta dos core: três escolhidos, e os
+//! situacionais recomendados para cobrir o que eles não cobrem
+//! (`engine::poolgap`).
 
 use serde::{Deserialize, Serialize};
 
@@ -81,6 +85,16 @@ impl Pool {
             .retain(|entry| !(entry.champion_id == champion_id && entry.role == role));
     }
 
+    /// Os de um tier numa rota, sem os que valem em qualquer rota: os core de
+    /// uma rota são escolha para ela.
+    pub fn ids_for_role_tier(&self, role: Role, tier: Tier) -> Vec<i64> {
+        self.entries
+            .iter()
+            .filter(|entry| entry.role == Some(role) && entry.tier == tier)
+            .map(|entry| entry.champion_id)
+            .collect()
+    }
+
     pub fn tier_of(&self, champion_id: i64, role: Role) -> Option<Tier> {
         self.entries
             .iter()
@@ -111,6 +125,18 @@ mod tests {
         assert!(pool.is_empty());
         assert!(pool.ids().is_empty());
         assert!(pool.ids_for_role(Role::Mid).is_empty());
+    }
+
+    #[test]
+    fn os_core_de_uma_rota_sao_so_dela() {
+        let mut pool = Pool::default();
+        pool.upsert(entry(103, Some(Role::Mid), Tier::Core));
+        pool.upsert(entry(7, Some(Role::Mid), Tier::Situational));
+        pool.upsert(entry(64, Some(Role::Jungle), Tier::Core));
+        pool.upsert(entry(1, None, Tier::Core));
+
+        assert_eq!(pool.ids_for_role_tier(Role::Mid, Tier::Core), vec![103]);
+        assert_eq!(pool.ids_for_role_tier(Role::Mid, Tier::Situational), vec![7]);
     }
 
     #[test]

@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import type { StaticData } from "../lib/ddragon";
 import {
-  GAP_TEXTO,
+  CORE_SIZE,
+  POOL_SIZE,
   ROLES,
   TIERS,
-  type Gap,
   type Pool,
-  type PoolCandidate,
+  type PoolPlan,
   type Role,
   type Tier,
 } from "../lib/types";
@@ -15,45 +15,43 @@ interface Props {
   pool: Pool;
   staticData: StaticData | null;
   onChange: (pool: Pool) => void;
-  /** Busca o que falta na pool desta rota. Ausente na demonstração. */
-  onSuggest?: (role: Role | null) => Promise<[Gap[], PoolCandidate[]]>;
+  /** O retrato dos core e os candidatos do próximo lugar. Na demonstração vem
+   *  uma lista fixa. */
+  onSuggest?: (role: Role | null) => Promise<PoolPlan>;
 }
 
-/** Quantos o passo pede. Enquanto o passo está aberto, ele não deixa passar
- *  disso — mas dá para continuar com menos, e na revisão não há limite. */
-const ALVO: Record<Exclude<Tier, "extra">, number> = { core: 2, situational: 3 };
+type Passo = "rota" | "core" | "completar" | "revisao";
 
-type Passo = "rota" | "core" | "situational" | "fechar" | "revisao";
+/** A ordem em que a pool aparece na trilha: core, depois os que cobrem. */
+const ORDEM: Record<Tier, number> = { core: 0, situational: 1, extra: 2 };
 
 export default function PoolBuilder({ pool, staticData, onChange, onSuggest }: Props) {
   const inicial = pool.entries[0]?.role ?? null;
   const [role, setRole] = useState<Role | null>(inicial);
   const [passo, setPasso] = useState<Passo>(inicial ? "revisao" : "rota");
   const [search, setSearch] = useState("");
-  const [buracos, setBuracos] = useState<Gap[]>([]);
-  const [candidatos, setCandidatos] = useState<PoolCandidate[] | null>(null);
+  const [plano, setPlano] = useState<PoolPlan | null>(null);
 
-  // As recomendações dependem dos cinco já escolhidos, então só fazem sentido
-  // quando o passo abre — e se refazem se a pessoa voltar e trocar alguém.
+  // Cada lugar é escolhido pelo que os anteriores ainda não cobrem, então o
+  // plano se refaz a cada campeão que entra ou sai.
   useEffect(() => {
-    if (passo !== "fechar" || !onSuggest) return;
+    if (passo !== "completar" || !onSuggest) return;
     let vivo = true;
-    setCandidatos(null);
+    setPlano(null);
     onSuggest(role)
-      .then(([gaps, lista]) => {
-        if (!vivo) return;
-        setBuracos(gaps);
-        setCandidatos(lista);
-      })
-      .catch(() => vivo && setCandidatos([]));
+      .then((resposta) => vivo && setPlano(resposta))
+      .catch(() => vivo && setPlano({ analysis: { strengths: [], weaknesses: [] }, candidates: [] }));
     return () => {
       vivo = false;
     };
   }, [passo, role, onSuggest, pool]);
 
-  const entries = pool.entries.filter((entry) => entry.role === role);
+  const entries = pool.entries
+    .filter((entry) => entry.role === role)
+    .sort((a, b) => ORDEM[a.tier] - ORDEM[b.tier]);
   const chosen = new Set(entries.map((entry) => entry.championId));
-  const conta = (tier: Tier) => entries.filter((entry) => entry.tier === tier).length;
+  const core = entries.filter((entry) => entry.tier === "core");
+  const rotulo = ROLES.find((item) => item.id === role)?.label ?? "";
 
   const catalog = useMemo(() => {
     if (!staticData) return [];
@@ -117,36 +115,25 @@ export default function PoolBuilder({ pool, staticData, onChange, onSuggest }: P
     );
   }
 
-  // ---- passos 2 e 3: escolher os campeões ----
+  // ---- passo 2: os três que você escolhe ----
 
-  if (passo === "core" || passo === "situational") {
-    const alvo = ALVO[passo];
-    const feitos = conta(passo);
-    const cheio = feitos >= alvo;
-    const rotulo = ROLES.find((item) => item.id === role)?.label ?? "";
-    const escolhidos = entries.filter((entry) => entry.tier === passo);
+  if (passo === "core") {
+    const feitos = core.length;
+    const cheio = feitos >= CORE_SIZE;
 
     return (
       <div className="builder">
         <div className="wizard-head">
-          <p className="eyebrow">
-            {rotulo} · passo {passo === "core" ? 2 : 3} de 4
-          </p>
-          <h2>
-            {passo === "core"
-              ? `Escolha seus ${alvo} campeões core`
-              : `Escolha seus ${alvo} campeões situacionais`}
-          </h2>
+          <p className="eyebrow">{rotulo} · passo 2 de 3</p>
+          <h2>Escolha seus {CORE_SIZE} campeões</h2>
           <p className="muted">
-            {passo === "core"
-              ? "Os que você pega em quase todo jogo."
-              : "Os que entram contra uma composição específica."}
+            Os que você mais joga. A pool vai ser montada em volta deles.
           </p>
         </div>
 
         <div className="wizard-track">
-          {Array.from({ length: alvo }, (_, i) => {
-            const entry = escolhidos[i];
+          {Array.from({ length: CORE_SIZE }, (_, i) => {
+            const entry = core[i];
             const champion = entry && staticData?.champions.get(entry.championId);
             return (
               <div className={`wizard-slot ${entry ? "on" : ""}`} key={i}>
@@ -169,7 +156,7 @@ export default function PoolBuilder({ pool, staticData, onChange, onSuggest }: P
             );
           })}
           <span className="counter">
-            {feitos} de {alvo}
+            {feitos} de {CORE_SIZE}
           </span>
         </div>
 
@@ -190,8 +177,8 @@ export default function PoolBuilder({ pool, staticData, onChange, onSuggest }: P
                 type="button"
                 key={champion.id}
                 className={`cell ${pego ? "cell-taken" : ""}`}
-                onClick={() => add(champion.id, passo)}
-                title={cheio && !pego ? `Já escolheu ${alvo}` : champion.name}
+                onClick={() => add(champion.id, "core")}
+                title={cheio && !pego ? `Já escolheu ${CORE_SIZE}` : champion.name}
                 disabled={pego || cheio}
               >
                 <div className="cell-portrait">
@@ -209,108 +196,170 @@ export default function PoolBuilder({ pool, staticData, onChange, onSuggest }: P
             className="ghost"
             onClick={() => {
               setSearch("");
-              setPasso(passo === "core" ? "rota" : "core");
+              setPasso("rota");
             }}
           >
             Voltar
           </button>
+          {/* A análise sai dos três: com menos, o retrato seria de outra pool. */}
           <button
             type="button"
             className="primary"
+            disabled={!cheio}
             onClick={() => {
               setSearch("");
-              setPasso(passo === "core" ? "situational" : "fechar");
+              setPasso("completar");
             }}
           >
-            {cheio ? "Continuar" : feitos === 0 ? "Pular" : `Continuar com ${feitos}`}
+            {cheio ? "Analisar os três" : `Faltam ${CORE_SIZE - feitos}`}
           </button>
         </div>
       </div>
     );
   }
 
-  // ---- passo 4: o último, escolhido pelo que falta ----
+  // ---- passo 3: os cinco que cobrem o que os três não cobrem ----
 
-  if (passo === "fechar") {
-    const rotulo = ROLES.find((item) => item.id === role)?.label ?? "";
+  if (passo === "completar") {
+    const total = entries.length;
+    const completa = total >= POOL_SIZE;
+    const candidatos = plano?.candidates.filter((c) => !chosen.has(c.championId)) ?? null;
 
     return (
       <div className="builder">
         <div className="wizard-head">
-          <p className="eyebrow">{rotulo} · passo 4 de 4</p>
-          <h2>O último, para fechar o que falta</h2>
-          {buracos.length > 0 ? (
-            <p className="muted">
-              Pelos cinco que você escolheu: {buracos.map((g) => GAP_TEXTO[g]).join(" · ")}.
-            </p>
-          ) : (
-            <p className="muted">
-              Escolha um a mais, se quiser. Sua pool já cobre tipo de dano,
-              frontline e alcance.
-            </p>
-          )}
+          <p className="eyebrow">{rotulo} · passo 3 de 3</p>
+          <h2>
+            {completa ? "Pool completa" : `Completar a pool: lugar ${total + 1} de ${POOL_SIZE}`}
+          </h2>
+          <p className="muted">
+            Cada lugar sai do que os anteriores ainda não cobrem, e a lista se refaz
+            a cada escolha.
+          </p>
         </div>
 
-        {candidatos === null ? (
-          <p className="muted">Calculando…</p>
-        ) : candidatos.length === 0 ? (
-          <p className="muted">
-            Nada a recomendar — e isso é um bom sinal. Dá para fechar aqui.
-          </p>
-        ) : (
-          <div className="grid grid-catalog grid-sugestao">
-            {candidatos.map((c) => {
-              const champion = staticData?.champions.get(c.championId);
-              return (
-                <button
-                  type="button"
-                  key={c.championId}
-                  className="cell cell-sugestao"
-                  onClick={() => {
-                    add(c.championId, "extra");
-                    setPasso("revisao");
-                  }}
-                  title={c.reasons.join(" · ")}
+        <div className="wizard-track">
+          {Array.from({ length: POOL_SIZE }, (_, i) => {
+            const entry = entries[i];
+            const champion = entry && staticData?.champions.get(entry.championId);
+            return (
+              <div key={i} className="wizard-slot-wrap">
+                {i === CORE_SIZE && <span className="wizard-sep" />}
+                <div
+                  className={`wizard-slot ${entry ? "on" : ""} ${entry?.tier === "core" ? "core" : ""}`}
+                  title={entry?.tier === "core" ? "Escolhido por você" : undefined}
                 >
-                  <div className="cell-portrait">
-                    {champion && (
-                      <img src={champion.iconUrl} alt={champion.name} loading="lazy" />
-                    )}
+                  {champion ? (
+                    <>
+                      <img src={champion.iconUrl} alt={champion.name} />
+                      {entry.tier !== "core" && (
+                        <button
+                          type="button"
+                          className="remove"
+                          onClick={() => remove(entry.championId)}
+                          title={`Tirar ${champion.name}`}
+                        >
+                          ×
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <span>{i + 1}</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+          <span className="counter">
+            {Math.min(total, POOL_SIZE)} de {POOL_SIZE}
+          </span>
+        </div>
+
+        {plano && (plano.analysis.strengths.length > 0 || plano.analysis.weaknesses.length > 0) && (
+          <div className="notes retrato">
+            <div className="notes-col">
+              <h3 className="section-h">Os seus três: pontos fortes</h3>
+              {plano.analysis.strengths.length === 0 ? (
+                <p className="muted">Nada que a rota valorize.</p>
+              ) : (
+                plano.analysis.strengths.map((f) => (
+                  <div className="note-card good" key={f.text}>
+                    <p>{f.text}</p>
                   </div>
-                  <span className="cell-name">{champion?.name ?? c.name}</span>
-                  <span className="cell-why">{c.reasons[0]}</span>
-                </button>
-              );
-            })}
+                ))
+              )}
+            </div>
+            <div className="notes-col">
+              <h3 className="section-h">Pontos fracos</h3>
+              {plano.analysis.weaknesses.length === 0 ? (
+                <p className="muted">Nenhum buraco no que a rota cobra.</p>
+              ) : (
+                plano.analysis.weaknesses.map((f) => (
+                  <div className="note-card bad" key={f.text}>
+                    <p>{f.text}</p>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         )}
 
-        {/* O número que aparece ao lado não é winrate, e dizer isso é mais
+        {completa ? (
+          <p className="muted">Oito na pool. Dá para trocar qualquer um na revisão.</p>
+        ) : candidatos === null ? (
+          <p className="muted">Calculando…</p>
+        ) : candidatos.length === 0 ? (
+          <p className="muted">Nada a recomendar para este lugar.</p>
+        ) : (
+          <>
+            <h3 className="section-h">Para o lugar {total + 1}</h3>
+            <div className="grid grid-catalog grid-sugestao">
+              {candidatos.map((c) => {
+                const champion = staticData?.champions.get(c.championId);
+                return (
+                  <button
+                    type="button"
+                    key={c.championId}
+                    className="cell cell-sugestao"
+                    onClick={() => add(c.championId, "situational")}
+                    title={c.reasons.join(" · ")}
+                  >
+                    <div className="cell-portrait">
+                      {champion && (
+                        <img src={champion.iconUrl} alt={champion.name} loading="lazy" />
+                      )}
+                    </div>
+                    <span className="cell-name">{champion?.name ?? c.name}</span>
+                    <span className="cell-why">{c.reasons[0]}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {/* O número por trás da ordem não é winrate, e dizer isso é mais
             importante que o número. */}
         <p className="faint">
-          Esta lista sai da composição da sua pool e da matemática de
-          resistências do jogo — que tipo de dano falta, quem segura a linha de
-          frente, quem varia menos conforme o dano que vem. Não sai de winrate:
-          essa base ainda não existe.
+          Esta lista sai da composição da sua pool — tipo de dano, linha de frente,
+          alcance, estilo — e da matemática de resistências do jogo. O que conta em
+          cada rota são pesos escritos à mão: regra, não estatística. Contra quem os
+          seus três perdem só a base de partidas vai dizer, e ela ainda não existe.
         </p>
 
         <div className="wizard-nav">
-          <button
-            type="button"
-            className="ghost"
-            onClick={() => setPasso("situational")}
-          >
+          <button type="button" className="ghost" onClick={() => setPasso("core")}>
             Voltar
           </button>
           <button type="button" className="primary" onClick={() => setPasso("revisao")}>
-            Fechar sem o sexto
+            {completa ? "Ver a pool" : `Fechar com ${total}`}
           </button>
         </div>
       </div>
     );
   }
 
-  // ---- passo 4: revisão, sem limite ----
+  // ---- revisão, sem limite ----
 
   return (
     <div className="builder">
@@ -319,9 +368,16 @@ export default function PoolBuilder({ pool, staticData, onChange, onSuggest }: P
           <h2>Sua pool</h2>
           <span className="muted">Aqui não há limite. Ajuste o que quiser.</span>
         </div>
-        <button type="button" className="ghost" onClick={() => setPasso("rota")}>
-          Outra rota
-        </button>
+        <div className="builder-actions">
+          {core.length > 0 && entries.length < POOL_SIZE && (
+            <button type="button" className="ghost" onClick={() => setPasso("completar")}>
+              Completar até {POOL_SIZE}
+            </button>
+          )}
+          <button type="button" className="ghost" onClick={() => setPasso("rota")}>
+            Outra rota
+          </button>
+        </div>
       </div>
 
       <div className="role-tabs">
