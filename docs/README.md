@@ -8,9 +8,9 @@ Assistente de draft, partida e pós-jogo para League of Legends. App de desktop
 >   timers, prioridade, overlay, leitura pós-partida e construtor de pool.
 > - **Camada estatística vazia:** winrate base, matchup e sinergia esperam a base
 >   de partidas, que espera uma chave da Riot que dure ([P-1](produto/perguntas-em-aberto.md), [P-6](produto/perguntas-em-aberto.md)).
-> - **Perfil de rota escrito:** a parte da casca ainda não foi compilada e os
->   nomes de campo da Riot não foram conferidos contra uma partida real
->   ([P-5](produto/perguntas-em-aberto.md)).
+> - **Perfil de rota escrito e compilando no Windows** (CI, `cargo test
+>   --workspace`). Os nomes de campo da Riot ainda não foram conferidos contra
+>   uma partida real ([P-5](produto/perguntas-em-aberto.md)).
 
 ## Por onde começar
 

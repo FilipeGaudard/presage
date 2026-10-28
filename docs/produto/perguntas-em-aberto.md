@@ -57,12 +57,14 @@ o documento afetado no mesmo commit.
 - **Por que importa:** todo campo é `default`. Um nome errado não dá erro — zera
   a métrica em silêncio.
 - **Estado:** o teste `le_os_nomes_de_campo_da_riot` trava os nomes que
-  assumimos, não os que a Riot manda. Junto com isso, a parte da casca do perfil
-  de rota (`riot.rs`, `profile.rs`, o comando `lane_profile`) ainda não foi
-  compilada.
-- **Default:** os nomes do teste. **Primeira coisa a fazer com uma chave:**
-  baixar uma partida real e passá-la por `history::played`; e rodar
-  `cargo check -p presage` no Windows.
+  assumimos, não os que a Riot manda. A casca do perfil de rota já compila no
+  Windows (CI, `cargo test --workspace`).
+- **Tentativa (2026-10-28):** a chave de desenvolvimento recebida já não existia
+  para a Riot (`401 Unknown apikey`) — chave de desenvolvimento morre em 24h ou
+  ao ser regenerada. No caminho apareceu uma armadilha que imita chave errada
+  ([L-21](../arquitetura/09-licoes-do-prototipo.md)).
+- **Default:** os nomes do teste. **Primeira coisa a fazer com uma chave viva:**
+  baixar uma partida real e passá-la por `history::played`.
 
 ## P-6 — Que chave pedir primeiro? 🟡
 

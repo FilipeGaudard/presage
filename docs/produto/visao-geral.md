@@ -136,7 +136,7 @@ Com a base de partidas, winrate base, matchup e sinergia.
 | 1 | Fase 2 in-game, sobre a Live Client Data API | feita (0.7.0) |
 | 2 | Overlay e o resto da casca | feita (0.7.0) |
 | 3 | Referência e força do shrinkage ([ADR-0008](../adr/0008-matchup-e-sinergia-contra-a-soma-das-forcas.md), [ADR-0009](../adr/0009-forca-do-shrinkage-derivada-do-desvio.md)) | feita |
-| 4 | Perfil de rota ([04](../arquitetura/04-perfil-de-rota.md)) | feita; casca não compilada ([P-5](perguntas-em-aberto.md)) |
+| 4 | Perfil de rota ([04](../arquitetura/04-perfil-de-rota.md)) | feita; compila no Windows, nomes de campo não conferidos ([P-5](perguntas-em-aberto.md)) |
 | 5 | Coletor com chave Personal e o teste do limite por região | espera chave ([P-1](perguntas-em-aberto.md), [P-6](perguntas-em-aberto.md)) |
 | 6 | Chave de produção, perguntando à Riot sobre o overlay no mesmo pedido | espera produto rodando ([P-2](perguntas-em-aberto.md)) |
 | 7 | Com a base: variância de matchup (destrava exposição a counter-pick de verdade), ban personalizado por pool, detector de fraqueza pessoal | — |

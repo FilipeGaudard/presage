@@ -142,5 +142,6 @@ novo ainda lê o antigo (`lanes` é `default`), o que um teste trava
 - Os nomes de campo de `challenges` contra uma partida real
   ([P-5](../produto/perguntas-em-aberto.md)). Um nome errado zera a métrica em
   silêncio.
-- A compilação da casca: `riot.rs` (`match_detail`), `profile.rs` e o comando
-  `lane_profile` foram escritos numa máquina sem WebKitGTK.
+- O caminho inteiro contra a Riot de verdade: a casca (`riot.rs`, `profile.rs`,
+  o comando `lane_profile`) compila no Windows desde o primeiro build do CI, mas
+  nunca buscou uma partida.
