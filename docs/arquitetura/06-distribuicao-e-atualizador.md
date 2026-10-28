@@ -9,6 +9,13 @@ em ordem de recomendação:
    `windows-latest` já têm MSVC. Dispare manualmente pela aba Actions, ou empurre
    uma tag `v*` e a release sai com o `.exe` e o `.msi` anexados. É de graça em
    repositório público e dá a URL que a página de download precisa.
+   - **Disparo manual** só compila e guarda o instalador como artefato
+     (`presage-windows`); não publica nada. Sem o secret da chave — num fork, por
+     exemplo — compila com `--no-sign`: o instalador sai para teste, sem
+     assinatura de atualização.
+   - **Tag** publica a release, e **sem a chave falha no primeiro passo**, de
+     propósito: uma release sem assinatura nenhum app aceitaria
+     ([L-20](09-licoes-do-prototipo.md)).
 2. **Qualquer máquina com administrador** — instale o Visual Studio Build Tools e
    rode `npm run tauri build`. Os instaladores saem em `target/release/bundle/`.
 3. **MSVC portátil, sem administrador** — baixar os pacotes do compilador e do
@@ -82,6 +89,11 @@ O endereço que o app consulta é a release do GitHub:
 https://github.com/pedrojpgazzoni-coder/presage/releases/latest/download/latest.json
 ```
 
+> **Estado (2026-10-28):** esse repositório ainda não tem nenhuma release, então o
+> endereço devolve **404**. Toda instalação existente procura atualização ali e,
+> como o atualizador falha calado, nunca recebeu nenhuma. A primeira tag assinada
+> nele resolve — e só vale para quem já tem a 0.3.0 ou depois.
+
 Para publicar, basta uma tag — o workflow faz o resto:
 
 ```powershell
@@ -95,8 +107,8 @@ O workflow compila, roda os testes, assina, gera o `latest.json` apontando para 
 tag e publica a release. A partir daí todo Presage instalado vê a versão nova na
 próxima vez que abrir.
 
-**Dois secrets precisam existir no repositório**, senão a release sai sem
-assinatura e nenhum app aceita o download:
+**Dois secrets precisam existir no repositório**, senão a tag falha antes de
+compilar — uma release sem assinatura nenhum app aceitaria:
 
 | Secret | O que é |
 |---|---|

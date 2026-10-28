@@ -21,7 +21,19 @@ jobs:
   windows:
     runs-on: windows-latest
 
+    env:
+      # Secret não pode entrar num `if:`; uma variável de ambiente pode.
+      TEM_CHAVE: ${{ secrets.UPDATER_PRIVATE_KEY != '' }}
+
     steps:
+      # Release sem a chave sairia sem assinatura, e nenhum app instalado
+      # aceitaria o download. Melhor falhar aqui, antes de 15 minutos de build.
+      - name: Tag exige a chave
+        if: startsWith(github.ref, 'refs/tags/') && env.TEM_CHAVE != 'true'
+        run: |
+          echo "::error::Tag sem o secret UPDATER_PRIVATE_KEY: a release sairia sem assinatura."
+          exit 1
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
@@ -41,16 +53,30 @@ jobs:
         run: cargo test --workspace
 
       - name: Compilar o app e empacotar
+        if: env.TEM_CHAVE == 'true'
         run: npm run tauri build
         env:
-          # A chave que assina a ATUALIZAÇÃO, não o executável. Sem ela o build
-          # sai sem o `.sig`, o manifesto não tem assinatura e todo app instalado
-          # recusa o download — que é a proteção funcionando.
+          # A chave que assina a ATUALIZAÇÃO, não o executável. O `.sig` que ela
+          # gera vai para o manifesto, e todo app instalado confere com a chave
+          # pública antes de executar.
           #
           # Guarde o conteúdo de `~/.presage/updater.key` no secret
           # UPDATER_PRIVATE_KEY. Ela nunca vai para o repositório.
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.UPDATER_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.UPDATER_KEY_PASSWORD }}
+          CI: true
+
+      # Sem a chave (num fork, por exemplo) o Tauri não sai sem o `.sig`: ele
+      # falha, porque a chave pública está no tauri.conf.json. `--no-sign` pula
+      # a assinatura da atualização e o instalador sai para teste. Release não
+      # passa por aqui — o primeiro passo derruba tag sem chave.
+      # bash, não PowerShell: o `npm.ps1` engole o `--`, e o `--no-sign` não
+      # chegaria ao Tauri.
+      - name: Compilar o app sem assinar a atualização
+        if: env.TEM_CHAVE != 'true'
+        shell: bash
+        run: npm run tauri -- build --no-sign
+        env:
           CI: true
 
       # Assinatura de código é outra coisa, e usa outra configuração:
