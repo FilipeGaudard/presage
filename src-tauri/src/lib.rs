@@ -205,21 +205,33 @@ fn build_suggestions(
 ///
 /// Serve o draft e a partida com a mesma chamada: durante o jogo os níveis e
 /// itens são reais, antes dele é projeção em igualdade.
+/// A análise de rota. Com `candidate`, a prévia do draft com aquele campeão no
+/// seu lugar — a mesma conta de quando ele estiver travado. A prévia ignora a
+/// partida: ela só existe no champ select.
 #[tauri::command]
-fn lane_analysis(shared: tauri::State<'_, Arc<Shared>>) -> Option<LaneReport> {
+fn lane_analysis(
+    candidate: Option<i64>,
+    shared: tauri::State<'_, Arc<Shared>>,
+) -> Option<LaneReport> {
     let live = shared.live.lock().unwrap().clone();
     let draft = shared.draft.lock().unwrap().clone();
     let champions = shared.champions.read().unwrap();
     let items = shared.items.read().unwrap();
     let stats = shared.stats.read().unwrap();
 
-    analysis::report(
-        live.as_ref().map(|snapshot| &snapshot.game),
-        draft.as_ref(),
-        &champions,
-        &items,
-        &**stats,
-    )
+    let ctx = draft.as_ref().map(|d| {
+        let ctx = draft_context(&shared, d, &champions, &**stats);
+        match candidate {
+            Some(id) => ctx.with_candidate(id),
+            None => ctx,
+        }
+    });
+    let game = live
+        .as_ref()
+        .map(|snapshot| &snapshot.game)
+        .filter(|_| candidate.is_none());
+
+    analysis::report(game, ctx.as_ref(), &champions, &items, &**stats)
 }
 
 /// A escaramuça que importa agora — uma só, para o overlay.
@@ -308,9 +320,12 @@ fn rune_plan(shared: tauri::State<'_, Arc<Shared>>) -> Option<runes::RunePlan> {
     let stats = shared.stats.read().unwrap();
     let rune_index = shared.runes.read().unwrap();
 
+    let ctx = draft
+        .as_ref()
+        .map(|d| draft_context(&shared, d, &champions, &**stats));
     let report = analysis::report(
         live.as_ref().map(|s| &s.game),
-        draft.as_ref(),
+        ctx.as_ref(),
         &champions,
         &items,
         &**stats,
@@ -322,12 +337,7 @@ fn rune_plan(shared: tauri::State<'_, Arc<Shared>>) -> Option<runes::RunePlan> {
         live.as_ref()
             .and_then(|s| s.game.me())
             .map(|me| Role::from_lcu(&me.position) == lane.role)
-            .unwrap_or_else(|| {
-                draft
-                    .as_ref()
-                    .map(|d| Role::from_lcu(&d.local_position) == lane.role)
-                    .unwrap_or(false)
-            })
+            .unwrap_or_else(|| ctx.as_ref().is_some_and(|c| c.my_role == lane.role))
     })?;
 
     runes::plan(minha.ally, minha.enemy, minha.role, &champions, &rune_index)

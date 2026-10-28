@@ -195,7 +195,7 @@ export default function App() {
     }
     let cancelled = false;
     Promise.all([
-      invoke<LaneReport | null>("lane_analysis"),
+      invoke<LaneReport | null>("lane_analysis", { candidate: null }),
       invoke<RunePlan | null>("rune_plan"),
     ])
       .then(([report, plano]) => {
@@ -216,6 +216,13 @@ export default function App() {
         role: role && role !== "Unknown" ? ROLE_TO_LCU[role] : null,
         limit: 6,
       }),
+    []
+  );
+
+  // A prévia de um candidato: a análise do draft com ele no seu lugar.
+  const previa = useCallback(
+    (championId: number) =>
+      invoke<LaneReport | null>("lane_analysis", { candidate: championId }),
     []
   );
 
@@ -399,6 +406,7 @@ export default function App() {
               engine={engine}
               role={draftRole}
               onRole={escolherRota}
+              onPreview={previa}
             />
           </section>
         </main>

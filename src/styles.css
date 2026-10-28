@@ -1898,3 +1898,160 @@ h3 {
 .perfil-tabela .perfil-confronto small {
   margin-left: 0;
 }
+
+/* ---- curva de nivel e vantagem de nivel ---- */
+
+.curva-nivel {
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  display: block;
+  margin: 4px 0 8px;
+}
+
+.curva-meio {
+  stroke: var(--line);
+  stroke-dasharray: 3 3;
+}
+
+.curva-chave {
+  stroke: var(--line);
+  opacity: 0.5;
+}
+
+.curva-eixo {
+  font-size: 9px;
+  fill: var(--dim);
+}
+
+/* A linha nao e cor de marca: a cor da marca nunca carrega dado. */
+.curva-linha {
+  fill: none;
+  stroke: var(--bone);
+  stroke-width: 1.5;
+}
+
+.curva-ponto {
+  stroke: var(--veil);
+  stroke-width: 1;
+}
+
+.curva-ponto.good {
+  fill: var(--mint);
+}
+
+.curva-ponto.bad {
+  fill: var(--coral);
+}
+
+.curva-ponto.even {
+  fill: var(--dim);
+}
+
+.curva-agora {
+  fill: none;
+  stroke: var(--ember);
+  stroke-width: 2;
+}
+
+.curva-agora-txt {
+  font-size: 9px;
+  fill: var(--ember);
+}
+
+.lane-curva {
+  grid-column: 2 / -1;
+}
+
+.vantagem-nivel {
+  border-collapse: collapse;
+  font-size: 11px;
+  margin: 4px 0 6px;
+}
+
+.vantagem-nivel th {
+  font-weight: 500;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 0 10px 4px 0;
+  text-align: right;
+}
+
+.vantagem-nivel td {
+  padding: 3px 10px 3px 0;
+  text-align: right;
+  border-top: 1px solid var(--line);
+}
+
+.vantagem-nivel th:first-child,
+.vantagem-nivel td:first-child {
+  text-align: left;
+}
+
+.vantagem-nivel td small {
+  color: var(--dim);
+  font-size: 9px;
+  margin-left: 4px;
+}
+
+/* ---- condicao de vitoria ---- */
+
+.wincon-lados {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.wincon h4 {
+  margin: 0 0 6px;
+  font-size: 12px;
+}
+
+.wincon ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wincon li {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.wincon-fase {
+  font-size: 13px;
+  margin: 0 0 10px;
+}
+
+/* De onde a frase sai, ao lado dela. */
+.fonte {
+  display: inline-block;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0 5px;
+  margin-right: 7px;
+  color: var(--dim);
+  vertical-align: 1px;
+}
+
+.fonte-atributos {
+  border-style: dashed;
+}
+
+/* ---- previa do candidato no draft ---- */
+
+.previa {
+  margin-top: 10px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
+
+.previa-vazia {
+  margin-top: 10px;
+}

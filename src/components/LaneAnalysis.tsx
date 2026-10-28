@@ -1,4 +1,6 @@
 import type { StaticData } from "../lib/ddragon";
+import CondicaoDeVitoria from "./CondicaoDeVitoria";
+import CurvaDeNivel from "./CurvaDeNivel";
 import type { LaneReport, LaneOutlook, LevelOdds, Skirmish } from "../lib/types";
 
 interface Props {
@@ -40,7 +42,15 @@ function Face({ id, staticData }: { id: number; staticData: StaticData | null })
   );
 }
 
-function LaneRow({ lane, staticData }: { lane: LaneOutlook; staticData: StaticData | null }) {
+function LaneRow({
+  lane,
+  staticData,
+  live,
+}: {
+  lane: LaneOutlook;
+  staticData: StaticData | null;
+  live: boolean;
+}) {
   return (
     <div className="lane-row">
       <span className="lane-tag">{lane.lane}</span>
@@ -64,11 +74,28 @@ function LaneRow({ lane, staticData }: { lane: LaneOutlook; staticData: StaticDa
       <div className="lane-niveis">
         <Niveis pontos={lane.byLevel} />
       </div>
+
+      {/* Na partida, o ponto de agora é o duelo nos níveis reais: a vantagem
+          ou o atraso de nível aparece fora da curva nivelada. */}
+      <div className="lane-curva">
+        <CurvaDeNivel
+          curve={lane.curve}
+          marker={
+            live
+              ? {
+                  level: lane.theirLevel,
+                  odds: lane.duel,
+                  label: `você nv ${lane.myLevel} · ele nv ${lane.theirLevel}`,
+                }
+              : null
+          }
+        />
+      </div>
     </div>
   );
 }
 
-function SkirmishRow({ fight, staticData }: { fight: Skirmish; staticData: StaticData | null }) {
+export function SkirmishRow({ fight, staticData }: { fight: Skirmish; staticData: StaticData | null }) {
   const meu = Math.round(fight.odds * 100);
 
   return (
@@ -130,13 +157,19 @@ export default function LaneAnalysis({ report, staticData }: Props) {
 
       {report.rolesAssumed && (
         <p className="warn-line">
-          O cliente não informou as rotas deles. Os pares saíram da ordem do draft.
+          O cliente não informou as rotas deles. Elas foram inferidas pelo que cada
+          campeão costuma jogar — pode errar com escolha fora de rota.
         </p>
       )}
 
       <div className="lane-list">
         {report.lanes.map((lane) => (
-          <LaneRow key={lane.lane} lane={lane} staticData={staticData} />
+          <LaneRow
+            key={lane.lane}
+            lane={lane}
+            staticData={staticData}
+            live={report.source === "partida"}
+          />
         ))}
       </div>
 
@@ -159,6 +192,8 @@ export default function LaneAnalysis({ report, staticData }: Props) {
           </div>
         </>
       )}
+
+      <CondicaoDeVitoria condition={report.winCondition} />
     </div>
   );
 }

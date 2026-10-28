@@ -1,42 +1,20 @@
-//! Traduz o que o cliente entrega para as perguntas do motor: chance por rota
-//! e chance em cada escaramuça.
+//! Traduz o que o cliente entrega para as perguntas do motor: chance por rota,
+//! chance em cada escaramuça e a condição de vitória.
 //!
-//! O trabalho de verdade aqui é a rota do inimigo. No seu time o cliente diz a
-//! posição de cada um; no time adversário, quase nunca. Sem ela não há par de
-//! rota, e sem par não há análise.
-//!
-//! A saída disso é parear pela ordem do draft quando o cliente cala — é o que
-//! dá para fazer — e marcar a resposta inteira como presumida, para a interface
-//! dizer isso em vez de mostrar os dois casos com a mesma cara.
+//! A montagem mora no core (`engine::report`), onde é testável. Aqui sobra a
+//! leitura da partida em andamento; o draft chega já resolvido pelo
+//! `DraftContext` — a sua rota, a do inimigo inferida, e o candidato no seu
+//! lugar quando a interface pede a prévia dele.
 
-use serde::Serialize;
-
-use presage_core::draft::{DraftSlot, DraftState};
 use presage_core::engine::champion::{ChampionIndex, Role};
+use presage_core::engine::context::DraftContext;
 use presage_core::engine::items::ItemIndex;
-use presage_core::engine::lanes::{self, LaneOutlook, Lineup, Skirmish};
+use presage_core::engine::lanes::Lineup;
+use presage_core::engine::report;
 use presage_core::engine::stats::StatsStore;
 use presage_core::live::LiveGame;
 
-/// Nível de referência antes da partida começar. É no 6 que as rotas se
-/// resolvem, e é igual para os dez, então a comparação continua justa.
-const PREGAME_LEVEL: u8 = 6;
-
-/// A ordem em que as rotas aparecem quando precisamos presumi-las pela ordem
-/// do draft. Não é verdade; é a convenção mais comum.
-const DRAFT_ORDER: [Role; 5] = [Role::Top, Role::Jungle, Role::Mid, Role::Bot, Role::Support];
-
-#[derive(Debug, Clone, Serialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct LaneReport {
-    pub lanes: Vec<LaneOutlook>,
-    pub skirmishes: Vec<Skirmish>,
-    /// `draft` ou `partida`.
-    pub source: &'static str,
-    /// Verdadeiro quando alguma rota saiu da ordem do draft em vez de vir do
-    /// cliente. A interface precisa dizer isso.
-    pub roles_assumed: bool,
-}
+pub use presage_core::engine::report::LaneReport;
 
 /// Monta os dois lados a partir da partida em andamento.
 ///
@@ -71,73 +49,36 @@ fn from_live(game: &LiveGame) -> Option<(Vec<Lineup>, Vec<Lineup>, bool)> {
     Some((ours, theirs, assumed))
 }
 
-/// Monta os dois lados a partir do champ select.
-///
-/// Campeão ainda não travado fica de fora: hover do inimigo não chega até nós,
-/// e inventar um pick para completar a rota seria pior que deixar a linha em
-/// branco.
-fn from_draft(draft: &DraftState) -> (Vec<Lineup>, Vec<Lineup>, bool) {
-    let mut assumed = false;
-
-    let mut side = |slots: &[DraftSlot]| -> Vec<Lineup> {
-        slots
-            .iter()
-            .enumerate()
-            .filter(|(_, slot)| slot.champion_id > 0)
-            .map(|(i, slot)| {
-                let mut role = Role::from_lcu(&slot.position);
-                if role == Role::Unknown {
-                    // O cliente não informou. Cai na ordem do draft e avisa.
-                    assumed = true;
-                    role = DRAFT_ORDER[i.min(DRAFT_ORDER.len() - 1)];
-                }
-                Lineup::new(role, slot.champion_id, PREGAME_LEVEL, Vec::new())
-            })
-            .collect()
-    };
-
-    let ours = side(&draft.my_team);
-    let theirs = side(&draft.their_team);
-    (ours, theirs, assumed)
-}
-
 /// A análise completa, da fonte mais confiável disponível.
 ///
 /// A partida em andamento sempre ganha do draft: lá os itens e os níveis são
 /// reais, e aqui tudo é projeção.
 pub fn report(
     live: Option<&LiveGame>,
-    draft: Option<&DraftState>,
+    draft: Option<&DraftContext>,
     champions: &ChampionIndex,
     items: &ItemIndex,
     store: &dyn StatsStore,
 ) -> Option<LaneReport> {
-    let (ours, theirs, assumed, source) = match live.and_then(from_live) {
-        Some((a, b, assumed)) => (a, b, assumed, "partida"),
-        None => {
-            let draft = draft?;
-            let (a, b, assumed) = from_draft(draft);
-            (a, b, assumed, "draft")
+    match live.and_then(from_live) {
+        Some((ours, theirs, assumed)) => {
+            report::build(&ours, &theirs, "partida", assumed, champions, items, store)
         }
-    };
-
-    if ours.is_empty() || theirs.is_empty() {
-        return None;
+        None => report::from_context(draft?, champions, items, store),
     }
-
-    Some(LaneReport {
-        lanes: lanes::lane_outlooks(&ours, &theirs, champions, items, store),
-        skirmishes: lanes::skirmishes(&ours, &theirs, champions, items),
-        source,
-        roles_assumed: assumed,
-    })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use presage_core::draft::{DraftSlot, DraftState};
     use presage_core::engine::stats::NoStats;
     use presage_core::live::{LivePlayer, RawScores};
+
+    /// O contexto que o app monta, com a rota que o draft informa.
+    fn contexto(d: &DraftState) -> DraftContext {
+        DraftContext::new(d, &champions(), &NoStats, &[], Role::from_lcu(&d.local_position))
+    }
 
     fn champions() -> ChampionIndex {
         use presage_core::engine::champion::{BaseStats, Champion};
@@ -232,7 +173,7 @@ mod tests {
         };
         let d = draft(vec![slot("middle", 7)], vec![slot("middle", 8)]);
 
-        let r = report(Some(&game), Some(&d), &champions(), &ItemIndex::default(), &NoStats).unwrap();
+        let r = report(Some(&game), Some(&contexto(&d)), &champions(), &ItemIndex::default(), &NoStats).unwrap();
 
         assert_eq!(r.source, "partida");
         assert_eq!(r.lanes[0].ally, 1, "devia usar o campeão da partida, não o do draft");
@@ -241,7 +182,7 @@ mod tests {
     #[test]
     fn sem_partida_usa_o_draft() {
         let d = draft(vec![slot("middle", 7)], vec![slot("middle", 8)]);
-        let r = report(None, Some(&d), &champions(), &ItemIndex::default(), &NoStats).unwrap();
+        let r = report(None, Some(&contexto(&d)), &champions(), &ItemIndex::default(), &NoStats).unwrap();
 
         assert_eq!(r.source, "draft");
         assert!(!r.roles_assumed);
@@ -255,7 +196,7 @@ mod tests {
             vec![slot("top", 1), slot("jungle", 2), slot("middle", 3)],
             vec![slot("", 4), slot("", 5), slot("", 6)],
         );
-        let r = report(None, Some(&d), &champions(), &ItemIndex::default(), &NoStats).unwrap();
+        let r = report(None, Some(&contexto(&d)), &champions(), &ItemIndex::default(), &NoStats).unwrap();
 
         assert!(r.roles_assumed, "a interface precisa poder dizer que presumiu");
         assert_eq!(r.lanes.len(), 3);
@@ -267,7 +208,7 @@ mod tests {
             vec![slot("middle", 7), slot("top", 0)],
             vec![slot("middle", 8)],
         );
-        let r = report(None, Some(&d), &champions(), &ItemIndex::default(), &NoStats).unwrap();
+        let r = report(None, Some(&contexto(&d)), &champions(), &ItemIndex::default(), &NoStats).unwrap();
 
         assert_eq!(r.lanes.len(), 1, "slot vazio não pode virar rota");
     }
@@ -280,7 +221,7 @@ mod tests {
     #[test]
     fn draft_so_de_um_lado_nao_rende_analise() {
         let d = draft(vec![slot("middle", 7)], vec![]);
-        assert!(report(None, Some(&d), &champions(), &ItemIndex::default(), &NoStats).is_none());
+        assert!(report(None, Some(&contexto(&d)), &champions(), &ItemIndex::default(), &NoStats).is_none());
     }
 
     #[test]
@@ -291,7 +232,7 @@ mod tests {
         };
         let d = draft(vec![slot("middle", 7)], vec![slot("middle", 8)]);
 
-        let r = report(Some(&game), Some(&d), &champions(), &ItemIndex::default(), &NoStats).unwrap();
+        let r = report(Some(&game), Some(&contexto(&d)), &champions(), &ItemIndex::default(), &NoStats).unwrap();
         assert_eq!(r.source, "draft");
     }
 
@@ -303,7 +244,7 @@ mod tests {
             vec![slot("top", 1), slot("middle", 3)],
             vec![slot("top", 2), slot("middle", 4)],
         );
-        let r = report(None, Some(&d), &champions(), &ItemIndex::default(), &NoStats).unwrap();
+        let r = report(None, Some(&contexto(&d)), &champions(), &ItemIndex::default(), &NoStats).unwrap();
 
         assert!(r
             .lanes
@@ -326,7 +267,7 @@ mod tests {
                 .map(|(i, p)| slot(p, i as i64 + 6))
                 .collect(),
         );
-        let r = report(None, Some(&d), &champions(), &ItemIndex::default(), &NoStats).unwrap();
+        let r = report(None, Some(&contexto(&d)), &champions(), &ItemIndex::default(), &NoStats).unwrap();
 
         assert_eq!(r.lanes.len(), 5);
         assert!(r.skirmishes.len() >= 4);

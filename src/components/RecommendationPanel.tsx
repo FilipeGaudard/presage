@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { StaticData } from "../lib/ddragon";
+import CondicaoDeVitoria from "./CondicaoDeVitoria";
+import CurvaDeNivel, { NiveisDeVantagem } from "./CurvaDeNivel";
+import { SkirmishRow } from "./LaneAnalysis";
 import {
   ROLES,
   type BanSuggestion,
   type DraftState,
   type EngineStatus,
+  type LaneReport,
   type MinimaxPick,
   type Role,
   type ScoredChampion,
@@ -20,6 +24,8 @@ interface Props {
   /** A rota escolhida na tela, para quando o cliente não informa. */
   role?: Role | null;
   onRole?: (role: Role) => void;
+  /** A análise do draft com este campeão no seu lugar. */
+  onPreview?: (championId: number) => Promise<LaneReport | null>;
 }
 
 const OVERALL_COUNT = 15;
@@ -39,8 +45,40 @@ export default function RecommendationPanel({
   engine,
   role = null,
   onRole,
+  onPreview,
 }: Props) {
   const [selected, setSelected] = useState<number | null>(null);
+  const [previa, setPrevia] = useState<LaneReport | null>(null);
+  const [calculando, setCalculando] = useState(false);
+
+  // A prévia se refaz quando o draft muda: um inimigo novo travado muda a rota
+  // e as escaramuças do candidato.
+  useEffect(() => {
+    if (selected === null || !onPreview) {
+      setPrevia(null);
+      return;
+    }
+    let vivo = true;
+    setCalculando(true);
+    onPreview(selected)
+      .then((r) => vivo && setPrevia(r))
+      .catch(() => vivo && setPrevia(null))
+      .finally(() => vivo && setCalculando(false));
+    return () => {
+      vivo = false;
+    };
+  }, [selected, draft, onPreview]);
+
+  // Candidato que saiu da lista (banido, escolhido por outro) sai da seleção.
+  useEffect(() => {
+    if (
+      selected !== null &&
+      !recommendations.some((r) => r.championId === selected) &&
+      !minimax.some((m) => m.championId === selected)
+    ) {
+      setSelected(null);
+    }
+  }, [recommendations, minimax, selected]);
 
   if (!draft) {
     return (
@@ -234,9 +272,78 @@ export default function RecommendationPanel({
               </li>
             )}
           </ul>
+          {onPreview && (
+            <Previa
+              previa={previa}
+              calculando={calculando}
+              champion={detail.championId}
+              staticData={staticData}
+            />
+          )}
         </div>
       )}
     </>
+  );
+}
+
+/** A rota, as escaramuças e a condição de vitória com o candidato no seu lugar —
+ *  a mesma conta de quando ele estiver travado. */
+function Previa({
+  previa,
+  calculando,
+  champion,
+  staticData,
+}: {
+  previa: LaneReport | null;
+  calculando: boolean;
+  champion: number;
+  staticData: StaticData | null;
+}) {
+  if (calculando && !previa) return <p className="muted">Calculando a prévia…</p>;
+  if (!previa) {
+    return (
+      <p className="muted previa-vazia">
+        A prévia de rota aparece quando o outro time travar alguém.
+      </p>
+    );
+  }
+
+  const rota = previa.lanes.find((lane) => lane.ally === champion) ?? null;
+  const brigas = previa.skirmishes.filter((s) => s.ours.includes(champion));
+
+  return (
+    <div className="previa">
+      {rota ? (
+        <>
+          <h3 className="section-h">
+            Rota contra {rota.enemyName}: o 1v1 de atributos, nível a nível
+          </h3>
+          <CurvaDeNivel curve={rota.curve} />
+          <NiveisDeVantagem gaps={rota.gaps} />
+        </>
+      ) : (
+        <p className="muted">O oponente da sua rota ainda não travou.</p>
+      )}
+
+      {brigas.length > 0 && (
+        <>
+          <h3 className="section-h">2v2 e 3v3 com ele</h3>
+          <div className="fight-list">
+            {brigas.map((fight) => (
+              <SkirmishRow key={fight.label} fight={fight} staticData={staticData} />
+            ))}
+          </div>
+        </>
+      )}
+
+      <CondicaoDeVitoria condition={previa.winCondition} />
+
+      {previa.rolesAssumed && (
+        <p className="faint">
+          As rotas deles foram inferidas pelo que cada campeão costuma jogar.
+        </p>
+      )}
+    </div>
   );
 }
 

@@ -184,11 +184,29 @@ export interface SkirmishFocus {
   because: string;
 }
 
+/** Uma afirmação da condição de vitória, com o lado e de onde ela sai. */
+export interface WinPoint {
+  side: "nosso" | "deles";
+  /** `regra`: composição por regra escrita à mão. `atributos`: a conta de
+   *  duelo, sem habilidades. */
+  source: "regra" | "atributos";
+  text: string;
+}
+
+export interface WinCondition {
+  facts: WinPoint[];
+  edges: WinPoint[];
+  /** A fase em que o time rende mais. Só com a base de partidas. */
+  phase: string | null;
+  caveat: string;
+}
+
 export interface LaneReport {
   lanes: LaneOutlook[];
   skirmishes: Skirmish[];
+  winCondition: WinCondition;
   source: "draft" | "partida";
-  /** As rotas inimigas foram presumidas pela ordem do draft. */
+  /** Alguma rota inimiga foi inferida, não informada pelo cliente. */
   rolesAssumed: boolean;
 }
 

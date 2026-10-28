@@ -420,6 +420,35 @@ function rotaDemo(cedo: number, tarde: number, meu = 6, dele = 6) {
 const laneReport: LaneReport = {
   source: "partida",
   rolesAssumed: false,
+  winCondition: {
+    facts: [
+      {
+        side: "deles",
+        source: "regra",
+        text: "Eles: 72% do dano é físico — armadura responde a quase tudo",
+      },
+    ],
+    edges: [
+      {
+        side: "nosso",
+        source: "atributos",
+        text: "SUP: Thresh ganha o 1v1 de Lulu na conta de atributos (62%)",
+      },
+      {
+        side: "nosso",
+        source: "atributos",
+        text: "JG+TOP x JG+TOP (gank ou invade no topo): vocês levam na conta de atributos (56%)",
+      },
+      {
+        side: "deles",
+        source: "atributos",
+        text: "TOP: Malphite ganha o 1v1 de Garen na conta de atributos (55%)",
+      },
+    ],
+    phase: null,
+    caveat:
+      "Composição por regra e duelos pela conta de atributos e itens, sem habilidades: quem escala pela suprema ou por acúmulo não aparece aqui. A fase do jogo só entra com a base de partidas.",
+  },
   lanes: [
     {
       role: "Top",
@@ -562,6 +591,21 @@ const laneReport: LaneReport = {
     },
   ],
 };
+
+// A prévia de um candidato na demonstração: o mesmo relatório, com ele no
+// lugar da Ahri no meio. O app real refaz a conta inteira para cada um.
+function previaDemo(championId: number): LaneReport {
+  const troca = (id: number) => (id === AHRI ? championId : id);
+  return {
+    ...laneReport,
+    source: "draft",
+    rolesAssumed: true,
+    lanes: laneReport.lanes.map((lane) =>
+      lane.ally === AHRI ? { ...lane, ally: championId, allyName: "Candidato" } : lane
+    ),
+    skirmishes: laneReport.skirmishes.map((s) => ({ ...s, ours: s.ours.map(troca) })),
+  };
+}
 
 const goldReport: GoldReport = {
   gameTime: 1147,
@@ -975,6 +1019,7 @@ function Demo() {
               staticData={staticData}
               draft={draft}
               engine={engine}
+              onPreview={async (id) => previaDemo(id)}
             />
           </section>
         </main>
