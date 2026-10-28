@@ -18,7 +18,7 @@ use std::collections::HashMap;
 
 use super::champion::Role;
 use super::profile::LaneProfile;
-use super::stats::{PersonalStats, Record, StatsStore};
+use super::stats::{Length, PersonalStats, Record, StatsStore};
 
 // `default` no struct inteiro: um arquivo truncado, de uma versão mais velha
 // do pipeline ou escrito à mão para teste tem de carregar. Campo que falta vira
@@ -42,6 +42,12 @@ pub struct Dataset {
     pub matchup: HashMap<String, Record>,
     #[serde(default)]
     pub synergy: HashMap<String, Record>,
+    /// `"A:B"`: o resultado de A com B em qualquer rota do time inimigo.
+    #[serde(default)]
+    pub versus: HashMap<String, Record>,
+    /// `"id:Rota:Faixa"`: o resultado por duração da partida.
+    #[serde(default)]
+    pub length: HashMap<String, Record>,
 }
 
 pub fn base_key(champion: i64, role: Role) -> String {
@@ -56,6 +62,15 @@ pub fn matchup_key(champion: i64, opponent: i64, role: Role) -> String {
 pub fn synergy_key(a: i64, b: i64) -> String {
     let (lo, hi) = if a <= b { (a, b) } else { (b, a) };
     format!("{lo}:{hi}")
+}
+
+/// Contra é direcional: `A:B` conta o resultado de A, `B:A` o de B.
+pub fn versus_key(champion: i64, opponent: i64) -> String {
+    format!("{champion}:{opponent}")
+}
+
+pub fn length_key(champion: i64, role: Role, bucket: Length) -> String {
+    format!("{champion}:{role:?}:{bucket:?}")
 }
 
 impl Dataset {
@@ -75,6 +90,12 @@ impl StatsStore for Dataset {
     }
     fn synergy(&self, champion: i64, ally: i64) -> Option<Record> {
         self.synergy.get(&synergy_key(champion, ally)).copied()
+    }
+    fn versus(&self, champion: i64, opponent: i64) -> Option<Record> {
+        self.versus.get(&versus_key(champion, opponent)).copied()
+    }
+    fn length(&self, champion: i64, role: Role, bucket: Length) -> Option<Record> {
+        self.length.get(&length_key(champion, role, bucket)).copied()
     }
     fn personal(&self, _champion: i64) -> Option<Record> {
         None
@@ -120,6 +141,12 @@ impl StatsStore for Layered {
     fn synergy(&self, champion: i64, ally: i64) -> Option<Record> {
         self.global.as_ref()?.synergy(champion, ally)
     }
+    fn versus(&self, champion: i64, opponent: i64) -> Option<Record> {
+        self.global.as_ref()?.versus(champion, opponent)
+    }
+    fn length(&self, champion: i64, role: Role, bucket: Length) -> Option<Record> {
+        self.global.as_ref()?.length(champion, role, bucket)
+    }
     fn personal(&self, champion: i64) -> Option<Record> {
         self.personal.personal(champion)
     }
@@ -157,7 +184,45 @@ mod tests {
                 Record::new(1840, 1050),
             )]),
             synergy: HashMap::from([(synergy_key(103, 64), Record::new(900, 480))]),
+            versus: HashMap::from([(versus_key(103, 64), Record::new(700, 330))]),
+            length: HashMap::from([(
+                length_key(103, Role::Mid, Length::Longa),
+                Record::new(9_000, 4_900),
+            )]),
         }
+    }
+
+    #[test]
+    fn contra_e_duracao_saem_da_base() {
+        let d = cheio();
+        assert_eq!(d.versus(103, 64), Some(Record::new(700, 330)));
+        assert!(d.versus(64, 103).is_none(), "contra é direcional");
+        assert_eq!(d.length(103, Role::Mid, Length::Longa), Some(Record::new(9_000, 4_900)));
+        assert!(d.length(103, Role::Mid, Length::Curta).is_none());
+    }
+
+    #[test]
+    fn a_camada_repassa_contra_e_duracao() {
+        let tudo = Layered::default().with_global(cheio());
+        assert!(tudo.versus(103, 64).is_some());
+        assert!(tudo.length(103, Role::Mid, Length::Longa).is_some());
+        assert!(Layered::default().versus(103, 64).is_none());
+    }
+
+    #[test]
+    fn base_antiga_sem_contra_carrega() {
+        // Base gerada antes das tabelas novas continua servindo.
+        let antiga = r#"{"patch":"16.21","matches":10,"base":{"103:Mid":{"games":10,"wins":5}}}"#;
+        let d: Dataset = serde_json::from_str(antiga).unwrap();
+        assert!(d.is_usable());
+        assert!(d.versus.is_empty() && d.length.is_empty());
+    }
+
+    #[test]
+    fn a_duracao_cai_na_faixa_certa() {
+        assert_eq!(Length::of(1200), Length::Curta);
+        assert_eq!(Length::of(1500), Length::Media);
+        assert_eq!(Length::of(2400), Length::Longa);
     }
 
     #[test]

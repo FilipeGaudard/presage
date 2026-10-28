@@ -111,11 +111,45 @@ pub fn expected_together(champion: f64, ally: f64) -> f64 {
     logistic(logit(champion) + logit(ally))
 }
 
+/// A duração da partida, em três faixas. É o que mede a fase do jogo em que um
+/// campeão rende: a winrate dele em partidas curtas contra longas.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Length {
+    /// Até 25:00.
+    Curta,
+    /// De 25:00 a 32:30.
+    Media,
+    /// Depois de 32:30.
+    Longa,
+}
+
+impl Length {
+    pub const ALL: [Length; 3] = [Length::Curta, Length::Media, Length::Longa];
+
+    pub fn of(game_duration_secs: i64) -> Length {
+        match game_duration_secs {
+            d if d < 1500 => Length::Curta,
+            d if d < 1950 => Length::Media,
+            _ => Length::Longa,
+        }
+    }
+}
+
 pub trait StatsStore: Send + Sync {
     fn base(&self, champion: i64, role: Role) -> Option<Record>;
     fn matchup(&self, champion: i64, opponent: i64, role: Role) -> Option<Record>;
     fn synergy(&self, champion: i64, ally: i64) -> Option<Record>;
     fn personal(&self, champion: i64) -> Option<Record>;
+
+    /// O resultado do campeão com o oponente em qualquer rota do time inimigo.
+    fn versus(&self, _champion: i64, _opponent: i64) -> Option<Record> {
+        None
+    }
+
+    /// O resultado do campeão na rota, em partidas daquela duração.
+    fn length(&self, _champion: i64, _role: Role, _bucket: Length) -> Option<Record> {
+        None
+    }
 
     /// Base agregada sobre muitos jogadores: winrate por rota, matchup,
     /// sinergia. Vem do pipeline de ingestão.

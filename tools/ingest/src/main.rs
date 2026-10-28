@@ -207,6 +207,7 @@ fn parece_vazio(dataset: &Dataset) -> bool {
         && dataset.base.is_empty()
         && dataset.matchup.is_empty()
         && dataset.synergy.is_empty()
+        && dataset.versus.is_empty()
 }
 
 fn relatorio(dataset: &Dataset) {
@@ -234,6 +235,23 @@ fn relatorio(dataset: &Dataset) {
         pct(cob.matchup_util, cob.matchup)
     );
     println!("  sinergia:      {:>7} entradas", cob.synergy);
+    println!(
+        "  contra:        {:>7} entradas, {} com n>={USEFUL} ({:.0}%)",
+        cob.versus,
+        cob.versus_util,
+        pct(cob.versus_util, cob.versus)
+    );
+    println!("  duração:       {:>7} entradas", cob.length);
+    match cob.versus_sd {
+        Some(sd) => println!(
+            "\n  Espalhamento medido do contra: {:.2}pp. É o VERSUS_PRIOR_SD do motor;\n  \
+             se for diferente do que está no código, troque lá.",
+            sd * 100.0
+        ),
+        None => println!(
+            "\n  Contra com amostra útil ainda é pouco para medir o espalhamento."
+        ),
+    }
 
     if !dataset.is_usable() {
         println!("\n  Esta base ainda não serve: o app vai ignorá-la.");
@@ -566,6 +584,14 @@ async fn main() -> Result<()> {
             serde_json::from_slice::<Estado>(&bruto).ok()
         }) {
             Some(salvo) if salvo.combina(&o) => {
+                if !salvo.contagens.resumable() {
+                    bail!(
+                        "o estado em {} é de uma versão do coletor sem as tabelas de \
+                         contra e duração. Retomar deixaria essas tabelas com menos \
+                         partidas do que o cabeçalho diz. Apague-o e recomece.",
+                        o.estado.display()
+                    );
+                }
                 tracing::info!(
                     jogadores = format!("{}/{}", salvo.proximo, salvo.jogadores.len()),
                     partidas = salvo.contagens.matches,

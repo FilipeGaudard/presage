@@ -10,7 +10,12 @@
 //!   vitória de A, `B:A:rota` a de B. É direcional de propósito, porque é
 //!   assim que a chave é lida no app;
 //! - **sinergia**: todo par de companheiros, sem direção (o menor id primeiro),
-//!   dez por time, vinte por partida.
+//!   dez por time, vinte por partida;
+//! - **contra**: todo par de adversários, em qualquer rota, nas duas direções —
+//!   `A:B` conta a vitória de A com B no time inimigo. Vinte e cinco pares,
+//!   cinquenta entradas por partida;
+//! - **duração**: uma linha por participante, `campeão:rota:faixa`, pela
+//!   duração da partida. É o que mede a fase do jogo em que um campeão rende.
 //!
 //! O que *não* entra importa tanto quanto. Remake, partida terminada por erro,
 //! modo que não é a Fenda, rota em branco: tudo isso é descartado com motivo,
@@ -21,8 +26,10 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use presage_core::engine::champion::Role;
-use presage_core::engine::dataset::{base_key, matchup_key, synergy_key, Dataset};
-use presage_core::engine::stats::Record;
+use presage_core::engine::dataset::{
+    base_key, length_key, matchup_key, synergy_key, versus_key, Dataset,
+};
+use presage_core::engine::stats::{expected_against, Length, Record};
 
 /// Abaixo disto é remake ou abandono precoce, independente das flags.
 const MIN_DURATION: i64 = 300;
@@ -124,7 +131,13 @@ pub struct Counts {
     pub base: HashMap<String, Record>,
     pub matchup: HashMap<String, Record>,
     pub synergy: HashMap<String, Record>,
+    pub versus: HashMap<String, Record>,
+    pub length: HashMap<String, Record>,
     pub matches: u64,
+    /// Partidas que entraram também em `versus` e `length`. Um estado salvo
+    /// antes delas existirem tem menos que `matches`, e retomar dele deixaria
+    /// as tabelas novas contando menos partidas do que o cabeçalho diz.
+    pub versus_matches: u64,
     /// O patch travado, assim que a primeira partida é aceita.
     pub patch: String,
     pub skipped: HashMap<Skip, u64>,
@@ -253,7 +266,28 @@ impl Counts {
             }
         }
 
+        let lados: Vec<&Vec<&Participant>> = times.values().collect();
+        for a in lados[0].iter() {
+            for b in lados[1].iter() {
+                bump(&mut self.versus, versus_key(a.champion_id, b.champion_id), a.win);
+                bump(&mut self.versus, versus_key(b.champion_id, a.champion_id), b.win);
+            }
+        }
+
+        let faixa = Length::of(info.game_duration);
+        for p in &info.participants {
+            let role = Role::from_lcu(&p.team_position);
+            bump(&mut self.length, length_key(p.champion_id, role, faixa), p.win);
+        }
+        self.versus_matches += 1;
+
         Ok(())
+    }
+
+    /// O estado pode ser retomado: toda partida contada entrou também nas
+    /// tabelas novas.
+    pub fn resumable(&self) -> bool {
+        self.versus_matches == self.matches
     }
 
     /// Fecha a base para o disco.
@@ -284,19 +318,74 @@ impl Counts {
             base: podar(self.base),
             matchup: podar(self.matchup),
             synergy: podar(self.synergy),
+            versus: podar(self.versus),
+            length: podar(self.length),
         }
     }
 }
 
 /// O que a base cobre de verdade, para a pessoa decidir se ela já serve.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Coverage {
     pub base: usize,
     pub matchup: usize,
     pub synergy: usize,
+    pub versus: usize,
+    pub length: usize,
     /// Entradas com amostra grande o bastante para mexer no ranking.
     pub matchup_util: usize,
     pub base_util: usize,
+    pub versus_util: usize,
+    /// O espalhamento de verdade dos efeitos de contra, em fração. `None` com
+    /// poucas entradas úteis.
+    pub versus_sd: Option<f64>,
+}
+
+/// Abaixo disto de entradas úteis, o espalhamento medido é ruído.
+const MIN_SPREAD_ENTRIES: usize = 30;
+
+/// Quanto os efeitos de contra se espalham além do que o ruído explica.
+///
+/// O resíduo de cada par é a taxa observada menos o que as duas forças já
+/// explicam (`expected_against`, com a winrate de cada um somada nas cinco
+/// rotas); o espalhamento é `τ² = Var(resíduos) − média(p(1 − p)/n)`. É o
+/// número que o motor deve usar como `VERSUS_PRIOR_SD` — medido, não chutado.
+fn versus_spread(dataset: &Dataset) -> Option<f64> {
+    let mut forca: HashMap<i64, (f64, f64)> = HashMap::new();
+    for (chave, r) in &dataset.base {
+        if let Some(id) = chave.split(':').next().and_then(|s| s.parse::<i64>().ok()) {
+            let e = forca.entry(id).or_insert((0.0, 0.0));
+            e.0 += r.games as f64;
+            e.1 += r.wins as f64;
+        }
+    }
+    let taxa = |id: i64| forca.get(&id).filter(|(g, _)| *g > 0.0).map(|(g, w)| w / g);
+
+    let mut residuos = Vec::new();
+    let mut ruido = Vec::new();
+    for (chave, r) in &dataset.versus {
+        if r.games < USEFUL {
+            continue;
+        }
+        let mut partes = chave.split(':').filter_map(|s| s.parse::<i64>().ok());
+        let (Some(a), Some(b)) = (partes.next(), partes.next()) else {
+            continue;
+        };
+        let (Some(pa), Some(pb)) = (taxa(a), taxa(b)) else {
+            continue;
+        };
+        let p = r.wins as f64 / r.games as f64;
+        residuos.push(p - expected_against(pa, pb));
+        ruido.push(p * (1.0 - p) / r.games as f64);
+    }
+    if residuos.len() < MIN_SPREAD_ENTRIES {
+        return None;
+    }
+    let n = residuos.len() as f64;
+    let media = residuos.iter().sum::<f64>() / n;
+    let var = residuos.iter().map(|d| (d - media).powi(2)).sum::<f64>() / (n - 1.0);
+    let ruido_medio = ruido.iter().sum::<f64>() / n;
+    Some((var - ruido_medio).max(0.0).sqrt())
 }
 
 /// A partir daqui o componente desloca a estimativa mais de um ponto
@@ -310,8 +399,12 @@ pub fn coverage(dataset: &Dataset) -> Coverage {
         base: dataset.base.len(),
         matchup: dataset.matchup.len(),
         synergy: dataset.synergy.len(),
+        versus: dataset.versus.len(),
+        length: dataset.length.len(),
         matchup_util: acima(&dataset.matchup),
         base_util: acima(&dataset.base),
+        versus_util: acima(&dataset.versus),
+        versus_sd: versus_spread(dataset),
     }
 }
 
@@ -361,6 +454,76 @@ mod tests {
         assert_eq!(patch_of("9.3.1"), "9.3");
         assert_eq!(patch_of("lixo"), "");
         assert_eq!(patch_of(""), "");
+    }
+
+    #[test]
+    fn uma_partida_rende_cinquenta_linhas_de_contra() {
+        let mut c = Counts::default();
+        c.add(&partida(true), &filtro()).unwrap();
+
+        // 5 × 5 pares, nas duas direções.
+        assert_eq!(c.versus.len(), 50);
+        // A:B e B:A somam uma vitória por partida.
+        let ab = c.versus[&versus_key(1, 11)];
+        let ba = c.versus[&versus_key(11, 1)];
+        assert_eq!(ab.games, 1);
+        assert_eq!(ab.wins + ba.wins, 1);
+        // De rotas diferentes também: o topo deles contra o meio de vocês.
+        assert!(c.versus.contains_key(&versus_key(3, 11)));
+    }
+
+    #[test]
+    fn a_duracao_vai_para_a_faixa_da_partida() {
+        let mut c = Counts::default();
+        c.add(&partida(true), &filtro()).unwrap();
+        assert_eq!(c.length.len(), 10);
+        assert_eq!(c.length[&length_key(1, Role::Top, Length::Media)], Record::new(1, 1));
+    }
+
+    /// Oito campeões de 50%, com todo par de contra a 50% mais `efeito(a, b)`.
+    fn base_de_contra(efeito: impl Fn(i64, i64) -> i32) -> Dataset {
+        let mut base = HashMap::new();
+        let mut versus = HashMap::new();
+        for a in 1..=8 {
+            base.insert(base_key(a, Role::Top), Record::new(10_000, 5_000));
+            for b in 1..=8 {
+                if a != b {
+                    let vitorias = (5_000 + efeito(a, b)) as u32;
+                    versus.insert(versus_key(a, b), Record::new(10_000, vitorias));
+                }
+            }
+        }
+        Dataset {
+            patch: "15.21".into(),
+            matches: 100_000,
+            base,
+            versus,
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn o_espalhamento_do_contra_e_medido_alem_do_ruido() {
+        // Efeitos de ±3pp plantados: a medida tem de achar ~3pp.
+        let plantado = base_de_contra(|a, b| if (a + b) % 2 == 0 { 300 } else { -300 });
+        let sd = coverage(&plantado).versus_sd.unwrap();
+        assert!((sd - 0.03).abs() < 0.002, "{sd}");
+
+        // Todo par exatamente no esperado: espalhamento zero.
+        let neutro = base_de_contra(|_, _| 0);
+        assert_eq!(coverage(&neutro).versus_sd, Some(0.0));
+    }
+
+    #[test]
+    fn estado_sem_as_tabelas_novas_nao_e_retomado() {
+        let mut c = Counts::default();
+        c.add(&partida(true), &filtro()).unwrap();
+        assert!(c.resumable());
+
+        // Como um estado salvo por uma versão anterior do coletor.
+        c.versus_matches = 0;
+        assert!(!c.resumable());
+        assert!(Counts::default().resumable(), "estado vazio sempre retoma");
     }
 
     #[test]
