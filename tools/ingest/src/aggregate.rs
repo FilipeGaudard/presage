@@ -259,9 +259,9 @@ impl Counts {
     /// Fecha a base para o disco.
     ///
     /// `min_games` corta as entradas magras. Com a força de prior do motor, um
-    /// matchup de dez partidas move a estimativa em menos de meio ponto
-    /// percentual — ou seja, ocupa espaço sem dizer nada. Cortar não perde
-    /// informação; só deixa de carregar ruído.
+    /// matchup de dez partidas pesa ~3,5% contra o prior — ou seja, ocupa
+    /// espaço sem dizer nada. Cortar não perde informação; só deixa de
+    /// carregar ruído.
     pub fn into_dataset(
         self,
         region: String,

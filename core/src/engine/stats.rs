@@ -65,6 +65,50 @@ pub fn shrunk_delta(record: Option<Record>, baseline: f64, strength: f64) -> Est
     }
 }
 
+/// Força da Beta, em partidas fictícias, cujo desvio padrão em torno de 50% é
+/// `sd`.
+///
+/// Uma Beta de média p e força s tem variância p(1 − p)/(s + 1). Força e
+/// desvio são a mesma crença dita de dois jeitos; guardados como constantes
+/// separadas, a força puxava a estimativa e o desvio desenhava o `±`, e os dois
+/// discordavam. Daqui sai uma só.
+pub fn strength_for_sd(sd: f64) -> f64 {
+    (0.25 / (sd * sd) - 1.0).max(1.0)
+}
+
+/// Desvio posterior de um componente com `games` partidas. Sem amostra é
+/// exatamente `prior_sd`; depois cai com a raiz da amostra, como na Beta.
+///
+/// Usa p = 0,5 na variância: entre 45% e 55% o p(1 − p) muda menos de 1%.
+pub fn posterior_sd(games: u32, prior_sd: f64) -> f64 {
+    (0.25 / (strength_for_sd(prior_sd) + 1.0 + games as f64)).sqrt()
+}
+
+fn logit(p: f64) -> f64 {
+    let p = p.clamp(1e-6, 1.0 - 1e-6);
+    (p / (1.0 - p)).ln()
+}
+
+fn logistic(x: f64) -> f64 {
+    1.0 / (1.0 + (-x).exp())
+}
+
+/// Winrate esperada de um campeão contra outro se o confronto não tiver nada
+/// de especial: só a força de cada um, somada em log-odds.
+///
+/// É contra isto que o matchup tem de ser medido. A taxa crua de A contra B já
+/// carrega a fraqueza geral de B; medida contra a base de A, essa fraqueza vira
+/// "matchup" na proporção da amostra, e o pick popular sobe por ser popular.
+pub fn expected_against(champion: f64, opponent: f64) -> f64 {
+    logistic(logit(champion) - logit(opponent))
+}
+
+/// Winrate esperada de dois campeões no mesmo time, sem interação entre eles.
+/// Mesmo raciocínio: a força do aliado não é sinergia.
+pub fn expected_together(champion: f64, ally: f64) -> f64 {
+    logistic(logit(champion) + logit(ally))
+}
+
 pub trait StatsStore: Send + Sync {
     fn base(&self, champion: i64, role: Role) -> Option<Record>;
     fn matchup(&self, champion: i64, opponent: i64, role: Role) -> Option<Record>;
@@ -214,6 +258,37 @@ mod tests {
         let e = shrink(Some(Record::new(0, 0)), PRIOR, 0.0);
         assert!(e.rate.is_finite());
         assert!(e.se().is_finite());
+    }
+
+    #[test]
+    fn forca_e_desvio_sao_a_mesma_crenca() {
+        for sd in [0.012, 0.030, 0.035] {
+            let s = strength_for_sd(sd);
+            let desvio_da_beta = (0.25 / (s + 1.0)).sqrt();
+            assert!((desvio_da_beta - sd).abs() < 1e-12, "{sd}: {desvio_da_beta}");
+            assert!((posterior_sd(0, sd) - sd).abs() < 1e-12);
+        }
+    }
+
+    #[test]
+    fn desvio_posterior_cai_com_a_raiz_da_amostra() {
+        // 4x a amostra, metade do desvio. Cair com 1/n encolheria o `±` quatro
+        // vezes, e a tela prometeria uma certeza que a base não tem.
+        let razao = posterior_sd(10_000, 0.03) / posterior_sd(40_000, 0.03);
+        assert!((1.9..2.1).contains(&razao), "{razao}");
+    }
+
+    #[test]
+    fn rival_e_aliado_neutros_nao_mudam_a_esperada() {
+        assert!((expected_against(0.53, 0.5) - 0.53).abs() < 1e-12);
+        assert!((expected_together(0.53, 0.5) - 0.53).abs() < 1e-12);
+    }
+
+    #[test]
+    fn rival_fraco_sobe_a_esperada_e_aliado_forte_tambem() {
+        assert!((expected_against(0.5, 0.47) - 0.53).abs() < 1e-12);
+        assert!((expected_together(0.5, 0.52) - 0.52).abs() < 1e-12);
+        assert!(expected_against(0.5, 0.53) < 0.5);
     }
 
     #[test]

@@ -16,11 +16,9 @@ use serde::Serialize;
 use super::build::{loadout, side_power, skirmish_odds, Combatant};
 use super::champion::{ChampionIndex, Role};
 use super::items::ItemIndex;
-use super::stats::{shrunk_delta, StatsStore};
+use super::stats::{shrunk_delta, strength_for_sd, StatsStore};
 use super::timeline::Spawn;
-
-/// A mesma força de prior usada no ranking de draft.
-const MATCHUP_STRENGTH: f64 = 800.0;
+use super::MATCHUP_PRIOR_SD;
 
 /// Quanto a matemática do duelo mexe na probabilidade final.
 ///
@@ -215,10 +213,11 @@ fn one_lane(
 
     let duel = skirmish_odds(mine, theirs, champions, items);
 
+    // A mesma crença sobre matchup que o ranking de draft usa.
     let matchup = shrunk_delta(
         store.matchup(ally.combatant.champion_id, enemy.combatant.champion_id, role),
         0.5,
-        MATCHUP_STRENGTH,
+        strength_for_sd(MATCHUP_PRIOR_SD),
     );
 
     // Sem amostra, `shrunk_delta` devolve exatamente 0 — o duelo responde

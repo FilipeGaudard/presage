@@ -19,17 +19,18 @@ use std::collections::HashSet;
 
 use crate::draft::{DraftSlot, DraftState};
 use champion::{Champion, ChampionIndex, Role};
-use stats::{shrink, shrunk_delta, StatsStore};
+use stats::{
+    expected_against, expected_together, posterior_sd, shrink, shrunk_delta, strength_for_sd,
+    StatsStore,
+};
 
 const PRIOR_RATE: f64 = 0.50;
 
 const BASE_STRENGTH: f64 = 400.0;
-const MATCHUP_STRENGTH: f64 = 800.0;
-const SYNERGY_STRENGTH: f64 = 1200.0;
-const PERSONAL_STRENGTH: f64 = 40.0;
 
 /// Dispersão típica de cada efeito na população. Sem amostra, é esta a nossa
-/// incerteza sobre o componente — não zero.
+/// incerteza sobre o componente — não zero. A força do shrinkage sai daqui
+/// (`strength_for_sd`), para a estimativa e o `±` contarem a mesma história.
 const MATCHUP_PRIOR_SD: f64 = 0.030;
 const SYNERGY_PRIOR_SD: f64 = 0.012;
 const PERSONAL_PRIOR_SD: f64 = 0.035;
@@ -74,7 +75,8 @@ pub fn rank(
 
     let allies = team_champions(&draft.my_team, true);
     let team = comp::profile(&allies, index);
-    let lane_opponent = lane_opponent(draft, index);
+    let ally_bases = ally_bases(&draft.my_team, store);
+    let lane_opponent = lane_opponent(draft, index, store);
 
     let mut scored: Vec<Scored> = index
         .ids()
@@ -86,7 +88,7 @@ pub fn rank(
                 champion,
                 role,
                 &team,
-                &allies,
+                &ally_bases,
                 lane_opponent.as_ref(),
                 store,
                 pool.contains(&id),
@@ -109,34 +111,41 @@ fn score_one(
     champion: &Champion,
     role: Role,
     team: &comp::TeamProfile,
-    allies: &[i64],
-    lane_opponent: Option<&(i64, String)>,
+    allies: &[(i64, f64)],
+    lane_opponent: Option<&LaneOpponent>,
     store: &dyn StatsStore,
     in_pool: bool,
 ) -> Scored {
     let base = shrink(store.base(champion.id, role), PRIOR_RATE, BASE_STRENGTH);
 
-    let matchup = lane_opponent.map(|(opponent, _)| {
+    // Matchup e sinergia são medidos contra o que as duas forças já explicam,
+    // não contra a sua base — senão a força do outro vira efeito, na proporção
+    // da amostra.
+    let matchup = lane_opponent.map(|opponent| {
         shrunk_delta(
-            store.matchup(champion.id, *opponent, role),
-            base.rate,
-            MATCHUP_STRENGTH,
+            store.matchup(champion.id, opponent.id, role),
+            expected_against(base.rate, opponent.base),
+            strength_for_sd(MATCHUP_PRIOR_SD),
         )
     });
 
     let synergies: Vec<stats::Estimate> = allies
         .iter()
-        .map(|ally| {
+        .map(|&(ally, ally_base)| {
             shrunk_delta(
-                store.synergy(champion.id, *ally),
-                base.rate,
-                SYNERGY_STRENGTH,
+                store.synergy(champion.id, ally),
+                expected_together(base.rate, ally_base),
+                strength_for_sd(SYNERGY_PRIOR_SD),
             )
         })
         .collect();
 
     let personal_record = store.personal(champion.id);
-    let personal = shrunk_delta(personal_record, base.rate, PERSONAL_STRENGTH);
+    let personal = shrunk_delta(
+        personal_record,
+        base.rate,
+        strength_for_sd(PERSONAL_PRIOR_SD),
+    );
 
     let balance_gain = comp::damage_balance_gain(team, champion);
     let frontline_fit = if champion.is_frontline() {
@@ -153,11 +162,11 @@ fn score_one(
         (base.rate + matchup_delta + synergy_delta + personal.rate + comp_delta).clamp(0.25, 0.75);
 
     let mut variance = base.se().powi(2) + COMP_SD.powi(2);
-    variance += delta_sd(matchup.as_ref(), MATCHUP_PRIOR_SD, MATCHUP_STRENGTH).powi(2);
+    variance += posterior_sd(matchup.map_or(0, |m| m.games), MATCHUP_PRIOR_SD).powi(2);
     for synergy in &synergies {
-        variance += delta_sd(Some(synergy), SYNERGY_PRIOR_SD, SYNERGY_STRENGTH).powi(2);
+        variance += posterior_sd(synergy.games, SYNERGY_PRIOR_SD).powi(2);
     }
-    variance += delta_sd(Some(&personal), PERSONAL_PRIOR_SD, PERSONAL_STRENGTH).powi(2);
+    variance += posterior_sd(personal.games, PERSONAL_PRIOR_SD).powi(2);
 
     let reasons = build_reasons(
         champion,
@@ -182,30 +191,24 @@ fn score_one(
     }
 }
 
-/// Incerteza de um componente expresso como desvio: parte do espalhamento
-/// populacional e encolhe conforme a amostra cresce.
-fn delta_sd(estimate: Option<&stats::Estimate>, prior_sd: f64, strength: f64) -> f64 {
-    let games = estimate.map(|e| e.games as f64).unwrap_or(0.0);
-    prior_sd * (strength / (strength + games))
-}
-
 fn build_reasons(
     champion: &Champion,
     team: &comp::TeamProfile,
     balance_gain: f64,
     frontline_fit: f64,
-    matchup: Option<(&stats::Estimate, &(i64, String))>,
+    matchup: Option<(&stats::Estimate, &LaneOpponent)>,
     personal_record: Option<stats::Record>,
     personal: &stats::Estimate,
     has_global: bool,
 ) -> Vec<String> {
     let mut reasons = Vec::new();
 
-    if let Some((estimate, (_, opponent_name))) = matchup {
+    if let Some((estimate, opponent)) = matchup {
         if estimate.games > 0 && estimate.rate.abs() > 0.005 {
             let verbo = if estimate.rate > 0.0 { "Vence" } else { "Perde para" };
             reasons.push(format!(
-                "{verbo} {opponent_name} na rota ({:+.1}pp, n={})",
+                "{verbo} {} na rota ({:+.1}pp, n={})",
+                opponent.name,
                 estimate.rate * 100.0,
                 estimate.games
             ));
@@ -243,33 +246,66 @@ fn build_reasons(
     reasons
 }
 
+fn slot_champion(slot: &DraftSlot) -> i64 {
+    if slot.champion_id > 0 {
+        slot.champion_id
+    } else {
+        slot.intent_id
+    }
+}
+
 fn team_champions(slots: &[DraftSlot], skip_local: bool) -> Vec<i64> {
     slots
         .iter()
         .filter(|slot| !(skip_local && slot.is_local))
-        .map(|slot| {
-            if slot.champion_id > 0 {
-                slot.champion_id
-            } else {
-                slot.intent_id
-            }
-        })
+        .map(slot_champion)
         .filter(|id| *id > 0)
         .collect()
 }
 
-fn lane_opponent(draft: &DraftState, index: &ChampionIndex) -> Option<(i64, String)> {
+fn base_rate(store: &dyn StatsStore, champion: i64, role: Role) -> f64 {
+    shrink(store.base(champion, role), PRIOR_RATE, BASE_STRENGTH).rate
+}
+
+/// Cada aliado com a winrate base dele na rota dele — a referência contra a
+/// qual a sinergia é medida. Rota desconhecida cai no prior de 50%, e a
+/// sinergia volta a ser medida só contra a sua base.
+fn ally_bases(slots: &[DraftSlot], store: &dyn StatsStore) -> Vec<(i64, f64)> {
+    slots
+        .iter()
+        .filter(|slot| !slot.is_local)
+        .map(|slot| (slot_champion(slot), Role::from_lcu(&slot.position)))
+        .filter(|(id, _)| *id > 0)
+        .map(|(id, role)| (id, base_rate(store, id, role)))
+        .collect()
+}
+
+struct LaneOpponent {
+    id: i64,
+    name: String,
+    /// Winrate base dele na rota: a referência do matchup.
+    base: f64,
+}
+
+fn lane_opponent(
+    draft: &DraftState,
+    index: &ChampionIndex,
+    store: &dyn StatsStore,
+) -> Option<LaneOpponent> {
     if draft.local_position.is_empty() {
         return None;
     }
+    let role = Role::from_lcu(&draft.local_position);
     draft
         .their_team
         .iter()
         .find(|slot| slot.position == draft.local_position && slot.champion_id > 0)
         .and_then(|slot| {
-            index
-                .get(slot.champion_id)
-                .map(|champion| (slot.champion_id, champion.name.clone()))
+            index.get(slot.champion_id).map(|champion| LaneOpponent {
+                id: slot.champion_id,
+                name: champion.name.clone(),
+                base: base_rate(store, slot.champion_id, role),
+            })
         })
 }
 
@@ -461,6 +497,120 @@ mod tests {
 
         assert_eq!(mago.sample, 0);
         assert!(!mago.reasons.iter().any(|r| r.contains("na rota")));
+    }
+
+    /// Base montada à mão, para testar a conta contra números conhecidos.
+    #[derive(Default)]
+    struct Montada {
+        base: HashMap<(i64, Role), Record>,
+        matchup: HashMap<(i64, i64), Record>,
+        synergy: HashMap<(i64, i64), Record>,
+        personal: HashMap<i64, Record>,
+    }
+
+    impl StatsStore for Montada {
+        fn base(&self, champion: i64, role: Role) -> Option<Record> {
+            self.base.get(&(champion, role)).copied()
+        }
+        fn matchup(&self, champion: i64, opponent: i64, _role: Role) -> Option<Record> {
+            self.matchup.get(&(champion, opponent)).copied()
+        }
+        fn synergy(&self, champion: i64, ally: i64) -> Option<Record> {
+            self.synergy
+                .get(&(champion.min(ally), champion.max(ally)))
+                .copied()
+        }
+        fn personal(&self, champion: i64) -> Option<Record> {
+            self.personal.get(&champion).copied()
+        }
+        fn has_global(&self) -> bool {
+            true
+        }
+    }
+
+    fn winrate_de(scored: &[Scored], id: i64) -> f64 {
+        scored.iter().find(|s| s.champion_id == id).unwrap().winrate
+    }
+
+    #[test]
+    fn popularidade_nao_vira_matchup() {
+        // O inimigo é fraco (47%), então qualquer um tem ~53% contra ele sem
+        // nada de especial no confronto. Mago e Tanque têm exatamente essa taxa
+        // — um com 5000 partidas, outro com 100. Nenhum dos dois tem matchup
+        // de verdade, e acrescentar essas linhas não pode mexer em nenhum.
+        let mut sem_matchup = Montada::default();
+        sem_matchup.base.insert((4, Role::Mid), Record::new(20_000, 10_000));
+        sem_matchup.base.insert((5, Role::Mid), Record::new(20_000, 10_000));
+        sem_matchup.base.insert((6, Role::Mid), Record::new(40_000, 18_800));
+
+        let mut com_matchup = Montada {
+            base: sem_matchup.base.clone(),
+            ..Default::default()
+        };
+        com_matchup.matchup.insert((4, 6), Record::new(5_000, 2_650));
+        com_matchup.matchup.insert((5, 6), Record::new(100, 53));
+
+        let antes = rank(&draft(), &index(), &sem_matchup, &[]);
+        let depois = rank(&draft(), &index(), &com_matchup, &[]);
+
+        for id in [4, 5] {
+            let deslocamento = winrate_de(&depois, id) - winrate_de(&antes, id);
+            assert!(
+                deslocamento.abs() < 0.002,
+                "campeão {id} andou {:+.2}pp só por ter amostra contra um inimigo fraco",
+                deslocamento * 100.0
+            );
+        }
+    }
+
+    #[test]
+    fn sinergia_nao_herda_a_forca_do_aliado() {
+        // O Lutador (top, aliado já travado) é forte: 52%. Com um campeão de
+        // 50%, sem interação nenhuma, a dupla ganha ~52%. Mago tem 900 jogos
+        // com ele nessa taxa, Tanque 50: a força do Lutador não é sinergia.
+        let mut sem_sinergia = Montada::default();
+        sem_sinergia.base.insert((2, Role::Top), Record::new(40_000, 20_800));
+        sem_sinergia.base.insert((4, Role::Mid), Record::new(20_000, 10_000));
+        sem_sinergia.base.insert((5, Role::Mid), Record::new(20_000, 10_000));
+
+        let mut com_sinergia = Montada {
+            base: sem_sinergia.base.clone(),
+            ..Default::default()
+        };
+        com_sinergia.synergy.insert((2, 4), Record::new(900, 468));
+        com_sinergia.synergy.insert((2, 5), Record::new(50, 26));
+
+        let antes = rank(&draft(), &index(), &sem_sinergia, &[]);
+        let depois = rank(&draft(), &index(), &com_sinergia, &[]);
+
+        for id in [4, 5] {
+            let deslocamento = winrate_de(&depois, id) - winrate_de(&antes, id);
+            assert!(
+                deslocamento.abs() < 0.002,
+                "campeão {id} andou {:+.2}pp herdando a força do aliado",
+                deslocamento * 100.0
+            );
+        }
+    }
+
+    #[test]
+    fn historico_pessoal_curto_nao_domina() {
+        // 15V-5D em 20 partidas. Com o espalhamento pessoal que o próprio `±`
+        // assume (3,5pp), a Beta move isso ~2pp — não 8.
+        let mut pessoal = stats::PersonalStats::default();
+        for i in 0..20 {
+            pessoal.add_match(&format!("BR1_{i}"), 4, i < 15);
+        }
+
+        let sem = rank(&draft(), &index(), &stats::NoStats, &[]);
+        let com = rank(&draft(), &index(), &pessoal, &[]);
+        let deslocamento = winrate_de(&com, 4) - winrate_de(&sem, 4);
+
+        assert!(
+            deslocamento > 0.0 && deslocamento < 0.03,
+            "20 partidas moveram {:+.2}pp",
+            deslocamento * 100.0
+        );
     }
 
     #[test]

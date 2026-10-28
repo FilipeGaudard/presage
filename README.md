@@ -392,6 +392,19 @@ típico daquele efeito na população (`MATCHUP_PRIOR_SD` e companhia), encolhen
 conforme a amostra cresce. Por isso o `±` que aparece na tela fica em torno de
 11pp sem base estatística.
 
+A força de cada Beta sai desse mesmo espalhamento (`strength_for_sd`): uma Beta
+de força s tem desvio √(p(1−p)/(s+1)), então o quanto a amostra puxa a
+estimativa e a largura do `±` são uma crença só — e o `±` cai com a raiz da
+amostra, não com ela.
+
+Matchup e sinergia são medidos contra o que as duas forças já explicam, somadas
+em log-odds, e não contra a base do candidato. A taxa crua de A contra B carrega
+a fraqueza geral de B; medida contra a base de A, essa fraqueza vira "matchup"
+na proporção da amostra, e o pick popular sobe por ser popular. Com o rival em
+47%, 5000 partidas sem nada de especial no confronto valiam +2,6pp; 100
+partidas, +0,3pp. `popularidade_nao_vira_matchup` e
+`sinergia_nao_herda_a_forca_do_aliado` travam isso.
+
 ### O que o fit de composição mede
 
 Dois sinais, ambos derivados do Data Dragon:
@@ -536,8 +549,8 @@ não para produzir a base.
   quanto a parte dela que já tem amostra.
 
 `--min-jogos` (padrão 20) corta as entradas magras na hora de gravar. Com a
-força de prior do motor, um matchup de dez partidas desloca a estimativa em
-menos de meio ponto percentual: ocupa espaço sem dizer nada.
+força de prior do motor, um matchup de dez partidas pesa ~3,5% contra o prior:
+ocupa espaço sem dizer nada.
 
 ### O que já roda sem dado nenhum
 
