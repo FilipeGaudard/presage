@@ -25,8 +25,8 @@ use crate::draft::DraftState;
 use champion::{Champion, ChampionIndex, Role};
 use context::DraftContext;
 use stats::{
-    expected_against, expected_together, posterior_sd, shrink, shrunk_delta, strength_for_sd,
-    StatsStore,
+    expected_against, expected_together, logistic, logit, posterior_sd, shrink, shrunk_delta,
+    strength_for_sd, Record, StatsStore,
 };
 
 const PRIOR_RATE: f64 = 0.50;
@@ -39,6 +39,9 @@ const BASE_STRENGTH: f64 = 400.0;
 const MATCHUP_PRIOR_SD: f64 = 0.030;
 const SYNERGY_PRIOR_SD: f64 = 0.012;
 const PERSONAL_PRIOR_SD: f64 = 0.035;
+/// Contra um inimigo fora da rota: efeito menor que o de rota. Palpite até a
+/// base existir — o `--verificar` do coletor mede o de verdade.
+const VERSUS_PRIOR_SD: f64 = 0.010;
 const COMP_SD: f64 = 0.010;
 
 /// Pesos escolhidos à mão, calibrados para que uma correção forte valha ~1,5pp
@@ -100,6 +103,26 @@ pub fn rank_with(ctx: &DraftContext, index: &ChampionIndex, store: &dyn StatsSto
         })
     });
     let lanes = store.lane_profile();
+    let foes: Vec<Foe> = ctx
+        .enemies
+        .iter()
+        .filter_map(|p| {
+            index.get(p.champion_id).map(|champion| Foe {
+                id: p.champion_id,
+                name: champion.name.clone(),
+                all_roles: all_roles_rate(store, p.champion_id),
+                lane_weight: if role != Role::Unknown && p.role == role {
+                    if p.informed {
+                        1.0
+                    } else {
+                        lane_share(champion, role, store)
+                    }
+                } else {
+                    0.0
+                },
+            })
+        })
+        .collect();
 
     let mut scored: Vec<Scored> = ctx
         .candidates
@@ -112,6 +135,7 @@ pub fn rank_with(ctx: &DraftContext, index: &ChampionIndex, store: &dyn StatsSto
                 &team,
                 &ally_bases,
                 lane_opponent.as_ref(),
+                &foes,
                 store,
                 ctx.pool.contains(&id),
                 lanes.as_ref().and_then(|profile| profile.champion(id)),
@@ -136,6 +160,7 @@ fn score_one(
     team: &comp::TeamProfile,
     allies: &[(i64, f64)],
     lane_opponent: Option<&LaneOpponent>,
+    foes: &[Foe],
     store: &dyn StatsStore,
     in_pool: bool,
     lane: Option<&profile::ChampionLane>,
@@ -153,14 +178,45 @@ fn score_one(
         )
     });
 
-    let synergies: Vec<stats::Estimate> = allies
+    let synergies: Vec<(stats::Estimate, f64)> = allies
         .iter()
         .map(|&(ally, ally_base)| {
-            shrunk_delta(
-                store.synergy(champion.id, ally),
-                expected_together(base.rate, ally_base),
-                strength_for_sd(SYNERGY_PRIOR_SD),
+            let referencia = expected_together(base.rate, ally_base);
+            (
+                shrunk_delta(
+                    store.synergy(champion.id, ally),
+                    referencia,
+                    strength_for_sd(SYNERGY_PRIOR_SD),
+                ),
+                referencia,
             )
+        })
+        .collect();
+
+    // Contra o time inimigo inteiro, em qualquer rota. A rota do inimigo não é
+    // conhecida na ranqueada, então a referência é a força de cada um somada
+    // nas cinco rotas. O oponente de rota entra pelo matchup na proporção em
+    // que ele é mesmo da sua rota (`lane_weight`), e pelo contra no resto: o
+    // mesmo par nunca conta duas vezes.
+    let todas = all_roles_rate(store, champion.id);
+    let lane_w = lane_opponent
+        .and_then(|o| foes.iter().find(|f| f.id == o.id))
+        .map_or(1.0, |f| f.lane_weight);
+    let contra: Vec<(&Foe, stats::Estimate, f64, f64)> = foes
+        .iter()
+        .map(|foe| {
+            let referencia = expected_against(todas, foe.all_roles);
+            let peso = if lane_opponent.is_some_and(|o| o.id == foe.id) {
+                1.0 - lane_w
+            } else {
+                1.0
+            };
+            let estimativa = shrunk_delta(
+                store.versus(champion.id, foe.id),
+                referencia,
+                strength_for_sd(VERSUS_PRIOR_SD),
+            );
+            (foe, estimativa, referencia, peso)
         })
         .collect();
 
@@ -186,18 +242,39 @@ fn score_one(
     };
     let comp_delta = W_DAMAGE_BALANCE * balance_gain + W_FRONTLINE * frontline_fit;
 
-    let matchup_delta = matchup.map(|m| m.rate).unwrap_or(0.0);
-    let synergy_delta: f64 = synergies.iter().map(|s| s.rate).sum();
-
-    let winrate =
-        (base.rate + matchup_delta + synergy_delta + personal.rate + comp_delta).clamp(0.25, 0.75);
+    // Tudo se soma em log-odds, onde forças independentes se somam. Cada
+    // efeito encolhido entra como o quanto ele move o log-odds a partir da
+    // própria referência.
+    let mut z = logit(base.rate);
+    if let (Some(m), Some(o)) = (matchup, lane_opponent) {
+        z += lane_w * shift(expected_against(base.rate, o.base), m.rate);
+    }
+    for (_, estimativa, referencia, peso) in &contra {
+        z += peso * shift(*referencia, estimativa.rate);
+    }
+    for (synergy, referencia) in &synergies {
+        z += shift(*referencia, synergy.rate);
+    }
+    z += shift(base.rate, personal.rate);
+    z += shift(PRIOR_RATE, comp_delta);
+    let winrate = logistic(z).clamp(0.25, 0.75);
 
     let mut variance = base.se().powi(2) + COMP_SD.powi(2);
-    variance += posterior_sd(matchup.map_or(0, |m| m.games), MATCHUP_PRIOR_SD).powi(2);
-    for synergy in &synergies {
+    variance += (lane_w * posterior_sd(matchup.map_or(0, |m| m.games), MATCHUP_PRIOR_SD)).powi(2);
+    for (_, estimativa, _, peso) in &contra {
+        variance += (peso * posterior_sd(estimativa.games, VERSUS_PRIOR_SD)).powi(2);
+    }
+    for (synergy, _) in &synergies {
         variance += posterior_sd(synergy.games, SYNERGY_PRIOR_SD).powi(2);
     }
     variance += posterior_sd(personal.games, PERSONAL_PRIOR_SD).powi(2);
+
+    // O contra que mais pesa, para virar razão.
+    let destaque = contra
+        .iter()
+        .filter(|(_, e, _, peso)| *peso > 0.0 && e.games > 0 && e.rate.abs() > 0.005)
+        .max_by(|a, b| a.1.rate.abs().total_cmp(&b.1.rate.abs()))
+        .map(|(foe, e, _, _)| (foe.name.as_str(), e.rate, e.games));
 
     let reasons = build_reasons(
         champion,
@@ -207,6 +284,7 @@ fn score_one(
         matchup.as_ref().zip(lane_opponent),
         personal_record,
         &personal,
+        destaque,
         lane,
         store.has_global(),
     );
@@ -231,6 +309,7 @@ fn build_reasons(
     matchup: Option<(&stats::Estimate, &LaneOpponent)>,
     personal_record: Option<stats::Record>,
     personal: &stats::Estimate,
+    versus: Option<(&str, f64, u32)>,
     lane: Option<&profile::ChampionLane>,
     has_global: bool,
 ) -> Vec<String> {
@@ -246,6 +325,14 @@ fn build_reasons(
                 estimate.games
             ));
         }
+    }
+
+    if let Some((nome, delta, games)) = versus {
+        let verbo = if delta > 0.0 { "Bate em" } else { "Sofre contra" };
+        reasons.push(format!(
+            "{verbo} {nome}, em qualquer rota ({:+.1}pp, n={games})",
+            delta * 100.0
+        ));
     }
 
     if balance_gain > 0.01 {
@@ -291,6 +378,45 @@ fn build_reasons(
 
 fn base_rate(store: &dyn StatsStore, champion: i64, role: Role) -> f64 {
     shrink(store.base(champion, role), PRIOR_RATE, BASE_STRENGTH).rate
+}
+
+/// A força do campeão somada nas cinco rotas: a referência do contra, já que a
+/// rota do inimigo não se sabe.
+fn all_roles_rate(store: &dyn StatsStore, champion: i64) -> f64 {
+    let (games, wins) = roles::ROLES
+        .iter()
+        .filter_map(|r| store.base(champion, *r))
+        .fold((0, 0), |(g, w), rec| (g + rec.games, w + rec.wins));
+    let record = (games > 0).then(|| Record::new(games, wins));
+    shrink(record, PRIOR_RATE, BASE_STRENGTH).rate
+}
+
+/// O quanto o inimigo é da sua rota, pela fração do encaixe dele nela.
+fn lane_share(champion: &Champion, role: Role, store: &dyn StatsStore) -> f64 {
+    let total: f64 = roles::ROLES
+        .iter()
+        .map(|r| roles::role_fit(champion, *r, store))
+        .sum();
+    if total <= 0.0 {
+        return 0.0;
+    }
+    roles::role_fit(champion, role, store) / total
+}
+
+/// O quanto um efeito encolhido move o log-odds a partir da referência dele.
+fn shift(reference: f64, delta: f64) -> f64 {
+    logit(reference + delta) - logit(reference)
+}
+
+/// Um inimigo travado, como o contra o lê.
+struct Foe {
+    id: i64,
+    name: String,
+    /// A força dele somada nas cinco rotas.
+    all_roles: f64,
+    /// O quanto ele é o seu oponente de rota: 1 com a posição informada, a
+    /// fração do encaixe dele na sua rota quando inferida, 0 nas outras.
+    lane_weight: f64,
 }
 
 struct LaneOpponent {
@@ -533,6 +659,7 @@ mod tests {
         matchup: HashMap<(i64, i64), Record>,
         synergy: HashMap<(i64, i64), Record>,
         personal: HashMap<i64, Record>,
+        versus: HashMap<(i64, i64), Record>,
     }
 
     impl StatsStore for Montada {
@@ -550,9 +677,87 @@ mod tests {
         fn personal(&self, champion: i64) -> Option<Record> {
             self.personal.get(&champion).copied()
         }
+        fn versus(&self, champion: i64, opponent: i64) -> Option<Record> {
+            self.versus.get(&(champion, opponent)).copied()
+        }
         fn has_global(&self) -> bool {
             true
         }
+    }
+
+    /// O draft de sempre com um segundo inimigo travado, no bot.
+    fn draft_com_atirador_deles() -> DraftState {
+        let mut d = draft();
+        d.their_team.push(slot(6, "bottom", 7, false));
+        d
+    }
+
+    fn base_dos_dois() -> Montada {
+        let mut m = Montada::default();
+        m.base.insert((4, Role::Mid), Record::new(20_000, 10_000));
+        m.base.insert((5, Role::Mid), Record::new(20_000, 10_000));
+        m.base.insert((6, Role::Mid), Record::new(20_000, 10_000));
+        // O atirador deles é fraco: 47%.
+        m.base.insert((7, Role::Bot), Record::new(40_000, 18_800));
+        m
+    }
+
+    #[test]
+    fn contra_no_esperado_nao_mexe_em_ninguem() {
+        // Contra um atirador de 47%, qualquer um de 50% tem ~53% sem nada de
+        // especial. Mago com 5000 partidas nessa taxa, Tanque com 100: nenhum
+        // dos dois pode subir por ter amostra.
+        let sem = base_dos_dois();
+        let mut com = base_dos_dois();
+        com.versus.insert((4, 7), Record::new(5_000, 2_648));
+        com.versus.insert((5, 7), Record::new(100, 53));
+
+        let antes = rank(&draft_com_atirador_deles(), &index(), &sem, &[]);
+        let depois = rank(&draft_com_atirador_deles(), &index(), &com, &[]);
+        for id in [4, 5] {
+            let d = winrate_de(&depois, id) - winrate_de(&antes, id);
+            assert!(d.abs() < 0.002, "campeão {id} andou {:+.2}pp", d * 100.0);
+        }
+    }
+
+    #[test]
+    fn o_oponente_de_rota_nao_conta_duas_vezes() {
+        // A posição do mago deles é informada: ele é o oponente de rota com
+        // peso 1, e entra só pelo matchup. Um contra extremo contra ele não
+        // pode mexer no número.
+        let sem = base_dos_dois();
+        let mut com = base_dos_dois();
+        com.versus.insert((4, 6), Record::new(5_000, 4_000));
+
+        let antes = rank(&draft(), &index(), &sem, &[]);
+        let depois = rank(&draft(), &index(), &com, &[]);
+        assert_eq!(winrate_de(&antes, 4), winrate_de(&depois, 4));
+    }
+
+    #[test]
+    fn contra_de_verdade_vira_peso_e_razao() {
+        let mut com = base_dos_dois();
+        com.versus.insert((4, 7), Record::new(5_000, 3_000)); // 60%, esperado ~53%
+        let antes = rank(&draft_com_atirador_deles(), &index(), &base_dos_dois(), &[]);
+        let depois = rank(&draft_com_atirador_deles(), &index(), &com, &[]);
+
+        assert!(winrate_de(&depois, 4) > winrate_de(&antes, 4));
+        let mago = depois.iter().find(|s| s.champion_id == 4).unwrap();
+        assert!(
+            mago.reasons.iter().any(|r| r.starts_with("Bate em AtiradorLivre")),
+            "{:?}",
+            mago.reasons
+        );
+    }
+
+    #[test]
+    fn o_peso_de_rota_e_o_encaixe_dele_na_sua_rota() {
+        // Assassino é de selva ou de meio pela classe: metade de chance de ser
+        // o seu oponente. Mago só joga o meio.
+        let assassino = fake(3, "Assassino", "Assassin", 9.0, 3.0, 3.0);
+        let mago = fake(4, "Mago", "Mage", 2.0, 9.0, 4.0);
+        assert!((lane_share(&assassino, Role::Mid, &stats::NoStats) - 0.5).abs() < 1e-9);
+        assert!((lane_share(&mago, Role::Mid, &stats::NoStats) - 1.0).abs() < 1e-9);
     }
 
     fn winrate_de(scored: &[Scored], id: i64) -> f64 {

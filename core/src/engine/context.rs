@@ -37,6 +37,8 @@ pub struct Placed {
     pub role: Role,
     /// O campeão já está escolhido; falso para hover de aliado.
     pub picked: bool,
+    /// A rota veio do cliente; falso quando foi inferida.
+    pub informed: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -172,10 +174,12 @@ impl DraftContext {
             .filter(|slot| !slot.is_local)
             .filter_map(|slot| {
                 let id = slot_champion(slot);
+                let role = Role::from_lcu(&slot.position);
                 (id > 0).then(|| Placed {
                     champion_id: id,
-                    role: Role::from_lcu(&slot.position),
+                    role,
                     picked: slot.champion_id > 0,
+                    informed: role != Role::Unknown,
                 })
             })
             .collect();
@@ -184,10 +188,14 @@ impl DraftContext {
             .their_team
             .iter()
             .filter(|slot| slot.champion_id > 0)
-            .map(|slot| Placed {
-                champion_id: slot.champion_id,
-                role: Role::from_lcu(&slot.position),
-                picked: true,
+            .map(|slot| {
+                let role = Role::from_lcu(&slot.position);
+                Placed {
+                    champion_id: slot.champion_id,
+                    role,
+                    picked: true,
+                    informed: role != Role::Unknown,
+                }
             })
             .collect();
 

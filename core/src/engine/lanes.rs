@@ -16,9 +16,9 @@ use serde::Serialize;
 use super::build::{loadout, side_power, skirmish_odds, Combatant};
 use super::champion::{ChampionIndex, Role};
 use super::items::ItemIndex;
-use super::stats::{shrunk_delta, strength_for_sd, StatsStore};
+use super::stats::{expected_against, shrunk_delta, strength_for_sd, StatsStore};
 use super::timeline::Spawn;
-use super::MATCHUP_PRIOR_SD;
+use super::{base_rate, MATCHUP_PRIOR_SD};
 
 /// Quanto a matemática do duelo mexe na probabilidade final.
 ///
@@ -287,16 +287,24 @@ fn one_lane(
 
     let duel = skirmish_odds(mine, theirs, champions, items);
 
-    // A mesma crença sobre matchup que o ranking de draft usa.
+    // A mesma crença sobre matchup que o ranking de draft usa, e a mesma
+    // referência: o que as duas forças já explicam (ADR-0008). Encolher para
+    // 50% puxava o confronto pouco jogado para o empate mesmo quando a base
+    // dizia que um dos dois é mais forte.
+    let id_ally = ally.combatant.champion_id;
+    let id_enemy = enemy.combatant.champion_id;
+    let esperado = expected_against(base_rate(store, id_ally, role), base_rate(store, id_enemy, role));
     let matchup = shrunk_delta(
-        store.matchup(ally.combatant.champion_id, enemy.combatant.champion_id, role),
-        0.5,
+        store.matchup(id_ally, id_enemy, role),
+        esperado,
         strength_for_sd(MATCHUP_PRIOR_SD),
     );
+    let estimativa = esperado + matchup.rate;
+    let da_base = store.base(id_ally, role).is_some() || store.base(id_enemy, role).is_some();
 
-    // Sem amostra, `shrunk_delta` devolve exatamente 0 — o duelo responde
-    // sozinho e o `from_data` abaixo diz isso à interface.
-    let raw = 0.5 + W_DUEL * (duel - 0.5) + matchup.rate;
+    // Sem base, a estimativa é exatamente 50% — o duelo responde sozinho e o
+    // `from_data` abaixo diz isso à interface.
+    let raw = 0.5 + W_DUEL * (duel - 0.5) + (estimativa - 0.5);
     let probability = raw.clamp(FLOOR, CEILING);
 
     let ally_name = name(ally.combatant.champion_id, champions);
@@ -305,10 +313,10 @@ fn one_lane(
     let mut reasons = Vec::new();
 
     if matchup.games > 0 {
-        let verb = if matchup.rate >= 0.0 { "Vence" } else { "Perde para" };
+        let verb = if estimativa >= 0.5 { "Vence" } else { "Perde para" };
         reasons.push(format!(
             "{verb} {enemy_name} na rota ({:+.1}pp, n={})",
-            matchup.rate * 100.0,
+            (estimativa - 0.5) * 100.0,
             matchup.games
         ));
     }
@@ -334,7 +342,7 @@ fn one_lane(
         win_probability: probability,
         margin: (probability - 0.5) * 100.0,
         sample: matchup.games,
-        from_data: matchup.games > 0,
+        from_data: matchup.games > 0 || da_base,
         by_level: curve(mine, theirs, champions, items),
         curve: full_curve(mine, theirs, champions, items),
         gaps: level_gaps(mine, theirs, champions, items),
@@ -707,6 +715,44 @@ mod tests {
         assert!(com[0].from_data);
         assert_eq!(com[0].sample, 4000);
         assert!(com[0].reasons[0].contains("n=4000"), "{:?}", com[0].reasons);
+    }
+
+    #[test]
+    fn matchup_no_esperado_nao_mexe_na_rota() {
+        // Com a base dizendo 53% contra 47%, um matchup exatamente no que as
+        // duas forças explicam não pode mover a rota — com 4000 partidas ou
+        // sem nenhuma.
+        struct Base(Option<Record>);
+        impl StatsStore for Base {
+            fn base(&self, c: i64, _r: Role) -> Option<Record> {
+                match c {
+                    1 => Some(Record::new(40_000, 21_200)),
+                    2 => Some(Record::new(40_000, 18_800)),
+                    _ => None,
+                }
+            }
+            fn matchup(&self, _: i64, _: i64, _: Role) -> Option<Record> {
+                self.0
+            }
+            fn synergy(&self, _: i64, _: i64) -> Option<Record> {
+                None
+            }
+            fn personal(&self, _: i64) -> Option<Record> {
+                None
+            }
+            fn has_global(&self) -> bool {
+                true
+            }
+        }
+        let mine = vec![lineup(Role::Mid, 1)];
+        let theirs = vec![lineup(Role::Mid, 2)];
+        let (idx, it) = (champions(), items());
+        let sem = lane_outlooks(&mine, &theirs, &idx, &it, &Base(None));
+        // Esperado: σ(logit 0,53 − logit 0,47) ≈ 0,5598.
+        let com = lane_outlooks(&mine, &theirs, &idx, &it, &Base(Some(Record::new(4_000, 2_239))));
+
+        assert!(sem[0].from_data, "a base já entra no número");
+        assert!((com[0].win_probability - sem[0].win_probability).abs() < 0.002);
     }
 
     #[test]

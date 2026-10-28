@@ -86,12 +86,12 @@ pub fn posterior_sd(games: u32, prior_sd: f64) -> f64 {
     (0.25 / (strength_for_sd(prior_sd) + 1.0 + games as f64)).sqrt()
 }
 
-fn logit(p: f64) -> f64 {
+pub fn logit(p: f64) -> f64 {
     let p = p.clamp(1e-6, 1.0 - 1e-6);
     (p / (1.0 - p)).ln()
 }
 
-fn logistic(x: f64) -> f64 {
+pub fn logistic(x: f64) -> f64 {
     1.0 / (1.0 + (-x).exp())
 }
 
