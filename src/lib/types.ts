@@ -131,7 +131,10 @@ export interface ItemSuggestion {
 }
 
 export interface LevelOdds {
+  /** O nível do inimigo. */
   level: number;
+  /** O seu nível menos o dele: 0 nivelado, ±1 nas linhas de vantagem. */
+  gap: number;
   odds: number;
 }
 
@@ -151,6 +154,14 @@ export interface LaneOutlook {
   fromData: boolean;
   /** A mesma conta nos níveis 3, 6, 11 e 16, com os dois nivelados. */
   byLevel: LevelOdds[];
+  /** Do 1 ao 18, nivelados: só o duelo de atributos. */
+  curve: LevelOdds[];
+  /** À frente, nivelado e atrás por um nível, no 3, 6, 11 e 16. */
+  gaps: LevelOdds[];
+  /** O duelo nos níveis de agora; na partida, os reais. */
+  duel: number;
+  myLevel: number;
+  theirLevel: number;
   reasons: string[];
 }
 

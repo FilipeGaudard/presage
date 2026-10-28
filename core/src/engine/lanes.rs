@@ -50,7 +50,11 @@ pub const BREAKPOINTS: [u8; 4] = [3, 6, 11, 16];
 #[derive(Debug, Clone, Copy, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct LevelOdds {
+    /// O nível do inimigo.
     pub level: u8,
+    /// O seu nível menos o dele: 0 na curva nivelada, ±1 nas linhas de
+    /// vantagem de nível.
+    pub gap: i8,
     pub odds: f64,
 }
 
@@ -77,6 +81,7 @@ fn curve(
         .iter()
         .map(|&level| LevelOdds {
             level,
+            gap: 0,
             odds: skirmish_odds(
                 &at_level(ours, level),
                 &at_level(theirs, level),
@@ -85,6 +90,66 @@ fn curve(
             ),
         })
         .collect()
+}
+
+/// A conta com você em `mine` e ele em `theirs` níveis.
+fn odds_at(
+    ours: &[Combatant],
+    theirs: &[Combatant],
+    mine: u8,
+    their: u8,
+    champions: &ChampionIndex,
+    items: &ItemIndex,
+) -> f64 {
+    skirmish_odds(&at_level(ours, mine), &at_level(theirs, their), champions, items)
+}
+
+/// Do nível 1 ao 18, os dois no mesmo nível.
+///
+/// Entre um nível e o seguinte a conta de atributos quase não muda; o que vale
+/// é a forma da curva — quem cresce mais —, não um "pico" num nível qualquer.
+/// Os picos de verdade são de habilidade, e ela não está aqui.
+fn full_curve(
+    ours: &[Combatant],
+    theirs: &[Combatant],
+    champions: &ChampionIndex,
+    items: &ItemIndex,
+) -> Vec<LevelOdds> {
+    (1..=18)
+        .map(|level| LevelOdds {
+            level,
+            gap: 0,
+            odds: odds_at(ours, theirs, level, level, champions, items),
+        })
+        .collect()
+}
+
+/// Nos níveis que mudam a rota, a mesma conta com você um nível à frente,
+/// nivelado, e um nível atrás. Sem linha à frente no 18, nem atrás no 1.
+///
+/// No 6, no 11 e no 16 o nível a mais é justamente a suprema — que esta conta
+/// não vê. A interface diz isso nessas linhas.
+fn level_gaps(
+    ours: &[Combatant],
+    theirs: &[Combatant],
+    champions: &ChampionIndex,
+    items: &ItemIndex,
+) -> Vec<LevelOdds> {
+    let mut out = Vec::new();
+    for &level in &BREAKPOINTS {
+        for gap in [1i8, 0, -1] {
+            let mine = level as i16 + gap as i16;
+            if !(1..=18).contains(&mine) {
+                continue;
+            }
+            out.push(LevelOdds {
+                level,
+                gap,
+                odds: odds_at(ours, theirs, mine as u8, level, champions, items),
+            });
+        }
+    }
+    out
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
@@ -107,6 +172,15 @@ pub struct LaneOutlook {
     pub from_data: bool,
     /// A mesma conta nos níveis 3, 6, 11 e 16, com os dois nivelados.
     pub by_level: Vec<LevelOdds>,
+    /// Do 1 ao 18, nivelados: só o duelo de atributos, sem o peso da rota.
+    pub curve: Vec<LevelOdds>,
+    /// À frente, nivelado e atrás por um nível, no 3, 6, 11 e 16.
+    pub gaps: Vec<LevelOdds>,
+    /// O duelo de atributos nos níveis de agora — na partida, os reais. É o
+    /// ponto que a interface marca na curva.
+    pub duel: f64,
+    pub my_level: u8,
+    pub their_level: u8,
     pub reasons: Vec<String>,
 }
 
@@ -262,6 +336,11 @@ fn one_lane(
         sample: matchup.games,
         from_data: matchup.games > 0,
         by_level: curve(mine, theirs, champions, items),
+        curve: full_curve(mine, theirs, champions, items),
+        gaps: level_gaps(mine, theirs, champions, items),
+        duel,
+        my_level: ally.combatant.level,
+        their_level: enemy.combatant.level,
         reasons,
     }
 }
@@ -996,6 +1075,54 @@ mod tests {
         for s in skirmishes(&mine, &theirs, &champions(), &items()) {
             assert_eq!(s.by_level.len(), BREAKPOINTS.len(), "{}", s.label);
         }
+    }
+
+    #[test]
+    fn a_curva_inteira_vai_do_1_ao_18() {
+        let out = lane_outlooks(&[lineup(Role::Mid, 1)], &[lineup(Role::Mid, 2)], &champions(), &items(), &NoStats);
+        let niveis: Vec<u8> = out[0].curve.iter().map(|p| p.level).collect();
+        assert_eq!(niveis, (1..=18).collect::<Vec<u8>>());
+        assert!(out[0].curve.iter().all(|p| p.gap == 0 && (0.0..=1.0).contains(&p.odds)));
+    }
+
+    #[test]
+    fn um_nivel_a_frente_nunca_piora() {
+        let out = lane_outlooks(&[lineup(Role::Mid, 1)], &[lineup(Role::Mid, 2)], &champions(), &items(), &NoStats);
+        for &level in &BREAKPOINTS {
+            let linha = |gap: i8| {
+                out[0]
+                    .gaps
+                    .iter()
+                    .find(|p| p.level == level && p.gap == gap)
+                    .unwrap()
+                    .odds
+            };
+            assert!(linha(1) >= linha(0) && linha(0) >= linha(-1), "nível {level}");
+        }
+    }
+
+    #[test]
+    fn a_vantagem_de_nivel_respeita_o_1_e_o_18() {
+        let idx = champions();
+        let it = items();
+        let ours = vec![lineup(Role::Mid, 1).combatant];
+        let theirs = vec![lineup(Role::Mid, 2).combatant];
+        // Só os níveis-chave entram, e nenhum pede nível 0 ou 19.
+        let linhas = level_gaps(&ours, &theirs, &idx, &it);
+        assert_eq!(linhas.len(), BREAKPOINTS.len() * 3);
+        assert!(linhas.iter().all(|p| (1..=18).contains(&(p.level as i16 + p.gap as i16))));
+    }
+
+    #[test]
+    fn o_ponto_de_agora_usa_os_niveis_reais() {
+        let idx = champions();
+        let it = items();
+        let mine = vec![Lineup::new(Role::Mid, 1, 9, vec![])];
+        let theirs = vec![Lineup::new(Role::Mid, 2, 7, vec![])];
+        let out = lane_outlooks(&mine, &theirs, &idx, &it, &NoStats);
+        assert_eq!((out[0].my_level, out[0].their_level), (9, 7));
+        let nivelado = out[0].curve.iter().find(|p| p.level == 7).unwrap().odds;
+        assert!(out[0].duel > nivelado, "dois níveis à frente pesam");
     }
 
     #[test]

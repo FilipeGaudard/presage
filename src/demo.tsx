@@ -406,6 +406,17 @@ const suggestions: ItemSuggestion[] = [
   },
 ];
 
+// A curva de uma rota na demonstração: começa em `cedo` no nível 1 e chega em
+// `tarde` no 18, como a conta de atributos costuma fazer — devagar, sem pico.
+function rotaDemo(cedo: number, tarde: number, meu = 6, dele = 6) {
+  const em = (nivel: number) => cedo + ((tarde - cedo) * (nivel - 1)) / 17;
+  const curve = Array.from({ length: 18 }, (_, i) => ({ level: i + 1, gap: 0, odds: em(i + 1) }));
+  const gaps = [3, 6, 11, 16].flatMap((level) =>
+    [1, 0, -1].map((gap) => ({ level, gap, odds: Math.min(0.95, Math.max(0.05, em(level) + gap * 0.06)) }))
+  );
+  return { curve, gaps, duel: em(dele) + (meu - dele) * 0.06, myLevel: meu, theirLevel: dele };
+}
+
 const laneReport: LaneReport = {
   source: "partida",
   rolesAssumed: false,
@@ -421,7 +432,8 @@ const laneReport: LaneReport = {
       margin: -7,
       sample: 2410,
       fromData: true,
-      byLevel: [{ level: 3, odds: 0.49 }, { level: 6, odds: 0.52 }, { level: 11, odds: 0.47 }, { level: 16, odds: 0.44 }],
+      byLevel: [{ level: 3, gap: 0, odds: 0.49 }, { level: 6, gap: 0, odds: 0.52 }, { level: 11, gap: 0, odds: 0.47 }, { level: 16, gap: 0, odds: 0.44 }],
+      ...rotaDemo(0.49, 0.44),
       reasons: [
         "Perde para Malphite na rota (−3.1pp, n=2410)",
         "Perde o 1v1 com os itens de agora (45%)",
@@ -438,7 +450,8 @@ const laneReport: LaneReport = {
       margin: 6,
       sample: 1920,
       fromData: true,
-      byLevel: [{ level: 3, odds: 0.49 }, { level: 6, odds: 0.52 }, { level: 11, odds: 0.47 }, { level: 16, odds: 0.44 }],
+      byLevel: [{ level: 3, gap: 0, odds: 0.49 }, { level: 6, gap: 0, odds: 0.52 }, { level: 11, gap: 0, odds: 0.47 }, { level: 16, gap: 0, odds: 0.44 }],
+      ...rotaDemo(0.49, 0.44),
       reasons: ["Vence Viego na rota (+2.4pp, n=1920)", "Ganha o 1v1 com os itens de agora (58%)"],
     },
     {
@@ -452,7 +465,8 @@ const laneReport: LaneReport = {
       margin: -3,
       sample: 1840,
       fromData: true,
-      byLevel: [{ level: 3, odds: 0.49 }, { level: 6, odds: 0.52 }, { level: 11, odds: 0.47 }, { level: 16, odds: 0.44 }],
+      byLevel: [{ level: 3, gap: 0, odds: 0.49 }, { level: 6, gap: 0, odds: 0.52 }, { level: 11, gap: 0, odds: 0.47 }, { level: 16, gap: 0, odds: 0.44 }],
+      ...rotaDemo(0.49, 0.44),
       reasons: [
         "Vence Zed na rota (+2.8pp, n=1840)",
         "Perde o 1v1 com os itens de agora (41%)",
@@ -470,7 +484,8 @@ const laneReport: LaneReport = {
       margin: -9,
       sample: 3100,
       fromData: true,
-      byLevel: [{ level: 3, odds: 0.49 }, { level: 6, odds: 0.52 }, { level: 11, odds: 0.47 }, { level: 16, odds: 0.44 }],
+      byLevel: [{ level: 3, gap: 0, odds: 0.49 }, { level: 6, gap: 0, odds: 0.52 }, { level: 11, gap: 0, odds: 0.47 }, { level: 16, gap: 0, odds: 0.44 }],
+      ...rotaDemo(0.49, 0.44),
       reasons: ["Perde para Jhin na rota (−2.2pp, n=3100)", "Perde o 1v1 com os itens de agora (38%)"],
     },
     {
@@ -484,7 +499,8 @@ const laneReport: LaneReport = {
       margin: 12,
       sample: 1450,
       fromData: true,
-      byLevel: [{ level: 3, odds: 0.49 }, { level: 6, odds: 0.52 }, { level: 11, odds: 0.47 }, { level: 16, odds: 0.44 }],
+      byLevel: [{ level: 3, gap: 0, odds: 0.49 }, { level: 6, gap: 0, odds: 0.52 }, { level: 11, gap: 0, odds: 0.47 }, { level: 16, gap: 0, odds: 0.44 }],
+      ...rotaDemo(0.49, 0.44),
       reasons: ["Vence Lulu na rota (+4.0pp, n=1450)", "Ganha o 1v1 com os itens de agora (66%)"],
     },
   ],
@@ -497,7 +513,7 @@ const laneReport: LaneReport = {
       ours: [LEE_SIN, GAREN],
       theirs: [VIEGO, MALPHITE],
       odds: 0.48,
-      byLevel: [{ level: 3, odds: 0.46 }, { level: 6, odds: 0.5 }, { level: 11, odds: 0.53 }, { level: 16, odds: 0.56 }],
+      byLevel: [{ level: 3, gap: 0, odds: 0.46 }, { level: 6, gap: 0, odds: 0.5 }, { level: 11, gap: 0, odds: 0.53 }, { level: 16, gap: 0, odds: 0.56 }],
       reasons: ["Quem mais pesa do seu lado: Garen", "Do lado deles: Malphite"],
     },
     {
@@ -508,7 +524,7 @@ const laneReport: LaneReport = {
       ours: [LEE_SIN, AHRI],
       theirs: [VIEGO, ZED],
       odds: 0.46,
-      byLevel: [{ level: 3, odds: 0.46 }, { level: 6, odds: 0.5 }, { level: 11, odds: 0.53 }, { level: 16, odds: 0.56 }],
+      byLevel: [{ level: 3, gap: 0, odds: 0.46 }, { level: 6, gap: 0, odds: 0.5 }, { level: 11, gap: 0, odds: 0.53 }, { level: 16, gap: 0, odds: 0.56 }],
       reasons: ["Do lado deles: Zed", "Eles têm frontline no grupo e vocês não"],
     },
     {
@@ -519,7 +535,7 @@ const laneReport: LaneReport = {
       ours: [ASHE, THRESH],
       theirs: [202, 117],
       odds: 0.53,
-      byLevel: [{ level: 3, odds: 0.46 }, { level: 6, odds: 0.5 }, { level: 11, odds: 0.53 }, { level: 16, odds: 0.56 }],
+      byLevel: [{ level: 3, gap: 0, odds: 0.46 }, { level: 6, gap: 0, odds: 0.5 }, { level: 11, gap: 0, odds: 0.53 }, { level: 16, gap: 0, odds: 0.56 }],
       reasons: ["Quem mais pesa do seu lado: Thresh", "Do lado deles: Jhin"],
     },
     {
@@ -530,7 +546,7 @@ const laneReport: LaneReport = {
       ours: [LEE_SIN, ASHE, THRESH],
       theirs: [VIEGO, 202, 117],
       odds: 0.61,
-      byLevel: [{ level: 3, odds: 0.46 }, { level: 6, odds: 0.5 }, { level: 11, odds: 0.53 }, { level: 16, odds: 0.56 }],
+      byLevel: [{ level: 3, gap: 0, odds: 0.46 }, { level: 6, gap: 0, odds: 0.5 }, { level: 11, gap: 0, odds: 0.53 }, { level: 16, gap: 0, odds: 0.56 }],
       reasons: ["Quem mais pesa do seu lado: Thresh", "Vocês têm frontline e eles não"],
     },
     {
@@ -541,7 +557,7 @@ const laneReport: LaneReport = {
       ours: [LEE_SIN, GAREN, AHRI],
       theirs: [VIEGO, MALPHITE, ZED],
       odds: 0.45,
-      byLevel: [{ level: 3, odds: 0.46 }, { level: 6, odds: 0.5 }, { level: 11, odds: 0.53 }, { level: 16, odds: 0.56 }],
+      byLevel: [{ level: 3, gap: 0, odds: 0.46 }, { level: 6, gap: 0, odds: 0.5 }, { level: 11, gap: 0, odds: 0.53 }, { level: 16, gap: 0, odds: 0.56 }],
       reasons: ["Quem mais pesa do seu lado: Garen", "Do lado deles: Malphite"],
     },
   ],
