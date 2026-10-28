@@ -13,6 +13,9 @@ em ordem de recomendação:
      (`presage-windows`); não publica nada. Sem o secret da chave — num fork, por
      exemplo — compila com `--no-sign`: o instalador sai para teste, sem
      assinatura de atualização.
+   - **Push num branch `ci/...`** faz o mesmo que o disparo manual. Serve para
+     testar antes da tag, e funciona num fork recém-criado, onde o disparo manual
+     só aparece na aba Actions depois que o workflow chega à `main`.
    - **Tag** publica a release, e **sem a chave falha no primeiro passo**, de
      propósito: uma release sem assinatura nenhum app aceitaria
      ([L-20](09-licoes-do-prototipo.md)).

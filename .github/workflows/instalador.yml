@@ -5,7 +5,8 @@
 # daqui é o endereço que o atualizador do app procura, então é daqui que a
 # atualização automática sai.
 #
-# Disparo manual na aba Actions, ou empurrando uma tag `v*`.
+# Disparo manual na aba Actions, empurrando uma tag `v*` (publica a release) ou
+# empurrando um branch `ci/...` (só guarda o instalador como artefato).
 
 name: Instalador
 
@@ -13,6 +14,10 @@ on:
   workflow_dispatch:
   push:
     tags: ["v*"]
+    # Branch `ci/...` compila e guarda o instalador, sem publicar nada: serve
+    # para testar antes da tag. E funciona num fork recém-criado, onde o disparo
+    # manual só aparece depois que o workflow chega à main.
+    branches: ["ci/**"]
 
 permissions:
   contents: write
