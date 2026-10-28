@@ -1,4 +1,6 @@
 use super::champion::Role;
+use super::profile::{self, LaneProfile};
+use crate::history::{LaneGame, PlayedGame};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -130,6 +132,12 @@ pub trait StatsStore: Send + Sync {
     fn personal_games(&self) -> u32 {
         0
     }
+
+    /// Quanto o jogador tira do oponente direto, a partir do próprio
+    /// histórico.
+    fn lane_profile(&self) -> Option<LaneProfile> {
+        None
+    }
 }
 
 pub struct NoStats;
@@ -149,7 +157,8 @@ impl StatsStore for NoStats {
     }
 }
 
-/// Vitórias e derrotas do próprio jogador, por campeão.
+/// O histórico do próprio jogador: vitórias e derrotas por campeão, e a
+/// comparação com o oponente direto em cada partida.
 ///
 /// Cobre só o componente pessoal, e de propósito: winrate base, matchup e
 /// sinergia precisam de milhões de partidas de milhares de jogadores. Uma
@@ -161,9 +170,32 @@ pub struct PersonalStats {
     pub by_champion: HashMap<i64, Record>,
     /// Partidas já contabilizadas, para a busca ser incremental.
     pub seen: Vec<String>,
+    /// Uma por partida em que havia oponente direto.
+    #[serde(default)]
+    pub lanes: Vec<LaneGame>,
 }
 
 impl PersonalStats {
+    /// Soma uma partida lida da match-v5. Vitória e derrota entram sempre; a
+    /// comparação de rota, quando existe.
+    pub fn add_played(&mut self, match_id: &str, game: PlayedGame) -> bool {
+        if !self.add_match(match_id, game.champion, game.won) {
+            return false;
+        }
+        if let Some(lane) = game.lane {
+            self.lanes.push(lane);
+        }
+        true
+    }
+
+    /// Partida que não conta (remake, curta), marcada para a próxima
+    /// atualização não buscá-la de novo.
+    pub fn mark_seen(&mut self, match_id: &str) {
+        if !self.seen.iter().any(|id| id == match_id) {
+            self.seen.push(match_id.to_string());
+        }
+    }
+
     pub fn add_match(&mut self, match_id: &str, champion: i64, won: bool) -> bool {
         if self.seen.iter().any(|id| id == match_id) {
             return false;
@@ -203,6 +235,9 @@ impl StatsStore for PersonalStats {
     }
     fn personal_games(&self) -> u32 {
         self.total_games()
+    }
+    fn lane_profile(&self) -> Option<LaneProfile> {
+        (!self.lanes.is_empty()).then(|| profile::build(&self.lanes))
     }
 }
 
@@ -328,6 +363,49 @@ mod tests {
         assert!(stats.base(103, Role::Mid).is_none());
         assert!(stats.matchup(103, 238, Role::Mid).is_none());
         assert!(stats.synergy(103, 64).is_none());
+    }
+
+    #[test]
+    fn partida_lida_soma_vitoria_e_rota() {
+        use crate::history::Metric;
+        use std::collections::BTreeMap;
+
+        let mut stats = PersonalStats::default();
+        let rota = LaneGame {
+            champion: 103,
+            opponent: 238,
+            role: Role::Mid,
+            won: true,
+            diffs: BTreeMap::from([(Metric::Cs10, 7.0)]),
+        };
+        let jogo = PlayedGame {
+            champion: 103,
+            won: true,
+            lane: Some(rota),
+        };
+
+        assert!(stats.add_played("BR1_1", jogo.clone()));
+        assert!(!stats.add_played("BR1_1", jogo), "repetida não conta");
+        assert_eq!(stats.personal(103), Some(Record::new(1, 1)));
+        assert_eq!(stats.lanes.len(), 1);
+    }
+
+    #[test]
+    fn partida_descartada_fica_vista_sem_contar() {
+        let mut stats = PersonalStats::default();
+        stats.mark_seen("BR1_9");
+        stats.mark_seen("BR1_9");
+        assert_eq!(stats.seen, vec!["BR1_9".to_string()]);
+        assert_eq!(stats.total_games(), 0);
+    }
+
+    #[test]
+    fn cache_antigo_carrega_sem_rotas() {
+        let antigo = r#"{"puuid":"x","by_champion":{"103":{"games":2,"wins":1}},"seen":["BR1_1"]}"#;
+        let stats: PersonalStats = serde_json::from_str(antigo).unwrap();
+        assert!(stats.lanes.is_empty());
+        assert_eq!(stats.personal(103), Some(Record::new(2, 1)));
+        assert!(stats.lane_profile().is_none());
     }
 
     #[test]

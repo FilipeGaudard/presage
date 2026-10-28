@@ -13,6 +13,7 @@ import type {
   Gap,
   GoldReport,
   ItemSuggestion,
+  LaneProfile,
   LaneReport,
   LiveSnapshot,
   MinimaxPick,
@@ -33,6 +34,7 @@ import LiveBuild from "./components/LiveBuild";
 import Logo from "./components/Logo";
 import LiveOverview from "./components/LiveOverview";
 import OverlayPrefsPanel from "./components/OverlayPrefsPanel";
+import PerfilDeRota from "./components/PerfilDeRota";
 import PoolBuilder from "./components/PoolBuilder";
 import PostGame from "./components/PostGame";
 import RecommendationPanel from "./components/RecommendationPanel";
@@ -61,6 +63,7 @@ export default function App() {
   const [lanes, setLanes] = useState<LaneReport | null>(null);
   const [goldReport, setGoldReport] = useState<GoldReport | null>(null);
   const [review, setReview] = useState<CoachReport | null>(null);
+  const [laneProfile, setLaneProfile] = useState<LaneProfile | null>(null);
   const [runas, setRunas] = useState<RunePlan | null>(null);
   const [overlayPrefs, setOverlayPrefs] = useState<OverlayPrefs>({ hidden: [] });
   const [staticData, setStaticData] = useState<StaticData | null>(null);
@@ -93,11 +96,17 @@ export default function App() {
     invoke<Pool>("get_pool").then(setPool).catch(() => void 0);
     invoke<LiveSnapshot | null>("get_live").then(setLive).catch(() => void 0);
     invoke<CoachReport | null>("last_review").then(setReview).catch(() => void 0);
+    invoke<LaneProfile | null>("lane_profile").then(setLaneProfile).catch(() => void 0);
     invoke<OverlayPrefs>("get_overlay_prefs").then(setOverlayPrefs).catch(() => void 0);
 
     const unlisteners = [
       listen<ConnStatus>(EVENT_STATUS, (event) => setStatus(event.payload)),
-      listen<EngineStatus>(EVENT_ENGINE, (event) => setEngine(event.payload)),
+      // O histórico pessoal termina de atualizar emitindo este evento, e é
+      // aí que o perfil de rota muda.
+      listen<EngineStatus>(EVENT_ENGINE, (event) => {
+        setEngine(event.payload);
+        invoke<LaneProfile | null>("lane_profile").then(setLaneProfile).catch(() => void 0);
+      }),
       listen<LiveSnapshot | null>(EVENT_LIVE, (event) => setLive(event.payload)),
       // A partida acabou e a leitura ficou pronta: traz a aba para a frente,
       // porque é exatamente a hora em que ela interessa.
@@ -324,6 +333,9 @@ export default function App() {
         <main className="layout layout-single">
           <section className="panel">
             <PostGame report={review} />
+          </section>
+          <section className="panel">
+            <PerfilDeRota profile={laneProfile} staticData={staticData} />
           </section>
         </main>
       ) : view === "live" ? (

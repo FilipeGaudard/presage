@@ -13,6 +13,7 @@ use serde::de::DeserializeOwned;
 use serde::Deserialize;
 use std::time::Duration;
 
+pub use presage_core::history::MatchDto;
 pub use presage_core::riot::{split_riot_id, urlencode, Region};
 
 pub const ENV_API_KEY: &str = "PRESAGE_RIOT_API_KEY";
@@ -32,24 +33,6 @@ pub struct Account {
     pub game_name: String,
     #[serde(default)]
     pub tag_line: String,
-}
-
-#[derive(Debug, Deserialize)]
-struct MatchDto {
-    info: MatchInfo,
-}
-
-#[derive(Debug, Deserialize)]
-struct MatchInfo {
-    participants: Vec<Participant>,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct Participant {
-    puuid: String,
-    champion_id: i64,
-    win: bool,
 }
 
 pub struct RiotClient {
@@ -129,22 +112,14 @@ impl RiotClient {
         self.get(self.region.routing, &path).await
     }
 
-    /// Campeão e resultado do jogador na partida. `None` quando ele não estava
-    /// nela, o que não deveria acontecer mas não vale um erro.
-    pub async fn match_outcome(&self, match_id: &str, puuid: &str) -> Result<Option<(i64, bool)>> {
+    /// A partida inteira. Quem lê é `presage_core::history::played`: a chamada
+    /// já paga pelo payload completo, e é dele que sai a comparação de rota.
+    pub async fn match_detail(&self, match_id: &str) -> Result<MatchDto> {
         tokio::time::sleep(CALL_SPACING).await;
-        let detail: MatchDto = self
-            .get(
-                self.region.routing,
-                &format!("/lol/match/v5/matches/{match_id}"),
-            )
-            .await?;
-
-        Ok(detail
-            .info
-            .participants
-            .into_iter()
-            .find(|participant| participant.puuid == puuid)
-            .map(|participant| (participant.champion_id, participant.win)))
+        self.get(
+            self.region.routing,
+            &format!("/lol/match/v5/matches/{match_id}"),
+        )
+        .await
     }
 }

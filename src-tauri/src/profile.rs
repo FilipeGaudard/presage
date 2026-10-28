@@ -9,12 +9,16 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use presage_core::engine::stats::PersonalStats;
+use presage_core::history;
 
 use crate::riot::{self, Region, RiotClient};
 use crate::storage;
 use crate::watcher::{Identity, Shared};
 
-const CACHE: &str = "personal.json";
+/// O `personal.json` antigo marca partidas como vistas sem a comparação de
+/// rota; reaproveitá-lo deixaria essas partidas sem rota para sempre. Arquivo
+/// novo, e a primeira atualização refaz o histórico.
+const CACHE: &str = "personal-v2.json";
 
 /// Teto por atualização. Com o espaçamento entre chamadas isso leva ~80s na
 /// primeira vez; depois só as partidas novas são buscadas.
@@ -65,14 +69,23 @@ pub async fn refresh(shared: Arc<Shared>) -> Result<PersonalStats> {
     );
 
     let mut added = 0;
+    let mut skipped = 0;
     for id in &pending {
-        match client.match_outcome(id, &identity.puuid).await {
-            Ok(Some((champion, won))) => {
-                if stats.add_match(id, champion, won) {
-                    added += 1;
+        match client.match_detail(id).await {
+            Ok(detail) => match history::played(&detail, &identity.puuid) {
+                Ok(game) => {
+                    if stats.add_played(id, game) {
+                        added += 1;
+                    }
                 }
-            }
-            Ok(None) => tracing::debug!(partida = %id, "jogador não está nesta partida"),
+                Err(skip) => {
+                    // Remake, curta, fora da Fenda: não muda com o tempo, então
+                    // fica marcada para não ser buscada de novo.
+                    tracing::debug!(partida = %id, ?skip, "partida fora da conta");
+                    stats.mark_seen(id);
+                    skipped += 1;
+                }
+            },
             Err(err) => {
                 // Chave expirada ou rate limit teimoso: para e guarda o que deu.
                 tracing::warn!(%err, "parando a atualização do histórico");
@@ -81,7 +94,7 @@ pub async fn refresh(shared: Arc<Shared>) -> Result<PersonalStats> {
         }
     }
 
-    if added > 0 {
+    if added > 0 || skipped > 0 {
         if let Err(err) = storage::write_json(CACHE, &stats) {
             tracing::warn!(%err, "não consegui gravar o cache do histórico");
         }

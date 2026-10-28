@@ -16,6 +16,7 @@ import LiveBuild from "./components/LiveBuild";
 import LiveOverview from "./components/LiveOverview";
 import Logo from "./components/Logo";
 import OverlayPrefsPanel from "./components/OverlayPrefsPanel";
+import PerfilDeRota from "./components/PerfilDeRota";
 import PoolBuilder from "./components/PoolBuilder";
 import PostGame from "./components/PostGame";
 import Runas from "./components/Runas";
@@ -31,6 +32,8 @@ import type {
   Gap,
   GoldReport,
   ItemSuggestion,
+  LaneProfile,
+  LaneReading,
   LaneReport,
   LivePlayer,
   LiveSnapshot,
@@ -722,6 +725,69 @@ const runasDemo: RunePlan = {
 
 type View = "draft" | "lanes" | "live" | "coach" | "pool" | "overlay";
 
+// Perfil de rota com números do tamanho que 40 partidas produzem: a média
+// geral já sai do ruído em tropa, os campeões menos jogados ainda não.
+const leitura = (
+  metric: LaneReading["metric"],
+  games: number,
+  value: number,
+  sd: number,
+  raw = value
+): LaneReading => ({ metric, games, raw, value, sd });
+
+const perfilDemo: LaneProfile = {
+  games: 40,
+  overall: [
+    leitura("cs10", 34, 3.1, 1.4),
+    leitura("killParticipation", 40, 2.0, 1.6),
+    leitura("damageShare", 40, 1.8, 0.9),
+    leitura("visionPerMinute", 40, -0.2, 0.06),
+    leitura("deaths", 40, 0.6, 0.4),
+  ],
+  champions: [
+    {
+      champion: AHRI,
+      games: 22,
+      readings: [
+        leitura("cs10", 22, 6.2, 1.9, 6.9),
+        leitura("killParticipation", 22, 3.1, 2.0, 3.8),
+        leitura("damageShare", 22, 2.4, 1.1, 2.7),
+        leitura("visionPerMinute", 22, -0.2, 0.08),
+        leitura("deaths", 22, -0.3, 0.5, -0.5),
+      ],
+      matchups: [
+        { opponent: ZED, games: 4, readings: [leitura("cs10", 4, -4.0, 3.5, -9.5)] },
+        { opponent: YASUO, games: 3, readings: [leitura("deaths", 3, 1.9, 0.8, 2.7)] },
+        { opponent: 105, games: 1, readings: [leitura("cs10", 1, 5.0, 4.5, 14.0)] },
+      ],
+    },
+    {
+      champion: 61,
+      games: 11,
+      readings: [
+        leitura("cs10", 11, 1.0, 2.2, 0.2),
+        leitura("killParticipation", 11, 1.0, 2.0),
+        leitura("damageShare", 11, 1.5, 1.2),
+        leitura("visionPerMinute", 11, -0.2, 0.08),
+        leitura("deaths", 11, 1.4, 0.6, 1.8),
+      ],
+      matchups: [{ opponent: 84, games: 2, readings: [leitura("cs10", 2, -3.0, 3.9, -11.0)] }],
+    },
+    {
+      champion: 112,
+      games: 7,
+      readings: [
+        leitura("cs10", 7, -2.0, 2.6, -4.1),
+        leitura("killParticipation", 7, 1.5, 2.1),
+        leitura("damageShare", 7, 1.2, 1.3),
+        leitura("visionPerMinute", 7, -0.2, 0.09),
+        leitura("deaths", 7, 0.8, 0.6, 1.1),
+      ],
+      matchups: [],
+    },
+  ],
+};
+
 const ABAS: { id: View; label: string }[] = [
   { id: "draft", label: "Draft" },
   { id: "lanes", label: "Rotas" },
@@ -803,6 +869,9 @@ function Demo() {
         <main className="layout layout-single">
           <section className="panel">
             <PostGame report={review} />
+          </section>
+          <section className="panel">
+            <PerfilDeRota profile={perfilDemo} staticData={staticData} />
           </section>
         </main>
       ) : view === "live" ? (

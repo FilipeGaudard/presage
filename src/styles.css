@@ -1775,3 +1775,74 @@ h3 {
   color: var(--dim);
   line-height: 1.45;
 }
+
+/* ---- perfil de rota ---- */
+
+.perfil {
+  margin-top: 8px;
+}
+
+.perfil-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.perfil-tabela th {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+  text-align: right;
+  padding: 0 8px 8px;
+}
+
+.perfil-tabela td {
+  text-align: right;
+  padding: 7px 8px;
+  border-top: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.perfil-tabela th:first-child,
+.perfil-tabela td:first-child {
+  text-align: left;
+}
+
+.perfil-tabela td small {
+  margin-left: 4px;
+  font-size: 10px;
+  color: var(--dim);
+}
+
+.perfil-geral td {
+  background: var(--rise);
+  font-weight: 600;
+}
+
+.perfil-nome {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Os confrontos ficam colados no campeão a que pertencem, sem divisória. */
+.perfil-confrontos td {
+  border-top: none;
+  padding-top: 0;
+  text-align: left;
+  white-space: normal;
+}
+
+.perfil-confronto {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 18px;
+  color: var(--dim);
+}
+
+.perfil-tabela .perfil-confronto small {
+  margin-left: 0;
+}

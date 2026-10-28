@@ -375,6 +375,44 @@ export interface BanSuggestion {
   reason: string;
 }
 
+/** As métricas comparadas com o oponente direto: os mesmos nomes de `Metric` no core. */
+export type LaneMetric =
+  | "cs10"
+  | "killParticipation"
+  | "damageShare"
+  | "visionPerMinute"
+  | "deaths";
+
+/** Você menos o oponente direto, encolhido para o nível de cima. */
+export interface LaneReading {
+  metric: LaneMetric;
+  games: number;
+  /** Média crua das suas partidas. */
+  raw: number;
+  /** O número para mostrar. */
+  value: number;
+  sd: number;
+}
+
+export interface MatchupLane {
+  opponent: number;
+  games: number;
+  readings: LaneReading[];
+}
+
+export interface ChampionLane {
+  champion: number;
+  games: number;
+  readings: LaneReading[];
+  matchups: MatchupLane[];
+}
+
+export interface LaneProfile {
+  games: number;
+  overall: LaneReading[];
+  champions: ChampionLane[];
+}
+
 export interface EngineStatus {
   ready: boolean;
   version: string;

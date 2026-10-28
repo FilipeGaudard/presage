@@ -21,6 +21,7 @@ abaixo diz qual é qual.
 | Runa do confronto | regras mecânicas escritas à mão | **regra, não estatística** |
 | Último pick da pool | composição da pool + resistências | **regra, não estatística** |
 | Score de draft (`+3.4`) | encaixe de composição, pesos à mão | **fraca** |
+| Perfil de rota (`+6 tropas aos 10`) | suas partidas contra o oponente direto, encolhidas por nível | **medição**, com `±`; mistura você e o campeão |
 | Winrate, matchup, sinergia | — | **não existe ainda** |
 
 ### O que é medição
@@ -660,8 +661,56 @@ ID digitado em lugar nenhum. Com o cliente fechado dá para forçar por
 
 A busca é incremental: 60 partidas de ranqueada solo por atualização, espaçadas
 1,3s para respeitar o limite da chave, e o que já foi contado fica em
-`%LOCALAPPDATA%\Presage\personal.json`. A primeira carga leva ~80s em segundo
-plano; depois só as partidas novas.
+`%LOCALAPPDATA%\Presage\personal-v2.json`. A primeira carga leva ~80s em segundo
+plano; depois só as partidas novas. O `personal.json` antigo fica para trás de
+propósito: ele marca partidas como vistas sem a comparação de rota, e
+reaproveitá-lo deixaria essas partidas sem rota para sempre.
+
+## Perfil de rota
+
+Vitória e derrota sozinhas dizem quase nada sobre uma conta: cada partida é uma
+moeda de variância 0,25, e para ver 5pp de diferença entre dois campeões seus
+são precisas ~400 partidas em cada. Pior, o matchmaking puxa toda conta para
+50%. A partida que a Riot devolve tem muito mais que o resultado, e a chamada
+já foi paga — então `history.rs` compara cada partida com o **oponente direto**:
+
+| Métrica | De onde sai | Por quê |
+|---|---|---|
+| Tropas aos 10 | `laneMinionsFirst10Minutes`, selva para o caçador | medida antes de a partida decidir |
+| Participação em abates | `killParticipation` | fração do time: tira boa parte do resultado |
+| Fatia de dano | `teamDamagePercentage` | idem |
+| Visão por minuto | `visionScorePerMinute` | a métrica de suporte e caçador |
+| Mortes | `deaths` | carrega parte do resultado, mas é o erro mais acionável |
+
+Ouro e dano por minuto ficaram de fora: no fim da partida medem quem ganhou,
+porque quem ganhou farma o mapa inteiro.
+
+O oponente direto é o grupo de controle que uma conta sozinha consegue ter: o
+matchmaking escolheu ele para o seu nível, na mesma partida, na mesma rota. E a
+diferença soma exatamente zero na população, então a referência existe sem
+base de partidas.
+
+`engine/profile.rs` lê isso em três níveis — você, você com o campeão, você com
+o campeão contra aquele oponente —, cada um encolhido para o de cima. Quanto
+encolhe sai do próprio histórico (DerSimonian–Laird): se os seus campeões não
+se distinguem acima do ruído, todos colapsam na sua média, em vez de o perfil
+inventar um especialista. Na tela, só ganha cor o que sai do intervalo de 95%;
+no draft, a leitura mais segura vira razão, nunca peso — converter tropa em
+vitória exige a base de partidas.
+
+O que ele não separa: quanto um campeão rende na rota por natureza. Quem perde
+tropa aos 10 por desenho aparece como se fosse você. E nenhuma nota única sai
+daqui: uma média das métricas seria o substituto de ranking que a política da
+Riot proíbe.
+
+### O vazamento que ficou
+
+O componente pessoal de vitória carrega a fase da conta: uma sequência boa
+entra em cada campeão na proporção do quanto ele foi jogado. Medir contra a
+fase resolve isso, mas zera o principal de quem só joga um campeão e o empata
+com campeões nunca jogados. Falta um termo de experiência (nunca jogado < sua
+média), e nenhum dado o calibra ainda. Entre os dois erros, o atual ordena
+melhor — e o comentário em `engine/mod.rs` diz isso no lugar.
 
 ## Construtor de Pool
 

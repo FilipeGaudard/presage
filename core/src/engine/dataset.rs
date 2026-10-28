@@ -17,6 +17,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use super::champion::Role;
+use super::profile::LaneProfile;
 use super::stats::{PersonalStats, Record, StatsStore};
 
 // `default` no struct inteiro: um arquivo truncado, de uma versão mais velha
@@ -130,6 +131,9 @@ impl StatsStore for Layered {
     }
     fn personal_games(&self) -> u32 {
         self.personal.personal_games()
+    }
+    fn lane_profile(&self) -> Option<LaneProfile> {
+        self.personal.lane_profile()
     }
 }
 

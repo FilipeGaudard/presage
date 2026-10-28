@@ -9,6 +9,7 @@ pub mod items;
 pub mod lanes;
 pub mod minimax;
 pub mod poolgap;
+pub mod profile;
 pub mod priority;
 pub mod runes;
 pub mod stats;
@@ -77,6 +78,7 @@ pub fn rank(
     let team = comp::profile(&allies, index);
     let ally_bases = ally_bases(&draft.my_team, store);
     let lane_opponent = lane_opponent(draft, index, store);
+    let lanes = store.lane_profile();
 
     let mut scored: Vec<Scored> = index
         .ids()
@@ -92,6 +94,7 @@ pub fn rank(
                 lane_opponent.as_ref(),
                 store,
                 pool.contains(&id),
+                lanes.as_ref().and_then(|profile| profile.champion(id)),
             )
         })
         .collect();
@@ -115,6 +118,7 @@ fn score_one(
     lane_opponent: Option<&LaneOpponent>,
     store: &dyn StatsStore,
     in_pool: bool,
+    lane: Option<&profile::ChampionLane>,
 ) -> Scored {
     let base = shrink(store.base(champion.id, role), PRIOR_RATE, BASE_STRENGTH);
 
@@ -140,6 +144,13 @@ fn score_one(
         })
         .collect();
 
+    // Vazamento conhecido, mantido de propósito: o registro pessoal carrega a
+    // fase da conta, e uma sequência boa entra em cada campeão na proporção
+    // do quanto ele foi jogado. Medir contra a fase da conta resolve isso mas
+    // zera o campeão principal de quem só joga um, empatando-o com campeões
+    // nunca jogados — falta um termo de experiência (nunca jogado < sua
+    // média) que nenhum dado calibra ainda. Entre os dois erros, este ordena
+    // melhor.
     let personal_record = store.personal(champion.id);
     let personal = shrunk_delta(
         personal_record,
@@ -176,6 +187,7 @@ fn score_one(
         matchup.as_ref().zip(lane_opponent),
         personal_record,
         &personal,
+        lane,
         store.has_global(),
     );
 
@@ -199,6 +211,7 @@ fn build_reasons(
     matchup: Option<(&stats::Estimate, &LaneOpponent)>,
     personal_record: Option<stats::Record>,
     personal: &stats::Estimate,
+    lane: Option<&profile::ChampionLane>,
     has_global: bool,
 ) -> Vec<String> {
     let mut reasons = Vec::new();
@@ -236,6 +249,16 @@ fn build_reasons(
                 personal.rate * 100.0
             ));
         }
+    }
+
+    // Só o que sai do ruído vira razão, e só como texto: sem a base para
+    // converter tropa em vitória, a rota não entra no número.
+    if let Some(reading) = lane.and_then(|l| l.clearest()) {
+        reasons.push(format!(
+            "Sua rota com ele: {} contra o oponente (n={})",
+            reading.metric.phrase(reading.value),
+            reading.games
+        ));
     }
 
     if reasons.is_empty() && !has_global {
@@ -611,6 +634,64 @@ mod tests {
             "20 partidas moveram {:+.2}pp",
             deslocamento * 100.0
         );
+    }
+
+    fn historico_de_rota(campeao: i64, centro: f64, n: usize) -> Vec<crate::history::LaneGame> {
+        use crate::history::{LaneGame, Metric};
+        const RUIDO: [f64; 6] = [3.0, -2.0, 1.0, -3.0, 2.0, -1.0];
+        (0..n)
+            .map(|i| LaneGame {
+                champion: campeao,
+                opponent: 900 + (i % 3) as i64,
+                role: Role::Mid,
+                won: true,
+                diffs: std::collections::BTreeMap::from([(
+                    Metric::Cs10,
+                    centro + RUIDO[i % RUIDO.len()],
+                )]),
+            })
+            .collect()
+    }
+
+    #[test]
+    fn rota_clara_vira_razao_sem_mexer_na_ordem() {
+        let mut pessoal = stats::PersonalStats::default();
+        pessoal.lanes = historico_de_rota(4, 10.0, 20);
+        pessoal.lanes.extend(historico_de_rota(5, -10.0, 20));
+
+        let com = rank(&draft(), &index(), &pessoal, &[]);
+        let sem = rank(&draft(), &index(), &stats::NoStats, &[]);
+
+        let mago = com.iter().find(|s| s.champion_id == 4).unwrap();
+        assert!(
+            mago.reasons
+                .iter()
+                .any(|r| r.contains("tropas aos 10") && r.contains("n=20")),
+            "{:?}",
+            mago.reasons
+        );
+        // O perfil de rota é leitura, não peso: sem a base para converter
+        // tropa em vitória, ele não entra no número.
+        for (a, b) in com.iter().zip(&sem) {
+            assert_eq!(a.champion_id, b.champion_id);
+            assert_eq!(a.winrate, b.winrate);
+        }
+    }
+
+    #[test]
+    fn rota_dentro_do_ruido_nao_vira_razao() {
+        let mut pessoal = stats::PersonalStats::default();
+        pessoal.lanes = historico_de_rota(4, 0.5, 6);
+        pessoal.lanes.extend(historico_de_rota(5, -0.5, 6));
+
+        let scored = rank(&draft(), &index(), &pessoal, &[]);
+        for s in &scored {
+            assert!(
+                !s.reasons.iter().any(|r| r.contains("Sua rota")),
+                "{:?}",
+                s.reasons
+            );
+        }
     }
 
     #[test]

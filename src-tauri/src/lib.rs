@@ -22,6 +22,7 @@ use presage_core::engine::dataset::{Dataset, Layered};
 use presage_core::engine::gold::{self, GoldReport};
 use presage_core::engine::lanes;
 use presage_core::engine::poolgap;
+use presage_core::engine::profile::LaneProfile;
 use presage_core::engine::runes;
 use presage_core::engine::minimax;
 use presage_core::engine::stats::PersonalStats;
@@ -113,6 +114,13 @@ fn rank_draft(shared: tauri::State<'_, Arc<Shared>>) -> Vec<Scored> {
     let champions = shared.champions.read().unwrap();
     let stats = shared.stats.read().unwrap();
     engine::rank(&draft, &champions, &**stats, &ids)
+}
+
+/// Quanto você tira do oponente direto, do seu histórico. `None` sem chave da
+/// Riot ou antes da primeira atualização.
+#[tauri::command]
+fn lane_profile(shared: tauri::State<'_, Arc<Shared>>) -> Option<LaneProfile> {
+    shared.stats.read().unwrap().lane_profile()
 }
 
 /// Ranking com uma camada de resposta adversária.
@@ -541,6 +549,7 @@ fn montar(com_atualizador: bool) -> tauri::Builder<tauri::Wry> {
         .invoke_handler(tauri::generate_handler![
             get_snapshot,
             engine_status,
+            lane_profile,
             rank_draft,
             minimax_draft,
             ban_suggestions,
