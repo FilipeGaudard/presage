@@ -331,10 +331,10 @@ export default function App() {
         </main>
       ) : view === "coach" ? (
         <main className="layout layout-single">
+          {/* Uma seção só: duas dividiriam a tela ao meio e cortariam o gráfico
+              do pós-jogo, cada metade com a própria rolagem. */}
           <section className="panel">
             <PostGame report={review} />
-          </section>
-          <section className="panel">
             <PerfilDeRota profile={laneProfile} staticData={staticData} />
           </section>
         </main>
