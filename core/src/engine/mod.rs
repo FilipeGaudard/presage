@@ -16,6 +16,7 @@ pub mod priority;
 pub mod runes;
 pub mod stats;
 pub mod timeline;
+pub mod wincon;
 
 use serde::Serialize;
 
