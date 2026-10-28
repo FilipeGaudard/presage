@@ -92,6 +92,42 @@ export interface Timeline {
   turrets: Sides;
   kills: Sides;
   upcoming: Spawn[];
+  /** Inibidores e torres do nexo derrubados que ainda não voltaram. */
+  respawns?: Respawn[];
+}
+
+export interface Respawn {
+  /** `Inibidor do topo`, `Torre do nexo`. */
+  name: string;
+  /** A estrutura é do seu time. */
+  ours: boolean;
+  at: number;
+  secondsLeft: number;
+}
+
+export interface Buff {
+  /** `Barão` ou `Ancião`. */
+  name: string;
+  ours: boolean;
+  started: number;
+  until: number;
+  secondsLeft: number;
+  /** Quem ainda tem, por campeão. `null` quando o abate foi antes de o app olhar. */
+  holders: number[] | null;
+}
+
+/** Você contra o oponente direto: a rota decide a métrica. */
+export interface Rival {
+  role: Role;
+  opponentId: number;
+  opponentKey: string;
+  /** `farm`: tropas/min. `vision`: placar de visão/min (suporte). */
+  metric: "farm" | "vision" | null;
+  minePerMin: number;
+  theirsPerMin: number;
+  /** O seu ouro em itens menos o dele. */
+  goldDiff: number;
+  standing: "behind" | "even" | "ahead";
 }
 
 export interface LanePriority {
@@ -110,6 +146,8 @@ export interface LiveSnapshot {
   game: LiveGame;
   timeline: Timeline;
   priority: PriorityReport;
+  buffs?: Buff[];
+  rival?: Rival | null;
 }
 
 export interface BuildContext {
@@ -410,6 +448,15 @@ export interface PoolEntry {
 
 export interface Pool {
   entries: PoolEntry[];
+  /** Os seus bans, em ordem. Até `BAN_POOL_MAX`. */
+  bans?: number[];
+}
+
+export const BAN_POOL_MAX = 5;
+
+export interface DraftPrefs {
+  /** Recomendar também quem a conta não pode escolher. */
+  showAllChampions: boolean;
 }
 
 export const ROLES: { id: Role; label: string }[] = [
@@ -451,6 +498,8 @@ export interface BanSuggestion {
   championId: number;
   threat: number;
   reason: string;
+  /** Veio da sua lista de bans. */
+  fromPool?: boolean;
 }
 
 /** As métricas comparadas com o oponente direto: os mesmos nomes de `Metric` no core. */

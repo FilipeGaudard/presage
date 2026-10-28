@@ -77,6 +77,19 @@ impl LcuClient {
         self.get_json("/lol-summoner/v1/current-summoner").await
     }
 
+    /// A grade do champ select: quem a conta tem, ganhou pelo Game Pass ou
+    /// está na rotação. Só responde durante o champ select. Só leitura.
+    pub async fn grid_champions(&self) -> Result<Vec<super::models::LcuGridChampion>> {
+        self.get_json("/lol-champ-select/v1/all-grid-champions").await
+    }
+
+    /// A fila da partida, p.ex. `420` (solo/duo).
+    pub async fn queue_id(&self) -> Result<i64> {
+        let sessao: super::models::LcuGameflowSession =
+            self.get_json("/lol-gameflow/v1/session").await?;
+        Ok(sessao.game_data.queue.id)
+    }
+
     /// Região da conta logada, p.ex. `BR`. Evita pedir isso ao usuário.
     pub async fn region(&self) -> Result<String> {
         let locale: RegionLocale = self.get_json("/riot/v1/region-locale").await?;

@@ -300,6 +300,25 @@ h3 {
   color: var(--dim);
 }
 
+.slot-role {
+  font: inherit;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+  background: transparent;
+  border: 1px dashed var(--line);
+  border-radius: 4px;
+  padding: 1px 4px;
+  max-width: 100%;
+}
+
+.slot-role-marked {
+  color: var(--bone);
+  border-style: solid;
+  border-color: var(--halo-edge);
+}
+
 .slot-pulse {
   position: absolute;
   right: 9px;
@@ -2065,4 +2084,54 @@ h3 {
 .time-chance p {
   margin: 0 0 6px;
   font-size: 14px;
+}
+
+.reco-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--dim);
+  cursor: pointer;
+}
+
+.cell-pool {
+  border-color: var(--halo-edge);
+}
+
+.cell-tag {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--halo);
+}
+
+.buff {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.buff-holders {
+  display: flex;
+  gap: 4px;
+}
+
+.buff-holders img {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+.sim-input {
+  font: inherit;
+  font-size: 13px;
+  color: var(--bone);
+  background: var(--veil);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 3px 6px;
+  width: 100%;
+  min-width: 0;
 }

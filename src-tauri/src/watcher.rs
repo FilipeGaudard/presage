@@ -9,6 +9,7 @@
 //! está aqui porque é mais simples de acertar e o custo é irrelevante nesta
 //! escala; o WS vira ganho real quando começarmos a reagir a hover de aliado.
 
+use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex, RwLock};
 use std::time::Duration;
 use tauri::{AppHandle, Emitter};
@@ -20,12 +21,13 @@ use presage_core::engine::items::ItemIndex;
 use presage_core::engine::runes::RuneIndex;
 use presage_core::engine::stats::{NoStats, StatsStore};
 use presage_core::engine::priority;
-use presage_core::engine::timeline::{self, Timings};
+use presage_core::engine::rival;
+use presage_core::engine::timeline::{self, BuffTracker, Timings};
 use presage_core::live::to_live_game;
 use presage_core::pool::Pool;
-use presage_core::prefs::OverlayPrefs;
+use presage_core::prefs::{DraftPrefs, OverlayPrefs};
 
-use crate::lcu::models::{to_draft_state, ConnStatus, DraftState};
+use crate::lcu::models::{selectable, to_draft_state, ConnStatus, DraftState};
 use crate::lcu::{credentials, LcuClient};
 use crate::live::{LiveClient, LiveSnapshot};
 use crate::recorder;
@@ -77,6 +79,16 @@ pub struct Shared {
     /// A rota escolhida na tela, para quando o cliente não informa (blind,
     /// normal). A informada pelo cliente sempre vence.
     pub draft_role: Mutex<Option<Role>>,
+    /// A rota que você marcou para um inimigo, por campeão. Esvazia quando o
+    /// champ select acaba.
+    pub enemy_roles: Mutex<HashMap<i64, Role>>,
+    /// Quem a conta pode escolher neste champ select. `None` até a grade do
+    /// cliente responder.
+    pub owned: Mutex<Option<HashSet<i64>>>,
+    pub draft_prefs: RwLock<DraftPrefs>,
+    /// O draft montado à mão no simulador. Enquanto existe, o motor lê ele no
+    /// lugar do champ select do cliente.
+    pub simulated: Mutex<Option<DraftState>>,
 }
 
 impl Shared {
@@ -96,6 +108,10 @@ impl Shared {
             last_review: Mutex::new(None),
             dataset: RwLock::new(None),
             draft_role: Mutex::new(None),
+            enemy_roles: Mutex::new(HashMap::new()),
+            owned: Mutex::new(None),
+            draft_prefs: RwLock::new(DraftPrefs::default()),
+            simulated: Mutex::new(None),
         }
     }
 }
@@ -130,6 +146,10 @@ fn close_recording(app: &AppHandle, shared: &Shared) {
 }
 
 fn clear_draft(app: &AppHandle, shared: &Shared) {
+    // A marca e a lista da conta são deste champ select; no próximo, os
+    // campeões e a fila são outros.
+    shared.enemy_roles.lock().unwrap().clear();
+    *shared.owned.lock().unwrap() = None;
     if shared.draft.lock().unwrap().take().is_some() {
         let _ = app.emit::<Option<DraftState>>(EVENT_DRAFT, None);
     }
@@ -138,6 +158,8 @@ fn clear_draft(app: &AppHandle, shared: &Shared) {
 pub async fn run(app: AppHandle, shared: Arc<Shared>) {
     let mut client: Option<LcuClient> = None;
     let mut summoner: Option<String> = None;
+
+    let mut buff_tracker = BuffTracker::default();
 
     let live_client = match LiveClient::new() {
         Ok(client) => client,
@@ -216,6 +238,22 @@ pub async fn run(app: AppHandle, shared: Arc<Shared>) {
         );
 
         if phase == "ChampSelect" {
+            // A grade só responde no champ select. Uma vez por champ select:
+            // quem a conta tem não muda no meio dele.
+            if shared.owned.lock().unwrap().is_none() {
+                match lcu.grid_champions().await {
+                    Ok(grade) => {
+                        let fila = lcu.queue_id().await.ok();
+                        let ids = selectable(&grade, fila);
+                        tracing::info!(campeoes = ids.len(), ?fila, "campeões da conta");
+                        if !ids.is_empty() {
+                            *shared.owned.lock().unwrap() = Some(ids);
+                        }
+                    }
+                    Err(err) => tracing::debug!(%err, "grade do champ select indisponível"),
+                }
+            }
+
             match lcu.champ_select_session().await {
                 Ok(session) => {
                     let state = to_draft_state(&session);
@@ -259,11 +297,15 @@ pub async fn run(app: AppHandle, shared: Arc<Shared>) {
                         let timeline =
                             timeline::build(&raw.events, &game, &Timings::default());
                         let priority = priority::report(&game, &timeline, &champions, &items);
+                        let buffs = buff_tracker.update(&raw.events, &game, &Timings::default());
+                        let rival = rival::report(&game);
 
                         LiveSnapshot {
                             game,
                             timeline,
                             priority,
+                            buffs,
+                            rival,
                         }
                     };
 
@@ -287,6 +329,7 @@ pub async fn run(app: AppHandle, shared: Arc<Shared>) {
             tokio::time::sleep(POLL_LIVE).await;
         } else {
             clear_draft(&app, &shared);
+            buff_tracker = BuffTracker::default();
             if shared.live.lock().unwrap().take().is_some() {
                 let _ = app.emit::<Option<LiveSnapshot>>(EVENT_LIVE, None);
             }

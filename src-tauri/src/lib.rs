@@ -17,7 +17,7 @@ use analysis::LaneReport;
 use lcu::models::{ConnStatus, DraftState};
 use presage_core::engine::build::{self, BuildContext, ItemSuggestion};
 use presage_core::engine::champion::{ChampionIndex, Role};
-use presage_core::engine::context::{self, DraftContext};
+use presage_core::engine::context::{self, DraftContext, Leitura};
 use presage_core::engine::stats::StatsStore;
 use presage_core::engine::coach::Report;
 use presage_core::engine::dataset::{Dataset, Layered};
@@ -31,12 +31,13 @@ use presage_core::engine::stats::PersonalStats;
 use presage_core::engine::{self, Scored};
 use live::LiveSnapshot;
 use presage_core::pool::{Pool, Tier};
-use presage_core::prefs::OverlayPrefs;
+use presage_core::prefs::{DraftPrefs, OverlayPrefs};
 use watcher::Shared;
 
 const EVENT_ENGINE: &str = "presage://engine";
 const POOL_CACHE: &str = "pool.json";
 const PREFS_CACHE: &str = "overlay.json";
+const DRAFT_PREFS_CACHE: &str = "draft.json";
 /// Base de partidas agregada. Não vem no instalador; quando existir, é aqui
 /// que ela mora.
 const DATASET_CACHE: &str = "base-de-partidas.json";
@@ -103,8 +104,18 @@ fn engine_status(shared: tauri::State<'_, Arc<Shared>>) -> EngineStatus {
     engine_status_of(&shared)
 }
 
+/// O draft que o motor lê: o do simulador, quando ele está aberto, ou o do
+/// champ select do cliente.
+fn current_draft(shared: &Shared) -> Option<DraftState> {
+    let simulado = shared.simulated.lock().unwrap().clone();
+    simulado.or_else(|| shared.draft.lock().unwrap().clone())
+}
+
 /// O contexto do draft com a rota resolvida: a do cliente, a escolhida na tela,
 /// ou a da pool. Ranking, minimax e análise de rota leem o mesmo.
+///
+/// Entram também as rotas que você marcou nos inimigos e, fora do simulador e
+/// sem "mostrar todos", a lista de quem a conta pode escolher.
 fn draft_context(
     shared: &Shared,
     draft: &DraftState,
@@ -114,12 +125,22 @@ fn draft_context(
     let pool = shared.pool.read().unwrap();
     let chosen = *shared.draft_role.lock().unwrap();
     let role = context::resolve_role(&draft.local_position, chosen, &pool);
-    DraftContext::new(draft, champions, stats, &pool.ids_for_role(role), role)
+    let simulando = shared.simulated.lock().unwrap().is_some();
+    let todos = shared.draft_prefs.read().unwrap().show_all_champions;
+    let leitura = Leitura {
+        enemy_roles: shared.enemy_roles.lock().unwrap().clone(),
+        owned: if simulando || todos {
+            None
+        } else {
+            shared.owned.lock().unwrap().clone()
+        },
+    };
+    DraftContext::new_with(draft, champions, stats, &pool.ids_for_role(role), role, &leitura)
 }
 
 #[tauri::command]
 fn rank_draft(shared: tauri::State<'_, Arc<Shared>>) -> Vec<Scored> {
-    let draft = shared.draft.lock().unwrap().clone();
+    let draft = current_draft(&shared);
     let Some(draft) = draft else {
         return Vec::new();
     };
@@ -138,6 +159,52 @@ fn set_draft_role(role: Option<String>, shared: tauri::State<'_, Arc<Shared>>) {
         .filter(|r| *r != Role::Unknown);
 }
 
+/// A rota de um inimigo, marcada à mão quando a inferida está errada. `None`
+/// desfaz a marca e devolve o campeão à inferência.
+#[tauri::command]
+fn set_enemy_role(champion_id: i64, role: Option<String>, shared: tauri::State<'_, Arc<Shared>>) {
+    let mut marcadas = shared.enemy_roles.lock().unwrap();
+    match role.map(|r| Role::from_lcu(&r)).filter(|r| *r != Role::Unknown) {
+        Some(role) => {
+            marcadas.insert(champion_id, role);
+        }
+        None => {
+            marcadas.remove(&champion_id);
+        }
+    }
+}
+
+/// As rotas marcadas agora, para a interface mostrar o que é marca.
+#[tauri::command]
+fn get_enemy_roles(shared: tauri::State<'_, Arc<Shared>>) -> Vec<(i64, Role)> {
+    shared
+        .enemy_roles
+        .lock()
+        .unwrap()
+        .iter()
+        .map(|(id, role)| (*id, *role))
+        .collect()
+}
+
+/// O simulador de draft. `Some` passa a ser o draft que o motor lê, com os
+/// indisponíveis refeitos; `None` volta para o champ select do cliente.
+#[tauri::command]
+fn set_simulated_draft(draft: Option<DraftState>, shared: tauri::State<'_, Arc<Shared>>) {
+    *shared.simulated.lock().unwrap() = draft.map(DraftState::normalized);
+}
+
+#[tauri::command]
+fn get_draft_prefs(shared: tauri::State<'_, Arc<Shared>>) -> DraftPrefs {
+    shared.draft_prefs.read().unwrap().clone()
+}
+
+#[tauri::command]
+fn set_draft_prefs(prefs: DraftPrefs, shared: tauri::State<'_, Arc<Shared>>) -> Result<(), String> {
+    storage::write_json(DRAFT_PREFS_CACHE, &prefs).map_err(|err| err.to_string())?;
+    *shared.draft_prefs.write().unwrap() = prefs;
+    Ok(())
+}
+
 /// Quanto você tira do oponente direto, do seu histórico. `None` sem chave da
 /// Riot ou antes da primeira atualização.
 #[tauri::command]
@@ -148,7 +215,7 @@ fn lane_profile(shared: tauri::State<'_, Arc<Shared>>) -> Option<LaneProfile> {
 /// Ranking com uma camada de resposta adversária.
 #[tauri::command]
 fn minimax_draft(shared: tauri::State<'_, Arc<Shared>>) -> Vec<minimax::MinimaxPick> {
-    let draft = shared.draft.lock().unwrap().clone();
+    let draft = current_draft(&shared);
     let Some(draft) = draft else {
         return Vec::new();
     };
@@ -161,12 +228,13 @@ fn minimax_draft(shared: tauri::State<'_, Arc<Shared>>) -> Vec<minimax::MinimaxP
 
 #[tauri::command]
 fn ban_suggestions(shared: tauri::State<'_, Arc<Shared>>) -> Vec<minimax::BanSuggestion> {
-    let draft = shared.draft.lock().unwrap().clone();
+    let draft = current_draft(&shared);
     let Some(draft) = draft else {
         return Vec::new();
     };
     let champions = shared.champions.read().unwrap();
-    minimax::suggest_bans(&draft, &champions, 10)
+    let pool = shared.pool.read().unwrap();
+    minimax::bans_with_pool(&draft, &champions, &pool.bans, 10)
 }
 
 #[tauri::command]
@@ -214,7 +282,7 @@ fn lane_analysis(
     shared: tauri::State<'_, Arc<Shared>>,
 ) -> Option<LaneReport> {
     let live = shared.live.lock().unwrap().clone();
-    let draft = shared.draft.lock().unwrap().clone();
+    let draft = current_draft(&shared);
     let champions = shared.champions.read().unwrap();
     let items = shared.items.read().unwrap();
     let stats = shared.stats.read().unwrap();
@@ -313,7 +381,7 @@ fn pool_suggestions(
 #[tauri::command]
 fn rune_plan(shared: tauri::State<'_, Arc<Shared>>) -> Option<runes::RunePlan> {
     let live = shared.live.lock().unwrap().clone();
-    let draft = shared.draft.lock().unwrap().clone();
+    let draft = current_draft(&shared);
 
     let champions = shared.champions.read().unwrap();
     let items = shared.items.read().unwrap();
@@ -373,6 +441,54 @@ fn set_overlay_prefs(
     storage::write_json(PREFS_CACHE, &prefs).map_err(|err| err.to_string())?;
     *shared.overlay_prefs.write().unwrap() = prefs.clone();
     let _ = app.emit(watcher::EVENT_PREFS, &prefs);
+    Ok(())
+}
+
+/// Iniciar com o Windows. Desligado até o jogador ligar: o Presage não se
+/// instala no boot de ninguém por conta própria.
+#[tauri::command]
+fn get_autostart(app: tauri::AppHandle) -> bool {
+    use tauri_plugin_autostart::ManagerExt;
+    app.autolaunch().is_enabled().unwrap_or(false)
+}
+
+#[tauri::command]
+fn set_autostart(enabled: bool, app: tauri::AppHandle) -> Result<(), String> {
+    use tauri_plugin_autostart::ManagerExt;
+    let gerente = app.autolaunch();
+    let feito = if enabled { gerente.enable() } else { gerente.disable() };
+    feito.map_err(|err| err.to_string())
+}
+
+fn mostrar_janela(app: &tauri::AppHandle) {
+    if let Some(janela) = app.get_webview_window("main") {
+        let _ = janela.unminimize();
+        let _ = janela.show();
+        let _ = janela.set_focus();
+    }
+}
+
+/// Ícone na bandeja: trazer a janela de volta e sair.
+fn bandeja(app: &tauri::App) -> tauri::Result<()> {
+    use tauri::menu::{Menu, MenuItem};
+    use tauri::tray::TrayIconBuilder;
+
+    let mostrar = MenuItem::with_id(app, "mostrar", "Mostrar o Presage", true, None::<&str>)?;
+    let sair = MenuItem::with_id(app, "sair", "Sair", true, None::<&str>)?;
+    let menu = Menu::with_items(app, &[&mostrar, &sair])?;
+
+    let mut icone = TrayIconBuilder::with_id("presage")
+        .tooltip("Presage")
+        .menu(&menu)
+        .on_menu_event(|app, event| match event.id.as_ref() {
+            "mostrar" => mostrar_janela(app),
+            "sair" => app.exit(0),
+            _ => {}
+        });
+    if let Some(imagem) = app.default_window_icon() {
+        icone = icone.icon(imagem.clone());
+    }
+    icone.build(app)?;
     Ok(())
 }
 
@@ -480,6 +596,10 @@ fn montar(com_atualizador: bool) -> tauri::Builder<tauri::Wry> {
     }
 
     builder
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            None,
+        ))
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
                 .with_handler(|app, shortcut, event| {
@@ -517,6 +637,10 @@ fn montar(com_atualizador: bool) -> tauri::Builder<tauri::Wry> {
                 *shared.last_review.lock().unwrap() = Some(saved);
             }
 
+            if let Some(saved) = storage::read_json::<DraftPrefs>(DRAFT_PREFS_CACHE) {
+                *shared.draft_prefs.write().unwrap() = saved;
+            }
+
             if let Some(saved) = storage::read_json::<OverlayPrefs>(PREFS_CACHE) {
                 tracing::info!(
                     escondidas = saved.hidden.len(),
@@ -526,6 +650,10 @@ fn montar(com_atualizador: bool) -> tauri::Builder<tauri::Wry> {
             }
 
             app.manage(shared.clone());
+
+            if let Err(err) = bandeja(app) {
+                tracing::warn!(%err, "sem ícone na bandeja");
+            }
 
             overlay::prepare(app.handle());
             {
@@ -595,6 +723,11 @@ fn montar(com_atualizador: bool) -> tauri::Builder<tauri::Wry> {
             lane_profile,
             rank_draft,
             set_draft_role,
+            set_enemy_role,
+            get_enemy_roles,
+            set_simulated_draft,
+            get_draft_prefs,
+            set_draft_prefs,
             minimax_draft,
             ban_suggestions,
             get_pool,
@@ -608,6 +741,8 @@ fn montar(com_atualizador: bool) -> tauri::Builder<tauri::Wry> {
             pool_suggestions,
             rune_plan,
             get_overlay_prefs,
-            set_overlay_prefs
+            set_overlay_prefs,
+            get_autostart,
+            set_autostart
         ])
 }

@@ -26,6 +26,9 @@ interface Props {
   onRole?: (role: Role) => void;
   /** A análise do draft com este campeão no seu lugar. */
   onPreview?: (championId: number) => Promise<LaneReport | null>;
+  /** Recomendar também quem a conta não pode escolher. */
+  showAll?: boolean;
+  onShowAll?: (showAll: boolean) => void;
 }
 
 const OVERALL_COUNT = 15;
@@ -46,6 +49,8 @@ export default function RecommendationPanel({
   role = null,
   onRole,
   onPreview,
+  showAll,
+  onShowAll,
 }: Props) {
   const [selected, setSelected] = useState<number | null>(null);
   const [previa, setPrevia] = useState<LaneReport | null>(null);
@@ -106,6 +111,16 @@ export default function RecommendationPanel({
             {recommendations.length} candidatos
           </span>
         </div>
+        {onShowAll && (
+          <label className="reco-toggle" title="Desligado, a lista só traz quem a sua conta pode escolher nesta fila, quando o cliente informa">
+            <input
+              type="checkbox"
+              checked={!!showAll}
+              onChange={(e) => onShowAll(e.target.checked)}
+            />
+            incluir quem você não tem
+          </label>
+        )}
       </div>
 
       {/* Na ranqueada o cliente diz a rota. Em blind e normal não diz, e sem
@@ -167,16 +182,20 @@ export default function RecommendationPanel({
           <h3>Bans</h3>
           {bans.length === 0 ? (
             <p className="muted">
-              Nada travado do lado deles ainda. Sem pick e sem base estatística
-              não há o que ranquear — e ordenar ruído seria pior que não dizer
-              nada.
+              Nada travado do lado deles ainda e nenhum ban na sua lista (aba
+              Pool). Sem pick e sem base estatística não há o que ranquear — e
+              ordenar ruído seria pior que não dizer nada.
             </p>
           ) : (
             <div className="grid">
               {bans.slice(0, 10).map((ban) => {
                 const champion = staticData?.champions.get(ban.championId);
                 return (
-                  <div className="cell cell-static" key={ban.championId} title={ban.reason}>
+                  <div
+                    className={`cell cell-static ${ban.fromPool ? "cell-pool" : ""}`}
+                    key={ban.championId}
+                    title={ban.reason}
+                  >
                     <div className="cell-portrait">
                       {champion ? (
                         <img src={champion.iconUrl} alt={champion.name} loading="lazy" />
@@ -185,6 +204,7 @@ export default function RecommendationPanel({
                       )}
                     </div>
                     <span className="cell-name">{champion?.name ?? `#${ban.championId}`}</span>
+                    {ban.fromPool && <span className="cell-tag">sua lista</span>}
                   </div>
                 );
               })}

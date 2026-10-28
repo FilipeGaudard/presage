@@ -173,8 +173,37 @@ constante não quebra nada além dela mesma.
 | Arauto (único) | 15:00 |
 | Grubs (únicos) | 8:00 |
 | dragões para a alma | 4 |
+| respawn do inibidor | 5:00 |
+| respawn da torre do nexo | 3:00 |
+| buff do Barão / do Ancião | 3:00 / 2:30 |
 
-Nenhum timer de habilidade inimiga, nem manual (C-1).
+**Estruturas** (`Respawn`): `InhibKilled` e `TurretKilled` de torre do nexo viram
+contagem até a volta, com o lado dono da estrutura. Há dois formatos de nome no
+mundo — `Inhib_TOrder_L2`/`Turret_TOrder_L1_P5`, o que apps em produção leem
+hoje, e `Barracks_T1_L1`/`Turret_T1_C_01_A`, o da documentação da Riot — e os
+dois são aceitos; nome desconhecido não vira timer
+([P-14](../produto/perguntas-em-aberto.md)).
+
+**Buffs** (`BuffTracker`): o buff de Barão e de Ancião é de quem estava vivo no
+abate, e some de quem morre. Saber quem ainda tem pede lembrar da leitura
+anterior, então este é o único timer com estado: a casca guarda o rastreador
+durante a partida e o zera fora dela. Quem morre perde o buff mesmo que renasça
+antes da leitura seguinte (o `ChampionKill` conta); abate visto mais de 5 s
+depois de acontecer mostra o tempo sem inventar quem tem; o buff some quando
+acaba ou quando ninguém mais o tem.
+
+Nenhum timer de habilidade inimiga, nem manual (C-1). Recarga de suprema, nem de
+aliado: a Live Client não entrega, e o que entrega isso (o GEP do Overwolf) não
+é API oficial (C-2).
+
+## 6.1 Sua rota ao vivo
+
+`rival.rs`: você contra o oponente direto, pela posição que a Live Client
+informa para os dez. A rota decide a métrica pela mesma `cobranca` do pós-jogo
+(§8): tropas por minuto para quem farma, **placar de visão por minuto para o
+suporte, nunca tropas**. Atrás, igual ou à frente sai do ouro em itens (exato),
+com a margem `max(300, 10% do que ele investiu)` — regra, não estatística.
+Antes de 1:30 não há painel: a taxa por minuto ainda é ruído.
 
 ## 7. Prioridade
 

@@ -14,11 +14,12 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 presage-core = { path = "../core" }
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["tray-icon"] }
 tauri-plugin-global-shortcut = "2"
 # O atualizador: sem ele cada correção de patch vira "baixe e reinstale à mão".
 tauri-plugin-updater = "2"
 tauri-plugin-process = "2"
+tauri-plugin-autostart = "2"
 serde.workspace = true
 serde_json.workspace = true
 anyhow.workspace = true

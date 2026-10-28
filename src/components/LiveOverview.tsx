@@ -1,4 +1,5 @@
-import type { LiveSnapshot } from "../lib/types";
+import type { StaticData } from "../lib/ddragon";
+import { ROLES, type Buff, type LiveSnapshot, type Rival } from "../lib/types";
 
 function clock(seconds: number): string {
   const total = Math.max(0, Math.floor(seconds));
@@ -10,9 +11,17 @@ function countdown(seconds: number): string {
   return clock(seconds);
 }
 
-export default function LiveOverview({ snapshot }: { snapshot: LiveSnapshot }) {
+export default function LiveOverview({
+  snapshot,
+  staticData = null,
+}: {
+  snapshot: LiveSnapshot;
+  staticData?: StaticData | null;
+}) {
   const { game, timeline, priority } = snapshot;
   const me = game.players.find((player) => player.isLocal);
+  const respawns = timeline.respawns ?? [];
+  const buffs = snapshot.buffs ?? [];
 
   return (
     <>
@@ -27,6 +36,8 @@ export default function LiveOverview({ snapshot }: { snapshot: LiveSnapshot }) {
       </div>
 
       {priority.focus && <div className="banner banner-turn">{priority.focus}</div>}
+
+      {snapshot.rival && <SuaRota rival={snapshot.rival} staticData={staticData} />}
 
       <div className="section">
         <h3>Objetivos</h3>
@@ -43,7 +54,19 @@ export default function LiveOverview({ snapshot }: { snapshot: LiveSnapshot }) {
               {!spawn.observed && <span className="timer-note">estimado</span>}
             </div>
           ))}
+          {respawns.map((r) => (
+            <div className="timer" key={`${r.name}-${r.at}`}>
+              <span className="timer-name">{r.name}</span>
+              <span className="timer-value">{clock(r.secondsLeft)}</span>
+              <span className={`timer-note ${r.ours ? "delta-weak" : "delta-strong"}`}>
+                {r.ours ? "seu, caído" : "deles, caído"}
+              </span>
+            </div>
+          ))}
         </div>
+        {buffs.map((buff) => (
+          <BuffLinha key={`${buff.name}-${buff.started}`} buff={buff} staticData={staticData} />
+        ))}
         <div className="facts">
           <div className="fact">
             <span className="fact-label">Dragões</span>
@@ -104,5 +127,80 @@ export default function LiveOverview({ snapshot }: { snapshot: LiveSnapshot }) {
         </p>
       </div>
     </>
+  );
+}
+
+const METRICA: Record<"farm" | "vision", string> = {
+  farm: "tropas/min",
+  vision: "visão/min",
+};
+
+const ESTADO: Record<Rival["standing"], { texto: string; classe: string }> = {
+  ahead: { texto: "à frente", classe: "delta-strong" },
+  even: { texto: "igual", classe: "delta-ok" },
+  behind: { texto: "atrás", classe: "delta-weak" },
+};
+
+/** Você contra o oponente direto, no que a sua rota cobra: o suporte é medido
+ *  em visão, nunca em tropas. */
+function SuaRota({ rival, staticData }: { rival: Rival; staticData: StaticData | null }) {
+  const oponente = staticData?.champions.get(rival.opponentId)?.name ?? rival.opponentKey;
+  const rota = ROLES.find((r) => r.id === rival.role)?.label ?? "";
+  const estado = ESTADO[rival.standing];
+  const sinal = rival.goldDiff > 0 ? "+" : "";
+  return (
+    <div className="section">
+      <h3>
+        Sua rota <span className="muted">({rota}) contra {oponente}</span>
+      </h3>
+      <div className="facts">
+        {rival.metric && (
+          <div className="fact">
+            <span className="fact-label">{METRICA[rival.metric]}</span>
+            <span className="fact-value">
+              {rival.minePerMin.toFixed(1)} <span className="muted">–</span>{" "}
+              {rival.theirsPerMin.toFixed(1)}
+            </span>
+          </div>
+        )}
+        <div className="fact">
+          <span className="fact-label">ouro em itens</span>
+          <span className={`fact-value ${estado.classe}`}>
+            {sinal}
+            {Math.round(rival.goldDiff).toLocaleString("pt-BR")} · {estado.texto}
+          </span>
+        </div>
+      </div>
+      <p className="faint">
+        Ouro em itens é exato. "À frente" a partir de 300 ou de 10% do que ele
+        investiu, o maior — regra, não estatística.
+      </p>
+    </div>
+  );
+}
+
+/** Buff de Barão ou Ancião: quanto falta e quem ainda tem. */
+function BuffLinha({ buff, staticData }: { buff: Buff; staticData: StaticData | null }) {
+  return (
+    <div className="buff">
+      <span className="timer-name">
+        {buff.name} <span className="muted">({buff.ours ? "seu time" : "deles"})</span>
+      </span>
+      <span className="timer-value">{clock(buff.secondsLeft)}</span>
+      {buff.holders === null ? (
+        <span className="timer-note">quem tem: abate antes de o app olhar</span>
+      ) : (
+        <span className="buff-holders">
+          {buff.holders.map((id) => {
+            const champion = staticData?.champions.get(id);
+            return champion ? (
+              <img key={id} src={champion.iconUrl} alt={champion.name} title={champion.name} />
+            ) : (
+              <span key={id}>#{id}</span>
+            );
+          })}
+        </span>
+      )}
+    </div>
   );
 }

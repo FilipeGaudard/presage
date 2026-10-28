@@ -1,7 +1,8 @@
 # 07 — Cruzamento com o Presage
 
 Cada funcionalidade do [catálogo](05-funcionalidades.md) contra o que o Presage
-tem em 2026-10-28 (branch `feat/draft-analise`).
+tem em 2026-10-28 (branch `feat/draft-analise`), já com as lacunas G-1 a G-8
+implementadas (§6).
 
 | Situação | Significa |
 |---|---|
@@ -26,15 +27,15 @@ tem em 2026-10-28 (branch `feat/draft-analise`).
 | I-6 | Estilo de jogo por faixa (Safe/Poke/Bully…) | falta | precisa de troca de dano e abates por confronto ao longo do tempo: timeline de partida no coletor |
 | I-7 | Estatísticas do time | tem | mistura de dano, linha de frente, alcance ([ADR-0018](../../adr/0018-o-que-a-condicao-de-vitoria-pode-afirmar.md)); força por fase sai do `length` (sem dado) |
 | I-8 | Recomendação de ban | parcial | `suggest_bans` só por composição ([ADR-0013](../../adr/0013-ban-nao-personalizado-enquanto-aditivo.md)) |
-| I-9 | Ban pool | **falta** | |
+| I-9 | Ban pool | tem | até 5, em ordem, na frente desde o primeiro ban, sem banir hover de aliado (`bans_with_pool`, G-5) |
 | I-10 | Pool priorizada | tem | [ADR-0016](../../adr/0016-pool-de-oito-tres-escolhidos-cinco-por-cobertura.md) |
 | I-11 | Filtro de pick rate | parcial | o filtro de rota usa a fatia de jogo da rota; não há controle do usuário |
-| I-12 | Só campeões que você tem | **falta** | leitura do LCU, permitida |
+| I-12 | Só campeões que você tem | tem | grade do champ select + fila, só leitura; rotação grátis fora da ranqueada (`draft::selectable`, G-6) |
 | I-13 | Hover dos aliados | tem | [L-26](../../arquitetura/09-licoes-do-prototipo.md) |
 | I-14 | Pesos do modelo pelo usuário | falta | baixa prioridade: pesos à mão mexidos pelo usuário viram mais palpite |
 | I-15 | Elo da estatística | parcial | uma base por arquivo; o coletor escolhe o tier |
 | I-16 | Maestria agregada | fora | o Presage não usa maestria |
-| I-17 | Override da rota do inimigo | **falta** | o Presage infere ([L-25](../../arquitetura/09-licoes-do-prototipo.md)) mas não deixa corrigir |
+| I-17 | Override da rota do inimigo | tem | a marca vence a inferência ([L-25](../../arquitetura/09-licoes-do-prototipo.md)) e nunca a posição do cliente (`Leitura::enemy_roles`, G-1) |
 | I-18 | Build por composição | parcial | runas do confronto no draft; build adaptativa só na partida |
 | I-19 | Enviar runas e itens ao cliente | decisão | hoje o Presage só **lê** o LCU (`src-tauri/src/lcu/client.rs` só tem `GET`); escrever é uma escolha nova |
 | I-20 | Auto-hover | decisão | escreve no LCU, como I-19; e beira [C-5](../../produto/requisitos.md) |
@@ -44,7 +45,7 @@ tem em 2026-10-28 (branch `feat/draft-analise`).
 | I-24 | Recomendação a cada fase | tem | refaz a cada mudança do champ select |
 | I-25 | Personalizada, Practice Tool, torneio | tem | não filtra por fila |
 | I-26 | ARAM | fora | o Presage é de Summoner's Rift |
-| I-27 | Simulador de draft | **falta** | montar os dois times à mão e rodar o mesmo motor |
+| I-27 | Simulador de draft | tem | aba Simulador: o mesmo motor lê o draft montado à mão (`set_simulated_draft`, G-7); sem importar partida nem sortear |
 | I-28 | Construtor de pool | tem | 3 escolhidos + 5 por cobertura; sem checagem AP/AD explícita nem par do bot |
 | I-29 | Tier list | sem dado | sai da base quando existir |
 | I-30 | Quiz de personalidade | fora | |
@@ -58,16 +59,16 @@ tem em 2026-10-28 (branch `feat/draft-analise`).
 | I-33 | Verificar o draft com as posições reais | tem | a análise da partida usa a posição da Live Client e ganha do draft (`analysis.rs`) |
 | I-34 | Pairings na partida | parcial | chance por rota e escaramuça com nível e itens reais; sem par a par com os nove |
 | I-35 | Força por faixa de duração | sem dado | `team.rs` + tabela `length` ([ADR-0019](../../adr/0019-contra-em-qualquer-rota-e-chance-do-time.md)) |
-| I-36 | Estado da rota | parcial | ouro em itens dos dez; não diz "atrás/igual/à frente" contra o oponente direto |
+| I-36 | Estado da rota | tem | atrás/igual/à frente pelo ouro em itens contra o oponente direto, não contra limiares fixos (`rival.rs`, G-2) |
 | I-37 | Build da partida | tem | adaptativa contra os itens deles ([C-6](../../produto/requisitos.md)) |
-| I-38 | Timer de inibidor e torre do nexo | **falta** | eventos `InhibKilled` e `TurretKilled` da Live Client |
+| I-38 | Timer de inibidor e torre do nexo | tem | `Respawn` a partir de `InhibKilled`/`TurretKilled`, nos dois formatos de nome ([P-14](../../produto/perguntas-em-aberto.md), G-3) |
 | I-39 | Relíquias de vida | fora · sem fonte | ARAM, e o dado vem do GEP |
-| I-40 | Buff de Barão e Ancião, com quem tem | **falta** | eventos `BaronKill`/`DragonKill` + `isDead` da Live Client; o Presage hoje só faz o respawn |
+| I-40 | Buff de Barão e Ancião, com quem tem | tem | `BuffTracker`: quem estava vivo no abate, perde quem morre (G-4) |
 | I-41 | Valor em itens por jogador e time | tem | `gold.rs`, exato |
 | I-42 | Suprema dos aliados | sem fonte | `team_frames` é do GEP; a Live Client não entrega recarga |
 | I-43 | Dano por tipo, medido | sem fonte · parcial | a Live Client não entrega dano; o Presage estima a divisão do dano que vem pelos itens deles |
 | I-44 | Próxima habilidade | falta | precisa de ordem de habilidade: timeline no coletor |
-| I-45 | CS/min contra referência | **falta** | o iTero compara com a média do elo; dá para comparar ao vivo com o **oponente direto**, e só nas rotas que farmam (suporte: visão) |
+| I-45 | CS/min contra referência | tem | contra o **oponente direto** ao vivo, só nas rotas que farmam; o suporte é medido em visão (`rival.rs`, G-2). O iTero compara com a média do elo, que exige a base |
 | I-46 | Aprimoramentos do Mayhem | fora | |
 | I-47 | Atalhos globais | tem | mostrar e interagir com o overlay |
 
@@ -96,17 +97,17 @@ tem em 2026-10-28 (branch `feat/draft-analise`).
 | I-61 | Anúncios | fora | [C-9](../../produto/requisitos.md) proíbe dentro do jogo |
 | I-62 | Idiomas | falta | só português |
 | I-63 | Atualização automática | tem | [06](../../arquitetura/06-distribuicao-e-atualizador.md) |
-| I-64 | Bandeja, autostart, instância única | falta | |
+| I-64 | Bandeja, autostart, instância única | parcial | bandeja e iniciar com o Windows, desligado por padrão (G-8); sem trava de instância única |
 | I-65 | Tutorial de primeiro uso | falta | |
 
 ## 5. Contagem
 
 | Situação | Quantas |
 |---|---|
-| tem | 15 |
+| tem | 23 |
 | parcial | 13 |
 | sem dado | 2 |
-| falta | 17 |
+| falta | 9 |
 | regra | 3 |
 | decisão | 3 |
 | sem fonte | 2 |
@@ -118,23 +119,30 @@ O `conferir.py` recalcula e falha se esta tabela divergir das linhas.
 
 ## 6. As lacunas que cabem, por valor
 
-Só o que está em **falta** e passa nas regras, ordenado por valor para o jogador
-sobre custo. "Dado" diz se funciona hoje ou espera a base.
+Só o que estava em **falta** e passa nas regras, ordenado por valor para o
+jogador sobre custo. "Dado" diz se funciona hoje ou espera a base. G-1 a G-8
+foram escolhidas e implementadas em 2026-10-28; o "Onde" aponta o código e o
+teste que prova.
+
+| # | Lacuna | Ids | Situação | Onde |
+|---|---|---|---|---|
+| G-1 | Corrigir à mão a rota de cada inimigo no draft | I-17 | **feita** | `context.rs` (`Leitura`), seletor no quadro do draft; `a_rota_marcada_vence_a_inferida`, `a_rota_marcada_tira_a_rota_dos_outros` |
+| G-2 | Painel da sua rota ao vivo: o que a rota cobra contra o oponente direto, e atrás/igual/à frente em ouro de itens | I-36, I-45 | **feita** | `rival.rs`; `suporte_ao_vivo_e_comparado_pela_visao_e_nunca_por_tropas` |
+| G-3 | Timer de inibidor e de torre do nexo | I-38 | **feita** | `timeline.rs` (`Respawn`); `inibidor_volta_em_cinco_minutos_nos_dois_formatos_de_nome` |
+| G-4 | Buff de Barão e Ancião: tempo restante e quem ainda tem | I-40 | **feita** | `timeline.rs` (`BuffTracker`); `quem_morre_perde_o_buff_mesmo_depois_de_renascer` |
+| G-5 | Ban pool do jogador | I-9 | **feita** | `minimax.rs` (`bans_with_pool`), seção "Seus bans" na aba Pool; `nao_bane_o_que_o_time_quer_pegar_nem_o_que_ja_saiu` |
+| G-6 | Mostrar só campeões que você tem | I-12 | **feita** | `draft.rs` (`selectable`), `context.rs`; `na_ranqueada_a_rotacao_gratis_nao_vale`, `so_entra_quem_a_sua_conta_pode_escolher` |
+| G-7 | Simulador de draft | I-27 | **feita** | aba Simulador, `set_simulated_draft`, `DraftState::normalized`; `draft_montado_a_mao_ganha_indisponiveis_e_rota`. Roda no app (Windows): o motor está na casca Tauri, que não compila no Kali; lá só o demo, com dados fixos |
+| G-8 | Bandeja e iniciar com o Windows | I-64 | **feita** | `lib.rs` (`bandeja`, `set_autostart`); compila só no CI do Windows |
+
+As que ficam:
 
 | # | Lacuna | Ids | Dado | Custo | Por quê |
 |---|---|---|---|---|---|
-| G-1 | Corrigir à mão a rota de cada inimigo no draft | I-17 | hoje | baixo | a inferência erra; um clique conserta o matchup de rota, a prévia e a condição de vitória — a rota é o fator principal |
-| G-2 | Painel da sua rota ao vivo: contra o oponente direto, o que a rota cobra — tropas/min nas rotas que farmam, visão no suporte — e atrás/igual/à frente em ouro de itens | I-36, I-45 | hoje | médio | mesma regra do pós-jogo (`cobranca`), agora durante a partida |
-| G-3 | Timer de inibidor e de torre do nexo | I-38 | hoje | baixo | evento oficial, já está na tela de quem viu |
-| G-4 | Buff de Barão e Ancião: tempo restante e quem ainda tem | I-40 | hoje | baixo | idem |
-| G-5 | Ban pool do jogador | I-9 | hoje | baixo | prioriza os seus bans sobre a sugestão por composição |
-| G-6 | Mostrar só campeões que você tem | I-12 | hoje | baixo | leitura do LCU; evita recomendar o que não dá para pegar |
-| G-7 | Simulador de draft | I-27 | hoje | médio | testar o motor e planejar sem champ select — e permite usar o Presage no Kali |
-| G-8 | Bandeja e iniciar com o Windows | I-64 | hoje | médio | conforto |
 | G-9 | Estilo de jogo da rota por faixa | I-6 | base + timeline | alto | precisa estender o coletor |
 | G-10 | Próxima habilidade a subir | I-44 | base + timeline | médio | idem |
 | G-11 | Scouting dos dez | I-32 | chave de produção | alto | |
-| G-12 | Idiomas, tutorial, várias contas, títulos, PDL | I-52, I-57, I-58, I-62, I-65 | hoje | variado | baixo valor agora |
+| G-12 | Idiomas, tutorial, várias contas, títulos, PDL, instância única | I-52, I-57, I-58, I-62, I-64, I-65 | hoje | variado | baixo valor agora |
 
 **Decisões que não são minhas** (mudam regra registrada):
 

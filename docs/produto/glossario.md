@@ -38,6 +38,11 @@ código. Quando o doc diz "confronto", o código diz `matchup`.
 | componente | — | Uma das cinco parcelas do ranking: base, matchup, sinergia, pessoal, composição |
 | winrate base | `StatsStore::base`, `base_key` (`"103:Mid"`) | Taxa de vitória de um campeão numa rota |
 | confronto | `StatsStore::matchup`, `matchup_key` (`"103:238:Mid"`) | A de um campeão contra outro na mesma rota. Direcional |
+| rota marcada | `Leitura::enemy_roles`, `set_enemy_role` | A rota que você deu a um inimigo quando a presumida estava errada. Vence a inferência, nunca a posição do cliente |
+| lista da conta | `Leitura::owned`, `draft::selectable` | Quem a sua conta pode escolher nesta fila: próprios, Game Pass e, fora da ranqueada, a rotação grátis |
+| sua lista de bans | `Pool::bans`, `bans_with_pool` | Até cinco bans seus, em ordem, sugeridos antes da conta da composição |
+| simulador | `set_simulated_draft`, `current_draft` | Draft montado à mão que o motor lê no lugar do champ select enquanto a aba está aberta |
+| sua rota ao vivo | `rival.rs`, `Rival` | Você contra o oponente direto durante a partida, no que a rota cobra e em ouro de itens |
 | sinergia | `StatsStore::synergy`, `synergy_key` (`"64:103"`, menor id primeiro) | A de dois campeões no mesmo time |
 | registro | `Record { games, wins }` | Partidas e vitórias. `wins` nunca passa de `games` |
 | encolher (shrinkage) | `shrink`, `shrunk_delta` | Puxar uma taxa de amostra pequena para o prior: média posterior de uma Beta |

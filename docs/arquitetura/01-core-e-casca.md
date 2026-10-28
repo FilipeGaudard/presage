@@ -114,6 +114,10 @@ Os que o front chama por `invoke` (`lib.rs`, `generate_handler!`):
 | `lane_profile` | o perfil de rota, ou `None` |
 | `rank_draft`, `minimax_draft`, `ban_suggestions` | o draft ([02](02-motor-de-draft.md)) |
 | `set_draft_role` | a rota escolhida na tela, para blind e normal |
+| `set_enemy_role`, `get_enemy_roles` | a rota marcada à mão em cada inimigo |
+| `set_simulated_draft` | o draft do simulador; `None` volta para o cliente |
+| `get_draft_prefs`, `set_draft_prefs` | incluir quem a conta não pode escolher |
+| `get_autostart`, `set_autostart` | iniciar com o Windows (desligado até o jogador ligar) |
 | `get_pool`, `set_pool`, `pool_suggestions` | a pool |
 | `lane_analysis(candidate)` | rotas, escaramuças e condição de vitória; com `candidate`, a prévia do draft com ele no seu lugar |
 | `get_live`, `build_suggestions`, `skirmish_focus`, `gold_report` | a partida ([03](03-motor-da-partida.md)) |
@@ -140,6 +144,7 @@ Tudo em `%LOCALAPPDATA%\Presage` (`storage.rs`):
 |---|---|
 | `pool.json` | a pool |
 | `overlay.json` | preferências do overlay |
+| `draft.json` | preferências do draft |
 | `personal-v2.json` | histórico pessoal: vitórias por campeão e comparação de rota por partida ([04 §7](04-perfil-de-rota.md#7-o-cache)) |
 | `base-de-partidas.json` | a base agregada, quando alguém a coloca ali ([05](05-coletor.md)) |
 | `gravacao.json`, `ultima-partida.json` | a gravação da partida e a leitura dela |

@@ -27,6 +27,25 @@ chave da Riot: uma derruba uma função, a outra entrega a máquina de cada usu�
   `process:allow-restart`. Nada de shell, nada de sistema de arquivos pelo front.
 - **Nenhum `dangerouslySetInnerHTML`** no front. Todo texto passa pelo escape do
   React.
+- **Comandos fechados.** A interface só alcança os comandos registrados em
+  `generate_handler!`, cada um com tipo de argumento; não existe canal genérico
+  para o processo nativo. O `DraftState` que o simulador manda é normalizado na
+  casca antes de chegar ao motor.
+
+### O cliente do League: só leitura
+
+O cliente do LCU do Presage só tem `GET` (`lcu/client.rs`): sessão do champ
+select, fase, invocador, região, grade de campeões e sessão do fluxo de jogo.
+Nada de hover, travar, banir, página de runa ou conjunto de itens — o iTero faz
+tudo isso ([referência](../referencia/itero/07-cruzamento.md)); passar a escrever
+pede um ADR.
+
+### Iniciar com o Windows
+
+`set_autostart` grava a entrada de inicialização do usuário (plugin
+`tauri-plugin-autostart`, chave `Run` do `HKCU`). É persistência na máquina, e
+por isso só acontece quando o jogador liga — o padrão é desligado, ao contrário
+do iTero, que liga na primeira execução.
 
 ### Entradas que não controlamos
 

@@ -7,8 +7,8 @@ tela dele ([C-4](requisitos.md#1-regras-da-riot-c)):
 
 | Momento | O que entrega | De onde lê |
 |---|---|---|
-| **Draft** | campeões da sua rota ranqueados conforme o draft acontece, com motivo em texto, intervalo de confiança e a resposta adversária (minimax); para cada candidato, a prévia: rota nível a nível, 2v2 e 3v3, condição de vitória; sugestão de ban; runas do confronto | LCU, Data Dragon, base de partidas quando existir |
-| **Partida** | build adaptativa contra os itens que eles têm agora, chance por rota e escaramuça, ouro dos dez, timers de objetivo, onde está o valor no mapa | Live Client Data API |
+| **Draft** | campeões da sua rota ranqueados conforme o draft acontece, com motivo em texto, intervalo de confiança e a resposta adversária (minimax); para cada candidato, a prévia: rota nível a nível, 2v2 e 3v3, condição de vitória; a rota de cada inimigo, presumida e corrigível à mão; só quem a sua conta pode escolher; sugestão de ban com a sua lista na frente; runas do confronto. E um simulador, para montar o draft à mão | LCU (só leitura), Data Dragon, base de partidas quando existir |
+| **Partida** | build adaptativa contra os itens que eles têm agora; você contra o oponente direto no que a sua rota cobra (tropas, ou visão no suporte) e em ouro de itens; chance por rota e escaramuça, ouro dos dez, timers de objetivo, inibidor e torre do nexo, buff de Barão e Ancião com quem tem, onde está o valor no mapa | Live Client Data API |
 | **Pós-jogo** | leitura da partida gravada; perfil de rota contra o oponente direto ao longo das suas partidas | gravação local, Riot Web API |
 
 E fora deles, o **construtor de pool**: por rota, o jogador escolhe três

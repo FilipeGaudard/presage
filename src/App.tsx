@@ -8,6 +8,7 @@ import type {
   BuildContext,
   CoachReport,
   ConnStatus,
+  DraftPrefs,
   DraftState,
   EngineStatus,
   GoldReport,
@@ -38,6 +39,7 @@ import PoolBuilder from "./components/PoolBuilder";
 import PostGame from "./components/PostGame";
 import RecommendationPanel from "./components/RecommendationPanel";
 import Runas from "./components/Runas";
+import SimuladorDraft, { draftVazio } from "./components/SimuladorDraft";
 
 const EVENT_STATUS = "presage://status";
 const EVENT_DRAFT = "presage://draft";
@@ -45,7 +47,7 @@ const EVENT_ENGINE = "presage://engine";
 const EVENT_LIVE = "presage://live";
 const EVENT_REVIEW = "presage://review";
 
-type View = "draft" | "lanes" | "live" | "coach" | "pool" | "overlay";
+type View = "draft" | "simulador" | "lanes" | "live" | "coach" | "pool" | "overlay";
 
 export default function App() {
   const [view, setView] = useState<View>("draft");
@@ -66,6 +68,14 @@ export default function App() {
   const [laneProfile, setLaneProfile] = useState<LaneProfile | null>(null);
   const [runas, setRunas] = useState<RunePlan | null>(null);
   const [overlayPrefs, setOverlayPrefs] = useState<OverlayPrefs>({ hidden: [] });
+  const [draftPrefs, setDraftPrefs] = useState<DraftPrefs>({ showAllChampions: false });
+  const [autostart, setAutostart] = useState(false);
+  // A rota que você marcou em cada inimigo, por campeão.
+  const [enemyRoles, setEnemyRoles] = useState<Record<number, Role>>({});
+  // O simulador: o que está na tela e o que o backend já guardou. As
+  // recomendações só são pedidas depois que ele guardou.
+  const [simDraft, setSimDraft] = useState<DraftState>(draftVazio);
+  const [simAplicado, setSimAplicado] = useState<DraftState | null>(null);
   const [staticData, setStaticData] = useState<StaticData | null>(null);
   const [staticError, setStaticError] = useState<string | null>(null);
 
@@ -98,6 +108,8 @@ export default function App() {
     invoke<CoachReport | null>("last_review").then(setReview).catch(() => void 0);
     invoke<LaneProfile | null>("lane_profile").then(setLaneProfile).catch(() => void 0);
     invoke<OverlayPrefs>("get_overlay_prefs").then(setOverlayPrefs).catch(() => void 0);
+    invoke<DraftPrefs>("get_draft_prefs").then(setDraftPrefs).catch(() => void 0);
+    invoke<boolean>("get_autostart").then(setAutostart).catch(() => void 0);
 
     const unlisteners = [
       listen<ConnStatus>(EVENT_STATUS, (event) => setStatus(event.payload)),
@@ -116,6 +128,8 @@ export default function App() {
       }),
       listen<DraftState | null>(EVENT_DRAFT, (event) => {
         setDraft(event.payload);
+        // O backend esquece as marcas quando o champ select acaba.
+        if (!event.payload) setEnemyRoles({});
         clockAnchor.current = event.payload
           ? { at: Date.now(), leftMs: event.payload.timeLeftMs }
           : null;
@@ -131,8 +145,27 @@ export default function App() {
     };
   }, []);
 
+  // O simulador manda o draft dele para o backend enquanto a aba está aberta;
+  // fora dela, o motor volta a ler o champ select do cliente.
   useEffect(() => {
-    if (!draft || !engine?.ready) {
+    if (view !== "simulador") {
+      setSimAplicado(null);
+      invoke("set_simulated_draft", { draft: null }).catch(() => void 0);
+      return;
+    }
+    let vivo = true;
+    invoke("set_simulated_draft", { draft: simDraft })
+      .then(() => vivo && setSimAplicado(simDraft))
+      .catch(() => void 0);
+    return () => {
+      vivo = false;
+    };
+  }, [view, simDraft]);
+
+  const activeDraft = view === "simulador" ? simAplicado : draft;
+
+  useEffect(() => {
+    if (!activeDraft || !engine?.ready) {
       setRecommendations([]);
       setMinimax([]);
       setBans([]);
@@ -156,7 +189,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [draft, engine?.ready, pool, draftRole]);
+  }, [activeDraft, engine?.ready, pool, draftRole, enemyRoles, draftPrefs]);
 
   useEffect(() => {
     if (!live) {
@@ -189,7 +222,7 @@ export default function App() {
   // A análise de rota serve os dois momentos: no draft é projeção, na partida
   // sai dos níveis e itens reais. O comando decide sozinho qual fonte usar.
   useEffect(() => {
-    if (!engine?.ready || (!draft && !live)) {
+    if (!engine?.ready || (!activeDraft && !live)) {
       setLanes(null);
       return;
     }
@@ -207,7 +240,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [draft, live, engine?.ready]);
+  }, [activeDraft, live, engine?.ready, enemyRoles]);
 
   // O construtor pergunta o que falta só quando chega no último passo.
   const pedirSugestoes = useCallback(
@@ -234,6 +267,41 @@ export default function App() {
       .then(() => setDraftRole(proxima))
       .catch(() => void 0);
   }, []);
+
+  // Corrigir a rota de um inimigo refaz ranking, prévia e análise de rota.
+  const marcarRota = useCallback((championId: number, role: Role | null) => {
+    const lcu = role && role !== "Unknown" ? ROLE_TO_LCU[role] : null;
+    invoke("set_enemy_role", { championId, role: lcu })
+      .then(() =>
+        setEnemyRoles((atual) => {
+          const proximo = { ...atual };
+          if (role && role !== "Unknown") proximo[championId] = role;
+          else delete proximo[championId];
+          return proximo;
+        })
+      )
+      .catch(() => void 0);
+  }, []);
+
+  // A rota que o motor presumiu para cada inimigo, lida da análise do draft.
+  const presumidas = useMemo(() => {
+    const mapa: Record<number, Role> = {};
+    if (lanes?.source === "draft") {
+      for (const lane of lanes.lanes) if (lane.enemy > 0) mapa[lane.enemy] = lane.role;
+    }
+    return mapa;
+  }, [lanes]);
+
+  function saveDraftPrefs(next: DraftPrefs) {
+    setDraftPrefs(next);
+    invoke("set_draft_prefs", { prefs: next }).catch(() => void 0);
+  }
+
+  function saveAutostart(next: boolean) {
+    invoke("set_autostart", { enabled: next })
+      .then(() => setAutostart(next))
+      .catch(() => void 0);
+  }
 
   const secondsLeft = useMemo(() => {
     const anchor = clockAnchor.current;
@@ -274,6 +342,13 @@ export default function App() {
           </button>
           <button
             type="button"
+            className={view === "simulador" ? "on" : ""}
+            onClick={() => setView("simulador")}
+          >
+            Simulador
+          </button>
+          <button
+            type="button"
             className={view === "lanes" ? "on" : ""}
             onClick={() => setView("lanes")}
           >
@@ -306,7 +381,7 @@ export default function App() {
             className={view === "overlay" ? "on" : ""}
             onClick={() => setView("overlay")}
           >
-            Overlay
+            Ajustes
           </button>
         </nav>
         <ConnectionStatus status={status} />
@@ -336,6 +411,42 @@ export default function App() {
         <main className="layout layout-single">
           <section className="panel">
             <OverlayPrefsPanel prefs={overlayPrefs} onChange={saveOverlayPrefs} />
+            <div className="section">
+              <h3>App</h3>
+              <label className="reco-toggle">
+                <input
+                  type="checkbox"
+                  checked={autostart}
+                  onChange={(e) => saveAutostart(e.target.checked)}
+                />
+                Iniciar o Presage com o Windows
+              </label>
+              <p className="faint">
+                Desligado até você ligar. O ícone na bandeja traz a janela de volta.
+              </p>
+            </div>
+          </section>
+        </main>
+      ) : view === "simulador" ? (
+        <main className="layout">
+          <section className="panel panel-draft">
+            <SimuladorDraft
+              value={simDraft}
+              staticData={staticData}
+              onChange={setSimDraft}
+              live={draft}
+            />
+          </section>
+          <section className="panel panel-reco">
+            <RecommendationPanel
+              recommendations={recommendations}
+              minimax={minimax}
+              bans={bans}
+              staticData={staticData}
+              draft={simAplicado}
+              engine={engine}
+              onPreview={previa}
+            />
           </section>
         </main>
       ) : view === "lanes" ? (
@@ -358,7 +469,7 @@ export default function App() {
         live ? (
           <main className="layout">
             <section className="panel">
-              <LiveOverview snapshot={live} />
+              <LiveOverview snapshot={live} staticData={staticData} />
               <GoldTracker report={goldReport} staticData={staticData} />
             </section>
             <section className="panel">
@@ -393,6 +504,9 @@ export default function App() {
               secondsLeft={secondsLeft}
               connected={status?.connected ?? false}
               phase={status?.phase ?? "Disconnected"}
+              inferred={presumidas}
+              marked={enemyRoles}
+              onEnemyRole={marcarRota}
             />
           </section>
 
@@ -407,6 +521,8 @@ export default function App() {
               role={draftRole}
               onRole={escolherRota}
               onPreview={previa}
+              showAll={draftPrefs.showAllChampions}
+              onShowAll={(showAllChampions) => saveDraftPrefs({ ...draftPrefs, showAllChampions })}
             />
           </section>
         </main>

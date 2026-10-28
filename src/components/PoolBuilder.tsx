@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { StaticData } from "../lib/ddragon";
 import {
+  BAN_POOL_MAX,
   CORE_SIZE,
   POOL_SIZE,
   ROLES,
@@ -63,11 +64,12 @@ export default function PoolBuilder({ pool, staticData, onChange, onSuggest }: P
 
   function add(championId: number, tier: Tier) {
     if (chosen.has(championId)) return;
-    onChange({ entries: [...pool.entries, { championId, role, tier }] });
+    onChange({ ...pool, entries: [...pool.entries, { championId, role, tier }] });
   }
 
   function retier(championId: number, tier: Tier) {
     onChange({
+      ...pool,
       entries: pool.entries.map((entry) =>
         entry.championId === championId && entry.role === role ? { ...entry, tier } : entry
       ),
@@ -76,6 +78,7 @@ export default function PoolBuilder({ pool, staticData, onChange, onSuggest }: P
 
   function remove(championId: number) {
     onChange({
+      ...pool,
       entries: pool.entries.filter(
         (entry) => !(entry.championId === championId && entry.role === role)
       ),
@@ -446,6 +449,8 @@ export default function PoolBuilder({ pool, staticData, onChange, onSuggest }: P
         );
       })}
 
+      <ListaDeBans pool={pool} staticData={staticData} onChange={onChange} />
+
       <div className="section">
         <h3>Adicionar</h3>
         <input
@@ -473,6 +478,112 @@ export default function PoolBuilder({ pool, staticData, onChange, onSuggest }: P
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+/** Os seus bans, em ordem. Vêm primeiro na sugestão de ban, desde o primeiro
+ *  ban, e nunca banem o que um aliado quer pegar. */
+function ListaDeBans({
+  pool,
+  staticData,
+  onChange,
+}: {
+  pool: Pool;
+  staticData: StaticData | null;
+  onChange: (pool: Pool) => void;
+}) {
+  const [busca, setBusca] = useState("");
+  const bans = pool.bans ?? [];
+  const cheia = bans.length >= BAN_POOL_MAX;
+
+  const achados = useMemo(() => {
+    const termo = busca.trim().toLowerCase();
+    if (!staticData || !termo) return [];
+    return [...staticData.champions.values()]
+      .filter((c) => c.name.toLowerCase().includes(termo) && !bans.includes(c.id))
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .slice(0, 8);
+  }, [staticData, busca, bans]);
+
+  const salvar = (proximos: number[]) => onChange({ ...pool, bans: proximos });
+
+  function subir(indice: number) {
+    if (indice === 0) return;
+    const proximos = [...bans];
+    [proximos[indice - 1], proximos[indice]] = [proximos[indice], proximos[indice - 1]];
+    salvar(proximos);
+  }
+
+  return (
+    <div className="section">
+      <h3>
+        Seus bans <span className="muted">({bans.length}/{BAN_POOL_MAX}, em ordem)</span>
+      </h3>
+      {bans.length === 0 ? (
+        <p className="muted">Nenhum. Os bans que você sempre faz entram aqui.</p>
+      ) : (
+        <div className="grid grid-pool">
+          {bans.map((id, indice) => {
+            const champion = staticData?.champions.get(id);
+            return (
+              <div className="cell cell-static" key={id}>
+                <div className="cell-portrait">
+                  {champion ? <img src={champion.iconUrl} alt={champion.name} loading="lazy" /> : <span>?</span>}
+                </div>
+                <span className="cell-name">
+                  {indice + 1}. {champion?.name ?? `#${id}`}
+                </span>
+                <div className="cell-actions">
+                  <button type="button" onClick={() => subir(indice)} disabled={indice === 0} title="Subir">
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    className="remove"
+                    onClick={() => salvar(bans.filter((b) => b !== id))}
+                    title="Remover"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {!cheia && (
+        <>
+          <input
+            className="search"
+            type="search"
+            placeholder="Adicionar ban…"
+            value={busca}
+            onChange={(event) => setBusca(event.target.value)}
+          />
+          {achados.length > 0 && (
+            <div className="grid grid-catalog">
+              {achados.map((champion) => (
+                <button
+                  type="button"
+                  key={champion.id}
+                  className="cell"
+                  onClick={() => {
+                    salvar([...bans, champion.id]);
+                    setBusca("");
+                  }}
+                  title={champion.name}
+                >
+                  <div className="cell-portrait">
+                    <img src={champion.iconUrl} alt={champion.name} loading="lazy" />
+                  </div>
+                  <span className="cell-name">{champion.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

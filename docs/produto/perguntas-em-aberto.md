@@ -125,6 +125,20 @@ o documento afetado no mesmo commit.
   errado nesses casos.
 - **Default:** inferência pelas classes, `roles_assumed` avisando na tela. Com a
   base, `role_share` decide e o empate quase some.
+- **Agora corrigível na tela:** a rota marcada à mão vence a inferência
+  ([02 §0](../arquitetura/02-motor-de-draft.md#0-o-contexto-do-draft)).
+
+## P-14 — Que nome a Live Client dá a inibidor e torre do nexo hoje? 🟡
+
+- **Por que importa:** o timer de respawn lê a estrutura pelo nome no evento
+  (`InhibKilled`, `TurretKilled`). A documentação da Riot mostra
+  `Barracks_T1_L1` e `Turret_T1_C_01_A`; apps em produção em 2026 leem
+  `Inhib_TOrder_L2` e `Turret_TOrder_L1_P5`. Nome que nenhum dos dois formatos
+  reconhece não vira timer — falha calada.
+- **Default:** os dois formatos aceitos, com teste para cada
+  (`timeline.rs`). Conferir numa partida real o que chega, e o mesmo para os
+  campos da grade do champ select (`owned`, `freeToPlay`, `xboxGPReward`) e a
+  fila em `/lol-gameflow/v1/session` (`gameData.queue.id`).
 
 ## P-11 — Dois conjuntos de pesos de composição? 🟡
 

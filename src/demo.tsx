@@ -21,6 +21,7 @@ import PoolBuilder from "./components/PoolBuilder";
 import PostGame from "./components/PostGame";
 import Runas from "./components/Runas";
 import RecommendationPanel from "./components/RecommendationPanel";
+import SimuladorDraft, { draftVazio } from "./components/SimuladorDraft";
 import type {
   BanSuggestion,
   BuildContext,
@@ -40,6 +41,7 @@ import type {
   OverlayPrefs,
   Pool,
   PoolPlan,
+  Role,
   RunePlan,
   ScoredChampion,
 } from "./lib/types";
@@ -112,12 +114,13 @@ const draft: DraftState = {
     slot(3, "bottom", ASHE),
     slot(4, "utility", THRESH),
   ],
+  // A ranqueada não informa a rota do inimigo: o motor presume, você corrige.
   theirTeam: [
-    slot(5, "top", MALPHITE),
-    slot(6, "jungle", VIEGO),
-    slot(7, "middle", ZED),
-    slot(8, "bottom", 0),
-    slot(9, "utility", 0),
+    slot(5, "", MALPHITE),
+    slot(6, "", VIEGO),
+    slot(7, "", ZED),
+    slot(8, "", 0),
+    slot(9, "", 0),
   ],
   myBans: [YASUO, 157],
   theirBans: [LUX, 7],
@@ -243,6 +246,7 @@ const minimax: MinimaxPick[] = [
 ];
 
 const bans: BanSuggestion[] = [
+  { championId: 517, threat: 0, reason: "Da sua lista de bans", fromPool: true },
   { championId: 55, threat: 0.031, reason: "Completa o que falta na composição deles" },
   { championId: 105, threat: 0.027, reason: "Completa o que falta na composição deles" },
   { championId: 245, threat: 0.024, reason: "Completa o que falta na composição deles" },
@@ -331,8 +335,29 @@ const live: LiveSnapshot = {
     kills: { ally: 11, enemy: 8 },
     upcoming: [
       { name: "Dragão", at: 1190, secondsLeft: 43, observed: true },
-      { name: "Barão", at: 1200, secondsLeft: 53, observed: false },
+      { name: "Barão", at: 1460, secondsLeft: 313, observed: true },
     ],
+    respawns: [{ name: "Inibidor do meio", ours: false, at: 1290, secondsLeft: 143 }],
+  },
+  buffs: [
+    {
+      name: "Barão",
+      ours: true,
+      started: 1100,
+      until: 1280,
+      secondsLeft: 133,
+      holders: [AHRI, GAREN, ASHE],
+    },
+  ],
+  rival: {
+    role: "Mid",
+    opponentId: ZED,
+    opponentKey: "Zed",
+    metric: "farm",
+    minePerMin: 7.4,
+    theirsPerMin: 8.1,
+    goldDiff: -1950,
+    standing: "behind",
   },
   priority: {
     lanes: [
@@ -836,7 +861,7 @@ const runasDemo: RunePlan = {
   },
 };
 
-type View = "draft" | "lanes" | "live" | "coach" | "pool" | "overlay";
+type View = "draft" | "simulador" | "lanes" | "live" | "coach" | "pool" | "overlay";
 
 // Perfil de rota com números do tamanho que 40 partidas produzem: a média
 // geral já sai do ruído em tropa, os campeões menos jogados ainda não.
@@ -903,11 +928,12 @@ const perfilDemo: LaneProfile = {
 
 const ABAS: { id: View; label: string }[] = [
   { id: "draft", label: "Draft" },
+  { id: "simulador", label: "Simulador" },
   { id: "lanes", label: "Rotas" },
   { id: "live", label: "Partida" },
   { id: "coach", label: "Pós-jogo" },
   { id: "pool", label: "Pool" },
-  { id: "overlay", label: "Overlay" },
+  { id: "overlay", label: "Ajustes" },
 ];
 
 function Demo() {
@@ -916,6 +942,9 @@ function Demo() {
   const [pool, setPool] = useState<Pool>(initialPool);
   const [overlayPrefs, setOverlayPrefs] = useState<OverlayPrefs>({ hidden: [] });
   const [seconds, setSeconds] = useState(21);
+  const [marcadas, setMarcadas] = useState<Record<number, Role>>({});
+  const [todos, setTodos] = useState(false);
+  const [simulado, setSimulado] = useState<DraftState>(draftVazio);
 
   useEffect(() => {
     loadStaticData().then(setStaticData).catch(() => void 0);
@@ -971,6 +1000,23 @@ function Demo() {
             <OverlayPrefsPanel prefs={overlayPrefs} onChange={setOverlayPrefs} />
           </section>
         </main>
+      ) : view === "simulador" ? (
+        <main className="layout">
+          <section className="panel panel-draft">
+            <SimuladorDraft value={simulado} staticData={staticData} onChange={setSimulado} live={draft} />
+          </section>
+          <section className="panel panel-reco">
+            <RecommendationPanel
+              recommendations={recommendations}
+              minimax={minimax}
+              bans={bans}
+              staticData={staticData}
+              draft={simulado}
+              engine={engine}
+              onPreview={async (id) => previaDemo(id)}
+            />
+          </section>
+        </main>
       ) : view === "lanes" ? (
         <main className="layout layout-single">
           <section className="panel">
@@ -990,7 +1036,7 @@ function Demo() {
       ) : view === "live" ? (
         <main className="layout">
           <section className="panel">
-            <LiveOverview snapshot={live} />
+            <LiveOverview snapshot={live} staticData={staticData} />
             <GoldTracker report={goldReport} staticData={staticData} />
           </section>
           <section className="panel">
@@ -1011,6 +1057,16 @@ function Demo() {
               secondsLeft={seconds}
               connected
               phase="ChampSelect"
+              inferred={{ [MALPHITE]: "Top", [VIEGO]: "Jungle", [ZED]: "Mid" }}
+              marked={marcadas}
+              onEnemyRole={(id, role) =>
+                setMarcadas((atual) => {
+                  const proximo = { ...atual };
+                  if (role) proximo[id] = role;
+                  else delete proximo[id];
+                  return proximo;
+                })
+              }
             />
           </section>
           <section className="panel panel-reco">
@@ -1022,6 +1078,8 @@ function Demo() {
               draft={draft}
               engine={engine}
               onPreview={async (id) => previaDemo(id)}
+              showAll={todos}
+              onShowAll={setTodos}
             />
           </section>
         </main>

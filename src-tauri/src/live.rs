@@ -8,7 +8,8 @@ use serde::de::DeserializeOwned;
 use std::time::Duration;
 
 use presage_core::engine::priority::PriorityReport;
-use presage_core::engine::timeline::{EventFeed, RawEvent, Timeline};
+use presage_core::engine::rival::Rival;
+use presage_core::engine::timeline::{Buff, EventFeed, RawEvent, Timeline};
 use presage_core::live::{LiveGame, RawPlayer};
 
 /// O que o front recebe de uma vez. Juntos de propósito: jogo, objetivos e
@@ -19,6 +20,10 @@ pub struct LiveSnapshot {
     pub game: LiveGame,
     pub timeline: Timeline,
     pub priority: PriorityReport,
+    /// Barão e Ancião em andamento, com quem ainda tem.
+    pub buffs: Vec<Buff>,
+    /// Você contra o oponente direto, no que a sua rota cobra.
+    pub rival: Option<Rival>,
 }
 
 const BASE: &str = "https://127.0.0.1:2999/liveclientdata";

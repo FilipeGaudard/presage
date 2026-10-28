@@ -22,6 +22,17 @@ Ranking, minimax e análise de rota leem o champ select de um jeito só
   atribuição mais plausível das rotas livres (`role_fit`, no máximo 120
   combinações); empate fica com a ordem de escolha. Posição informada nunca é
   contestada, e `roles_assumed` avisa a interface ([P-13](../produto/perguntas-em-aberto.md)).
+- **Rota marcada:** quando a inferência erra, você corrige no próprio quadro do
+  draft (`set_enemy_role`). A marca vence a inferência e nunca a posição do
+  cliente; duas marcas na mesma rota ficam com a do primeiro a escolher; a
+  inferência só distribui as rotas que sobram. As marcas morrem com o champ
+  select (`Leitura::enemy_roles`).
+- **Quem a conta pode escolher:** a grade do champ select
+  (`/lol-champ-select/v1/all-grid-champions`, só leitura) dá os próprios, os do
+  Game Pass e a rotação grátis; a fila (`/lol-gameflow/v1/session`) decide se a
+  rotação vale — não vale na ranqueada (420, 440), e fila desconhecida fica do
+  lado seguro, sem ela (`draft::selectable`). Lista vazia ou indisponível não
+  tira ninguém. "Incluir quem você não tem" desliga o filtro (`DraftPrefs`).
 - **Indisponíveis:** banidos, escolhidos e em hover de aliado. A sua escolha ainda
   não travada **não**: o cliente preenche o seu `championId` antes de travar
   ([P-12](../produto/perguntas-em-aberto.md)).
@@ -234,6 +245,24 @@ matchup entrar, ele deve falhar — e aí o ban vira pessoal.
 O ban também **devolve vazio enquanto o outro lado não travou nada**. Sem pick e
 sem base estatística todo campeão pontua igual, e ordenar isso seria apresentar
 ruído como conselho.
+
+### A sua lista de bans
+
+O que é pessoal no ban hoje é a sua lista: até cinco, em ordem (`Pool::bans`).
+`bans_with_pool` põe a lista na frente desde o primeiro ban — quando a conta da
+composição ainda não tem o que dizer —, tira dela quem já saiu e quem um aliado
+quer pegar (banir o pick do próprio time é o erro clássico de ban automático), e
+completa com `suggest_bans` sem repetir. O app não bane nada sozinho: a lista
+aparece como sugestão marcada "sua lista".
+
+### O simulador
+
+A aba Simulador monta um `DraftState` à mão e o manda para a casca
+(`set_simulated_draft`). Enquanto a aba está aberta, ranking, minimax, bans e a
+prévia leem esse draft no lugar do champ select do cliente (`current_draft`);
+`DraftState::normalized` refaz os indisponíveis e a sua rota, para o motor não
+depender de a interface acertar os dois. Rota de inimigo deixada em branco é
+presumida como na ranqueada. O simulador ignora a lista da conta.
 
 ## 7. Pool
 

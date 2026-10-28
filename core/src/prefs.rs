@@ -90,6 +90,15 @@ impl OverlayPrefs {
     }
 }
 
+/// Preferências do draft.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase", default)]
+pub struct DraftPrefs {
+    /// Recomendar também quem a conta não pode escolher. Desligado: a lista da
+    /// conta filtra, quando o cliente a entrega.
+    pub show_all_champions: bool,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

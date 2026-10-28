@@ -1,5 +1,5 @@
 import type { StaticData } from "../lib/ddragon";
-import { POSITION_LABEL, type DraftSlot, type DraftState } from "../lib/types";
+import { POSITION_LABEL, ROLES, type DraftSlot, type DraftState, type Role } from "../lib/types";
 
 interface Props {
   draft: DraftState | null;
@@ -7,9 +7,23 @@ interface Props {
   secondsLeft: number | null;
   connected: boolean;
   phase: string;
+  /** A rota que o motor presumiu para cada inimigo, por campeão. */
+  inferred?: Record<number, Role>;
+  /** A rota que você marcou, por campeão. */
+  marked?: Record<number, Role>;
+  onEnemyRole?: (championId: number, role: Role | null) => void;
 }
 
-export default function DraftBoard({ draft, staticData, secondsLeft, connected, phase }: Props) {
+export default function DraftBoard({
+  draft,
+  staticData,
+  secondsLeft,
+  connected,
+  phase,
+  inferred,
+  marked,
+  onEnemyRole,
+}: Props) {
   if (!draft) {
     return (
       <div className="empty">
@@ -47,7 +61,15 @@ export default function DraftBoard({ draft, staticData, secondsLeft, connected, 
 
       <div className="teams">
         <TeamColumn title="Seu time" side="ally" slots={draft.myTeam} staticData={staticData} />
-        <TeamColumn title="Inimigos" side="enemy" slots={draft.theirTeam} staticData={staticData} />
+        <TeamColumn
+          title="Inimigos"
+          side="enemy"
+          slots={draft.theirTeam}
+          staticData={staticData}
+          inferred={inferred}
+          marked={marked}
+          onEnemyRole={onEnemyRole}
+        />
       </div>
 
       <div className="bans">
@@ -63,11 +85,17 @@ function TeamColumn({
   side,
   slots,
   staticData,
+  inferred,
+  marked,
+  onEnemyRole,
 }: {
   title: string;
   side: "ally" | "enemy";
   slots: DraftSlot[];
   staticData: StaticData | null;
+  inferred?: Record<number, Role>;
+  marked?: Record<number, Role>;
+  onEnemyRole?: (championId: number, role: Role | null) => void;
 }) {
   return (
     <div className={`team team-${side}`}>
@@ -101,17 +129,56 @@ function TeamColumn({
               <span className="slot-name">
                 {champion?.name ?? (shownId ? `#${shownId}` : "Aguardando")}
               </span>
-              <span className="slot-meta">
-                {POSITION_LABEL[slot.position] ?? slot.position.toUpperCase()}
-                {slot.isLocal && " · você"}
-                {isHover && " · hover"}
-              </span>
+              {side === "enemy" && slot.championId > 0 && !slot.position && onEnemyRole ? (
+                <RotaInimiga
+                  championId={slot.championId}
+                  presumida={inferred?.[slot.championId]}
+                  marcada={marked?.[slot.championId]}
+                  onChange={onEnemyRole}
+                />
+              ) : (
+                <span className="slot-meta">
+                  {POSITION_LABEL[slot.position] ?? slot.position.toUpperCase()}
+                  {slot.isLocal && " · você"}
+                  {isHover && " · hover"}
+                </span>
+              )}
             </div>
             {slot.isActing && <span className="slot-pulse" />}
           </div>
         );
       })}
     </div>
+  );
+}
+
+/** A ranqueada não diz a rota do inimigo: o motor presume, e você corrige. */
+function RotaInimiga({
+  championId,
+  presumida,
+  marcada,
+  onChange,
+}: {
+  championId: number;
+  presumida?: Role;
+  marcada?: Role;
+  onChange: (championId: number, role: Role | null) => void;
+}) {
+  const rotulo = (role?: Role) => ROLES.find((r) => r.id === role)?.label ?? "?";
+  return (
+    <select
+      className={`slot-role ${marcada ? "slot-role-marked" : ""}`}
+      value={marcada ?? ""}
+      title={marcada ? "Rota marcada por você" : "Rota presumida pelo Presage; corrija se estiver errada"}
+      onChange={(e) => onChange(championId, (e.target.value || null) as Role | null)}
+    >
+      <option value="">{`${rotulo(presumida)} (presumida)`}</option>
+      {ROLES.map((r) => (
+        <option key={r.id} value={r.id}>
+          {r.label}
+        </option>
+      ))}
+    </select>
   );
 }
 

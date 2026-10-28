@@ -6,7 +6,7 @@
 //! os dois: quando a Riot mexer no formato, só ela quebra.
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 // ---------------------------------------------------------------------------
 // Formato cru do LCU
@@ -73,8 +73,10 @@ pub struct LcuSummoner {
 // Modelo de domínio do Presage
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone, Serialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
+// O domínio também desserializa: o simulador de draft monta um `DraftState` na
+// interface e manda para o motor, e campo omitido vale o padrão.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase", default)]
 pub struct DraftSlot {
     pub cell_id: i64,
     pub position: String,
@@ -90,8 +92,8 @@ pub struct DraftSlot {
     pub locked: bool,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase", default)]
 pub struct DraftState {
     pub phase: String,
     pub time_left_ms: i64,
@@ -190,16 +192,7 @@ pub fn to_draft_state(session: &LcuSession) -> DraftState {
         .map(|s| s.position.clone())
         .unwrap_or_default();
 
-    let mut unavailable: Vec<i64> = my_bans
-        .iter()
-        .chain(their_bans.iter())
-        .copied()
-        .chain(my_team.iter().chain(their_team.iter()).filter_map(|s| {
-            (s.champion_id > 0).then_some(s.champion_id)
-        }))
-        .collect();
-    unavailable.sort_unstable();
-    unavailable.dedup();
+    let unavailable = unavailable_of(&my_bans, &their_bans, &my_team, &their_team);
 
     DraftState {
         phase: session.timer.phase.clone(),
@@ -215,6 +208,81 @@ pub fn to_draft_state(session: &LcuSession) -> DraftState {
         current_action,
         unavailable,
     }
+}
+
+/// Banidos e escolhidos, sem repetição. A mesma conta para o draft do cliente e
+/// para o montado à mão no simulador.
+fn unavailable_of(my_bans: &[i64], their_bans: &[i64], my_team: &[DraftSlot], their_team: &[DraftSlot]) -> Vec<i64> {
+    let mut unavailable: Vec<i64> = my_bans
+        .iter()
+        .chain(their_bans.iter())
+        .copied()
+        .chain(my_team.iter().chain(their_team.iter()).filter_map(|s| {
+            (s.champion_id > 0).then_some(s.champion_id)
+        }))
+        .filter(|id| *id > 0)
+        .collect();
+    unavailable.sort_unstable();
+    unavailable.dedup();
+    unavailable
+}
+
+impl DraftState {
+    /// Refaz `unavailable` e `local_position` a partir dos times e bans. O
+    /// simulador chama isso no que a interface mandou, para o motor não
+    /// depender de a interface acertar os dois.
+    pub fn normalized(mut self) -> Self {
+        self.unavailable = unavailable_of(&self.my_bans, &self.their_bans, &self.my_team, &self.their_team);
+        if let Some(local) = self.my_team.iter().find(|s| s.is_local) {
+            self.local_cell_id = local.cell_id;
+            self.local_position = local.position.clone();
+        }
+        self
+    }
+}
+
+/// Um campeão da grade do champ select (`/lol-champ-select/v1/all-grid-champions`).
+#[derive(Debug, Clone, Deserialize, Default)]
+#[serde(rename_all = "camelCase", default)]
+pub struct LcuGridChampion {
+    pub id: i64,
+    pub owned: bool,
+    pub free_to_play: bool,
+    #[serde(rename = "xboxGPReward")]
+    pub xbox_gp_reward: bool,
+}
+
+#[derive(Debug, Clone, Deserialize, Default)]
+#[serde(rename_all = "camelCase", default)]
+pub struct LcuGameflowSession {
+    pub game_data: LcuGameData,
+}
+
+#[derive(Debug, Clone, Deserialize, Default)]
+#[serde(rename_all = "camelCase", default)]
+pub struct LcuGameData {
+    pub queue: LcuQueue,
+}
+
+#[derive(Debug, Clone, Deserialize, Default)]
+#[serde(default)]
+pub struct LcuQueue {
+    pub id: i64,
+}
+
+/// Filas ranqueadas: solo/duo e flex. Nelas a rotação grátis não vale.
+pub const RANKED_QUEUES: [i64; 2] = [420, 440];
+
+/// Quem a conta pode escolher nesta fila: os próprios e os do Game Pass; fora
+/// da ranqueada, também os da rotação grátis. Fila desconhecida fica do lado
+/// seguro — sem a rotação —, porque recomendar quem não dá para pegar é pior do
+/// que esconder uma opção.
+pub fn selectable(grid: &[LcuGridChampion], queue_id: Option<i64>) -> HashSet<i64> {
+    let gratis_vale = queue_id.is_some_and(|q| q > 0 && !RANKED_QUEUES.contains(&q));
+    grid.iter()
+        .filter(|c| c.id > 0 && (c.owned || c.xbox_gp_reward || (gratis_vale && c.free_to_play)))
+        .map(|c| c.id)
+        .collect()
 }
 
 #[cfg(test)]
@@ -299,5 +367,60 @@ mod tests {
         assert!(state.my_team.is_empty());
         assert!(!state.is_local_turn);
         assert_eq!(state.current_action, None);
+    }
+
+    fn grade() -> Vec<LcuGridChampion> {
+        serde_json::from_str(
+            r#"[
+                {"id": 1, "name": "Próprio", "owned": true, "freeToPlay": false, "xboxGPReward": false, "rented": false},
+                {"id": 2, "name": "Grátis", "owned": false, "freeToPlay": true, "xboxGPReward": false, "rented": false},
+                {"id": 3, "name": "Game Pass", "owned": false, "freeToPlay": false, "xboxGPReward": true, "rented": false},
+                {"id": 4, "name": "Não tem", "owned": false, "freeToPlay": false, "xboxGPReward": false, "rented": false}
+            ]"#,
+        )
+        .unwrap()
+    }
+
+    #[test]
+    fn na_ranqueada_a_rotacao_gratis_nao_vale() {
+        let ids = selectable(&grade(), Some(420));
+        assert_eq!(ids, [1, 3].into_iter().collect());
+    }
+
+    #[test]
+    fn fora_da_ranqueada_a_rotacao_vale() {
+        let ids = selectable(&grade(), Some(400));
+        assert_eq!(ids, [1, 2, 3].into_iter().collect());
+    }
+
+    #[test]
+    fn fila_desconhecida_fica_do_lado_seguro() {
+        assert_eq!(selectable(&grade(), None), [1, 3].into_iter().collect());
+    }
+
+    #[test]
+    fn a_fila_sai_da_sessao_do_fluxo_de_jogo() {
+        let sessao: LcuGameflowSession =
+            serde_json::from_str(r#"{"phase": "ChampSelect", "gameData": {"queue": {"id": 420, "type": "RANKED_SOLO_5x5"}}}"#)
+                .unwrap();
+        assert_eq!(sessao.game_data.queue.id, 420);
+    }
+
+    #[test]
+    fn draft_montado_a_mao_ganha_indisponiveis_e_rota() {
+        // O simulador manda só o essencial; o resto vem do padrão e da conta.
+        let d: DraftState = serde_json::from_str(
+            r#"{
+                "myTeam": [{"cellId": 0, "position": "middle", "isLocal": true},
+                           {"cellId": 1, "position": "top", "championId": 86, "locked": true}],
+                "theirTeam": [{"cellId": 5, "championId": 103, "locked": true}],
+                "myBans": [64], "theirBans": [0]
+            }"#,
+        )
+        .unwrap();
+        let d = d.normalized();
+        assert_eq!(d.unavailable, vec![64, 86, 103]);
+        assert_eq!(d.local_position, "middle");
+        assert_eq!(d.local_cell_id, 0);
     }
 }
