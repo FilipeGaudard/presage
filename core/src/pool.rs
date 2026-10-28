@@ -38,9 +38,15 @@ pub struct PoolEntry {
     pub tier: Tier,
 }
 
+/// Quantos bans cabem na sua lista: um por fase de ban da ranqueada.
+pub const BAN_POOL_MAX: usize = 5;
+
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Pool {
     pub entries: Vec<PoolEntry>,
+    /// Os seus bans, em ordem de preferência. Arquivo antigo carrega vazio.
+    #[serde(default)]
+    pub bans: Vec<i64>,
 }
 
 impl Pool {

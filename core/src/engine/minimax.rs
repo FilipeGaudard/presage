@@ -52,6 +52,9 @@ pub struct BanSuggestion {
     /// Quanto deixar este campeão em jogo custa a você.
     pub threat: f64,
     pub reason: String,
+    /// Veio da sua lista de bans, não da conta da composição.
+    #[serde(default)]
+    pub from_pool: bool,
 }
 
 /// Valor de uma composição contra a outra, como probabilidade de vitória.
@@ -237,6 +240,7 @@ pub fn suggest_bans(
                 champion_id: id,
                 threat: round3(threat),
                 reason: "Completa o que falta na composição deles".to_string(),
+                from_pool: false,
             }
         })
         .collect();
@@ -249,6 +253,54 @@ pub fn suggest_bans(
     });
     suggestions.truncate(limit);
     suggestions
+}
+
+/// Os bans com a sua lista na frente.
+///
+/// A lista vale desde o primeiro ban, antes de o outro lado escolher qualquer
+/// coisa — é quando a conta da composição ainda não tem o que dizer. Sai dela
+/// quem já está banido ou escolhido e quem um aliado quer pegar: banir o pick
+/// do próprio time é o erro que um ban automático comete. Depois da lista vem a
+/// sugestão por composição, sem repetir.
+pub fn bans_with_pool(
+    draft: &DraftState,
+    index: &ChampionIndex,
+    ban_pool: &[i64],
+    limit: usize,
+) -> Vec<BanSuggestion> {
+    let unavailable: HashSet<i64> = draft
+        .unavailable
+        .iter()
+        .chain(draft.my_bans.iter())
+        .chain(draft.their_bans.iter())
+        .copied()
+        .collect();
+    let do_time: HashSet<i64> = locked(&draft.my_team, false).into_iter().collect();
+
+    let mut saida: Vec<BanSuggestion> = Vec::new();
+    for &id in ban_pool {
+        let livre = id > 0 && !unavailable.contains(&id) && !do_time.contains(&id);
+        if livre && !saida.iter().any(|b| b.champion_id == id) {
+            saida.push(BanSuggestion {
+                champion_id: id,
+                threat: 0.0,
+                reason: "Da sua lista de bans".to_string(),
+                from_pool: true,
+            });
+        }
+    }
+    // `unavailable` já traz os bans quando o draft vem do LCU; o simulador monta
+    // o draft à mão, e por isso a conta não confia só nele.
+    for sugestao in suggest_bans(draft, index, limit + saida.len() + unavailable.len()) {
+        if !do_time.contains(&sugestao.champion_id)
+            && !unavailable.contains(&sugestao.champion_id)
+            && !saida.iter().any(|b| b.champion_id == sugestao.champion_id)
+        {
+            saida.push(sugestao);
+        }
+    }
+    saida.truncate(limit);
+    saida
 }
 
 fn round3(value: f64) -> f64 {
@@ -480,5 +532,38 @@ mod tests {
     #[test]
     fn limite_de_bans_e_respeitado() {
         assert_eq!(suggest_bans(&draft(vec![], vec![MARKS]), &index(), 3).len(), 3);
+    }
+
+    #[test]
+    fn a_sua_lista_de_bans_vem_antes_e_vale_desde_o_primeiro_ban() {
+        // Ninguém escolheu nada: a conta da composição não tem o que dizer, a
+        // sua lista tem.
+        let bans = bans_with_pool(&draft(vec![], vec![]), &index(), &[TANK, MAGE], 5);
+        let ids: Vec<i64> = bans.iter().map(|b| b.champion_id).collect();
+        assert_eq!(ids, vec![TANK, MAGE]);
+        assert!(bans.iter().all(|b| b.from_pool));
+
+        let depois = bans_with_pool(&draft(vec![], vec![MARKS]), &index(), &[TANK], 3);
+        assert_eq!(depois[0].champion_id, TANK);
+        assert!(!depois[1].from_pool, "depois da lista vem a composição");
+        assert_eq!(depois.len(), 3);
+        assert_eq!(depois.iter().filter(|b| b.champion_id == TANK).count(), 1);
+    }
+
+    #[test]
+    fn nao_bane_o_que_o_time_quer_pegar_nem_o_que_ja_saiu() {
+        // O aliado está em hover no Tanque; o Mago já foi banido.
+        let mut d = draft(vec![], vec![MARKS]);
+        d.my_team[0].intent_id = 0;
+        d.my_team.push(DraftSlot {
+            intent_id: TANK,
+            ..slot(3, 0, false)
+        });
+        d.their_bans = vec![MAGE];
+        let bans = bans_with_pool(&d, &index(), &[TANK, MAGE, ASSASSIN], 5);
+        let ids: Vec<i64> = bans.iter().map(|b| b.champion_id).collect();
+        assert_eq!(ids.first(), Some(&ASSASSIN));
+        assert!(!ids.contains(&TANK), "hover de aliado não é banido");
+        assert!(!ids.contains(&MAGE), "banido não se bane de novo");
     }
 }

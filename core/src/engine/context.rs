@@ -12,8 +12,12 @@
 //! classes quando não. Empate fica com a ordem de escolha, sempre a mesma
 //! resposta para a mesma entrada. Posição informada pelo cliente nunca é
 //! contestada.
+//!
+//! Duas coisas vêm de fora do champ select e entram aqui pela [`Leitura`]: a
+//! rota que você marcou para um inimigo, quando a inferência errou, e os
+//! campeões que a sua conta pode escolher.
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use crate::draft::{DraftSlot, DraftState};
 use crate::pool::Pool;
@@ -37,8 +41,20 @@ pub struct Placed {
     pub role: Role,
     /// O campeão já está escolhido; falso para hover de aliado.
     pub picked: bool,
-    /// A rota veio do cliente; falso quando foi inferida.
+    /// A rota não foi inferida: veio do cliente ou foi marcada por você.
     pub informed: bool,
+}
+
+/// O que o draft não informa e muda a leitura dele.
+#[derive(Debug, Clone, Default)]
+pub struct Leitura {
+    /// A rota que você marcou para um inimigo. Vence a inferência, nunca a
+    /// posição que o cliente informou; duas marcas na mesma rota ficam com a
+    /// do primeiro a escolher.
+    pub enemy_roles: HashMap<i64, Role>,
+    /// Quem a sua conta pode escolher nesta fila. `None` ou vazio: não se sabe,
+    /// e então ninguém sai da lista por isso.
+    pub owned: Option<HashSet<i64>>,
 }
 
 #[derive(Debug, Clone)]
@@ -165,6 +181,17 @@ impl DraftContext {
         pool: &[i64],
         my_role: Role,
     ) -> Self {
+        Self::new_with(draft, index, store, pool, my_role, &Leitura::default())
+    }
+
+    pub fn new_with(
+        draft: &DraftState,
+        index: &ChampionIndex,
+        store: &dyn StatsStore,
+        pool: &[i64],
+        my_role: Role,
+        leitura: &Leitura,
+    ) -> Self {
         let local = draft.my_team.iter().find(|slot| slot.is_local);
         let me = local.map(slot_champion).filter(|id| *id > 0);
 
@@ -199,6 +226,17 @@ impl DraftContext {
             })
             .collect();
 
+        for i in 0..enemies.len() {
+            let Some(&role) = leitura.enemy_roles.get(&enemies[i].champion_id) else {
+                continue;
+            };
+            let tomada = enemies.iter().any(|p| p.role == role);
+            if enemies[i].role == Role::Unknown && role != Role::Unknown && !tomada {
+                enemies[i].role = role;
+                enemies[i].informed = true;
+            }
+        }
+
         let assumed_allies = infer(&mut allies, &[my_role], index, store);
         let assumed_enemies = infer(&mut enemies, &[], index, store);
 
@@ -216,10 +254,12 @@ impl DraftContext {
         }
 
         let pool: HashSet<i64> = pool.iter().copied().collect();
+        let owned = leitura.owned.as_ref().filter(|o| !o.is_empty());
         let candidates = index
             .ids()
             .into_iter()
             .filter(|id| !unavailable.contains(id))
+            .filter(|id| owned.map_or(true, |o| o.contains(id)))
             .filter(|id| {
                 pool.contains(id)
                     || index
@@ -457,11 +497,98 @@ mod tests {
     fn a_rota_vem_do_cliente_da_escolha_ou_da_pool() {
         let pool_meio = Pool {
             entries: vec![PoolEntry { champion_id: 4, role: Some(Role::Mid), tier: Tier::Core }],
+            bans: vec![],
         };
         assert_eq!(resolve_role("top", Some(Role::Mid), &pool_meio), Role::Top);
         assert_eq!(resolve_role("", Some(Role::Bot), &pool_meio), Role::Bot);
         assert_eq!(resolve_role("", None, &pool_meio), Role::Mid);
         assert_eq!(resolve_role("", None, &Pool::default()), Role::Unknown);
+    }
+
+    fn ctx_com(d: &DraftState, pool: &[i64], leitura: &Leitura) -> DraftContext {
+        DraftContext::new_with(d, &indice(), &NoStats, pool, Role::from_lcu(&d.local_position), leitura)
+    }
+
+    fn marcadas(pares: &[(i64, Role)]) -> Leitura {
+        Leitura {
+            enemy_roles: pares.iter().copied().collect(),
+            owned: None,
+        }
+    }
+
+    #[test]
+    fn a_rota_marcada_vence_a_inferida() {
+        // Pelas classes o atirador iria para o bot; você viu que ele está no
+        // meio.
+        let d = draft(
+            vec![slot(0, "middle", 0, 0, true, false)],
+            vec![slot(5, "", 1, 0, false, true)],
+        );
+        assert_eq!(ctx(&d, &[]).enemies[0].role, Role::Bot);
+
+        let c = ctx_com(&d, &[], &marcadas(&[(1, Role::Mid)]));
+        assert_eq!(c.enemies[0].role, Role::Mid);
+        assert_eq!(c.lane_opponent().map(|p| p.champion_id), Some(1));
+        assert!(!c.roles_assumed, "rota marcada não é presumida");
+    }
+
+    #[test]
+    fn a_rota_marcada_tira_a_rota_dos_outros() {
+        // Atirador e suporte sem posição. Marcar o suporte no bot obriga o
+        // atirador a ir para outra rota: a inferência só distribui o que sobra.
+        let d = draft(
+            vec![slot(0, "middle", 0, 0, true, false)],
+            vec![slot(5, "", 1, 0, false, true), slot(6, "", 3, 0, false, true)],
+        );
+        let c = ctx_com(&d, &[], &marcadas(&[(3, Role::Bot)]));
+        let rota = |id: i64| c.enemies.iter().find(|p| p.champion_id == id).unwrap().role;
+        assert_eq!(rota(3), Role::Bot);
+        assert_ne!(rota(1), Role::Bot);
+        assert!(c.roles_assumed, "o atirador ainda é presumido");
+    }
+
+    #[test]
+    fn duas_marcas_na_mesma_rota_ficam_com_a_primeira() {
+        let d = draft(
+            vec![slot(0, "middle", 0, 0, true, false)],
+            vec![slot(5, "", 4, 0, false, true), slot(6, "", 7, 0, false, true)],
+        );
+        let c = ctx_com(&d, &[], &marcadas(&[(4, Role::Top), (7, Role::Top)]));
+        let rota = |id: i64| c.enemies.iter().find(|p| p.champion_id == id).unwrap().role;
+        assert_eq!(rota(4), Role::Top);
+        assert_ne!(rota(7), Role::Top);
+    }
+
+    #[test]
+    fn a_marca_nao_contesta_a_posicao_do_cliente() {
+        let d = draft(
+            vec![slot(0, "middle", 0, 0, true, false)],
+            vec![slot(5, "middle", 1, 0, false, true)],
+        );
+        let c = ctx_com(&d, &[], &marcadas(&[(1, Role::Bot)]));
+        assert_eq!(c.enemies[0].role, Role::Mid);
+    }
+
+    #[test]
+    fn so_entra_quem_a_sua_conta_pode_escolher() {
+        let d = draft(vec![slot(0, "middle", 0, 0, true, false)], vec![]);
+        let leitura = Leitura {
+            enemy_roles: HashMap::new(),
+            owned: Some([7].into_iter().collect()),
+        };
+        let c = ctx_com(&d, &[4], &leitura);
+        assert!(c.candidates.contains(&7));
+        assert!(!c.candidates.contains(&4), "nem a pool entra sem o campeão");
+    }
+
+    #[test]
+    fn sem_a_lista_da_conta_ninguem_sai() {
+        let d = draft(vec![slot(0, "middle", 0, 0, true, false)], vec![]);
+        let vazia = Leitura {
+            enemy_roles: HashMap::new(),
+            owned: Some(HashSet::new()),
+        };
+        assert_eq!(ctx_com(&d, &[], &vazia).candidates, ctx(&d, &[]).candidates);
     }
 
     #[test]
