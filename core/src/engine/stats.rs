@@ -138,6 +138,11 @@ pub trait StatsStore: Send + Sync {
     fn lane_profile(&self) -> Option<LaneProfile> {
         None
     }
+
+    /// O jogador já jogou o campeão nesta rota, pelo próprio histórico.
+    fn played_in(&self, _champion: i64, _role: Role) -> bool {
+        false
+    }
 }
 
 pub struct NoStats;
@@ -238,6 +243,11 @@ impl StatsStore for PersonalStats {
     }
     fn lane_profile(&self) -> Option<LaneProfile> {
         (!self.lanes.is_empty()).then(|| profile::build(&self.lanes))
+    }
+    fn played_in(&self, champion: i64, role: Role) -> bool {
+        self.lanes
+            .iter()
+            .any(|game| game.champion == champion && game.role == role)
     }
 }
 

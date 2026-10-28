@@ -10,6 +10,7 @@ pub mod lanes;
 pub mod minimax;
 pub mod poolgap;
 pub mod profile;
+pub mod roles;
 pub mod priority;
 pub mod runes;
 pub mod stats;

@@ -135,6 +135,9 @@ impl StatsStore for Layered {
     fn lane_profile(&self) -> Option<LaneProfile> {
         self.personal.lane_profile()
     }
+    fn played_in(&self, champion: i64, role: Role) -> bool {
+        self.personal.played_in(champion, role)
+    }
 }
 
 #[cfg(test)]

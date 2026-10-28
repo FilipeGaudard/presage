@@ -18,6 +18,7 @@ use serde::Serialize;
 
 use super::champion::{Champion, ChampionIndex, Role};
 use super::damage::damage_multiplier;
+use super::roles::plays;
 use super::stats::StatsStore;
 
 /// O tamanho da pool completa, e quantos dela você escolhe.
@@ -33,10 +34,6 @@ const ROBUST: f64 = 0.55;
 /// Abaixo disto de peso, a característica não vira ponto forte nem fraco na
 /// rota — só desempata a escolha.
 const RELEVANT: f64 = 0.5;
-
-/// Com a base de partidas, joga a rota quem tem nela ao menos esta fração das
-/// próprias partidas.
-const ROLE_SHARE: f64 = 0.05;
 
 const MAX_REASONS: usize = 3;
 
@@ -241,33 +238,6 @@ pub fn robustness(champion: &Champion) -> f64 {
     menor / maior
 }
 
-/// Quem joga a rota.
-///
-/// Com a base de partidas, quem tem nela ao menos 5% das próprias partidas.
-/// Sem a base, as classes do Data Dragon — grosseiro, porque classe não é rota
-/// e o topo de alcance fica de fora, mas é o que impede sugerir tanque para a
-/// pool de atirador. A escolha manual não passa por aqui: qualquer campeão
-/// entra na pool se o jogador quiser.
-pub fn plays(champion: &Champion, role: Role, store: &dyn StatsStore) -> bool {
-    if store.has_global() {
-        let games = |r: Role| store.base(champion.id, r).map_or(0, |rec| rec.games);
-        let total: u32 = [Role::Top, Role::Jungle, Role::Mid, Role::Bot, Role::Support]
-            .into_iter()
-            .map(games)
-            .sum();
-        return total > 0 && games(role) as f64 / total as f64 >= ROLE_SHARE;
-    }
-    let tags: &[&str] = match role {
-        Role::Top => &["Fighter", "Tank"],
-        Role::Jungle => &["Fighter", "Tank", "Assassin"],
-        Role::Mid => &["Mage", "Assassin"],
-        Role::Bot => &["Marksman"],
-        Role::Support => &["Support", "Tank"],
-        Role::Unknown => return true,
-    };
-    champion.tags.iter().any(|t| tags.contains(&t.as_str()))
-}
-
 #[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Finding {
@@ -438,7 +408,7 @@ pub fn role_label(role: Role) -> &'static str {
 mod tests {
     use super::*;
     use crate::engine::champion::{fake, BaseStats};
-    use crate::engine::stats::{NoStats, Record};
+    use crate::engine::stats::NoStats;
     use std::collections::HashMap;
 
     fn com_base(mut c: Champion, hp: f64, armor: f64, mr: f64) -> Champion {
@@ -563,38 +533,6 @@ mod tests {
                 c.name
             );
         }
-    }
-
-    #[test]
-    fn com_a_base_a_rota_sai_das_partidas() {
-        // O Lutador21 tem 30% das partidas no meio; pela classe não entraria.
-        struct Base;
-        impl StatsStore for Base {
-            fn base(&self, champion: i64, role: Role) -> Option<Record> {
-                match (champion, role) {
-                    (21, Role::Mid) => Some(Record::new(300, 150)),
-                    (21, Role::Top) => Some(Record::new(700, 350)),
-                    (1, Role::Mid) => Some(Record::new(1000, 500)),
-                    _ => None,
-                }
-            }
-            fn matchup(&self, _: i64, _: i64, _: Role) -> Option<Record> {
-                None
-            }
-            fn synergy(&self, _: i64, _: i64) -> Option<Record> {
-                None
-            }
-            fn personal(&self, _: i64) -> Option<Record> {
-                None
-            }
-            fn has_global(&self) -> bool {
-                true
-            }
-        }
-        let idx = indice();
-        assert!(plays(idx.get(21).unwrap(), Role::Mid, &Base));
-        assert!(!plays(idx.get(21).unwrap(), Role::Mid, &NoStats));
-        assert!(!plays(idx.get(2).unwrap(), Role::Mid, &Base), "sem partidas, não joga");
     }
 
     #[test]
