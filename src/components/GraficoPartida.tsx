@@ -1,8 +1,10 @@
-import type { CoachNote, Point, Series } from "../lib/types";
+import type { CoachNote, Point, Role, Series } from "../lib/types";
 
 interface Props {
   series: Series;
   duration: number;
+  /** A rota da partida. O suporte vê a curva de visão no lugar da de tropas. */
+  role?: Role;
 }
 
 const L = 44; // espaço do eixo à esquerda
@@ -109,7 +111,10 @@ function Curva({
   );
 }
 
-export default function GraficoPartida({ series, duration }: Props) {
+export default function GraficoPartida({ series, duration, role }: Props) {
+  // Tropas contra o outro suporte não medem o trabalho de nenhum dos dois.
+  const suporte = role === "Support";
+  const visao = series?.visionDiff ?? [];
   if (!series || series.goldLead.length < 2) return null;
 
   const fim = series.goldLead[series.goldLead.length - 1].v;
@@ -139,14 +144,23 @@ export default function GraficoPartida({ series, duration }: Props) {
         )}
       </p>
 
-      {series.csDiff.length >= 2 && (
-        <Curva
-          pontos={series.csDiff}
-          rotulo="Tropas, você menos o seu oponente"
-          formata={(v) => BR.format(v)}
-          altura={104}
-        />
-      )}
+      {suporte
+        ? visao.length >= 2 && (
+            <Curva
+              pontos={visao}
+              rotulo="Visão, você menos o outro suporte"
+              formata={(v) => v.toFixed(0)}
+              altura={104}
+            />
+          )
+        : series.csDiff.length >= 2 && (
+            <Curva
+              pontos={series.csDiff}
+              rotulo="Tropas, você menos o seu oponente"
+              formata={(v) => BR.format(v)}
+              altura={104}
+            />
+          )}
 
       {series.levelDiff.length >= 2 && (
         <Curva

@@ -69,7 +69,7 @@ export default function PostGame({ report }: Props) {
         </div>
       )}
 
-      <GraficoPartida series={report.series} duration={report.duration} />
+      <GraficoPartida series={report.series} duration={report.duration} role={report.role} />
 
       <p className="faint">
         Tudo aqui sai da gravação da própria partida, feita na sua máquina. Nada

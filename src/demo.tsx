@@ -666,6 +666,7 @@ const serieDemo = {
 
 const review: CoachReport = {
   champion: "Ahri",
+  role: "Mid",
   duration: 2184,
   won: false,
   summary: "36:24 de Ahri · 3 a corrigir, 2 a manter.",

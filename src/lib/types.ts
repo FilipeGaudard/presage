@@ -270,6 +270,8 @@ export interface Series {
   /** Ouro em itens do seu time menos o deles. Exato. */
   goldLead: Point[];
   csDiff: Point[];
+  /** Seu placar de visão menos o do oponente direto: a curva do suporte. */
+  visionDiff?: Point[];
   levelDiff: Point[];
   /** Instantes em que você morreu. */
   deaths: number[];
@@ -278,6 +280,8 @@ export interface Series {
 
 export interface CoachReport {
   champion: string;
+  /** A rota da partida: decide o que foi cobrado e qual curva aparece. */
+  role?: Role;
   duration: number;
   won: boolean | null;
   good: CoachNote[];

@@ -6,9 +6,16 @@
 //!
 //! Cada observação precisa ser verificável pela própria pessoa: um número que
 //! ela poderia ter conferido na aba de pontuação. Nada de "jogue mais seguro".
+//!
+//! A rota decide o que se cobra (`cobranca`). Farm contra o oponente direto é
+//! trabalho do topo, da selva, do meio e do atirador; do suporte, não — cobrar
+//! tropas de um suporte contra o outro é mandar fazer o trabalho de outra pessoa.
+//! O suporte é cobrado pela visão contra o outro suporte, e a participação em
+//! abates pesa diferente em cada rota.
 
 use serde::{Deserialize, Serialize};
 
+use super::champion::Role;
 use super::gold::earned_at;
 use super::items::ItemIndex;
 use crate::live::{LiveGame, LivePlayer};
@@ -25,6 +32,42 @@ const IDLE_GOLD: f64 = 1300.0;
 
 /// Partida curta demais não rende leitura nenhuma.
 const MIN_DURATION: f64 = 300.0;
+
+/// O que cada rota tem como trabalho, e portanto o que o relatório cobra dela.
+///
+/// Escrito à mão: regra, não estatística. Os limiares de participação seguem o
+/// que cada rota costuma ter — o suporte e a selva vivem de entrar nas brigas, o
+/// topo passa boa parte do jogo sozinho na rota.
+struct Cobranca {
+    /// Farm contra o oponente direto é trabalho da rota.
+    farm: bool,
+    /// Visão contra o oponente direto é trabalho da rota.
+    vision: bool,
+    /// Participação abaixo disto é ponto fraco; acima de `kp_good`, forte.
+    kp_bad: f64,
+    kp_good: f64,
+}
+
+fn cobranca(role: Role) -> Cobranca {
+    let (farm, vision, kp_bad, kp_good) = match role {
+        Role::Support => (false, true, 0.50, 0.75),
+        Role::Jungle => (true, false, 0.45, 0.70),
+        Role::Top => (true, false, 0.30, 0.60),
+        Role::Mid | Role::Bot => (true, false, 0.40, 0.65),
+        // Sem rota (ARAM, partida sem posição) não há oponente direto.
+        Role::Unknown => (false, false, 0.40, 0.65),
+    };
+    Cobranca {
+        farm,
+        vision,
+        kp_bad,
+        kp_good,
+    }
+}
+
+fn sem_rota() -> Role {
+    Role::Unknown
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Recording {
@@ -90,6 +133,9 @@ pub struct Series {
     pub gold_lead: Vec<Point>,
     /// Suas tropas menos as do oponente direto.
     pub cs_diff: Vec<Point>,
+    /// Seu placar de visão menos o do oponente direto. É a curva do suporte.
+    #[serde(default)]
+    pub vision_diff: Vec<Point>,
     pub level_diff: Vec<Point>,
     /// Instantes em que você morreu, para marcar na linha do tempo.
     pub deaths: Vec<f64>,
@@ -110,6 +156,9 @@ const BUCKET: f64 = 30.0;
 #[serde(rename_all = "camelCase")]
 pub struct Report {
     pub champion: String,
+    /// A rota da partida. Decide o que foi cobrado e qual curva aparece.
+    #[serde(default = "sem_rota")]
+    pub role: Role,
     pub duration: f64,
     pub won: Option<bool>,
     pub good: Vec<Note>,
@@ -168,8 +217,10 @@ pub fn review(recording: &Recording, items: &ItemIndex) -> Report {
     let last = recording.frames.last();
     let me = last.and_then(me_in);
 
+    let role = me.map_or(Role::Unknown, |m| Role::from_lcu(&m.position));
     let mut report = Report {
         champion: me.map(|m| m.champion_key.clone()).unwrap_or_default(),
+        role,
         duration,
         won: recording.won,
         good: Vec::new(),
@@ -196,8 +247,14 @@ pub fn review(recording: &Recording, items: &ItemIndex) -> Report {
     let minutes = duration / 60.0;
     let mut notes = Vec::new();
 
-    notes.extend(farm(last, me, minutes));
-    notes.extend(participation(last, me));
+    let regra = cobranca(role);
+    if regra.farm {
+        notes.extend(farm(last, me, minutes));
+    }
+    if regra.vision {
+        notes.extend(vision(last, me, minutes));
+    }
+    notes.extend(participation(last, me, &regra));
     notes.extend(deaths(recording, me));
     notes.extend(death_clusters(recording));
     notes.extend(first_legendary(recording, items));
@@ -216,12 +273,17 @@ pub fn review(recording: &Recording, items: &ItemIndex) -> Report {
     report.bad.sort_by(|a, b| b.weight.total_cmp(&a.weight));
 
     report.summary = format!(
-        "{} de {} · {} a corrigir, {} a manter.",
+        "{} de {}{} · {} a corrigir, {} a manter.",
         clock(duration),
         if report.champion.is_empty() {
             "partida".into()
         } else {
             report.champion.clone()
+        },
+        if role == Role::Unknown {
+            String::new()
+        } else {
+            format!(" ({})", role.short())
         },
         report.bad.len(),
         report.good.len()
@@ -282,6 +344,10 @@ fn series(recording: &Recording) -> Series {
                 t,
                 v: (me.scores.creep_score - rival.scores.creep_score) as f64,
             });
+            out.vision_diff.push(Point {
+                t,
+                v: me.scores.ward_score - rival.scores.ward_score,
+            });
             out.level_diff.push(Point {
                 t,
                 v: f64::from(me.level) - f64::from(rival.level),
@@ -330,8 +396,42 @@ fn farm(last: &LiveGame, me: &LivePlayer, minutes: f64) -> Vec<Note> {
     vec![]
 }
 
-/// Fatia dos abates do time em que você entrou.
-fn participation(last: &LiveGame, me: &LivePlayer) -> Vec<Note> {
+/// Placar de visão por minuto contra o oponente direto. Para o suporte, é o
+/// que o farm é para as outras rotas.
+fn vision(last: &LiveGame, me: &LivePlayer, minutes: f64) -> Vec<Note> {
+    let Some(rival) = opponent_in(last, me) else {
+        return vec![];
+    };
+    let meu = me.scores.ward_score / minutes;
+    let dele = rival.scores.ward_score / minutes;
+    let diferenca = (me.scores.ward_score - rival.scores.ward_score).abs();
+
+    if dele - meu >= 0.4 {
+        return vec![bad(
+            format!("{meu:.1} de visão por minuto contra {dele:.1}"),
+            format!(
+                "{} terminou com {diferenca:.0} pontos de visão a mais. Visão é o que deixa o time ver a briga antes dela acontecer.",
+                rival.champion_key
+            ),
+            ((dele - meu) / 1.5).min(1.0),
+        )];
+    }
+    if meu - dele >= 0.3 {
+        return vec![good(
+            format!("{meu:.1} de visão por minuto contra {dele:.1}"),
+            format!(
+                "Você fechou {diferenca:.0} pontos de visão a mais que {}.",
+                rival.champion_key
+            ),
+            ((meu - dele) / 1.5).min(1.0),
+        )];
+    }
+    vec![]
+}
+
+/// Fatia dos abates do time em que você entrou, medida contra o que a rota
+/// costuma ter.
+fn participation(last: &LiveGame, me: &LivePlayer, regra: &Cobranca) -> Vec<Note> {
     let total: i64 = last
         .players
         .iter()
@@ -346,14 +446,14 @@ fn participation(last: &LiveGame, me: &LivePlayer) -> Vec<Note> {
     let minha = me.scores.kills + me.scores.assists;
     let share = minha as f64 / total as f64;
 
-    if share >= 0.65 {
+    if share >= regra.kp_good {
         return vec![good(
             format!("{:.0}% dos abates do time", share * 100.0),
             format!("Você entrou em {minha} dos {total} abates."),
             share,
         )];
     }
-    if share <= 0.40 {
+    if share <= regra.kp_bad {
         return vec![bad(
             format!("{:.0}% dos abates do time", share * 100.0),
             format!(
@@ -598,6 +698,7 @@ mod tests {
     use super::*;
     use crate::engine::items::{parse_stats, Item};
     use crate::live::RawScores;
+    use crate::engine::champion::Role;
     use std::collections::HashMap;
 
     fn items() -> ItemIndex {
@@ -642,6 +743,12 @@ mod tests {
         rival_kills: i64,
         rival_level: u8,
         rival_gold: f64,
+        /// A rota dos dois, como a Live Client escreve.
+        position: &'static str,
+        ward: f64,
+        rival_ward: f64,
+        /// Abates de um aliado, para a participação ter time.
+        ally_kills: i64,
     }
 
     impl Default for Quadro {
@@ -660,18 +767,23 @@ mod tests {
                 rival_kills: 0,
                 rival_level: 1,
                 rival_gold: 0.0,
+                position: "MIDDLE",
+                ward: 0.0,
+                rival_ward: 0.0,
+                ally_kills: 0,
             }
         }
     }
 
     fn frame(q: Quadro) -> LiveGame {
+        let position = q.position;
         let mk = |key: &str, team: &str, local: bool, level: u8, gold: f64, items: Vec<i64>, s: RawScores, dead: bool| {
             LivePlayer {
                 champion_key: key.into(),
                 champion_id: 1,
                 display_name: key.into(),
                 team: team.into(),
-                position: "MIDDLE".into(),
+                position: position.into(),
                 level,
                 items,
                 gold_invested: gold,
@@ -697,7 +809,7 @@ mod tests {
                         deaths: q.deaths,
                         assists: q.assists,
                         creep_score: q.cs,
-                        ward_score: 0.0,
+                        ward_score: q.ward,
                     },
                     q.dead,
                 ),
@@ -713,10 +825,30 @@ mod tests {
                         deaths: 0,
                         assists: 0,
                         creep_score: q.rival_cs,
-                        ward_score: 0.0,
+                        ward_score: q.rival_ward,
                     },
                     false,
                 ),
+                LivePlayer {
+                    champion_key: "Aliado".into(),
+                    champion_id: 2,
+                    display_name: "Aliado".into(),
+                    team: "ORDER".into(),
+                    position: "JUNGLE".into(),
+                    level: q.level,
+                    items: vec![],
+                    gold_invested: 0.0,
+                    is_dead: false,
+                    respawn_timer: 0.0,
+                    is_local: false,
+                    scores: RawScores {
+                        kills: q.ally_kills,
+                        deaths: 0,
+                        assists: 0,
+                        creep_score: 0,
+                        ward_score: 0.0,
+                    },
+                },
             ],
         }
     }
@@ -787,6 +919,80 @@ mod tests {
             "{:?}",
             r.bad
         );
+    }
+
+    /// 30 minutos de suporte: o outro suporte farmou mais e pôs mais visão.
+    fn suporte(t: f64) -> Quadro {
+        let m = t / 60.0;
+        Quadro {
+            t,
+            position: "UTILITY",
+            cs: (m * 1.0) as i64,
+            rival_cs: (m * 2.5) as i64,
+            ward: m * 1.2,
+            rival_ward: m * 2.0,
+            level: 1 + (m / 3.0) as u8,
+            rival_level: 1 + (m / 3.0) as u8,
+            ..Quadro::default()
+        }
+    }
+
+    #[test]
+    fn suporte_nao_e_cobrado_por_farm() {
+        // O caso real: farm de suporte contra suporte não é o trabalho de
+        // nenhum dos dois, e o relatório não pode mandar farmar.
+        let r = review(&gravar(suporte, 1800.0), &items());
+        let tudo: Vec<&str> = r.bad.iter().chain(r.good.iter()).map(|n| n.title.as_str()).collect();
+        assert!(!tudo.iter().any(|t| t.contains("tropas")), "{tudo:?}");
+    }
+
+    #[test]
+    fn suporte_e_cobrado_pela_visao() {
+        let r = review(&gravar(suporte, 1800.0), &items());
+        assert!(
+            r.bad.iter().any(|n| n.title.contains("visão")),
+            "o outro suporte pôs mais visão: {:?}",
+            r.bad
+        );
+    }
+
+    #[test]
+    fn a_curva_do_suporte_e_a_de_visao() {
+        let r = review(&gravar(suporte, 1800.0), &items());
+        assert_eq!(r.role, Role::Support);
+        assert!(r.series.vision_diff.len() >= 2);
+        assert!(r.series.vision_diff.last().unwrap().v < 0.0);
+    }
+
+    #[test]
+    fn participacao_cobra_mais_de_quem_vive_dela() {
+        // 9 de 20 abates: pouco para suporte, normal para o meio.
+        let molde = |pos: &'static str| {
+            move |t: f64| Quadro {
+                t,
+                position: pos,
+                kills: if t >= 900.0 { 4 } else { 0 },
+                assists: if t >= 900.0 { 5 } else { 0 },
+                ally_kills: if t >= 900.0 { 16 } else { 0 },
+                ..reta(t)
+            }
+        };
+        let sup = review(&gravar(molde("UTILITY"), 1800.0), &items());
+        let meio = review(&gravar(molde("MIDDLE"), 1800.0), &items());
+        assert!(sup.bad.iter().any(|n| n.title.contains("abates")), "{:?}", sup.bad);
+        assert!(!meio.bad.iter().any(|n| n.title.contains("abates")), "{:?}", meio.bad);
+    }
+
+    #[test]
+    fn leitura_salva_antes_da_rota_ainda_carrega() {
+        // O app guarda a última leitura em disco; a de antes não tem rota nem
+        // curva de visão.
+        let antiga = r#"{"champion":"Ahri","duration":1800.0,"won":true,"good":[],"bad":[],
+            "summary":"30:00 de Ahri","series":{"goldLead":[],"csDiff":[],"levelDiff":[],
+            "deaths":[],"teamKills":[]}}"#;
+        let r: Report = serde_json::from_str(antiga).unwrap();
+        assert_eq!(r.role, Role::Unknown);
+        assert!(r.series.vision_diff.is_empty());
     }
 
     #[test]

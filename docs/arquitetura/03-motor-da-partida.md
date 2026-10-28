@@ -201,6 +201,21 @@ Cada observação precisa ser verificável pela própria pessoa: um número que 
 poderia ter conferido na aba de pontuação. Nada de "jogue mais seguro". E nada
 vira nota (C-7). A gravação fica na máquina do jogador; nada é enviado (RNF-8).
 
+**A rota decide o que se cobra** (`cobranca`, escrito à mão — regra):
+
+| Rota | Farm contra o oponente | Visão contra o oponente | Participação fraca / forte |
+|---|---|---|---|
+| Topo | sim | — | ≤30% / ≥60% |
+| Selva | sim (campos contra campos) | — | ≤45% / ≥70% |
+| Meio, Atirador | sim | — | ≤40% / ≥65% |
+| Suporte | **não** | **sim** | ≤50% / ≥75% |
+| Sem rota | — | — | ≤40% / ≥65% |
+
+Cobrar tropas de um suporte contra o outro é mandar fazer o trabalho de outra
+pessoa ([L-27](09-licoes-do-prototipo.md)). O suporte é cobrado pelo placar de
+visão por minuto contra o outro suporte, e o gráfico do pós-jogo mostra a curva
+de visão no lugar da de tropas.
+
 O perfil de rota ([04](04-perfil-de-rota.md)) é o par desta leitura: uma partida
 aqui, o histórico inteiro lá.
 
