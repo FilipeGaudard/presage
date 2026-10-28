@@ -7,7 +7,7 @@ tela dele ([C-4](requisitos.md#1-regras-da-riot-c)):
 
 | Momento | O que entrega | De onde lê |
 |---|---|---|
-| **Draft** | campeões ranqueados conforme o draft acontece, com motivo em texto, intervalo de confiança e a resposta adversária (minimax); sugestão de ban; runas do confronto | LCU, Data Dragon, base de partidas quando existir |
+| **Draft** | campeões da sua rota ranqueados conforme o draft acontece, com motivo em texto, intervalo de confiança e a resposta adversária (minimax); para cada candidato, a prévia: rota nível a nível, 2v2 e 3v3, condição de vitória; sugestão de ban; runas do confronto | LCU, Data Dragon, base de partidas quando existir |
 | **Partida** | build adaptativa contra os itens que eles têm agora, chance por rota e escaramuça, ouro dos dez, timers de objetivo, onde está o valor no mapa | Live Client Data API |
 | **Pós-jogo** | leitura da partida gravada; perfil de rota contra o oponente direto ao longo das suas partidas | gravação local, Riot Web API |
 
@@ -59,7 +59,8 @@ resposta honesta é que eles **não têm todos a mesma qualidade**.
 | Divisão do dano que vem (`81% físico`) | itens que eles compraram | alta depois dos primeiros itens |
 | A mesma, antes de eles comprarem | prior de classe escrito à mão | **fraca** |
 | Chance por rota e escaramuça | razão de poder de combate × peso escolhido à mão | **fraca como probabilidade** |
-| Curva por nível (3, 6, 11, 16) | crescimento de atributos por nível | real, mas **não vê habilidades** |
+| Curva por nível (1 a 18) e vantagem de nível | crescimento de atributos por nível | real, mas **não vê habilidades** — nem a suprema no 6, 11 e 16 |
+| Condição de vitória | composição por regra + duelos pela conta de atributos | **regra**; sem fase do jogo até a base existir |
 | Runa do confronto | regras mecânicas escritas à mão | **regra, não estatística** |
 | Recomendação da pool (lugares 4 a 8) | composição da pool + resistências, pesos à mão por rota | **regra, não estatística** |
 | Score de draft (`+3.4`) | encaixe de composição, pesos à mão | **fraca** |

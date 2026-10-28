@@ -53,6 +53,13 @@ código. Quando o doc diz "confronto", o código diz `matchup`.
 | termo de experiência | — | O que falta para corrigir o vazamento: campeão nunca jogado rende abaixo da sua média ([P-4](perguntas-em-aberto.md)) |
 | camada global, camada pessoal | `Layered { global, personal }` | A base de partidas e o histórico da conta, independentes |
 | base de partidas | `Dataset`, `base-de-partidas.json` | O arquivo agregado que o coletor produz |
+| contexto do draft | `DraftContext` | A leitura única do champ select: sua rota, candidatos, aliados com hover, inimigos com rota inferida |
+| rota inferida | `infer`, `roles_assumed` | A rota do inimigo que o cliente não informa, pela atribuição mais plausível |
+| quem joga a rota | `roles::plays`, `role_fit` | A base (5% das partidas), as classes, ou o seu próprio histórico |
+| curva de nível | `LaneOutlook::curve` | O duelo de atributos do 1 ao 18, nivelados |
+| vantagem de nível | `LaneOutlook::gaps`, `LevelOdds::gap` | Você um nível à frente ou atrás, no 3, 6, 11 e 16 |
+| condição de vitória | `wincon::WinCondition` | Fatos de composição (regra) e onde a conta de atributos pende. Sem fase sem a base |
+| prévia | `lane_analysis(candidate)` | A análise do draft com o candidato no seu lugar |
 | pool | `Pool`, `PoolEntry`, `Tier` | Os campeões do jogador por rota: oito, três escolhidos e cinco recomendados |
 | core | `Tier::Core`, `CORE_SIZE` | Os três que o jogador escolhe; a pool é montada em volta deles |
 | situacionais | `Tier::Situational` | Os cinco que cobrem o que os core não cobrem |

@@ -24,6 +24,10 @@ core/src/                    presage-core — sem Tauri, sem rede, sem disco
   engine/runes.rs            runa do confronto, por regra
   engine/coach.rs            leitura da partida a partir da gravação
   engine/comp.rs             perfil de composição de time
+  engine/context.rs          a leitura do champ select: rota, candidatos, inimigo inferido
+  engine/roles.rs            quem joga cada rota
+  engine/report.rs           a análise de rota inteira, do draft e da partida
+  engine/wincon.rs           condição de vitória: composição por regra, duelos por atributos
   engine/minimax.rs          draft com resposta e sugestão de ban
   engine/poolgap.rs          retrato dos core e os cinco que completam a pool
   engine/stats.rs            shrinkage, referência, StatsStore, PersonalStats
@@ -38,7 +42,7 @@ src-tauri/src/               a casca
   riot.rs                    Riot Web API, chave vinda do ambiente
   profile.rs                 histórico pessoal, incremental e cacheado
   ddragon.rs                 campeões, itens e runas, com cache em disco
-  analysis.rs                resolve as rotas dos dez e chama o motor
+  analysis.rs                lê a partida e chama engine::report
   recorder.rs                grava a partida e dispara a leitura no fim
   overlay.rs                 a janela do overlay e os atalhos
   watcher.rs                 polling adaptativo, emite eventos
@@ -49,7 +53,8 @@ src/                         React
   lib/ddragon.ts             ícones e nomes
   lib/types.ts               os tipos que a casca devolve, espelhados
   components/                DraftBoard, RecommendationPanel, LiveBuild,
-                             LaneAnalysis, GoldTracker, PostGame, PerfilDeRota,
+                             LaneAnalysis, CurvaDeNivel, CondicaoDeVitoria,
+                             GoldTracker, PostGame, PerfilDeRota,
                              Runas, PoolBuilder, OverlayPrefsPanel, ConnectionStatus
   demo.tsx                   a interface com dados de exemplo, sem Tauri
 
@@ -108,8 +113,10 @@ Os que o front chama por `invoke` (`lib.rs`, `generate_handler!`):
 | `engine_status` | se o motor está pronto, patch, se há base global e histórico pessoal |
 | `lane_profile` | o perfil de rota, ou `None` |
 | `rank_draft`, `minimax_draft`, `ban_suggestions` | o draft ([02](02-motor-de-draft.md)) |
+| `set_draft_role` | a rota escolhida na tela, para blind e normal |
 | `get_pool`, `set_pool`, `pool_suggestions` | a pool |
-| `get_live`, `build_suggestions`, `lane_analysis`, `skirmish_focus`, `gold_report` | a partida ([03](03-motor-da-partida.md)) |
+| `lane_analysis(candidate)` | rotas, escaramuças e condição de vitória; com `candidate`, a prévia do draft com ele no seu lugar |
+| `get_live`, `build_suggestions`, `skirmish_focus`, `gold_report` | a partida ([03](03-motor-da-partida.md)) |
 | `rune_plan` | runas do confronto |
 | `last_review` | a última leitura pós-partida |
 | `get_overlay_prefs`, `set_overlay_prefs` | o que aparece no overlay |

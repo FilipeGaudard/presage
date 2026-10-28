@@ -110,6 +110,24 @@ o documento afetado no mesmo commit.
 - **Default:** probabilidade, enquanto a composição for o único componente com
   valor.
 
+## P-12 — O cliente preenche o seu `championId` antes de travar? 🟡
+
+- **Por que importa:** o tradutor do LCU monta `champion_id` com o
+  `championId` do jogador quando ele vem preenchido, e `locked` só com a ação
+  concluída. Se o cliente preenche durante o seu turno, a sua escolha entrava em
+  `unavailable` e sumia da sua própria lista.
+- **Default:** o contexto não marca como indisponível a sua escolha não travada —
+  certo nos dois casos. Conferir num champ select real o que o LCU manda.
+
+## P-13 — Quanto a inferência de rota do inimigo erra sem a base? 🟡
+
+- **Por que importa:** sem a base, a rota sai das classes. Um lutador puro empata
+  entre topo e selva, e o empate vai para a ordem de escolha; um campeão fora de
+  rota (suporte no meio) é posto onde a classe manda. A prévia mostra o oponente
+  errado nesses casos.
+- **Default:** inferência pelas classes, `roles_assumed` avisando na tela. Com a
+  base, `role_share` decide e o empate quase some.
+
 ## P-11 — Dois conjuntos de pesos de composição? 🟡
 
 - **Por que importa:** `rank()` usa `W_DAMAGE_BALANCE = 0,050` e

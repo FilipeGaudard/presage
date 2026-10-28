@@ -8,8 +8,9 @@ de pontuação, e por isso tudo funciona sem chave e sem base
 ## 1. Da Live Client ao domínio
 
 `to_live_game` (`core/src/live.rs`) traduz `RawPlayer`, `RawItem` e
-`RawScores` para `LiveGame`. `analysis.rs`, na casca, resolve a rota de cada um
-dos dez e chama o motor.
+`RawScores` para `LiveGame`. `analysis.rs`, na casca, monta os dois lados da
+partida e chama `engine::report`, a mesma montagem que o draft usa a partir do
+`DraftContext`.
 
 ## 2. Build adaptativa
 
@@ -93,9 +94,21 @@ chance da rota = 0,5 + W_DUEL × (duelo − 0,5) + Δmatchup     cortada em [0,2
 - Rotas sem oponente identificado ficam de fora em vez de virarem 50%: um palpite
   com cara de medida é pior que silêncio.
 
-### Curva por nível
+### Curva por nível e vantagem de nível
 
-A mesma conta nos níveis 3, 6, 11 e 16 (`BREAKPOINTS`), com os dois nivelados.
+Três leituras da mesma conta de duelo (`LaneOutlook`):
+
+- `by_level`: os níveis 3, 6, 11 e 16 (`BREAKPOINTS`), com os dois nivelados — os
+  quatro números compactos da linha.
+- `curve`: do 1 ao 18, nivelados. Entre um nível e o seguinte a conta quase não
+  muda: vale a forma da curva, quem cresce mais, não um pico num nível qualquer.
+- `gaps`: no 3, 6, 11 e 16, você um nível à frente, nivelado e um atrás (`gap` ±1).
+  No 6, 11 e 16 o nível a mais é justamente a suprema, que a conta não vê — a
+  tabela diz "atributos, sem a suprema" nessas linhas.
+
+Na partida, `duel`, `my_level` e `their_level` são o duelo nos níveis reais, e a
+curva marca esse ponto: a vantagem ou o atraso de nível aparece fora da linha
+nivelada.
 
 **O que esta curva vê:** crescimento de vida, armadura, resistência mágica e dano
 de ataque por nível, que diferem bastante entre campeões, mais os itens que cada
@@ -105,6 +118,29 @@ um já tem.
 no 6, nem quanto ela bate. Então a curva mostra a diferença de *atributos* ao
 longo do jogo — real, mas não é o powerspike de habilidade que a palavra costuma
 sugerir. A interface diz isso.
+
+### Condição de vitória
+
+`engine/wincon.rs` lê os dois times e os duelos já calculados
+([ADR-0018](../adr/0018-o-que-a-condicao-de-vitoria-pode-afirmar.md)):
+
+- **fatos de composição, por regra:** dano de um tipo só (≥70%), ninguém na linha
+  de frente, time de alcance ou corpo a corpo. Time com menos de três definidos
+  fica sem fatos;
+- **onde a conta de atributos pende:** rotas e escaramuças a mais de 5 pontos de
+  50%, cada uma marcada como `atributos`.
+
+**Sem fase do jogo.** A conta não vê habilidade e por isso não vê quem escala: "seu
+time é de fim de jogo" a partir dela poderia sair ao contrário. A fase entra com a
+base, pela winrate em partidas curtas e longas. Tudo é descrição, nunca ordem
+(C-5).
+
+### A prévia no draft
+
+No draft, clicar num candidato chama `lane_analysis` com ele no seu lugar
+(`DraftContext::with_candidate`): a rota contra o oponente, as escaramuças de que
+ele participa e a condição de vitória — a mesma conta de quando ele estiver
+travado (`a_previa_e_a_mesma_conta_de_quando_ele_estiver_travado`).
 
 ## 5. Ouro
 

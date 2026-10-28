@@ -4,9 +4,31 @@
 loja de estatísticas e a pool. Saída: campeões ranqueados com probabilidade,
 intervalo e motivo.
 
+## 0. O contexto do draft
+
+Ranking, minimax e análise de rota leem o champ select de um jeito só
+(`DraftContext`, [ADR-0017](../adr/0017-uma-leitura-do-champ-select.md)):
+
+- **Sua rota:** a do cliente; em blind e normal, a escolhida no seletor do painel
+  (`set_draft_role`); sem escolha, a da pool, se ela for de uma rota só
+  (`resolve_role`).
+- **Candidatos:** disponíveis, e que jogam a sua rota (`roles::plays`) **ou** estão
+  na sua pool. A pool é escolha do jogador e passa por cima da regra de rota.
+  Rota desconhecida não filtra.
+- **Quem joga a rota** (`engine/roles.rs`): com a base, quem tem nela 5% das
+  próprias partidas; sem ela, as classes do Data Dragon (suporte exige a classe
+  Suporte); e sempre quem o próprio jogador já jogou ali (`played_in`).
+- **Rota do inimigo:** o cliente não informa na ranqueada. Ela é inferida pela
+  atribuição mais plausível das rotas livres (`role_fit`, no máximo 120
+  combinações); empate fica com a ordem de escolha. Posição informada nunca é
+  contestada, e `roles_assumed` avisa a interface ([P-13](../produto/perguntas-em-aberto.md)).
+- **Indisponíveis:** banidos, escolhidos e em hover de aliado. A sua escolha ainda
+  não travada **não**: o cliente preenche o seu `championId` antes de travar
+  ([P-12](../produto/perguntas-em-aberto.md)).
+
 ## 1. `rank()`
 
-`rank()` devolve, para cada candidato disponível, uma probabilidade de vitória
+`rank()` devolve, para cada candidato do contexto, uma probabilidade de vitória
 com intervalo de confiança. Ela sai da soma de cinco componentes:
 
 | Componente | Estado | Fonte |
@@ -157,8 +179,11 @@ draft: depois de você travar, eles escolhem contra você. `minimax` olha uma
 camada à frente e ordena pelo valor **depois** da melhor resposta deles. A
 diferença entre os dois números é a **exposição** do pick.
 
-A busca é podada — só os melhores candidatos, só as melhores respostas — porque a
-árvore cheia é 170 × 170 e a fase dura 30 segundos (RNF-4).
+Os candidatos são os do contexto, podados pelo guloso (`breadth`). As respostas
+deles são **todas** as que jogam uma rota que eles ainda não fecharam — varrer
+tudo é barato, porque `team_value` é aritmética pura. Antes a busca olhava só os
+32 primeiros ids, e o "melhor contra-pick" saía sempre dos campeões de id baixo
+([L-24](09-licoes-do-prototipo.md)).
 
 ### Por que o ban ainda não é pessoal
 
