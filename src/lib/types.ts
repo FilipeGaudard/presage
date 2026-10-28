@@ -201,10 +201,26 @@ export interface WinCondition {
   caveat: string;
 }
 
+/** Uma parcela da chance do time, para dizer de onde vem a vantagem. */
+export interface TeamTerm {
+  label: string;
+  /** O quanto ela move a chance, em pontos percentuais. */
+  shift: number;
+  games: number;
+}
+
+/** A chance do time pelos dados. Só existe com a base de partidas. */
+export interface TeamEstimate {
+  win: number;
+  confidence: number;
+  terms: TeamTerm[];
+}
+
 export interface LaneReport {
   lanes: LaneOutlook[];
   skirmishes: Skirmish[];
   winCondition: WinCondition;
+  team: TeamEstimate | null;
   source: "draft" | "partida";
   /** Alguma rota inimiga foi inferida, não informada pelo cliente. */
   rolesAssumed: boolean;

@@ -22,7 +22,12 @@ export default function CondicaoDeVitoria({ condition }: Props) {
   return (
     <div className="wincon">
       <h3 className="section-h">Condição de vitória</h3>
-      {condition.phase && <p className="wincon-fase">{condition.phase}</p>}
+      {condition.phase && (
+        <p className="wincon-fase">
+          <span className="fonte fonte-dados">dados</span>
+          {condition.phase}
+        </p>
+      )}
 
       {nossos.length === 0 && deles.length === 0 ? (
         <p className="muted">

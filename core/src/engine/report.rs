@@ -11,6 +11,7 @@ use super::context::{DraftContext, PREGAME_LEVEL};
 use super::items::ItemIndex;
 use super::lanes::{self, LaneOutlook, Lineup, Skirmish};
 use super::stats::StatsStore;
+use super::team::{self, TeamEstimate};
 use super::wincon::{self, WinCondition};
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
@@ -19,6 +20,9 @@ pub struct LaneReport {
     pub lanes: Vec<LaneOutlook>,
     pub skirmishes: Vec<Skirmish>,
     pub win_condition: WinCondition,
+    /// A chance do time, com o candidato quando é prévia. Só com a base de
+    /// partidas, e só no draft.
+    pub team: Option<TeamEstimate>,
     /// `draft` ou `partida`.
     pub source: &'static str,
     /// Verdadeiro quando alguma rota saiu da inferência em vez de vir do
@@ -42,11 +46,12 @@ pub fn build(
     }
     let rotas = lanes::lane_outlooks(ours, theirs, champions, items, store);
     let brigas = lanes::skirmishes(ours, theirs, champions, items);
-    let win_condition = wincon::analyze(ours, theirs, &rotas, &brigas, champions);
+    let win_condition = wincon::analyze(ours, theirs, &rotas, &brigas, champions, store);
     Some(LaneReport {
         lanes: rotas,
         skirmishes: brigas,
         win_condition,
+        team: None,
         source,
         roles_assumed,
     })
@@ -61,7 +66,10 @@ pub fn from_context(
     store: &dyn StatsStore,
 ) -> Option<LaneReport> {
     let (ours, theirs) = ctx.lineups(PREGAME_LEVEL);
-    build(&ours, &theirs, "draft", ctx.roles_assumed, champions, items, store)
+    let mut report = build(&ours, &theirs, "draft", ctx.roles_assumed, champions, items, store)?;
+    let (nos, eles) = team::seats(ctx, champions, store);
+    report.team = team::estimate(&nos, &eles, champions, store);
+    Some(report)
 }
 
 #[cfg(test)]

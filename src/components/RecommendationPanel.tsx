@@ -336,6 +336,28 @@ function Previa({
         </>
       )}
 
+      {previa.team && (
+        <div className="time-chance">
+          <h3 className="section-h">Chance do time com ele, pela base de partidas</h3>
+          <p>
+            <b className={previa.team.win >= 0.52 ? "good" : previa.team.win <= 0.48 ? "bad" : "even"}>
+              {Math.round(previa.team.win * 100)}%
+            </b>{" "}
+            <span className="muted">±{previa.team.confidence.toFixed(1)}</span>
+          </p>
+          {previa.team.terms.length > 0 && (
+            <ul className="detail-reasons">
+              {previa.team.terms.map((t) => (
+                <li key={t.label}>
+                  {t.label}: {t.shift > 0 ? "+" : ""}
+                  {t.shift.toFixed(1)}pp <span className="muted">(n={t.games})</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
       <CondicaoDeVitoria condition={previa.winCondition} />
 
       {previa.rolesAssumed && (

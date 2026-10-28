@@ -2055,3 +2055,14 @@ h3 {
 .previa-vazia {
   margin-top: 10px;
 }
+
+/* Dado medido pesa diferente de regra e de atributo: o selo diz. */
+.fonte-dados {
+  border-color: var(--dim);
+  color: var(--bone);
+}
+
+.time-chance p {
+  margin: 0 0 6px;
+  font-size: 14px;
+}

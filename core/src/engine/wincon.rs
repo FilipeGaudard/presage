@@ -17,6 +17,8 @@ use serde::Serialize;
 use super::champion::ChampionIndex;
 use super::comp;
 use super::lanes::{LaneOutlook, Lineup, Skirmish};
+use super::stats::{logit, shrink, Length, StatsStore};
+use super::BASE_STRENGTH;
 
 /// Acima disto de dano de um tipo, o time é de um tipo só.
 const ONE_SIDED: f64 = 0.70;
@@ -28,6 +30,10 @@ const EDGE: f64 = 0.05;
 const MIN_KNOWN: usize = 3;
 
 const MAX_EDGES: usize = 5;
+
+/// Acima disto de diferença de inclinação, em log-odds (~2 pontos), um time
+/// pende para partida curta ou longa.
+const LEAN: f64 = 0.08;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -124,6 +130,44 @@ fn facts_of(ids: &[i64], side: Side, index: &ChampionIndex) -> Vec<Point> {
     out
 }
 
+/// A fase pelos dados: a winrate de cada um, na rota dele, em partidas longas
+/// contra curtas — encolhida para a força dele na rota, para pouca amostra não
+/// virar inclinação. A diferença entre os dois times é a fase.
+fn phase_from_data(ours: &[Lineup], theirs: &[Lineup], store: &dyn StatsStore) -> Option<String> {
+    if !store.has_global() {
+        return None;
+    }
+    let inclinacao = |lado: &[Lineup]| -> Option<(f64, u32)> {
+        let (mut soma, mut quantos, mut jogos) = (0.0, 0, 0);
+        for l in lado {
+            let (id, rota) = (l.combatant.champion_id, l.role);
+            let curta = store.length(id, rota, Length::Curta);
+            let longa = store.length(id, rota, Length::Longa);
+            if curta.is_none() && longa.is_none() {
+                continue;
+            }
+            let base = shrink(store.base(id, rota), 0.5, BASE_STRENGTH).rate;
+            let pc = shrink(curta, base, BASE_STRENGTH).rate;
+            let pl = shrink(longa, base, BASE_STRENGTH).rate;
+            soma += logit(pl) - logit(pc);
+            quantos += 1;
+            jogos += curta.map_or(0, |r| r.games) + longa.map_or(0, |r| r.games);
+        }
+        (quantos > 0).then(|| (soma / quantos as f64, jogos))
+    };
+    let (nossa, n_nossa) = inclinacao(ours)?;
+    let (deles, n_deles) = inclinacao(theirs).unwrap_or((0.0, 0));
+    let n = n_nossa + n_deles;
+    let diferenca = nossa - deles;
+    Some(if diferenca > LEAN {
+        format!("Pelos dados, o seu time rende mais em partidas longas que o deles (n={n})")
+    } else if diferenca < -LEAN {
+        format!("Pelos dados, o seu time rende mais em partidas curtas que o deles (n={n})")
+    } else {
+        format!("Pelos dados, nenhum dos dois times pende para partida curta ou longa (n={n})")
+    })
+}
+
 fn pct(odds: f64) -> f64 {
     (odds * 100.0).round()
 }
@@ -138,6 +182,7 @@ pub fn analyze(
     lanes: &[LaneOutlook],
     skirmishes: &[Skirmish],
     index: &ChampionIndex,
+    store: &dyn StatsStore,
 ) -> WinCondition {
     let nossos: Vec<i64> = ours.iter().map(|l| l.combatant.champion_id).collect();
     let deles: Vec<i64> = theirs.iter().map(|l| l.combatant.champion_id).collect();
@@ -199,7 +244,7 @@ pub fn analyze(
     WinCondition {
         facts,
         edges,
-        phase: None,
+        phase: phase_from_data(ours, theirs, store),
         caveat: CAVEAT,
     }
 }
@@ -252,7 +297,7 @@ mod tests {
         let it = ItemIndex::default();
         let lanes = lanes::lane_outlooks(ours, theirs, &idx, &it, &NoStats);
         let brigas = lanes::skirmishes(ours, theirs, &idx, &it);
-        analyze(ours, theirs, &lanes, &brigas, &idx)
+        analyze(ours, theirs, &lanes, &brigas, &idx, &NoStats)
     }
 
     #[test]
@@ -285,6 +330,44 @@ mod tests {
     fn sem_base_nao_ha_fase() {
         let nos = time(&[(Role::Top, 4), (Role::Jungle, 6), (Role::Mid, 7), (Role::Bot, 1)]);
         assert!(ler(&nos, &[]).phase.is_none());
+    }
+
+    #[test]
+    fn com_base_a_fase_sai_da_duracao_das_partidas() {
+        // Os seus ganham muito mais em partida longa; os deles, igual.
+        struct Base;
+        impl StatsStore for Base {
+            fn base(&self, _: i64, _: Role) -> Option<crate::engine::stats::Record> {
+                Some(crate::engine::stats::Record::new(20_000, 10_000))
+            }
+            fn matchup(&self, _: i64, _: i64, _: Role) -> Option<crate::engine::stats::Record> {
+                None
+            }
+            fn synergy(&self, _: i64, _: i64) -> Option<crate::engine::stats::Record> {
+                None
+            }
+            fn personal(&self, _: i64) -> Option<crate::engine::stats::Record> {
+                None
+            }
+            fn length(&self, c: i64, _: Role, faixa: Length) -> Option<crate::engine::stats::Record> {
+                use crate::engine::stats::Record;
+                let nosso = c <= 4;
+                Some(match (nosso, faixa) {
+                    (true, Length::Longa) => Record::new(5_000, 2_800),
+                    (true, Length::Curta) => Record::new(5_000, 2_200),
+                    _ => Record::new(5_000, 2_500),
+                })
+            }
+            fn has_global(&self) -> bool {
+                true
+            }
+        }
+        let nos = time(&[(Role::Top, 4), (Role::Mid, 2), (Role::Bot, 1)]);
+        let eles = time(&[(Role::Top, 7), (Role::Mid, 6), (Role::Bot, 8)]);
+        let idx = indice();
+        let w = analyze(&nos, &eles, &[], &[], &idx, &Base);
+        let fase = w.phase.expect("com base há fase");
+        assert!(fase.contains("longas") && fase.starts_with("Pelos dados"), "{fase}");
     }
 
     #[test]

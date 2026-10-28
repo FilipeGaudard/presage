@@ -16,6 +16,7 @@ pub mod roles;
 pub mod priority;
 pub mod runes;
 pub mod stats;
+pub mod team;
 pub mod timeline;
 pub mod wincon;
 

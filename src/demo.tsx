@@ -420,6 +420,7 @@ function rotaDemo(cedo: number, tarde: number, meu = 6, dele = 6) {
 const laneReport: LaneReport = {
   source: "partida",
   rolesAssumed: false,
+  team: null,
   winCondition: {
     facts: [
       {
