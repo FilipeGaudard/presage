@@ -20,7 +20,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 - testes no código: 499; nomes no catálogo (13): 499; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 3025
+- IDs citados conferidos: 3027
 
 ## type
 
@@ -1114,4 +1114,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 32 | 31 | 0 | 38 |
+| 23 | 40 | 0 | 38 |
