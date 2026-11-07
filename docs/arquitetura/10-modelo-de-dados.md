@@ -2624,8 +2624,9 @@ pub struct Shared {
 ## 33. Arquivos em disco
 
 Tudo em `%LOCALAPPDATA%\Presage`. O app lê e grava por `storage.rs`: `write_json`
-grava o arquivo inteiro com `serde_json::to_vec` (JSON compacto, sem arquivo
-temporário), e `read_json` devolve `None` quando o arquivo falta, não abre ou não
+grava o JSON compacto inteiro (`serde_json::to_vec`) em `nome.parcial` e renomeia
+para o nome final, então um corte no meio deixa o arquivo anterior (A7); e
+`read_json` devolve `None` quando o arquivo falta, não abre ou não
 desserializa. Para quem chama, falta e corrupção são a mesma coisa, e nenhuma
 deixa log. A lista de quem escreve e quem lê cada arquivo está em 12 §6.
 

@@ -8,7 +8,7 @@
 //!
 //! Tudo fica em `%LOCALAPPDATA%\Presage`. Nada sai da máquina.
 
-use presage_core::engine::coach::{review, Recording, Report};
+use presage_core::engine::coach::{review, worth_reviewing, Recording, Report};
 use presage_core::engine::items::ItemIndex;
 use presage_core::engine::timeline::RawEvent;
 use presage_core::live::LiveGame;
@@ -21,10 +21,6 @@ pub const LAST_RECORDING: &str = "gravacao.json";
 /// Teto de quadros guardados. A um por segundo, cobre mais de uma hora de
 /// jogo; o limite existe para uma sessão esquecida aberta não encher o disco.
 const MAX_FRAMES: usize = 6000;
-
-/// Abaixo disto não vale guardar: remake, partida custom de teste, ou a
-/// gravação começou quando o jogo já tinha acabado.
-const MIN_FRAMES: usize = 60;
 
 pub fn observe(recording: &mut Recording, game: &LiveGame, events: &[RawEvent]) {
     if recording.frames.len() < MAX_FRAMES {
@@ -44,7 +40,11 @@ pub fn observe(recording: &mut Recording, game: &LiveGame, events: &[RawEvent]) 
 pub fn finish(recording: &mut Recording, items: &ItemIndex) -> Option<Report> {
     let gravado = std::mem::take(recording);
 
-    if gravado.frames.len() < MIN_FRAMES {
+    // O corte é o do pós-jogo (`coach::worth_reviewing`): remake, partida curta
+    // ou gravação que começou no fim não rendem leitura. Sem leitura, nada é
+    // gravado e nada é avisado: a última partida de verdade fica no disco e a
+    // aba não vem para a frente (A6).
+    if !worth_reviewing(&gravado) {
         return None;
     }
 

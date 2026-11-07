@@ -12,10 +12,16 @@ pub fn write_json<T: Serialize>(name: &str, value: &T) -> Result<()> {
     write_json_in(&dir, name, value)
 }
 
-/// Grava `value` em `dir/name`.
+/// Grava `value` em `dir/name` sem nunca deixar o arquivo pela metade: escreve
+/// tudo em `name.parcial` e só então troca pelo nome final. Uma escrita que morre
+/// no meio (disco cheio, energia que cai) deixa o arquivo anterior inteiro, e a
+/// pool não volta vazia na abertura seguinte (A7). É a mesma disciplina do
+/// coletor (`tools/ingest`).
 fn write_json_in<T: Serialize>(dir: &Path, name: &str, value: &T) -> Result<()> {
     std::fs::create_dir_all(dir)?;
-    std::fs::write(dir.join(name), serde_json::to_vec(value)?)?;
+    let parcial = dir.join(format!("{name}.parcial"));
+    std::fs::write(&parcial, serde_json::to_vec(value)?)?;
+    std::fs::rename(&parcial, dir.join(name))?;
     Ok(())
 }
 

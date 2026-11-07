@@ -20,7 +20,7 @@ de vir da casca, e não ser adivinhado ou copiado no TypeScript.
 |---|---|---|---|
 | GC-1 | A falha de um comando não chega à tela | P0 | parcial: o front fechou (TF-POOL-4, TF-CASCA-4); a forma do erro e o evento de fundo ficam (A14) |
 | GC-2 | O ouro em mão dos outros nove cruza a ponte e aparece | P0 | fechada (TF-PARTIDA-3, T-OURO-10) |
-| GC-3 | Perder o cliente não limpa o draft na tela | P1 | aberta |
+| GC-3 | Perder o cliente não limpa o draft na tela | P1 | fechada (T-CASCA-20) |
 | GC-4 | Marcas e rota escolhida vivem em dois lugares; `get_enemy_roles` sem uso | P1 | aberta |
 | GC-5 | A rota que o motor usou não volta para a tela | P1 | aberta |
 | GC-6 | Dois vocabulários de rota na mesma ponte | P1 | aberta |
@@ -99,8 +99,10 @@ zero, e o ranking, pedido de novo, volta vazio.
 
 **Proposta:** o ramo de erro chama `clear_draft`, como os outros dois ramos.
 
-**Enquanto isso:** a barra diz "Cliente fechado" e o painel do draft continua
-aberto com o último estado.
+> **Fechada.** Perder o cliente passa pelo mesmo `clear_draft` do fim do champ
+> select (emite `presage://draft` nulo, limpa marcas e lista da conta), publica
+> `Disconnected` com o erro e espera os 3 s de sem cliente (`perdeu_o_cliente`,
+> T-CASCA-20, A5 e A11).
 
 ## GC-4 — Marcas e rota escolhida vivem em dois lugares; `get_enemy_roles` sem uso (P1)
 

@@ -327,10 +327,13 @@ os 120 s e cai para `PRESAGE_RIOT_ID`.
 **O que pode dar errado.**
 - A pausa vem **depois** das chamadas: o período real é a pausa mais o tempo das
   requisições, com até 5 s de timeout por chamada ao LCU.
-- **Defeito conhecido.** Se `gameflow_phase` falha no meio do champ select, o
-  watcher apaga `Shared::draft` e volta ao começo sem emitir `presage://draft`
-  e sem limpar as marcas (`watcher.rs:218-225`). A tela fica com o último draft
-  ([GC-3](../frontend/07-lacunas-da-casca.md)).
+- **Perder o cliente** (a leitura da fase falha): o watcher encerra o draft como
+  no fim do champ select (emite `presage://draft` nulo e limpa marcas e lista da
+  conta), publica `Disconnected` com o erro e espera os 3 s de sem cliente antes
+  de procurar de novo (`perdeu_o_cliente`, T-CASCA-20). Até a 0.7.0 ele apagava o
+  draft calado e voltava sem pausa: a tela ficava com o draft velho, e um
+  lockfile velho fazia o laço girar (A5, A11,
+  [GC-3](../frontend/07-lacunas-da-casca.md)).
 - Pela leitura do código: o ramo "qualquer outra" pega toda fase que não é
   `ChampSelect` nem `InProgress`, inclusive a de reconexão, que a barra traduz
   como "Reconectando" (`src/components/ConnectionStatus.tsx:13`). Cair da partida
@@ -931,8 +934,9 @@ escondidas, não desenha nada (`src/overlay.tsx:94`).
 3. `close_recording` (`watcher.rs:129`): sem quadros, sai cedo; senão,
    `recorder::finish` (`recorder.rs:44`):
    - tira a gravação do `Shared`, deixando-a vazia em todos os casos;
-   - com menos de 60 quadros (`MIN_FRAMES`, `recorder.rs:27`), devolve `None` e
-     não grava nada;
+   - se a gravação não vale leitura (`coach::worth_reviewing`: menos de 60
+     quadros ou menos de 5 minutos de partida), devolve `None` e não grava nem
+     emite nada;
    - senão, roda `coach::review` (§11.3), grava `gravacao.json` e
      `ultima-partida.json` (`recorder.rs:53`, `recorder.rs:56`);
 4. emite `presage://review` (`watcher.rs:143`) e guarda em `last_review`.
@@ -944,13 +948,10 @@ custom de teste ou gravação que começou no fim não valem uma leitura.
 12 §6, 10 §31.6.
 
 **O que pode dar errado.**
-- **Defeito conhecido.** O piso da gravação são 60 **quadros** (`recorder.rs:47`);
-  o do coach são 300 **segundos** (`MIN_DURATION`, `core/src/engine/coach.rs:34`,
-  conferido em `core/src/engine/coach.rs:237`). Um remake de 3:30 tem uns 210
-  quadros: `review` devolve o relatório vazio "curta demais para tirar
-  conclusão", e mesmo assim ele **substitui** a leitura anterior em
-  `ultima-partida.json`, sobrescreve `gravacao.json`, emite `presage://review` e
-  traz a aba Pós-jogo para a frente (12 §7, "Gravação da partida").
+- **Defeito corrigido (A6).** Até a 0.7.0 o piso da gravação eram 60 quadros e o
+  do coach 300 segundos: um remake de 3:30 passava no primeiro, a leitura vazia
+  "curta demais" substituía a anterior e a aba Pós-jogo vinha para a frente.
+  Agora os dois pisos moram em `coach::worth_reviewing` (T-CASCA-19).
 - Falha de disco ao gravar os dois arquivos vira só aviso no log
   (`recorder.rs:53-58`).
 - A queda e volta do cliente no meio da partida passa por aqui (§4.3): a leitura
@@ -1074,9 +1075,8 @@ Web API (só com a chave) e o endpoint do atualizador. Nenhuma gravação nem
 leitura sai da máquina (RNF-8).
 
 **O que pode dar errado.**
-- `write_json` grava o arquivo inteiro, sem arquivo temporário. Um corte no meio
-  deixa JSON quebrado, que na próxima abertura é lido como arquivo que falta
-  (12 §6).
+- `write_json` grava em `.parcial` e renomeia: um corte no meio deixa o arquivo
+  anterior inteiro (A7; antes, deixava JSON quebrado, lido como arquivo que falta).
 - `gravacao.json` guarda o `displayName` dos dez em cada quadro (10 §33).
 
 ## 13. Uma partida do começo ao fim

@@ -334,13 +334,13 @@ fora da casca.
 Tudo em `%LOCALAPPDATA%\Presage` (`storage::cache_dir`, `storage.rs:5`). Sem
 `LOCALAPPDATA`, gravar falha e ler devolve nada.
 
-- **`write_json`** cria a pasta e escreve o arquivo inteiro de uma vez, em JSON
-  compacto, sem arquivo temporário.
+- **`write_json`** cria a pasta, escreve o JSON compacto inteiro em
+  `nome.parcial` e só então renomeia para o nome final. Uma escrita que morre no
+  meio deixa o arquivo anterior inteiro (A7, T-CASCA-21).
 - **`read_json`** devolve `None` quando o arquivo falta, não abre ou não
   desserializa. Os três casos são o mesmo para quem chama, e nenhum deixa log.
 
-O coletor grava com arquivo `.parcial` e `rename` (`tools/ingest/src/main.rs:189`);
-o app, não. A forma de cada JSON e o que acontece quando ele falta ou está
+O coletor grava do mesmo jeito (`tools/ingest/src/main.rs:189`). A forma de cada JSON e o que acontece quando ele falta ou está
 corrompido estão em 10 §33.
 
 | Arquivo | O quê | Escrito por | Lido por | Esquema |
@@ -469,10 +469,10 @@ por segundo. `Recording::push` descarta o quadro cujo relógio não andou.
 - **Teto:** 6000 quadros (`MAX_FRAMES`, `recorder.rs:23`), pouco mais de uma
   hora e meia. Depois dele, os quadros novos são descartados, e o resultado ainda
   é lido.
-- **Piso:** abaixo de 60 quadros (`MIN_FRAMES`, `recorder.rs:27`), `finish` não
-  rende leitura e não grava nada. Entre 60 quadros e os 5 minutos de
-  `MIN_DURATION` do coach, a leitura sai sem observação ("curta demais"), e mesmo
-  assim substitui a anterior em `ultima-partida.json` e emite `presage://review`.
+- **Piso:** `finish` só rende leitura quando `coach::worth_reviewing` diz que
+  vale: 60 quadros e 5 minutos de partida no relógio. Abaixo disso, nada é gravado
+  e nada é emitido: a última partida de verdade continua em `ultima-partida.json`,
+  e a aba Pós-jogo não vem para a frente (A6, T-CASCA-19).
 - **Resultado:** sai do primeiro evento `GameEnd` (`Win` ou `Lose`) e não é
   reescrito.
 - **Fim da gravação:** ao sair de `InProgress`, `close_recording`

@@ -709,22 +709,30 @@ const BUCKET: f64 = 30.0;
   visão, tempo morto), o tempo do primeiro item por campeão e rota, e a curva de
   vitória por vantagem de ouro.
 
-### RN-28 — O piso da gravação (`casca::recorder`)
+### RN-28 — O teto e o piso da gravação (`casca::recorder`, `core::engine::coach`)
+
+O teto é da casca:
 
 ```rust
 const MAX_FRAMES: usize = 6000;
+```
+
+### O piso da RN-28, em `core::engine::coach`
+
+```rust
 const MIN_FRAMES: usize = 60;
 ```
 
-- **Regra:** até 6000 quadros por partida; abaixo de 60, não há leitura.
-- **Origem:** escolha à mão (disco).
+- **Regra:** até 6000 quadros por partida. Para render leitura, a gravação
+  precisa de ao menos 60 quadros **e** de uma partida de 300 s no relógio
+  (`MIN_DURATION`, RN-27): os dois pisos moram juntos em `coach::worth_reviewing`.
+- **Origem:** escolha à mão (disco, e o que dá para afirmar).
 - **Confiança:** regra.
-- **Onde:** `src-tauri/src/recorder.rs:23`, `recorder.rs:27`; 12 §7. O comentário
-  diz que o piso cobre remake, mas o piso do pós-jogo é 300 s (RN-27): um remake
-  de três minutos passa no primeiro e apaga a última leitura (defeito no
-  `build/audit.md`).
-- **Quando a base existir:** fica: é orçamento de disco. Os dois pisos deveriam
-  ser um só.
+- **Onde:** `src-tauri/src/recorder.rs:23` (teto); `core/src/engine/coach.rs`
+  (`MIN_FRAMES`, `worth_reviewing`); 11 §31.4, 12 §7. Até a 0.7.0 o piso de
+  quadros vivia só na casca, e um remake de três minutos passava nele e apagava a
+  última leitura (A6).
+- **Quando a base existir:** fica: é orçamento de disco e honestidade.
 
 ## 16. Perfil de rota e histórico pessoal — `core::engine::profile`
 

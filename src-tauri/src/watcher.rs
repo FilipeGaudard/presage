@@ -148,8 +148,6 @@ fn close_recording(app: &AppHandle, shared: &Shared) {
 /// Para onde vai o que o laço avisa quando perde o cliente. Existe para o teste
 /// trocar o app por um registro do que foi avisado.
 trait Saida {
-    /// Apaga o draft da memória sem avisar a tela.
-    fn apagar_draft(&self);
     /// O champ select acabou: limpa marcas e lista da conta, e avisa a tela.
     fn draft_encerrado(&self);
     fn status(&self, status: ConnStatus);
@@ -161,9 +159,6 @@ struct SaidaDoApp<'a> {
 }
 
 impl Saida for SaidaDoApp<'_> {
-    fn apagar_draft(&self) {
-        *self.shared.draft.lock().unwrap() = None;
-    }
     fn draft_encerrado(&self) {
         clear_draft(self.app, self.shared);
     }
@@ -174,9 +169,20 @@ impl Saida for SaidaDoApp<'_> {
 
 /// A leitura da fase falhou: o cliente fechou ou as credenciais expiraram.
 /// Devolve quanto esperar antes de redescobrir.
-fn perdeu_o_cliente(saida: &impl Saida, _erro: &str) -> Duration {
-    saida.apagar_draft();
-    Duration::ZERO
+///
+/// Para a tela, o champ select acabou: o draft sai com aviso, e as marcas e a
+/// lista da conta vão junto (A11). O status diz que não há cliente, e por quê. E
+/// a próxima volta espera o ritmo de sem cliente: antes ela voltava na hora e,
+/// com um lockfile velho de um cliente que travou, girava sem pausa (A5).
+fn perdeu_o_cliente(saida: &impl Saida, erro: &str) -> Duration {
+    saida.draft_encerrado();
+    saida.status(ConnStatus {
+        connected: false,
+        phase: "Disconnected".into(),
+        summoner: None,
+        detail: Some(erro.to_string()),
+    });
+    POLL_DISCONNECTED
 }
 
 fn clear_draft(app: &AppHandle, shared: &Shared) {
@@ -255,8 +261,10 @@ pub async fn run(app: AppHandle, shared: Arc<Shared>) {
                 tracing::debug!(%err, "perdemos o cliente, redescobrindo");
                 client = None;
                 summoner = None;
-                let saida = SaidaDoApp { app: &app, shared: &shared };
-                let espera = perdeu_o_cliente(&saida, &err.to_string());
+                let espera = {
+                    let saida = SaidaDoApp { app: &app, shared: &shared };
+                    perdeu_o_cliente(&saida, &err.to_string())
+                };
                 tokio::time::sleep(espera).await;
                 continue;
             }
@@ -411,9 +419,6 @@ mod tests {
     }
 
     impl Saida for Registro {
-        fn apagar_draft(&self) {
-            self.avisos.borrow_mut().push("apagou calado".into());
-        }
         fn draft_encerrado(&self) {
             self.avisos.borrow_mut().push("draft encerrado".into());
         }

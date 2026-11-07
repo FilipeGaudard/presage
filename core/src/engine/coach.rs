@@ -33,6 +33,10 @@ const IDLE_GOLD: f64 = 1300.0;
 /// Partida curta demais não rende leitura nenhuma.
 const MIN_DURATION: f64 = 300.0;
 
+/// Abaixo disto a gravação não diz nada: a gravação começou quando o jogo já
+/// tinha acabado, ou durou um piscar. A um quadro por segundo, um minuto.
+const MIN_FRAMES: usize = 60;
+
 /// O que cada rota tem como trabalho, e portanto o que o relatório cobra dela.
 ///
 /// Escrito à mão: regra, não estatística. Os limiares de participação seguem o
@@ -206,6 +210,16 @@ fn opponent_in<'a>(frame: &'a LiveGame, me: &LivePlayer) -> Option<&'a LivePlaye
         .players
         .iter()
         .find(|p| p.team != me.team && p.position == me.position)
+}
+
+/// A gravação vale uma leitura? Precisa de quadros bastantes (`MIN_FRAMES`) e
+/// de uma partida de verdade no relógio do último quadro (`MIN_DURATION`): um
+/// remake de três minutos passa no primeiro e não no segundo. É o mesmo corte
+/// de `review`, num lugar só, para a casca não gravar nem avisar uma leitura
+/// vazia por cima da última partida (A6).
+pub fn worth_reviewing(recording: &Recording) -> bool {
+    recording.frames.len() >= MIN_FRAMES
+        && recording.frames.last().is_some_and(|f| f.game_time >= MIN_DURATION)
 }
 
 /// Lê a gravação inteira e devolve o que dá para afirmar.
@@ -908,6 +922,22 @@ mod tests {
         let r = review(&Recording::default(), &items());
         assert!(r.good.is_empty() && r.bad.is_empty());
         assert!(r.summary.contains("Sem gravação"));
+    }
+
+    #[test]
+    fn so_partida_de_verdade_vale_leitura() {
+        // Remake de 3:00, um quadro por segundo: quadros bastam, partida não.
+        assert!(!worth_reviewing(&gravar(reta, 180.0)));
+        // Cinco minutos: vale.
+        assert!(worth_reviewing(&gravar(reta, 300.0)));
+        // Trinta quadros no fim de uma partida de 30 minutos: a gravação não
+        // viu nada.
+        let mut tarde = Recording::default();
+        for i in 0..30 {
+            tarde.push(frame(reta(1770.0 + i as f64)));
+        }
+        assert!(!worth_reviewing(&tarde));
+        assert!(!worth_reviewing(&Recording::default()));
     }
 
     #[test]

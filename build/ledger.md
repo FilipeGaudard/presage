@@ -5,22 +5,22 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | Tipo | Total | Feito | Adiado | Pendente |
 |---|---|---|---|---|
 | type | 112 | 112 | 0 | 0 |
-| func | 163 | 163 | 0 | 0 |
+| func | 164 | 164 | 0 | 0 |
 | const | 85 | 85 | 0 | 0 |
 | wire | 55 | 55 | 0 | 0 |
 | command | 26 | 25 | 1 | 0 |
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 345 | 345 | 0 | 0 |
+| test | 346 | 346 | 0 | 0 |
 | ui-test | 41 | 5 | 36 | 0 |
 | trace | 43 | 33 | 10 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 473; nomes no catálogo (13): 471; fora dele: 0
+- testes no código: 474; nomes no catálogo (13): 472; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 2867
+- IDs citados conferidos: 2879
 
 ## type
 
@@ -51,12 +51,12 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::champion::Champion` | arquitetura/10-modelo-de-dados §23.3 | done | core/src/engine/champion.rs:80 |
 | `core::engine::champion::ChampionIndex` | arquitetura/10-modelo-de-dados §23.4 | done | core/src/engine/champion.rs:130 |
 | `core::engine::champion::Role` | arquitetura/10-modelo-de-dados §23.1 | done | core/src/engine/champion.rs:4 |
-| `core::engine::coach::Note` | arquitetura/10-modelo-de-dados §31.3 | done | core/src/engine/coach.rs:107 |
-| `core::engine::coach::Point` | arquitetura/10-modelo-de-dados §31.4 | done | core/src/engine/coach.rs:118 |
-| `core::engine::coach::Recording` | arquitetura/10-modelo-de-dados §31.1 | done | core/src/engine/coach.rs:72 |
-| `core::engine::coach::Report` | arquitetura/10-modelo-de-dados §31.6 | done | core/src/engine/coach.rs:155 |
-| `core::engine::coach::Series` | arquitetura/10-modelo-de-dados §31.5 | done | core/src/engine/coach.rs:129 |
-| `core::engine::coach::Verdict` | arquitetura/10-modelo-de-dados §31.2 | done | core/src/engine/coach.rs:100 |
+| `core::engine::coach::Note` | arquitetura/10-modelo-de-dados §31.3 | done | core/src/engine/coach.rs:111 |
+| `core::engine::coach::Point` | arquitetura/10-modelo-de-dados §31.4 | done | core/src/engine/coach.rs:122 |
+| `core::engine::coach::Recording` | arquitetura/10-modelo-de-dados §31.1 | done | core/src/engine/coach.rs:76 |
+| `core::engine::coach::Report` | arquitetura/10-modelo-de-dados §31.6 | done | core/src/engine/coach.rs:159 |
+| `core::engine::coach::Series` | arquitetura/10-modelo-de-dados §31.5 | done | core/src/engine/coach.rs:133 |
+| `core::engine::coach::Verdict` | arquitetura/10-modelo-de-dados §31.2 | done | core/src/engine/coach.rs:104 |
 | `core::engine::comp::TeamProfile` | arquitetura/10-modelo-de-dados §13.1 | done | core/src/engine/comp.rs:3 |
 | `core::engine::context::DraftContext` | arquitetura/10-modelo-de-dados §10.4 | done | core/src/engine/context.rs:60 |
 | `core::engine::context::Leitura` | arquitetura/10-modelo-de-dados §10.3 | done | core/src/engine/context.rs:49 |
@@ -169,10 +169,11 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::champion::grown` | arquitetura/11-catalogo-de-funcoes §23.2 | done | core/src/engine/champion.rs:47 |
 | `core::engine::champion::Role::from_lcu` | arquitetura/11-catalogo-de-funcoes §23.1 | done | core/src/engine/champion.rs:15 |
 | `core::engine::champion::Role::short` | arquitetura/11-catalogo-de-funcoes §23.1 | done | core/src/engine/champion.rs:27 |
-| `core::engine::coach::Recording::duration` | arquitetura/11-catalogo-de-funcoes §31.2 | done | core/src/engine/coach.rs:92 |
-| `core::engine::coach::Recording::push` | arquitetura/11-catalogo-de-funcoes §31.2 | done | core/src/engine/coach.rs:81 |
-| `core::engine::coach::review` | arquitetura/11-catalogo-de-funcoes §31.1 | done | core/src/engine/coach.rs:215 |
-| `core::engine::coach::Series::is_empty` | arquitetura/11-catalogo-de-funcoes §31.3 | done | core/src/engine/coach.rs:147 |
+| `core::engine::coach::Recording::duration` | arquitetura/11-catalogo-de-funcoes §31.2 | done | core/src/engine/coach.rs:96 |
+| `core::engine::coach::Recording::push` | arquitetura/11-catalogo-de-funcoes §31.2 | done | core/src/engine/coach.rs:85 |
+| `core::engine::coach::review` | arquitetura/11-catalogo-de-funcoes §31.1 | done | core/src/engine/coach.rs:229 |
+| `core::engine::coach::Series::is_empty` | arquitetura/11-catalogo-de-funcoes §31.3 | done | core/src/engine/coach.rs:151 |
+| `core::engine::coach::worth_reviewing` | arquitetura/11-catalogo-de-funcoes §31.4 | done | core/src/engine/coach.rs:220 |
 | `core::engine::comp::damage_balance_gain` | arquitetura/11-catalogo-de-funcoes §13.2 | done | core/src/engine/comp.rs:42 |
 | `core::engine::comp::frontline_need` | arquitetura/11-catalogo-de-funcoes §13.3 | done | core/src/engine/comp.rs:53 |
 | `core::engine::comp::profile` | arquitetura/11-catalogo-de-funcoes §13.1 | done | core/src/engine/comp.rs:19 |
@@ -311,8 +312,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Item | Fonte | Estado | Onde / motivo |
 |---|---|---|---|
-| `casca::recorder::MAX_FRAMES` | produto/regras-e-pesos RN-28 — O piso da gravação (`casca::reco | done | src-tauri/src/recorder.rs:23 |
-| `casca::recorder::MIN_FRAMES` | produto/regras-e-pesos RN-28 — O piso da gravação (`casca::reco | done | src-tauri/src/recorder.rs:27 |
+| `casca::recorder::MAX_FRAMES` | produto/regras-e-pesos RN-28 — O teto e o piso da gravação (`ca | done | src-tauri/src/recorder.rs:23 |
 | `casca::riot::RANKED_SOLO_QUEUE` | produto/regras-e-pesos RN-31 — O histórico pessoal da casca (`c | done | src-tauri/src/riot.rs:26 |
 | `coletor::aggregate::MIN_DURATION` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:35 |
 | `coletor::aggregate::MIN_SPREAD_ENTRIES` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:345 |
@@ -322,12 +322,13 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::draft::RANKED_QUEUES` | arquitetura/10-modelo-de-dados §3.13 | done | core/src/draft.rs:274 |
 | `core::engine::BASE_STRENGTH` | produto/regras-e-pesos RN-2 — A força da winrate base é escolhi | done | core/src/engine/mod.rs:36 |
 | `core::engine::build::MIN_ITEM_COST` | produto/regras-e-pesos RN-19 — O que entra na lista e como o it | done | core/src/engine/build.rs:24 |
-| `core::engine::coach::BUCKET` | produto/regras-e-pesos RN-27 — Os limiares das observações | done | core/src/engine/coach.rs:153 |
+| `core::engine::coach::BUCKET` | produto/regras-e-pesos RN-27 — Os limiares das observações | done | core/src/engine/coach.rs:157 |
 | `core::engine::coach::CLUSTER_DEATHS` | produto/regras-e-pesos RN-27 — Os limiares das observações | done | core/src/engine/coach.rs:28 |
 | `core::engine::coach::CLUSTER_WINDOW` | produto/regras-e-pesos RN-27 — Os limiares das observações | done | core/src/engine/coach.rs:27 |
 | `core::engine::coach::IDLE_GOLD` | produto/regras-e-pesos RN-27 — Os limiares das observações | done | core/src/engine/coach.rs:31 |
 | `core::engine::coach::LEGENDARY_COST` | produto/regras-e-pesos RN-27 — Os limiares das observações | done | core/src/engine/coach.rs:24 |
 | `core::engine::coach::MIN_DURATION` | produto/regras-e-pesos RN-27 — Os limiares das observações | done | core/src/engine/coach.rs:34 |
+| `core::engine::coach::MIN_FRAMES` | produto/regras-e-pesos O piso da RN-28, em `core::engine::coach | done | core/src/engine/coach.rs:38 |
 | `core::engine::COMP_SD` | produto/regras-e-pesos RN-4 — A composição tem sempre um desvio | done | core/src/engine/mod.rs:47 |
 | `core::engine::context::EPS` | produto/regras-e-pesos RN-7 — O nível da prévia e a plausibilid | done | core/src/engine/context.rs:36 |
 | `core::engine::context::PREGAME_LEVEL` | arquitetura/10-modelo-de-dados §10.1 | done | core/src/engine/context.rs:32 |
@@ -428,9 +429,9 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `MatchupLane ↔ MatchupLane` | arquitetura/10-modelo-de-dados §21.2 | done | core/src/engine/profile.rs:61 |
 | `Metric ↔ LaneMetric` | arquitetura/10-modelo-de-dados §5.5 | done | core/src/history.rs:89 |
 | `MinimaxPick ↔ MinimaxPick` | arquitetura/10-modelo-de-dados §12.1 | done | core/src/engine/minimax.rs:34 |
-| `Note ↔ CoachNote` | arquitetura/10-modelo-de-dados §31.3 | done | core/src/engine/coach.rs:107 |
+| `Note ↔ CoachNote` | arquitetura/10-modelo-de-dados §31.3 | done | core/src/engine/coach.rs:111 |
 | `OverlayPrefs ↔ OverlayPrefs` | arquitetura/10-modelo-de-dados §8.2 | done | core/src/prefs.rs:64 |
-| `Point ↔ Point` | arquitetura/10-modelo-de-dados §31.4 | done | core/src/engine/coach.rs:118 |
+| `Point ↔ Point` | arquitetura/10-modelo-de-dados §31.4 | done | core/src/engine/coach.rs:122 |
 | `Point ↔ WinPoint` | arquitetura/10-modelo-de-dados §15.3 | done | core/src/engine/wincon.rs:55 |
 | `Pool ↔ Pool` | arquitetura/10-modelo-de-dados §7.4 | done | core/src/pool.rs:44 |
 | `PoolEntry ↔ PoolEntry` | arquitetura/10-modelo-de-dados §7.2 | done | core/src/pool.rs:32 |
@@ -438,7 +439,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `PriorityReport ↔ PriorityReport` | arquitetura/10-modelo-de-dados §30.2 | done | core/src/engine/priority.rs:42 |
 | `RawScores ↔ LiveScores` | arquitetura/10-modelo-de-dados §4.3 | done | core/src/live.rs:44 |
 | `Reading ↔ LaneReading` | arquitetura/10-modelo-de-dados §21.1 | done | core/src/engine/profile.rs:37 |
-| `Report ↔ CoachReport` | arquitetura/10-modelo-de-dados §31.6 | done | core/src/engine/coach.rs:155 |
+| `Report ↔ CoachReport` | arquitetura/10-modelo-de-dados §31.6 | done | core/src/engine/coach.rs:159 |
 | `Respawn ↔ Respawn` | arquitetura/10-modelo-de-dados §29.7 | done | core/src/engine/timeline.rs:144 |
 | `Rival ↔ Rival` | arquitetura/10-modelo-de-dados §22.4 | done | core/src/engine/rival.rs:46 |
 | `Role ↔ Role` | arquitetura/10-modelo-de-dados §23.1 | done | core/src/engine/champion.rs:4 |
@@ -446,7 +447,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `RuneSuggestion ↔ RuneSuggestion` | arquitetura/10-modelo-de-dados §18.3 | done | core/src/engine/runes.rs:59 |
 | `Scored ↔ ScoredChampion` | arquitetura/10-modelo-de-dados §9.1 | done | core/src/engine/mod.rs:57 |
 | `Section ↔ OverlaySection` | arquitetura/10-modelo-de-dados §8.1 | done | core/src/prefs.rs:13 |
-| `Series ↔ Series` | arquitetura/10-modelo-de-dados §31.5 | done | core/src/engine/coach.rs:129 |
+| `Series ↔ Series` | arquitetura/10-modelo-de-dados §31.5 | done | core/src/engine/coach.rs:133 |
 | `Sides ↔ Sides` | arquitetura/10-modelo-de-dados §29.4 | done | core/src/engine/timeline.rs:111 |
 | `Skirmish ↔ Skirmish` | arquitetura/10-modelo-de-dados §27.4 | done | core/src/engine/lanes.rs:187 |
 | `Spawn ↔ Spawn` | arquitetura/10-modelo-de-dados §29.5 | done | core/src/engine/timeline.rs:117 |
@@ -567,8 +568,8 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-CASCA-18` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:141 |
 | `T-CASCA-19` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:155 |
 | `T-CASCA-2` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:182 |
-| `T-CASCA-20` | arquitetura/13-testes §2 | done | src-tauri/src/watcher.rs:425 |
-| `T-CASCA-21` | arquitetura/13-testes §2 | done | src-tauri/src/storage.rs:42 |
+| `T-CASCA-20` | arquitetura/13-testes §2 | done | src-tauri/src/watcher.rs:430 |
+| `T-CASCA-21` | arquitetura/13-testes §2 | done | src-tauri/src/storage.rs:48 |
 | `T-CASCA-3` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:192 |
 | `T-CASCA-4` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:205 |
 | `T-CASCA-5` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:216 |
@@ -783,29 +784,30 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-POOL-7` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:561 |
 | `T-POOL-8` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:569 |
 | `T-POOL-9` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:575 |
-| `T-POS-1` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:895 |
-| `T-POS-10` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1035 |
-| `T-POS-11` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1062 |
-| `T-POS-12` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1092 |
-| `T-POS-13` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1098 |
-| `T-POS-14` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1138 |
-| `T-POS-15` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1171 |
-| `T-POS-16` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1190 |
-| `T-POS-17` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1205 |
-| `T-POS-18` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1240 |
-| `T-POS-19` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1251 |
-| `T-POS-2` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:906 |
-| `T-POS-20` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1268 |
-| `T-POS-21` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1286 |
-| `T-POS-22` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1308 |
-| `T-POS-23` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:920 |
-| `T-POS-3` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:913 |
-| `T-POS-4` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:954 |
-| `T-POS-5` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:989 |
-| `T-POS-6` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:998 |
-| `T-POS-7` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1008 |
-| `T-POS-8` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1016 |
-| `T-POS-9` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1321 |
+| `T-POS-1` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:909 |
+| `T-POS-10` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1065 |
+| `T-POS-11` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1092 |
+| `T-POS-12` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1122 |
+| `T-POS-13` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1128 |
+| `T-POS-14` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1168 |
+| `T-POS-15` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1201 |
+| `T-POS-16` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1220 |
+| `T-POS-17` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1235 |
+| `T-POS-18` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1270 |
+| `T-POS-19` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1281 |
+| `T-POS-2` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:920 |
+| `T-POS-20` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1298 |
+| `T-POS-21` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1316 |
+| `T-POS-22` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1338 |
+| `T-POS-23` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:950 |
+| `T-POS-24` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:927 |
+| `T-POS-3` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:943 |
+| `T-POS-4` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:984 |
+| `T-POS-5` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1019 |
+| `T-POS-6` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1028 |
+| `T-POS-7` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1038 |
+| `T-POS-8` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1046 |
+| `T-POS-9` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1351 |
 | `T-PREVIA-1` | arquitetura/13-testes §2 | done | core/src/engine/team.rs:285 |
 | `T-PREVIA-10` | arquitetura/13-testes §2 | done | core/src/engine/wincon.rs:373 |
 | `T-PREVIA-11` | arquitetura/13-testes §2 | done | core/src/engine/wincon.rs:388 |

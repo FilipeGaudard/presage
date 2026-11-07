@@ -495,6 +495,7 @@ só o que diz.
 | T-POS-21 | `a_curva_de_tropas_mede_a_diferenca_contra_o_oponente` | unidade | `t / 6` contra `t / 12` tropas: `cs_diff` começa com menos de 5 de diferença e termina acima de 100 | R-16 |
 | T-POS-22 | `os_abates_do_time_contam_uma_vez_cada` | unidade | Um abate a cada 300 s em 1800 s dá 6 instantes em `team_kills` | R-16 |
 | T-POS-23 | `gravacao_que_comeca_tarde_usa_o_relogio_da_partida` | regressão | Gravação dos 20:00 aos 30:00, com 270 tropas contra 300 e o Rabadon já no primeiro quadro: `duration = 1800`, a nota de farm é "9.0 tropas por minuto contra 10.0" e nenhuma nota de primeiro item grande. Antes da correção, `duration = 600` e a taxa saía sobre 10 minutos (27 contra 30) | R-16, A9 |
+| T-POS-24 | `so_partida_de_verdade_vale_leitura` | unidade | `worth_reviewing` é falso para um remake de 3:00 (181 quadros) e para 30 quadros no fim de uma partida de 30 minutos, verdadeiro para 5:00 de partida gravada, e falso para a gravação vazia | R-16, A6 |
 
 ### 2.17 Casca — fonte da análise, descoberta do cliente, atualizador e gravação
 

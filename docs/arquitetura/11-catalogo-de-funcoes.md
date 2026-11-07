@@ -1904,3 +1904,19 @@ impl Series {
 | Método | Faz | Atende |
 |---|---|---|
 | `is_empty` | `true` quando `gold_lead` está vazio, isto é, quando a leitura não rodou | R-16 |
+
+### 31.4 `worth_reviewing`
+
+```rust
+pub fn worth_reviewing(recording: &Recording) -> bool;
+```
+
+- **Faz:** diz se a gravação vale uma leitura: ao menos `MIN_FRAMES` quadros
+  (60, um minuto a um por segundo) **e** o relógio do último quadro em pelo menos
+  `MIN_DURATION` (300 s). Um remake de três minutos passa no primeiro e não no
+  segundo; trinta quadros no fim de uma partida longa, o contrário.
+- **Retorno:** verdadeiro quando há o que ler.
+- **Erros:** nenhum. Gravação vazia: falso.
+- **Quem usa:** `recorder::finish` na casca, que não grava nem avisa quando é
+  falso. O corte é o mesmo de `review`, num lugar só (A6, T-POS-24).
+- **Atende:** R-16, RNF-1
