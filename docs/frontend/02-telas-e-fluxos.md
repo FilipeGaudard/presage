@@ -410,9 +410,11 @@ lista de bans.
 | Conexão | `get_snapshot`, `presage://status` | Ponto verde ou apagado, a fase traduzida (`PHASE_LABEL`, `ConnectionStatus.tsx:3-15`: "Seleção de campeões", "Cliente fechado"…; fase desconhecida aparece crua) e o seu Riot ID. O erro de conexão vai no `title` (`ConnStatus.detail`) |
 | Versão nova | `check()` do plugin updater, uma vez na abertura | "Versão X disponível", as notas da versão, "Atualizar e reiniciar" e "Depois" (`title` "Volta a avisar na próxima vez que abrir"); baixando: "Baixando N%"; no fim, "Reiniciando…" |
 | Data Dragon | `loadStaticData()` | "Não consegui carregar os dados do Data Dragon ({erro}). Nomes e ícones ficam indisponíveis." |
+| Falha de comando | `chamar` em `App.tsx` ([03 §7](03-estado-e-atualizacao.md#7-erros-hoje)) | Uma faixa por coisa que falhou: "Não consegui {o que o app tentava}: {o que a casca disse}", com "×" para fechar. Ex.: "Não consegui gravar a pool: …", "Não consegui ler o ranking: …". Some sozinha quando a mesma chamada volta a dar certo |
 
 - **Versão nova nunca instala sozinha** (RNF-7). Falha na checagem, no download
   ou na instalação esconde o aviso, que volta na próxima abertura
   (`Atualizacao.tsx:56-60`). Essa é a única falha calada por decisão.
 - **"Depois"** vale para esta execução: o estado não é gravado.
-- O aviso do Data Dragon é o único erro que a tela mostra com o texto do erro.
+- Todo comando que falha aparece numa faixa com o texto da casca (A1). A única
+  falha calada por decisão continua sendo a da versão nova (RNF-7).

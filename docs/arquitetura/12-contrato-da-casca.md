@@ -50,11 +50,12 @@ os demais na seção do módulo do core). A forma de cada arquivo em disco está
   padrão. Uma rejeição deles só vem do próprio Tauri: argumento que não
   desserializa, ou pânico de um `Mutex` envenenado (todo comando faz
   `.lock().unwrap()`).
-- **A interface engole tudo.** `App.tsx` tem 22 `.catch(() => void 0)` e
-  `overlay.tsx` tem 5. Em `set_pool`, `set_overlay_prefs` e `set_draft_prefs` a
-  tela muda antes da resposta (`App.tsx:313`, `App.tsx:320`, `App.tsx:296`). Se o
-  disco falha, a tela mostra o novo valor, a casca guarda o antigo, e ninguém
-  avisa. `set_autostart` espera o `Ok` antes de marcar a caixa (`App.tsx:302`).
+- **A interface mostra a falha.** Toda chamada de `App.tsx` passa por
+  `chamar`, e o texto do `Err` vira uma faixa
+  ([frontend 03 §7](../frontend/03-estado-e-atualizacao.md#7-erros-hoje)). Em
+  `set_pool`, `set_overlay_prefs` e `set_draft_prefs` a tela muda antes da
+  resposta e volta ao valor de antes se a casca recusar; `set_autostart` espera o
+  `Ok` antes de marcar a caixa.
 
 ### Rota: dois vocabulários
 

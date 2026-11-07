@@ -129,33 +129,53 @@ tela nunca mistura os dois.
 | `set_enemy_role` | depois | não grava | o seletor volta para "(presumida)" |
 | `set_simulated_draft` | depois (`simAplicado`) | não grava | o ranking fica no draft anterior |
 
-Nos três otimistas, uma falha deixa a tela, a memória da casca e o disco em
-dois estados diferentes, e nada avisa.
+Nos três otimistas, a tela muda na hora. Se a casca recusa, a tela volta ao
+valor de antes, que é o que a casca e o disco ainda têm, e a faixa de falha diz o
+que não gravou (§7). Ela só volta se ainda mostra o valor daquela escrita: uma
+escrita mais nova, que deu certo, não é desfeita. Nos confirmados, a tela só muda
+com o `Ok`, e a falha também vira faixa.
 
 ## 7. Erros hoje
 
-| Onde | Chamadas com `.catch(() => void 0)` | O que acontece |
+Toda chamada de `App.tsx` à casca passa por `chamar(rótulo, comando, args)`
+(A1, [GC-1](07-lacunas-da-casca.md)):
+
+- **Falhou:** a falha entra na lista de faixas, uma por rótulo ("Não consegui
+  gravar a pool: {o texto da casca}"), e a chamada devolve `{ ok: false }`.
+- **Deu certo:** a faixa daquele rótulo some.
+- Quem chamou decide o que mostrar no lugar, e a regra é uma só: **dado que não
+  veio não fica na tela como se fosse o de agora.**
+
+| Onde | Falhou | A tela |
 |---|---|---|
-| `App.tsx` | 22: 9 leituras da carga inicial, `lane_profile` no evento, a limpeza dos ouvintes, 2 `set_simulated_draft`, os 3 efeitos de leitura, `set_draft_role`, `set_enemy_role`, `set_draft_prefs`, `set_autostart`, `set_pool`, `set_overlay_prefs` | nada na tela |
-| `overlay.tsx` | 5 | nada; o overlay fica com o dado anterior |
-| `Atualizacao.tsx` | 1, mais um `try` | o aviso some (falha calada por decisão, RNF-7) |
-| `demo.tsx` | 1 (`loadStaticData`) | a demonstração fica sem retratos |
-| `RecommendationPanel.tsx:70` | a prévia vira `null` | aparece "A prévia de rota aparece quando o outro time travar alguém.", que é texto de outro estado |
-| `PoolBuilder.tsx:44` | a sugestão vira lista vazia | aparece "Nada a recomendar para este lugar." |
-| `App.tsx:88` | o erro do Data Dragon vira `staticError` | a faixa com o texto do erro: o único erro visível |
+| Carga inicial (9 leituras) e `lane_profile` no evento | a leitura | fica o valor inicial, com a faixa |
+| Ranking, resposta, bans | cada um por si | a lista que falhou fica vazia; as outras duas valem |
+| Build e ouro | cada um por si | build vazia; ouro sem relatório |
+| Rotas e runas | cada um por si | sem análise; sem runa |
+| Prévia (`lane_analysis` com candidato) | a promessa rejeita | `RecommendationPanel` mostra o estado sem prévia, e a faixa diz por quê |
+| Sugestão da pool | a promessa rejeita | "Não consegui calcular a sugestão agora. O aviso no topo diz por quê.", nunca "Nada a recomendar" |
+| Escritas otimistas | a casca recusa | a tela volta ao valor de antes (§6) |
+| Escritas confirmadas | a casca recusa | a tela não muda |
+| `overlay.tsx` | cada seção por si (`Promise.allSettled`) | a seção que falhou some; o overlay não mostra faixa por cima do jogo, porque a janela principal pede os mesmos comandos e mostra a dela |
+| `Atualizacao.tsx` | a checagem | o aviso some: falha calada por decisão (RNF-7) |
+| `App.tsx:88` | o Data Dragon | a faixa com o texto do erro |
 
-O que isso faz na tela:
+A única chamada que ainda ignora a falha é desligar um ouvinte que nunca ligou,
+na limpeza dos efeitos: não há o que avisar.
 
-- **Escrita que falha some.** Uma pool, uma preferência do overlay ou do draft
-  que não gravou continua na tela como gravada (§6).
-- **Leitura que falha deixa o dado velho.** Os três comandos do ranking vão num
-  `Promise.all`: se um rejeita, os três resultados se perdem e a tela continua
-  com as listas da leitura anterior, sem dizer que envelheceram.
+O que a faixa não cobre:
+
+- **Erro de fundo:** Data Dragon da casca, histórico pessoal, registro de atalho.
+  Ele não volta por comando nenhum, então só vai para o log, e a versão de
+  lançamento não tem console (A14).
+- **A forma do erro:** ele chega como texto livre (`Result<(), String>`, 12 §1),
+  sem código para a tela escolher o que dizer.
 - **Motor que não carrega fica "carregando".** `engine.ready` é "há campeões"
   (`lib.rs:67`). Se a casca não conseguir os campeões nem pelo cache, a tela diz
   "Carregando dados de campeões…" para sempre ([GC-7](07-lacunas-da-casca.md)).
 
-A proposta é um canal de erro ([GC-1](07-lacunas-da-casca.md)).
+Provas: TF-POOL-4 (escrita recusada volta e avisa) e TF-CASCA-4 (ranking que
+falha avisa e sai da tela).
 
 ## 8. O relógio
 

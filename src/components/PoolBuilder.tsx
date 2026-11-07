@@ -32,6 +32,8 @@ export default function PoolBuilder({ pool, staticData, onChange, onSuggest }: P
   const [passo, setPasso] = useState<Passo>(inicial ? "revisao" : "rota");
   const [search, setSearch] = useState("");
   const [plano, setPlano] = useState<PoolPlan | null>(null);
+  // A sugestão que falhou não vira "nada a recomendar": o aviso do topo diz por quê.
+  const [semSugestao, setSemSugestao] = useState(false);
 
   // Cada lugar é escolhido pelo que os anteriores ainda não cobrem, então o
   // plano se refaz a cada campeão que entra ou sai.
@@ -39,9 +41,10 @@ export default function PoolBuilder({ pool, staticData, onChange, onSuggest }: P
     if (passo !== "completar" || !onSuggest) return;
     let vivo = true;
     setPlano(null);
+    setSemSugestao(false);
     onSuggest(role)
       .then((resposta) => vivo && setPlano(resposta))
-      .catch(() => vivo && setPlano({ analysis: { strengths: [], weaknesses: [] }, candidates: [] }));
+      .catch(() => vivo && setSemSugestao(true));
     return () => {
       vivo = false;
     };
@@ -309,6 +312,8 @@ export default function PoolBuilder({ pool, staticData, onChange, onSuggest }: P
 
         {completa ? (
           <p className="muted">Oito na pool. Dá para trocar qualquer um na revisão.</p>
+        ) : semSugestao ? (
+          <p className="muted">Não consegui calcular a sugestão agora. O aviso no topo diz por quê.</p>
         ) : candidatos === null ? (
           <p className="muted">Calculando…</p>
         ) : candidatos.length === 0 ? (

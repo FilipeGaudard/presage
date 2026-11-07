@@ -133,6 +133,8 @@ export type Tier = "core" | "situational" | "extra";
 export type Obj = { x: number };
 const a = await invoke<[A, B[]] | null>("build_suggestions", { limit: 8 });
 invoke("set_pool", { pool });
+chamar<Pool>("gravar a pool", "set_pool_via_canal", { pool });
+ler<Pool>("ler a pool", "get_pool", setPool);
 const s = 'presage://live';
 `;
   const r = scanTs(src);
@@ -141,7 +143,7 @@ const s = 'presage://live';
   assert.deepEqual(sc.extends, ['Base']);
   assert.deepEqual(r.unions.find((u) => u.name === 'Tier').values, ['core', 'situational', 'extra']);
   assert.deepEqual(r.interfaces.find((i) => i.name === 'Obj').fields, ['x']);
-  assert.deepEqual(r.invokes.map((i) => i.name), ['build_suggestions', 'set_pool']);
+  assert.deepEqual(r.invokes.map((i) => i.name), ['build_suggestions', 'set_pool', 'set_pool_via_canal', 'get_pool']);
   assert.ok(r.strings.some((s) => s.value === 'presage://live'));
 });
 

@@ -9,14 +9,14 @@ e o contrato entre os dois lados está em
 > **Status (2026-11-07):**
 > - **Construído** em `src/`, cerca de 7.800 linhas: `App.tsx`, `overlay.tsx`,
 >   `demo.tsx`, 18 componentes, o espelho de tipos `lib/types.ts` e dois CSS.
-> - **Sem teste automatizado.** O único portão é o `tsc --noEmit` do
->   `npm run build`. O catálogo `TF-*` está escrito e todo pendente
+>- **Testes com Vitest** desde 2026-11-07 (`npm test`, também no CI). O
+>   catálogo `TF-*` está escrito; as linhas sem teste ficam adiadas uma a uma
 >   ([06](06-testes.md), [P-16](../produto/perguntas-em-aberto.md)).
-> - **Erro de comando não aparece na tela.** As 22 chamadas de `App.tsx` e as
->   5 de `overlay.tsx` engolem a falha (`.catch(() => void 0)`). Uma pool que
->   não gravou continua na tela como se tivesse gravado ([GC-1](07-lacunas-da-casca.md)).
-> - **Uma tela contraria uma regra da Riot.** O rastreador de ouro mostra o ouro
->   em mão estimado dos inimigos, que C-4 e R-12 proíbem ([GC-2](07-lacunas-da-casca.md)).
+> - **Erro de comando aparece na tela.** Toda chamada passa por um canal só, e a
+>   falha vira uma faixa que diz o que não deu; escrita recusada volta ao valor
+>   de antes ([03 §7](03-estado-e-atualizacao.md#7-erros-hoje), GC-1).
+> - **Ouro em mão, só o seu** (C-4, R-12; [GC-2](07-lacunas-da-casca.md),
+>   fechada).
 
 ## 1. Decisões já tomadas
 

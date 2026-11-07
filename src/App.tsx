@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { invoke, type InvokeArgs } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 
 import { loadStaticData, type StaticData } from "./lib/ddragon";
@@ -49,6 +49,21 @@ const EVENT_REVIEW = "presage://review";
 
 type View = "draft" | "simulador" | "lanes" | "live" | "coach" | "pool" | "overlay";
 
+/** O que uma chamada à casca devolveu: o valor, ou que ela falhou. */
+type Resultado<T> = { ok: true; valor: T } | { ok: false };
+
+/** Uma chamada que falhou: o que o app tentava fazer, e o que a casca disse. */
+interface Falha {
+  rotulo: string;
+  detalhe: string;
+}
+
+function textoDoErro(err: unknown): string {
+  if (typeof err === "string") return err;
+  if (err instanceof Error) return err.message;
+  return String(err);
+}
+
 export default function App() {
   const [view, setView] = useState<View>("draft");
   const [status, setStatus] = useState<ConnStatus | null>(null);
@@ -79,6 +94,27 @@ export default function App() {
   const [staticData, setStaticData] = useState<StaticData | null>(null);
   const [staticError, setStaticError] = useState<string | null>(null);
 
+  const [falhas, setFalhas] = useState<Falha[]>([]);
+
+  // Toda chamada à casca passa por aqui (GC-1). A falha vira um aviso que diz o
+  // que o app tentava fazer, e some quando a mesma chamada volta a dar certo.
+  // Nada é engolido: quem chama decide o que mostrar no lugar, e um dado que não
+  // veio nunca fica na tela como se fosse o de agora.
+  const chamar = useCallback(
+    async <T,>(rotulo: string, comando: string, args?: InvokeArgs): Promise<Resultado<T>> => {
+      try {
+        const valor = await invoke<T>(comando, args);
+        setFalhas((xs) => (xs.some((x) => x.rotulo === rotulo) ? xs.filter((x) => x.rotulo !== rotulo) : xs));
+        return { ok: true, valor };
+      } catch (err) {
+        const detalhe = textoDoErro(err);
+        setFalhas((xs) => [...xs.filter((x) => x.rotulo !== rotulo), { rotulo, detalhe }]);
+        return { ok: false };
+      }
+    },
+    []
+  );
+
   const clockAnchor = useRef<{ at: number; leftMs: number } | null>(null);
   const [tick, setTick] = useState(0);
 
@@ -91,25 +127,29 @@ export default function App() {
   useEffect(() => {
     let disposed = false;
 
-    invoke<[ConnStatus | null, DraftState | null]>("get_snapshot")
-      .then(([snapStatus, snapDraft]) => {
-        if (disposed) return;
-        if (snapStatus) setStatus(snapStatus);
-        if (snapDraft) {
-          setDraft(snapDraft);
-          clockAnchor.current = { at: Date.now(), leftMs: snapDraft.timeLeftMs };
-        }
-      })
-      .catch(() => void 0);
+    chamar<[ConnStatus | null, DraftState | null]>("ler o cliente", "get_snapshot").then((r) => {
+      if (disposed || !r.ok) return;
+      const [snapStatus, snapDraft] = r.valor;
+      if (snapStatus) setStatus(snapStatus);
+      if (snapDraft) {
+        setDraft(snapDraft);
+        clockAnchor.current = { at: Date.now(), leftMs: snapDraft.timeLeftMs };
+      }
+    });
 
-    invoke<EngineStatus>("engine_status").then(setEngine).catch(() => void 0);
-    invoke<Pool>("get_pool").then(setPool).catch(() => void 0);
-    invoke<LiveSnapshot | null>("get_live").then(setLive).catch(() => void 0);
-    invoke<CoachReport | null>("last_review").then(setReview).catch(() => void 0);
-    invoke<LaneProfile | null>("lane_profile").then(setLaneProfile).catch(() => void 0);
-    invoke<OverlayPrefs>("get_overlay_prefs").then(setOverlayPrefs).catch(() => void 0);
-    invoke<DraftPrefs>("get_draft_prefs").then(setDraftPrefs).catch(() => void 0);
-    invoke<boolean>("get_autostart").then(setAutostart).catch(() => void 0);
+    // Leitura que falha deixa o valor inicial e o aviso: nunca um valor inventado.
+    const ler = <T,>(rotulo: string, comando: string, aplicar: (valor: T) => void) =>
+      chamar<T>(rotulo, comando).then((r) => {
+        if (!disposed && r.ok) aplicar(r.valor);
+      });
+    ler<EngineStatus>("ler o estado do motor", "engine_status", setEngine);
+    ler<Pool>("ler a pool", "get_pool", setPool);
+    ler<LiveSnapshot | null>("ler a partida", "get_live", setLive);
+    ler<CoachReport | null>("ler o pós-jogo", "last_review", setReview);
+    ler<LaneProfile | null>("ler o perfil de rota", "lane_profile", setLaneProfile);
+    ler<OverlayPrefs>("ler as preferências do overlay", "get_overlay_prefs", setOverlayPrefs);
+    ler<DraftPrefs>("ler as preferências do draft", "get_draft_prefs", setDraftPrefs);
+    ler<boolean>("ler o início com o Windows", "get_autostart", setAutostart);
 
     const unlisteners = [
       listen<ConnStatus>(EVENT_STATUS, (event) => setStatus(event.payload)),
@@ -117,7 +157,7 @@ export default function App() {
       // aí que o perfil de rota muda.
       listen<EngineStatus>(EVENT_ENGINE, (event) => {
         setEngine(event.payload);
-        invoke<LaneProfile | null>("lane_profile").then(setLaneProfile).catch(() => void 0);
+        ler<LaneProfile | null>("ler o perfil de rota", "lane_profile", setLaneProfile);
       }),
       listen<LiveSnapshot | null>(EVENT_LIVE, (event) => setLive(event.payload)),
       // A partida acabou e a leitura ficou pronta: traz a aba para a frente,
@@ -141,26 +181,27 @@ export default function App() {
     return () => {
       disposed = true;
       window.clearInterval(ticker);
+      // Desligar um ouvinte que nunca ligou não tem o que avisar.
       unlisteners.forEach((p) => p.then((un) => un()).catch(() => void 0));
     };
-  }, []);
+  }, [chamar]);
 
   // O simulador manda o draft dele para o backend enquanto a aba está aberta;
   // fora dela, o motor volta a ler o champ select do cliente.
   useEffect(() => {
     if (view !== "simulador") {
       setSimAplicado(null);
-      invoke("set_simulated_draft", { draft: null }).catch(() => void 0);
+      void chamar("devolver o draft ao cliente", "set_simulated_draft", { draft: null });
       return;
     }
     let vivo = true;
-    invoke("set_simulated_draft", { draft: simDraft })
-      .then(() => vivo && setSimAplicado(simDraft))
-      .catch(() => void 0);
+    chamar("aplicar o draft do simulador", "set_simulated_draft", { draft: simDraft }).then((r) => {
+      if (vivo && r.ok) setSimAplicado(simDraft);
+    });
     return () => {
       vivo = false;
     };
-  }, [view, simDraft]);
+  }, [view, simDraft, chamar]);
 
   const activeDraft = view === "simulador" ? simAplicado : draft;
 
@@ -174,22 +215,21 @@ export default function App() {
     let cancelled = false;
 
     Promise.all([
-      invoke<ScoredChampion[]>("rank_draft"),
-      invoke<MinimaxPick[]>("minimax_draft"),
-      invoke<BanSuggestion[]>("ban_suggestions"),
-    ])
-      .then(([ranked, tree, banList]) => {
-        if (cancelled) return;
-        setRecommendations(ranked);
-        setMinimax(tree);
-        setBans(banList);
-      })
-      .catch(() => void 0);
+      chamar<ScoredChampion[]>("ler o ranking", "rank_draft"),
+      chamar<MinimaxPick[]>("ler a resposta adversária", "minimax_draft"),
+      chamar<BanSuggestion[]>("ler a sugestão de ban", "ban_suggestions"),
+    ]).then(([ranked, tree, banList]) => {
+      if (cancelled) return;
+      // Cada lista que falhou sai da tela: a da leitura anterior não é a de agora.
+      setRecommendations(ranked.ok ? ranked.valor : []);
+      setMinimax(tree.ok ? tree.valor : []);
+      setBans(banList.ok ? banList.valor : []);
+    });
 
     return () => {
       cancelled = true;
     };
-  }, [activeDraft, engine?.ready, pool, draftRole, enemyRoles, draftPrefs]);
+  }, [activeDraft, engine?.ready, pool, draftRole, enemyRoles, draftPrefs, chamar]);
 
   useEffect(() => {
     if (!live) {
@@ -201,23 +241,24 @@ export default function App() {
     let cancelled = false;
 
     Promise.all([
-      invoke<[BuildContext, ItemSuggestion[]] | null>("build_suggestions", { limit: 8 }),
-      invoke<GoldReport | null>("gold_report"),
-    ])
-      .then(([build, gold]) => {
-        if (cancelled) return;
-        if (build) {
-          setBuildContext(build[0]);
-          setSuggestions(build[1]);
-        }
-        setGoldReport(gold);
-      })
-      .catch(() => void 0);
+      chamar<[BuildContext, ItemSuggestion[]] | null>("ler a build", "build_suggestions", { limit: 8 }),
+      chamar<GoldReport | null>("ler o ouro", "gold_report"),
+    ]).then(([build, gold]) => {
+      if (cancelled) return;
+      if (!build.ok) {
+        setBuildContext(null);
+        setSuggestions([]);
+      } else if (build.valor) {
+        setBuildContext(build.valor[0]);
+        setSuggestions(build.valor[1]);
+      }
+      setGoldReport(gold.ok ? gold.valor : null);
+    });
 
     return () => {
       cancelled = true;
     };
-  }, [live]);
+  }, [live, chamar]);
 
   // A análise de rota serve os dois momentos: no draft é projeção, na partida
   // sai dos níveis e itens reais. O comando decide sozinho qual fonte usar.
@@ -228,60 +269,65 @@ export default function App() {
     }
     let cancelled = false;
     Promise.all([
-      invoke<LaneReport | null>("lane_analysis", { candidate: null }),
-      invoke<RunePlan | null>("rune_plan"),
-    ])
-      .then(([report, plano]) => {
-        if (cancelled) return;
-        setLanes(report);
-        setRunas(plano);
-      })
-      .catch(() => void 0);
+      chamar<LaneReport | null>("ler a análise de rota", "lane_analysis", { candidate: null }),
+      chamar<RunePlan | null>("ler as runas", "rune_plan"),
+    ]).then(([report, plano]) => {
+      if (cancelled) return;
+      setLanes(report.ok ? report.valor : null);
+      setRunas(plano.ok ? plano.valor : null);
+    });
     return () => {
       cancelled = true;
     };
-  }, [activeDraft, live, engine?.ready, enemyRoles]);
+  }, [activeDraft, live, engine?.ready, enemyRoles, chamar]);
 
   // O construtor pergunta o que falta só quando chega no último passo.
+  // Quem chama precisa saber que falhou, para não mostrar "nada a recomendar"
+  // no lugar de um erro: aqui a falha volta como promessa rejeitada.
   const pedirSugestoes = useCallback(
     (role: Role | null) =>
-      invoke<PoolPlan>("pool_suggestions", {
+      chamar<PoolPlan>("calcular a sugestão da pool", "pool_suggestions", {
         role: role && role !== "Unknown" ? ROLE_TO_LCU[role] : null,
         limit: 6,
+      }).then((r) => {
+        if (!r.ok) throw new Error("pool_suggestions falhou");
+        return r.valor;
       }),
-    []
+    [chamar]
   );
 
   // A prévia de um candidato: a análise do draft com ele no seu lugar.
   const previa = useCallback(
     (championId: number) =>
-      invoke<LaneReport | null>("lane_analysis", { candidate: championId }),
-    []
+      chamar<LaneReport | null>("calcular a prévia", "lane_analysis", { candidate: championId }).then((r) => {
+        if (!r.ok) throw new Error("lane_analysis falhou");
+        return r.valor;
+      }),
+    [chamar]
   );
 
   // A rota só muda na tela depois que o backend guardou: a lista que volta já
   // é a da rota nova.
   const escolherRota = useCallback((proxima: Role) => {
     if (proxima === "Unknown") return;
-    invoke("set_draft_role", { role: ROLE_TO_LCU[proxima] })
-      .then(() => setDraftRole(proxima))
-      .catch(() => void 0);
-  }, []);
+    chamar("escolher a rota", "set_draft_role", { role: ROLE_TO_LCU[proxima] }).then((r) => {
+      if (r.ok) setDraftRole(proxima);
+    });
+  }, [chamar]);
 
   // Corrigir a rota de um inimigo refaz ranking, prévia e análise de rota.
   const marcarRota = useCallback((championId: number, role: Role | null) => {
     const lcu = role && role !== "Unknown" ? ROLE_TO_LCU[role] : null;
-    invoke("set_enemy_role", { championId, role: lcu })
-      .then(() =>
-        setEnemyRoles((atual) => {
-          const proximo = { ...atual };
-          if (role && role !== "Unknown") proximo[championId] = role;
-          else delete proximo[championId];
-          return proximo;
-        })
-      )
-      .catch(() => void 0);
-  }, []);
+    chamar("marcar a rota do inimigo", "set_enemy_role", { championId, role: lcu }).then((r) => {
+      if (!r.ok) return;
+      setEnemyRoles((atual) => {
+        const proximo = { ...atual };
+        if (role && role !== "Unknown") proximo[championId] = role;
+        else delete proximo[championId];
+        return proximo;
+      });
+    });
+  }, [chamar]);
 
   // A rota que o motor presumiu para cada inimigo, lida da análise do draft.
   const presumidas = useMemo(() => {
@@ -292,15 +338,22 @@ export default function App() {
     return mapa;
   }, [lanes]);
 
+  // As escritas otimistas mudam a tela na hora; se a casca recusar, a tela
+  // volta ao valor de antes, que é o que a casca e o disco ainda têm. Só volta
+  // se a tela ainda mostra o que esta escrita pôs lá: uma escrita mais nova
+  // que deu certo não é desfeita.
   function saveDraftPrefs(next: DraftPrefs) {
+    const anterior = draftPrefs;
     setDraftPrefs(next);
-    invoke("set_draft_prefs", { prefs: next }).catch(() => void 0);
+    chamar("gravar as preferências do draft", "set_draft_prefs", { prefs: next }).then((r) => {
+      if (!r.ok) setDraftPrefs((atual) => (atual === next ? anterior : atual));
+    });
   }
 
   function saveAutostart(next: boolean) {
-    invoke("set_autostart", { enabled: next })
-      .then(() => setAutostart(next))
-      .catch(() => void 0);
+    chamar("mudar o início com o Windows", "set_autostart", { enabled: next }).then((r) => {
+      if (r.ok) setAutostart(next);
+    });
   }
 
   const secondsLeft = useMemo(() => {
@@ -310,15 +363,21 @@ export default function App() {
   }, [draft, tick]);
 
   function savePool(next: Pool) {
+    const anterior = pool;
     setPool(next);
-    invoke("set_pool", { pool: next }).catch(() => void 0);
+    chamar("gravar a pool", "set_pool", { pool: next }).then((r) => {
+      if (!r.ok) setPool((atual) => (atual === next ? anterior : atual));
+    });
   }
 
   function saveOverlayPrefs(next: OverlayPrefs) {
     // Otimista: o clique responde na hora e o backend confirma depois. Travar
     // um checkbox esperando ida e volta ao disco seria lento à toa.
+    const anterior = overlayPrefs;
     setOverlayPrefs(next);
-    invoke("set_overlay_prefs", { prefs: next }).catch(() => void 0);
+    chamar("gravar as preferências do overlay", "set_overlay_prefs", { prefs: next }).then((r) => {
+      if (!r.ok) setOverlayPrefs((atual) => (atual === next ? anterior : atual));
+    });
   }
 
   return (
@@ -388,6 +447,22 @@ export default function App() {
       </header>
 
       <Atualizacao />
+
+      {falhas.map((falha) => (
+        <div className="banner banner-warn banner-falha" role="alert" key={falha.rotulo}>
+          <span>
+            Não consegui {falha.rotulo}: {falha.detalhe}
+          </span>
+          <button
+            type="button"
+            className="banner-fechar"
+            title="Fechar"
+            onClick={() => setFalhas((xs) => xs.filter((x) => x.rotulo !== falha.rotulo))}
+          >
+            ×
+          </button>
+        </div>
+      ))}
 
       {staticError && (
         <div className="banner banner-warn">

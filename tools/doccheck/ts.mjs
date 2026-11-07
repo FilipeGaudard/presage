@@ -119,5 +119,10 @@ export function scanTs(src, { file = '' } = {}) {
   for (const m of code.matchAll(/\binvoke\s*(?:<[^(]*?>)?\s*\(\s*"@(\d+)"/g)) {
     invokes.push({ name: strings[Number(m[1])].value, file, line: lineAt(code, m.index) });
   }
+  // O canal de erro do App (`chamar(rótulo, comando, args)` e `ler(rótulo,
+  // comando, aplicar)`): o comando é o segundo texto.
+  for (const m of code.matchAll(/\b(?:chamar|ler)\s*(?:<[^(]*?>)?\s*\(\s*"@\d+"\s*,\s*"@(\d+)"/g)) {
+    invokes.push({ name: strings[Number(m[1])].value, file, line: lineAt(code, m.index) });
+  }
   return { interfaces, unions, invokes, strings, comments };
 }

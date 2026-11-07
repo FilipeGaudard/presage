@@ -14,7 +14,6 @@ command get_enemy_roles | A2: registrado no generate_handler! e nunca chamado pe
 ui-test TF-CASCA-1 | P-16: teste do front ainda não escrito
 ui-test TF-CASCA-2 | P-16: teste do front ainda não escrito
 ui-test TF-CASCA-3 | P-16: teste do front ainda não escrito
-ui-test TF-CASCA-4 | P-16: teste do front ainda não escrito
 ui-test TF-CASCA-5 | P-16: teste do front ainda não escrito
 ui-test TF-CASCA-6 | P-16: teste do front ainda não escrito
 ui-test TF-DRAFT-1 | P-16: teste do front ainda não escrito
@@ -42,7 +41,6 @@ ui-test TF-POS-3 | P-16: teste do front ainda não escrito
 ui-test TF-POOL-1 | P-16: teste do front ainda não escrito
 ui-test TF-POOL-2 | P-16: teste do front ainda não escrito
 ui-test TF-POOL-3 | P-16: teste do front ainda não escrito
-ui-test TF-POOL-4 | P-16: teste do front ainda não escrito
 ui-test TF-POOL-5 | P-16: teste do front ainda não escrito
 ui-test TF-AJUSTES-1 | P-16: teste do front ainda não escrito
 ui-test TF-AJUSTES-2 | P-16: teste do front ainda não escrito

@@ -180,6 +180,23 @@ h3 {
   margin: 12px 20px;
 }
 
+.banner-falha {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.banner-fechar {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+}
+
 .banner-turn {
   background: var(--halo-soft);
   border: 1px solid var(--halo-edge);

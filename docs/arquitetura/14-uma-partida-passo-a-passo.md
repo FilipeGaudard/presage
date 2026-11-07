@@ -241,12 +241,11 @@ watcher ao abrir: o último status e o último draft já estão no `Shared`.
 [frontend 03](../frontend/03-estado-e-atualizacao.md).
 
 **O que pode dar errado.**
-- **Defeito conhecido.** `App.tsx` tem 22 `.catch(() => void 0)`. A falha de
-  qualquer comando some, e a única falha visível é a do Data Dragon do front
-  (`src/App.tsx:88`) ([GC-1](../frontend/07-lacunas-da-casca.md)).
+- **Defeito corrigido (A1).** Até a 0.7.0, a falha de qualquer comando sumia
+  (22 `.catch(() => void 0)`). Agora toda chamada passa por `chamar`, e a falha
+  vira uma faixa que diz o que não deu ([GC-1](../frontend/07-lacunas-da-casca.md)).
 - `set_pool`, `set_overlay_prefs` e `set_draft_prefs` mudam a tela antes da
-  resposta (`src/App.tsx:313`, `src/App.tsx:320`, `src/App.tsx:296`). Se o disco
-  falha, a tela mostra o valor novo e a casca guarda o velho (GC-1).
+  resposta e voltam ao valor de antes se a casca recusar (TF-POOL-4).
 
 ## 4. Achar o cliente e o ritmo
 
@@ -521,8 +520,8 @@ Soma tudo em log-odds, corta em [0,25; 0,75], monta até três razões e ordena 
   conjuntos deles, o do ranking e o do minimax (P-11).
 - O componente pessoal carrega a fase da conta
   ([ADR-0012](../adr/0012-vazamento-da-fase-da-conta-mantido.md)).
-- Se um dos três comandos rejeita, o `Promise.all` cai no `catch` e a tela fica
-  com as listas da leitura anterior (GC-1).
+- Se um dos três comandos falha, a lista dele sai da tela e a faixa diz qual; as
+  outras duas continuam valendo (TF-CASCA-4).
 
 ### 7.2 A resposta deles
 

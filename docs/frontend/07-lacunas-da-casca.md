@@ -18,7 +18,7 @@ de vir da casca, e não ser adivinhado ou copiado no TypeScript.
 
 | # | Lacuna | Prioridade | Estado |
 |---|---|---|---|
-| GC-1 | A falha de um comando não chega à tela | P0 | aberta |
+| GC-1 | A falha de um comando não chega à tela | P0 | parcial: o front fechou (TF-POOL-4, TF-CASCA-4); a forma do erro e o evento de fundo ficam (A14) |
 | GC-2 | O ouro em mão dos outros nove cruza a ponte e aparece | P0 | fechada (TF-PARTIDA-3, T-OURO-10) |
 | GC-3 | Perder o cliente não limpa o draft na tela | P1 | aberta |
 | GC-4 | Marcas e rota escolhida vivem em dois lugares; `get_enemy_roles` sem uso | P1 | aberta |
@@ -57,8 +57,13 @@ de vir da casca, e não ser adivinhado ou copiado no TypeScript.
   Uma escrita otimista que rejeita volta ao valor anterior.
 - Prova: TF-CASCA-4, TF-POOL-4.
 
-**Enquanto isso:** a única falha visível é a do Data Dragon do front. Uma pool
-que não gravou só se descobre reabrindo o app.
+> **O front fechou.** Como proposto: `chamar(rótulo, comando, args)` em
+> `App.tsx`, uma faixa por rótulo, escrita otimista que volta ao valor anterior,
+> e cada leitura que falha sai da tela em vez de ficar velha. O overlay ganhou o
+> mesmo cuidado sem faixa (cada seção por si). Prova: TF-POOL-4 e TF-CASCA-4,
+> vermelhos antes. **Fica:** o erro com forma fixa (`{ code, message }`) e o
+> evento `presage://erro` para as falhas de fundo, com o log que o jogador
+> consegue abrir (A14).
 
 ## GC-2 — O ouro em mão dos outros nove cruza a ponte e aparece (P0)
 

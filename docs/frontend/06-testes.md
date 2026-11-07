@@ -50,7 +50,7 @@ com `mockIPC`, que é onde mora o tratamento de erro.
 | TF-CASCA-1 | componente | Hoje. Com `engine.ready`, `version: "16.21.1"` e `__APP_VERSION__ = "0.7.0"`, a barra diz "patch 16.21.1 · v0.7.0"; com `engine: null`, "draft engine · v0.7.0" | L-12 |
 | TF-CASCA-2 | componente | Hoje. Com `check()` resolvendo a versão 0.8.0, aparece "Versão 0.8.0 disponível"; `downloadAndInstall` só é chamado no clique de "Atualizar e reiniciar"; "Depois" esconde o aviso; com `check()` rejeitando, nada aparece | RNF-7, R-19 |
 | TF-CASCA-3 | componente | Hoje. Na aba Pool, um `presage://review` com uma leitura troca a aba para Pós-jogo e mostra o campeão da leitura | R-16 |
-| TF-CASCA-4 | componente | Desejado. Um `rank_draft` que rejeita mostra um aviso que nomeia o ranking; a lista anterior não continua na tela como se fosse atual | GC-1 |
+| TF-CASCA-4 | componente | Hoje. Um `rank_draft` que rejeita mostra um aviso que nomeia o ranking; a lista anterior não continua na tela como se fosse atual | GC-1 |
 | TF-CASCA-5 | estático | Hoje. Em `src/`, só `App.tsx` e `overlay.tsx` importam `@tauri-apps/api`, e nenhum arquivo usa `dangerouslySetInnerHTML`, `innerHTML`, `eval`, `localStorage` ou `<a href` | 05 §1 |
 | TF-CASCA-6 | componente | Hoje. Um motivo `<img src=x onerror=alert(1)>` em `ScoredChampion.reasons` aparece como texto no detalhe, e o DOM não ganha nenhum `<img>` com `onerror` | 05 §1 |
 | TF-DRAFT-1 | componente | Hoje. `draft: null` com `connected: false` mostra "Sem draft ativo" e "Abra o League of Legends."; com `connected: true` e `phase: "Lobby"`, "Cliente conectado (Lobby)." | R-18 |
@@ -79,7 +79,7 @@ com `mockIPC`, que é onde mora o tratamento de erro.
 | TF-POOL-1 | componente | Hoje. Pool vazia abre em "Em que rota você joga?"; pool com uma entrada de `Mid` abre em "Sua pool", na aba MID | R-9 |
 | TF-POOL-2 | componente | Hoje. No passo 2, com dois core o botão diz "Faltam 1" e está desligado; com três, a grade desliga e o botão diz "Analisar os três" | R-9 |
 | TF-POOL-3 | componente | Hoje. No passo 3, aceitar um candidato acrescenta uma entrada `situational` e chama `onSuggest` de novo com a mesma rota | R-9 |
-| TF-POOL-4 | componente | Desejado. Um `set_pool` que rejeita mostra o erro e devolve a tela à pool que a casca tem | GC-1 |
+| TF-POOL-4 | componente | Hoje. Um `set_pool` que rejeita mostra o erro e devolve a tela à pool que a casca tem | GC-1 |
 | TF-POOL-5 | componente | Hoje. Com cinco bans, o campo "Adicionar ban…" some; "↑" no segundo troca os dois primeiros e grava a pool | R-3 |
 | TF-AJUSTES-1 | componente | Hoje. Desmarcar "Ouro em itens" chama `set_overlay_prefs` com `{ prefs: { hidden: ["gold"] } }`, e a caixa muda antes da resposta | R-15 |
 | TF-AJUSTES-2 | componente | Hoje. "Iniciar o Presage com o Windows" só muda depois que `set_autostart` resolve; se rejeitar, continua desmarcada | R-19 |

@@ -40,6 +40,8 @@ function Overlay() {
   const mostra = (secao: OverlaySection) => !prefs.hidden.includes(secao);
 
   useEffect(() => {
+    // Sem resposta, tudo continua visível: esconder por falha de leitura seria
+    // decidir pelo jogador.
     invoke<OverlayPrefs>("get_overlay_prefs").then(setPrefs).catch(() => void 0);
     // Mexer no painel tem efeito imediato, inclusive no meio de uma partida.
     const unlisten = listen<OverlayPrefs>(EVENT_PREFS, (event) => setPrefs(event.payload));
@@ -49,7 +51,8 @@ function Overlay() {
   }, []);
 
   useEffect(() => {
-    invoke<LiveSnapshot | null>("get_live").then(setSnapshot).catch(() => void 0);
+    // Sem resposta, sem snapshot: o overlay some até o próximo `presage://live`.
+    invoke<LiveSnapshot | null>("get_live").then(setSnapshot).catch(() => setSnapshot(null));
     const unlisten = listen<LiveSnapshot | null>(EVENT_LIVE, (event) =>
       setSnapshot(event.payload)
     );
@@ -70,19 +73,24 @@ function Overlay() {
 
     // Tudo se refaz a cada tique da partida: o que eles compraram muda a
     // ordem dos itens, e quem morreu muda a chance da briga.
-    Promise.all([
+    //
+    // Cada seção vale por si: a que falhou some, em vez de continuar mostrando o
+    // número de um tique atrás como se fosse o de agora (A1). O aviso da falha
+    // fica na janela principal, que pede os mesmos comandos; por cima do jogo,
+    // só o que está certo agora.
+    Promise.allSettled([
       invoke<[BuildContext, ItemSuggestion[]] | null>("build_suggestions", { limit: 2 }),
       invoke<GoldReport | null>("gold_report"),
       invoke<SkirmishFocus | null>("skirmish_focus"),
-    ])
-      .then(([build, goldReport, foco]) => {
-        if (cancelled) return;
-        setContext(build?.[0] ?? null);
-        setItens(build?.[1] ?? []);
-        setGold(goldReport);
-        setBriga(foco);
-      })
-      .catch(() => void 0);
+    ]).then(([build, goldReport, foco]) => {
+      if (cancelled) return;
+      const valor = <T,>(r: PromiseSettledResult<T>): T | null => (r.status === "fulfilled" ? r.value : null);
+      const b = valor(build);
+      setContext(b?.[0] ?? null);
+      setItens(b?.[1] ?? []);
+      setGold(valor(goldReport));
+      setBriga(valor(foco));
+    });
 
     return () => {
       cancelled = true;
