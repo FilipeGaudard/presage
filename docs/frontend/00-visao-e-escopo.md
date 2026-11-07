@@ -123,7 +123,7 @@ A última coluna é o que a tela escreve hoje perto do número.
 | Runa do confronto | Rotas | regra | "Isto sai de regras sobre a mecânica do confronto … Não sai de winrate" |
 | Sugestão dos lugares 4 a 8 da pool | Pool | regra | "regra, não estatística" (`PoolBuilder.tsx:347`) |
 | Score e delta do draft | Draft, simulador | fraca | sem base, a faixa "Sem base estatística"; com base, "Base do patch …" |
-| Exposição ao contra-pick | Draft, simulador | fraca | `−x.x` sem unidade na grade; "custa x pp" no detalhe |
+| Exposição ao contra-pick | Draft, simulador | fraca | "pontos da composição": a nota da seção e o título do `−x.x` na grade, e "tira x.x pontos da composição" no detalhe. Até a 0.7.0, `−x.x` sem unidade e "custa x pp" (A22) |
 | Prioridade de rota (0 a 100) | Partida, overlay | não está na visão geral §2 | "Ranking de valor, não de posição" |
 | Perfil de rota | Pós-jogo | medição, com `±` | "Só ganha cor o que sai do ruído (intervalo de 95%)" |
 | Chance do time | Prévia | só com a base | "Chance do time com ele, pela base de partidas" |

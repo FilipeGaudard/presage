@@ -97,7 +97,8 @@ candidato clicado, com a prévia.
   cliente.
 
 **Detalhe e prévia:** `score% ±confidence · n=sample`, os motivos de
-`ScoredChampion.reasons` e "Melhor resposta deles custa x.xpp (Nome)". A prévia
+`ScoredChampion.reasons` e "Melhor resposta deles tira x.x pontos da composição
+(Nome)". A prévia
 tem a curva 1–18 e a tabela de vantagem de nível contra o oponente da rota
 ("Rota contra {nome}: o 1v1 de atributos, nível a nível"), as brigas "2v2 e 3v3
 com ele", a "Chance do time com ele, pela base de partidas" (só com a base) e a

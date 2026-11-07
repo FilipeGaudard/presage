@@ -562,14 +562,16 @@ pub fn others_play(champion: &Champion, role: Role, store: &dyn StatsStore) -> b
 pub fn team_value(ours: &[i64], theirs: &[i64], index: &ChampionIndex) -> f64;
 ```
 
-- **Faz:** calcula `0,5 + penalidade(theirs) − penalidade(ours)`, cortado em
-  [0,05; 0,95]. A penalidade de um time é `|physical_share − 0,5| × 2 × W_BALANCE`,
+- **Faz:** calcula `0,5 + penalidade(theirs) − penalidade(ours)`. A penalidade de um time é `|physical_share − 0,5| × 2 × W_BALANCE`,
   mais `W_FRONTLINE` quando nenhum é frontline e o time tem ao menos
   `FRONTLINE_FROM` campeões conhecidos, tudo vezes `min(known / 5, 1)`. Time sem campeão conhecido
   não tem penalidade.
 - **Params:** ids do Data Dragon; os que o índice não conhece são ignorados.
-- **Retorno:** fração 0–1. É simétrica: `team_value(A, B) + team_value(B, A) = 1`.
-  Um índice de composição, não uma probabilidade medida.
+- **Retorno:** um índice de composição centrado em 0,5, não uma probabilidade:
+  cada lado perde no máximo `W_BALANCE + W_FRONTLINE`, então o valor fica em
+  0,5 ± 0,085 (T-DRAFT-65). Até a 0.7.0 era cortado em [0,05; 0,95], um corte que
+  nunca agia e fazia parecer chance (A22). É simétrica:
+  `team_value(A, B) + team_value(B, A) = 1`.
 - **Erros:** nenhum.
 - **Confiança:** fraca
 - **Atende:** R-2, R-3, ADR-0013, P-11

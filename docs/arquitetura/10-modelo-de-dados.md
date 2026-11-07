@@ -906,20 +906,19 @@ valor.
 #[serde(rename_all = "camelCase")]
 pub struct MinimaxPick {
     pub champion_id: i64,           // id do Data Dragon, um de `ctx.candidates`
-    pub greedy: f64,                // fração 0–1: `team_value` do seu time com ele contra o deles de agora, a 3 casas
-    pub after_response: f64,        // fração 0–1: o mesmo depois da resposta deles que mais o derruba, a 3 casas
-    pub exposure: f64,              // fração 0–1: `greedy − after_response` antes de arredondar, a 3 casas. A tela mostra ×100 como pp
+    pub greedy: f64,                // índice em 0,5 ± 0,085: `team_value` do seu time com ele contra o deles de agora, a 3 casas
+    pub after_response: f64,        // índice em 0,5 ± 0,085: o mesmo depois da resposta deles que mais o derruba, a 3 casas
+    pub exposure: f64,              // `greedy − after_response` antes de arredondar, a 3 casas, de 0 a 0,17. A tela mostra ×100 como "pontos da composição", nunca como pp
     pub best_response: Option<i64>, // id do Data Dragon da resposta que mais derruba; `None` quando nenhuma derruba (time deles fechado ou nada piora)
     pub in_pool: bool,              // o id está em `ctx.pool`
 }
 ```
 
 **Invariantes:**
-- `exposure ≥ 0`: o pior valor começa no guloso e só desce (`minimax.rs:166-177`).
+- `exposure ≥ 0`: o pior valor começa no guloso e só desce (`minimax.rs:150-161`).
 - `best_response` nunca é o próprio candidato nem um id de `ctx.unavailable`.
-- `greedy` e `after_response` ficam perto de 0,5. Cada lado perde no máximo
-  `W_BALANCE + W_FRONTLINE`, e o corte em [0,05; 0,95] de `team_value` não chega a
-  agir.
+- `greedy` e `after_response` ficam em 0,5 ± 0,085: cada lado perde no máximo
+  `W_BALANCE + W_FRONTLINE` (T-DRAFT-65). Não são chance de vitória (A22).
 
 ### 12.2 `BanSuggestion` ↔ `BanSuggestion`
 
@@ -966,7 +965,7 @@ pub struct TeamProfile {
   (`time_vazio_e_neutro`).
 - A completude que pondera os sinais é `min(known / 4, 1)`, método privado
   `completeness` (`comp.rs:14-16`). `team_value` usa outra, `min(known / 5, 1)`
-  (`minimax.rs:76`).
+  (`minimax.rs:81`).
 
 ## 14. `core::engine::team` — A chance do time
 

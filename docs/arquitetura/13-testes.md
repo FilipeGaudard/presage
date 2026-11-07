@@ -215,6 +215,7 @@ confere saem da mesma conta, feita à parte.
 | T-DRAFT-62 | `time_sem_tanque_precisa_de_frontline`, `time_com_tanque_nao_precisa` | unidade | `frontline_need` é > 0 para [Atirador, Assassino, Mago] e 0 para [Atirador, Assassino, Tanque] | R-1 |
 | T-DRAFT-63 | `sinal_vale_menos_no_comeco_do_draft` | unidade | O ganho do Mago com um aliado (Atirador) é menor que com três. Sem a completude seria o contrário: o ganho bruto é 0,36 com um e 0,15 com três | 02 §4 |
 | T-DRAFT-64 | `a_resposta_deles_nao_vem_do_seu_historico` | regressão | Com o atirador deles travado no meio e um histórico seu que só diz "você jogou o mago no topo", nenhuma resposta do `minimax_with` é o mago: pela classe ele não joga topo, selva, bot nem suporte. Antes da correção, o seu histórico o punha entre as respostas deles | R-2, A12 |
+| T-DRAFT-65 | `o_valor_do_time_fica_a_8_5_pontos_de_meio` | propriedade | Cinco atiradores só físicos e sem linha de frente contra ninguém valem 0,5 − (0,9 × `W_BALANCE` + `W_FRONTLINE`) ≈ 0,421, abaixo de 0,5 − 0,9 × 0,085; atiradores contra magos, magos contra atiradores e atiradores contra atiradores ficam em 0,5 ± 0,085. É índice, não chance | R-2, RNF-1, A22 |
 
 ### 2.4 Prévia — chance do time, condição de vitória e análise de rota
 

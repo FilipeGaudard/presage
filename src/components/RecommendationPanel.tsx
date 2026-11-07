@@ -222,6 +222,8 @@ export default function RecommendationPanel({
       {!banning && safest.length > 0 && (
         <div className="section">
           <h3>Menos expostos ao contra-pick</h3>
+          {/* A exposição é do valor do time, não da chance do ranking (A22, RNF-1). */}
+          <p className="muted">Pontos da composição (dano e linha de frente) que a melhor resposta deles tira. Não usa a base.</p>
           <div className="grid">
             {safest.map((pick) => {
               const champion = staticData?.champions.get(pick.championId);
@@ -243,7 +245,7 @@ export default function RecommendationPanel({
                       <span>?</span>
                     )}
                   </div>
-                  <span className="cell-delta delta-ok">
+                  <span className="cell-delta delta-ok" title="pontos da composição">
                     −{(pick.exposure * 100).toFixed(1)}
                   </span>
                 </button>
@@ -289,7 +291,7 @@ export default function RecommendationPanel({
             ))}
             {tree && (
               <li>
-                Melhor resposta deles custa {(tree.exposure * 100).toFixed(1)}pp
+                Melhor resposta deles tira {(tree.exposure * 100).toFixed(1)} pontos da composição
                 {tree.bestResponse !== null &&
                   ` (${
                     staticData?.champions.get(tree.bestResponse)?.name ??

@@ -59,12 +59,15 @@ pub struct BanSuggestion {
     pub from_pool: bool,
 }
 
-/// Valor de uma composição contra a outra, como probabilidade de vitória.
+/// Valor de uma composição contra a outra: um índice centrado em 0,5, não uma
+/// probabilidade de vitória. Cada time só perde ponto, no máximo
+/// `W_BALANCE + W_FRONTLINE`, então o valor fica a 8,5 pontos de 0,5 (A22). A
+/// tela o mostra como "pontos da composição", nunca como chance.
 ///
 /// Simétrica de propósito: o que penaliza um lado premia o outro, então não há
 /// viés embutido a favor de quem está sendo avaliado.
 pub fn team_value(ours: &[i64], theirs: &[i64], index: &ChampionIndex) -> f64 {
-    (0.5 + comp_edge(ours, index) - comp_edge(theirs, index)).clamp(0.05, 0.95)
+    0.5 + comp_edge(ours, index) - comp_edge(theirs, index)
 }
 
 fn comp_edge(team: &[i64], index: &ChampionIndex) -> f64 {
@@ -373,6 +376,30 @@ mod tests {
         let equilibrada = team_value(&[MARKS, MAGE], &[], &index);
         let unilateral = team_value(&[MARKS, ASSASSIN], &[], &index);
         assert!(equilibrada > unilateral);
+    }
+
+    #[test]
+    fn o_valor_do_time_fica_a_8_5_pontos_de_meio() {
+        // O pior time possível: cinco atiradores só de ataque físico, sem
+        // linha de frente, contra cinco magos. Perde quase tudo o que um time
+        // pode perder, e mesmo assim fica perto de 0,5: é índice, não chance.
+        let mut idx = index();
+        for id in 20..25 {
+            idx.by_id.insert(id, fake(id, &format!("Atirador{id}"), "Marksman", 10.0, 0.0, 2.0));
+        }
+        for id in 30..35 {
+            idx.by_id.insert(id, fake(id, &format!("Mago{id}"), "Mage", 0.0, 10.0, 2.0));
+        }
+        let fisicos: Vec<i64> = (20..25).collect();
+        let magos: Vec<i64> = (30..35).collect();
+        let limite = W_BALANCE + W_FRONTLINE;
+        let pior = team_value(&fisicos, &[], &idx);
+        assert!(pior < 0.5 - 0.9 * limite, "{pior}: o caso extremo não chegou perto do limite");
+        for (a, b) in [(&fisicos, &magos), (&magos, &fisicos), (&fisicos, &fisicos)] {
+            let v = team_value(a, b, &idx);
+            assert!((v - 0.5).abs() <= limite + 1e-9, "{v} passa de 0,5 ± {limite}");
+        }
+        assert!((team_value(&fisicos, &[], &idx) - (0.5 - (0.9 * W_BALANCE + W_FRONTLINE))).abs() < 1e-9);
     }
 
     #[test]

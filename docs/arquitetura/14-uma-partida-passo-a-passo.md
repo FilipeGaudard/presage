@@ -539,8 +539,9 @@ todo candidato:
 
 A tela mostra os cinco **menos expostos** entre os candidatos que ela lista,
 reordenados por `exposure` (`src/components/RecommendationPanel.tsx:102-108`), e
-no detalhe de qualquer candidato da lista "Melhor resposta deles custa x.xpp
-(Nome)".
+no detalhe de qualquer candidato da lista "Melhor resposta deles tira x.x pontos
+da composição (Nome)": é o valor do time, outra escala que a chance do ranking
+logo acima (A22).
 
 **Por quê.**
 - **Um pick bom no guloso pode ser o mais fácil de punir** (R-2,

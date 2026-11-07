@@ -273,7 +273,7 @@ const FRONTLINE_FROM: usize = 3;
 - **Origem:** escolha à mão. Mede o mesmo efeito que a RN-5 com outra forma e
   outros pesos ([P-11](perguntas-em-aberto.md)).
 - **Confiança:** fraca. A exposição aparece na tela em pp, sem etiqueta.
-- **Onde:** `core/src/engine/minimax.rs:28-32`, a forma em `minimax.rs:64-86`;
+- **Onde:** `core/src/engine/minimax.rs:28-32`, a forma em `minimax.rs:69-91`;
   11 §12.1.
 - **Quando a base existir:** o modelo de time (`team.rs`) levado ao minimax, como
   a [ADR-0019](../adr/0019-contra-em-qualquer-rota-e-chance-do-time.md) diz que é o
@@ -283,9 +283,9 @@ Valor no código, não conferido pelo doccheck:
 
 | O quê | Valor | Onde |
 |---|---|---|
-| completude | `min(known / 5, 1)` | `minimax.rs:76` |
-| desequilíbrio | `abs(share − 0,5) × 2` | `minimax.rs:78` |
-| corte do valor | [0,05; 0,95], que nunca age: a penalidade máxima de um lado é 0,085 | `minimax.rs:65` |
+| completude | `min(known / 5, 1)` | `minimax.rs:81` |
+| desequilíbrio | `abs(share − 0,5) × 2` | `minimax.rs:83` |
+| alcance do valor | 0,5 ± 0,085, sem corte: a penalidade máxima de um lado é `W_BALANCE + W_FRONTLINE`. O corte em [0,05; 0,95] que nunca agia saiu (A22) | `minimax.rs:70`, T-DRAFT-65 |
 
 ## 6. Chance do time e condição de vitória — `core::engine::team`
 

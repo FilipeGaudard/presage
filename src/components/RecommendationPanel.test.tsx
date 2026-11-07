@@ -63,6 +63,29 @@ describe("RecommendationPanel", () => {
     // O último da tela tem a árvore dele.
     const geral = screen.getByText("Melhores no geral").closest(".section") as HTMLElement;
     fireEvent.click(within(geral).getByTitle("Campeão 15"));
-    expect(screen.getByText(/Melhor resposta deles custa 3\.0pp/)).toBeTruthy();
+    expect(screen.getByText(/Melhor resposta deles/)).toBeTruthy();
+  });
+
+  it("TF-DRAFT-13: a exposição diz que é da composição, e não fala em pp (RNF-1)", () => {
+    // O detalhe mostra a chance do ranking em %; a exposição é outra escala, a
+    // do valor do time (A22). "1.9pp" logo abaixo de "52%" se lê como chance.
+    render(
+      <RecommendationPanel
+        recommendations={ids.map(candidato)}
+        minimax={ids.map((id) => arvore(id, 0.019))}
+        bans={[]}
+        staticData={staticData}
+        draft={draft}
+        engine={null}
+      />
+    );
+    const secao = screen.getByText("Menos expostos ao contra-pick").closest(".section") as HTMLElement;
+    expect(secao.textContent).toMatch(/composição/);
+
+    const geral = screen.getByText("Melhores no geral").closest(".section") as HTMLElement;
+    fireEvent.click(within(geral).getByTitle("Campeão 3"));
+    const linha = screen.getByText(/Melhor resposta deles/);
+    expect(linha.textContent).toMatch(/1\.9 pontos da composição/);
+    expect(linha.textContent).not.toMatch(/pp/);
   });
 });
