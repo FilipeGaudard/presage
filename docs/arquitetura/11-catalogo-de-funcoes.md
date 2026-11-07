@@ -1779,9 +1779,9 @@ impl BuffTracker {
 
 - **Confiança:** exata em `until`, que é o abate visto mais a duração do jogo.
   `holders` é exata quando não é `None`.
-- **Limite:** um buff descartado por ficar sem ninguém volta na leitura seguinte
-  com `holders = None`, até acabar. O abate ainda está na lista de eventos, e
-  o rastreador não lembra que já o descartou.
+- **Buff descartado não volta:** um buff que acabou por ficar sem ninguém entra
+  em `encerrados`, e o mesmo abate, que continua na lista de eventos, não o
+  recria na leitura seguinte (A8, T-OBJETIVO-13).
 
 ## 30. `core::engine::priority` — Onde está o valor no mapa (`core`, pura)
 

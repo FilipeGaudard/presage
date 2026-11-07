@@ -46,7 +46,7 @@ A primeira rodada deu seis sobreviventes falsos: o cargo rodava o binário velho
 | G-8 | Bandeja e iniciar com o Windows | `7e50a94` | `bandeja`, `get_autostart` e `set_autostart` em `src-tauri/src/lib.rs` | nenhum: a casca só compila no CI do Windows, e a bandeja não tem teste | — |
 
 O que estes testes não pegam, e está aberto no `build/audit.md`:
-- G-4: o buff que sumiu volta como "sem saber quem tem" na leitura seguinte (A8);
+- G-4: o buff que sumia voltava como "sem saber quem tem" na leitura seguinte (A8, corrigido);
 - G-2: a margem de ouro não é simétrica (A24);
 - G-1: a marca vive em dois lugares, e `get_enemy_roles` nunca é chamado (A2);
 - G-8: fechar a janela principal provavelmente não tem volta pela bandeja (A16).

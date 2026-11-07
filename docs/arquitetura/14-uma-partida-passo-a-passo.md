@@ -744,11 +744,11 @@ São quatro `invoke` por segundo na janela principal e três no overlay.
 **Onde.** `build`, `BuffTracker::update`; 11 §29.1, 11 §29.3, 10 §29.
 
 **O que pode dar errado.**
-- **Defeito conhecido.** O buff pode ressuscitar. Quando todos que o tinham
-  morrem, o buff sai da lista (`core/src/engine/timeline.rs:295-296`). Na leitura
-  seguinte o abate ainda está em `/eventdata`, e `visto` só procura nos buffs que
-  restaram (`core/src/engine/timeline.rs:252-256`). O buff volta com
-  `holders = None` ("abate antes de o app olhar") até acabar (11 §29.3, "Limite").
+- **Defeito corrigido (A8).** Até a 0.7.0 o buff podia ressuscitar: quando todos
+  que o tinham morriam, ele saía da lista, e na leitura seguinte o mesmo abate, que
+  continua em `/eventdata`, o recriava com `holders = None`. Agora o rastreador
+  lembra os buffs que acabaram assim (`BuffTracker::encerrados`) e não os recria
+  (T-OBJETIVO-13).
 - As constantes mudam a cada temporada. A 16 trouxe o Barão de volta para 20:00.
 
 ### 10.2 Prioridade

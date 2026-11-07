@@ -2322,7 +2322,8 @@ pub struct Buff {
 
 ```rust
 pub struct BuffTracker {
-    buffs: Vec<Buff>, // buffs das leituras anteriores; privado
+    buffs: Vec<Buff>,                // buffs das leituras anteriores; privado
+    encerrados: Vec<(String, f64)>,  // (nome, início, em segundos de jogo) dos buffs que acabaram porque todos os donos morreram; privado. Impede que o mesmo abate os recrie (A8)
 }
 ```
 

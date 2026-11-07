@@ -20,7 +20,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 - testes no código: 468; nomes no catálogo (13): 466; fora dele: 0
 - links relativos conferidos: 869
-- IDs citados conferidos: 2848
+- IDs citados conferidos: 2850
 
 ## type
 
@@ -269,8 +269,8 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::stats::strength_for_sd` | arquitetura/11-catalogo-de-funcoes §19.5 | done | core/src/engine/stats.rs:77 |
 | `core::engine::team::estimate` | arquitetura/11-catalogo-de-funcoes §14.2 | done | core/src/engine/team.rs:98 |
 | `core::engine::team::seats` | arquitetura/11-catalogo-de-funcoes §14.1 | done | core/src/engine/team.rs:68 |
-| `core::engine::timeline::BuffTracker::update` | arquitetura/11-catalogo-de-funcoes §29.3 | done | core/src/engine/timeline.rs:242 |
-| `core::engine::timeline::build` | arquitetura/11-catalogo-de-funcoes §29.1 | done | core/src/engine/timeline.rs:319 |
+| `core::engine::timeline::BuffTracker::update` | arquitetura/11-catalogo-de-funcoes §29.3 | done | core/src/engine/timeline.rs:246 |
+| `core::engine::timeline::build` | arquitetura/11-catalogo-de-funcoes §29.1 | done | core/src/engine/timeline.rs:332 |
 | `core::engine::timeline::RawEvent::outcome` | arquitetura/11-catalogo-de-funcoes §29.2 | done | core/src/engine/timeline.rs:93 |
 | `core::engine::wincon::analyze` | arquitetura/11-catalogo-de-funcoes §15.1 | done | core/src/engine/wincon.rs:179 |
 | `core::history::Metric::higher_is_better` | arquitetura/11-catalogo-de-funcoes §5.2 | done | core/src/history.rs:113 |
@@ -733,22 +733,22 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-JOGO-7` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:229 |
 | `T-JOGO-8` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:250 |
 | `T-JOGO-9` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:270 |
-| `T-OBJETIVO-1` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:479 |
-| `T-OBJETIVO-10` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:656 |
-| `T-OBJETIVO-11` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:694 |
-| `T-OBJETIVO-12` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:707 |
-| `T-OBJETIVO-13` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:719 |
-| `T-OBJETIVO-14` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:736 |
-| `T-OBJETIVO-15` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:745 |
-| `T-OBJETIVO-16` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:752 |
-| `T-OBJETIVO-2` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:489 |
-| `T-OBJETIVO-3` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:512 |
-| `T-OBJETIVO-4` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:500 |
-| `T-OBJETIVO-5` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:563 |
-| `T-OBJETIVO-6` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:544 |
-| `T-OBJETIVO-7` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:589 |
-| `T-OBJETIVO-8` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:615 |
-| `T-OBJETIVO-9` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:642 |
+| `T-OBJETIVO-1` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:492 |
+| `T-OBJETIVO-10` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:669 |
+| `T-OBJETIVO-11` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:707 |
+| `T-OBJETIVO-12` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:720 |
+| `T-OBJETIVO-13` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:732 |
+| `T-OBJETIVO-14` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:754 |
+| `T-OBJETIVO-15` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:763 |
+| `T-OBJETIVO-16` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:770 |
+| `T-OBJETIVO-2` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:502 |
+| `T-OBJETIVO-3` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:525 |
+| `T-OBJETIVO-4` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:513 |
+| `T-OBJETIVO-5` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:576 |
+| `T-OBJETIVO-6` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:557 |
+| `T-OBJETIVO-7` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:602 |
+| `T-OBJETIVO-8` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:628 |
+| `T-OBJETIVO-9` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:655 |
 | `T-OURO-1` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:224 |
 | `T-OURO-10` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:330 |
 | `T-OURO-2` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:320 |
@@ -1080,4 +1080,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 57 | 5 | 0 | 38 |
+| 56 | 6 | 0 | 38 |

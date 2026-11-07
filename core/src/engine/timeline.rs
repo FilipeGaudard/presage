@@ -236,6 +236,10 @@ const BUFF_FRESH: f64 = 5.0;
 #[derive(Debug, Clone, Default)]
 pub struct BuffTracker {
     buffs: Vec<Buff>,
+    /// Os buffs que acabaram antes da hora porque todos os donos morreram:
+    /// (nome, início). O abate continua no fluxo de eventos, e sem esta memória
+    /// o buff voltaria na leitura seguinte, sem dono conhecido (A8).
+    encerrados: Vec<(String, f64)>,
 }
 
 impl BuffTracker {
@@ -253,7 +257,11 @@ impl BuffTracker {
                 .buffs
                 .iter()
                 .any(|b| b.name == nome && (b.started - event.time).abs() < 0.5);
-            if visto || event.time + duracao <= now {
+            let encerrado = self
+                .encerrados
+                .iter()
+                .any(|(n, t)| n == nome && (t - event.time).abs() < 0.5);
+            if visto || encerrado || event.time + duracao <= now {
                 continue;
             }
             let Some(time) = team_of(game, &event.killer).map(str::to_string) else {
@@ -290,6 +298,11 @@ impl BuffTracker {
                     });
                     !p.is_dead && !morreu
                 });
+            }
+        }
+        for b in &self.buffs {
+            if b.until > now && b.holders.as_ref().is_some_and(|h| h.is_empty()) {
+                self.encerrados.push((b.name.clone(), b.started));
             }
         }
         self.buffs
@@ -727,6 +740,11 @@ mod tests {
 
         let todos_mortos = rastreador.update(&eventos, &partida(2010.0, &["inimigo#BR1"]), &Timings::default());
         assert!(todos_mortos.is_empty());
+
+        // A leitura seguinte ainda traz o abate do Ancião, e quem morreu já
+        // renasceu: o buff não volta "sem saber quem tem" (A8).
+        let depois = rastreador.update(&eventos, &partida(2020.0, &[]), &Timings::default());
+        assert!(depois.is_empty(), "{depois:?}");
 
         let mut outro = BuffTracker::default();
         outro.update(&eventos, &partida(2001.0, &[]), &Timings::default());
