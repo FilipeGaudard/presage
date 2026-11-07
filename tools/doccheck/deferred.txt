@@ -1,0 +1,6 @@
+# kind name | motivo
+# Um item adiado sai do pendente, mas fica no ledger com o motivo. Sem motivo
+# é erro, e um adiamento que não casa com nenhum item vira aviso.
+
+todo src-tauri/src/lcu/client.rs TODO(segurança) | P-8: pinning do root CA da Riot antes do release público
+todo src-tauri/src/watcher.rs TODO(fase 1) | ADR-0002: polling até reagirmos a hover de aliado

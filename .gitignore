@@ -40,3 +40,6 @@ latest.json
 *.local
 .DS_Store
 Thumbs.db
+
+# Anotações de teste de segurança: locais, nunca no repositório.
+.pentest/

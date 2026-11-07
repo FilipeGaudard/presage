@@ -11,7 +11,9 @@
     "manifesto": "node scripts/manifesto.mjs",
     "entrega": "powershell -File scripts/entrega.ps1",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "doccheck": "node tools/doccheck/doccheck.mjs",
+    "doccheck:test": "node --test tools/doccheck/doccheck.test.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.1.1",

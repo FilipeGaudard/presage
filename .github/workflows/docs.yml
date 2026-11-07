@@ -1,0 +1,33 @@
+# Prova que os docs e o código concordam (ADR-0020), a cada push e pull request.
+#
+# Roda em Linux e só com Node: o doccheck lê o código como texto, não compila
+# nada, então não precisa de Rust, MSVC nem Tauri. Leva segundos.
+
+name: Docs
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  doccheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Testes do doccheck
+        run: node --test tools/doccheck/doccheck.test.mjs
+
+      - name: Docs e código concordam
+        run: node tools/doccheck/doccheck.mjs -strict -v
+
+      # O ledger é gerado; se o commit trouxe um ledger velho, o diff aparece aqui.
+      - name: Ledger atualizado
+        run: git diff --exit-code build/ledger.md
