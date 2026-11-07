@@ -67,16 +67,24 @@ pub fn role_fit(champion: &Champion, role: Role, store: &dyn StatsStore) -> f64 
     }
 }
 
-/// O campeão joga a rota?
+/// Você joga o campeão nesta rota?
 ///
-/// Rota desconhecida (blind, normal sem posição) não filtra ninguém. O
-/// histórico do jogador vale antes de tudo; depois a base, se houver partida
-/// do campeão nela; por fim a classe.
+/// Rota desconhecida (blind, normal sem posição) não filtra ninguém. O seu
+/// histórico vale antes de tudo; depois a mesma regra de `others_play`.
 pub fn plays(champion: &Champion, role: Role, store: &dyn StatsStore) -> bool {
     if role == Role::Unknown {
         return true;
     }
-    if store.played_in(champion.id, role) {
+    store.played_in(champion.id, role) || others_play(champion, role, store)
+}
+
+/// Alguém que não é você joga o campeão nesta rota?
+///
+/// A base, se houver partida do campeão nela; senão, a classe. O seu
+/// histórico fica de fora: o que você já jogou no topo não diz nada do que o
+/// outro time escolhe (A12). É a regra da resposta adversária.
+pub fn others_play(champion: &Champion, role: Role, store: &dyn StatsStore) -> bool {
+    if role == Role::Unknown {
         return true;
     }
     match (role_share(champion.id, store), index(role)) {

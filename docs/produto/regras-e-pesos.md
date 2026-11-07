@@ -195,7 +195,9 @@ const ROLE_SHARE: f64 = 0.05;
 
 - **Regra:** com a base, joga a rota quem tem nela 5% das próprias partidas. Sem a
   base, pela classe do Data Dragon: classe principal da rota vale 1, secundária
-  0,5, nenhuma 0. O próprio histórico do jogador vale antes de tudo.
+  0,5, nenhuma 0. Para os **seus** candidatos e a sua pool, o seu histórico vale
+  antes de tudo (`plays`); para as respostas **deles**, não vale (`others_play`,
+  A12).
 - **Origem:** escolha à mão, nas classes de cada rota e no limiar.
 - **Confiança:** regra.
 - **Onde:** `core/src/engine/roles.rs:18`, classes em `roles.rs:28-37`, encaixe em

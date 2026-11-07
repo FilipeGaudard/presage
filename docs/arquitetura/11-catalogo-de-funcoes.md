@@ -511,14 +511,30 @@ pub fn role_fit(champion: &Champion, role: Role, store: &dyn StatsStore) -> f64;
 pub fn plays(champion: &Champion, role: Role, store: &dyn StatsStore) -> bool;
 ```
 
-- **Faz:** decide nesta ordem:
+- **Faz:** **você** joga o campeão nesta rota? Decide nesta ordem:
   1. rota desconhecida: sim;
-  2. o jogador já jogou o campeão ali (`played_in`): sim;
-  3. com `role_share`: a fração da rota é ao menos `ROLE_SHARE`;
-  4. senão: `role_fit > 0`, pela classe.
+  2. você já jogou o campeão ali (`played_in`): sim;
+  3. senão, `others_play`.
 - **Retorno:** verdadeiro quando o campeão joga a rota.
 - **Erros:** nenhum.
-- **Atende:** R-1, R-2, R-9, L-4, L-22, L-23
+- **Quem usa:** os seus candidatos (`DraftContext`) e a sugestão da sua pool
+  (`poolgap::suggest`).
+- **Atende:** R-1, R-9, L-22, L-23
+
+### 11.4 `others_play`
+
+```rust
+pub fn others_play(champion: &Champion, role: Role, store: &dyn StatsStore) -> bool;
+```
+
+- **Faz:** **alguém que não é você** joga o campeão nesta rota? Rota desconhecida:
+  sim; com `role_share`, a fração da rota é ao menos `ROLE_SHARE`; senão,
+  `role_fit > 0`, pela classe. O seu histórico fica de fora.
+- **Retorno:** verdadeiro quando o campeão joga a rota.
+- **Erros:** nenhum.
+- **Quem usa:** as respostas deles no `minimax_with`. O que você já jogou no topo
+  não diz nada do que o outro time escolhe (A12, T-DRAFT-64).
+- **Atende:** R-2, L-4, L-24
 
 ## 12. `core::engine::minimax` — Draft com resposta e bans (`core`, pura)
 

@@ -236,7 +236,9 @@ Os candidatos são os do contexto, podados pelo guloso (`breadth`). As respostas
 deles são **todas** as que jogam uma rota que eles ainda não fecharam — varrer
 tudo é barato, porque `team_value` é aritmética pura. Antes a busca olhava só os
 32 primeiros ids, e o "melhor contra-pick" saía sempre dos campeões de id baixo
-([L-24](09-licoes-do-prototipo.md)).
+([L-24](09-licoes-do-prototipo.md)). "Joga a rota", aqui, é pela base ou pela
+classe (`roles::others_play`), nunca pelo seu histórico: o que você já jogou não
+diz o que eles escolhem (A12).
 
 ### Por que o ban ainda não é pessoal
 

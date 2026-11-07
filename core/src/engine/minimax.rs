@@ -125,7 +125,8 @@ pub fn minimax_with(
     let theirs = ctx.enemy_ids();
 
     // A resposta deles só pode vir de quem joga uma rota que eles ainda não
-    // fecharam. Time inimigo completo não tem resposta.
+    // fecharam, pela base ou pela classe: o seu histórico diz o que você joga,
+    // não o que eles jogam (A12). Time inimigo completo não tem resposta.
     let abertas = ctx.open_enemy_roles();
     let respostas: Vec<i64> = index
         .ids()
@@ -134,7 +135,7 @@ pub fn minimax_with(
         .filter(|id| {
             index
                 .get(*id)
-                .is_some_and(|c| abertas.iter().any(|r| roles::plays(c, *r, store)))
+                .is_some_and(|c| abertas.iter().any(|r| roles::others_play(c, *r, store)))
         })
         .collect();
 
@@ -310,6 +311,7 @@ fn round3(value: f64) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::super::champion::fake;
+    use super::super::stats::Record;
     use super::*;
     use crate::draft::DraftSlot;
     use std::collections::HashMap;
@@ -468,6 +470,43 @@ mod tests {
         let picks = minimax(&draft(vec![], vec![MARKS]), &idx, &[], 3);
         assert!(
             picks.iter().any(|p| p.best_response == Some(999)),
+            "{picks:?}"
+        );
+    }
+
+    /// Sem base, com um histórico: você já jogou o mago no topo.
+    struct SeuHistorico;
+    impl StatsStore for SeuHistorico {
+        fn base(&self, _: i64, _: Role) -> Option<Record> {
+            None
+        }
+        fn matchup(&self, _: i64, _: i64, _: Role) -> Option<Record> {
+            None
+        }
+        fn synergy(&self, _: i64, _: i64) -> Option<Record> {
+            None
+        }
+        fn personal(&self, _: i64) -> Option<Record> {
+            None
+        }
+        fn played_in(&self, champion: i64, role: Role) -> bool {
+            champion == MAGE && role == Role::Top
+        }
+    }
+
+    #[test]
+    fn a_resposta_deles_nao_vem_do_seu_historico() {
+        // O atirador deles está no meio (posição informada), então topo, selva,
+        // bot e suporte estão abertos. Pela classe, o mago não joga nenhuma das
+        // quatro; só você o jogou no topo. A resposta é deles, e o seu histórico
+        // não diz nada do que eles escolhem (A12).
+        let d = draft(vec![], vec![MARKS]);
+        let idx = index();
+        let ctx = DraftContext::new(&d, &idx, &SeuHistorico, &[], Role::Mid);
+        let picks = minimax_with(&ctx, &idx, &SeuHistorico, 5);
+        assert!(!picks.is_empty());
+        assert!(
+            picks.iter().all(|p| p.best_response != Some(MAGE)),
             "{picks:?}"
         );
     }
