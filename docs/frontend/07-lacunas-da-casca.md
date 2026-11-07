@@ -21,7 +21,7 @@ de vir da casca, e não ser adivinhado ou copiado no TypeScript.
 | GC-1 | A falha de um comando não chega à tela | P0 | parcial: o front fechou (TF-POOL-4, TF-CASCA-4); a forma do erro e o evento de fundo ficam (A14) |
 | GC-2 | O ouro em mão dos outros nove cruza a ponte e aparece | P0 | fechada (TF-PARTIDA-3, T-OURO-10) |
 | GC-3 | Perder o cliente não limpa o draft na tela | P1 | fechada (T-CASCA-20) |
-| GC-4 | Marcas e rota escolhida vivem em dois lugares; `get_enemy_roles` sem uso | P1 | aberta |
+| GC-4 | Marcas e rota escolhida vivem em dois lugares; `get_enemy_roles` sem uso | P1 | parcial: as marcas voltam depois de recarregar (TF-DRAFT-11); a rota escolhida, não |
 | GC-5 | A rota que o motor usou não volta para a tela | P1 | aberta |
 | GC-6 | Dois vocabulários de rota na mesma ponte | P1 | parcial: os comandos aceitam os dois (T-JOGO-15); unificar a ponte fica |
 | GC-7 | Motor sem campeões fica "carregando" para sempre | P1 | aberta |
@@ -30,7 +30,7 @@ de vir da casca, e não ser adivinhado ou copiado no TypeScript.
 | GC-10 | Rótulos escritos dos dois lados | P2 | aberta |
 | GC-11 | O número de seções do overlay escrito à mão | P2 | aberta |
 | GC-12 | O Data Dragon baixado duas vezes | P2 | aberta |
-| GC-13 | Uma capability para as duas janelas | P2 | aberta |
+| GC-13 | Uma capability para as duas janelas | P2 | parcial: uma capability por janela (T-CASCA-29); o manifesto de comandos fica (A52) |
 
 ## GC-1 — A falha de um comando não chega à tela (P0)
 
@@ -120,7 +120,9 @@ zero, e o ranking, pedido de novo, volta vazio.
 `get_snapshot` as devolve), e a tela passa a ler em vez de copiar. Se
 `get_enemy_roles` continuar, o front o chama na montagem.
 
-**Enquanto isso:** a cópia da tela vale enquanto a janela não recarrega.
+> **Parcial.** A tela chama `get_enemy_roles` na montagem, e as marcas voltam
+> depois de recarregar no meio do champ select (A2, TF-DRAFT-11). A rota escolhida
+> ainda não tem comando de leitura.
 
 ## GC-5 — A rota que o motor usou não volta para a tela (P1)
 
@@ -281,4 +283,7 @@ comandos. O overlay usa cinco ([05 §3](05-seguranca.md#3-o-que-a-webview-pode-c
 comandos que ele usa, declarados num manifesto do app
 (`tauri_build::Attributes::app_manifest`); a principal com o resto.
 
-**Enquanto isso:** as duas janelas só carregam código nosso, e o risco é baixo.
+> **Parcial.** Duas capabilities: `main.json` com o atualizador e o reinício,
+> `overlay.json` só com `core:default` (A33, T-CASCA-29). O manifesto de comandos do
+> app, que limitaria o overlay aos cinco comandos que ele usa, continua aberto
+> (A52).

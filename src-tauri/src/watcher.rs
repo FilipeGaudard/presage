@@ -145,6 +145,17 @@ fn close_recording(app: &AppHandle, shared: &Shared) {
     }
 }
 
+/// Quanto o laço espera antes da próxima leitura, pela fase do cliente: 350 ms
+/// no champ select, 1 s na partida e 1,5 s no resto; sem cliente, 3 s
+/// (`perdeu_o_cliente`). R-18, RNF-4.
+fn ritmo(fase: &str) -> Duration {
+    match fase {
+        "ChampSelect" => POLL_CHAMP_SELECT,
+        "InProgress" => POLL_LIVE,
+        _ => POLL_IDLE,
+    }
+}
+
 /// Para onde vai o que o laço avisa quando perde o cliente. Existe para o teste
 /// trocar o app por um registro do que foi avisado.
 trait Saida {
@@ -318,7 +329,7 @@ pub async fn run(app: AppHandle, shared: Arc<Shared>) {
                 }
                 Err(err) => tracing::debug!(%err, "falha ao ler a sessão de champ select"),
             }
-            tokio::time::sleep(POLL_CHAMP_SELECT).await;
+            tokio::time::sleep(ritmo(&phase)).await;
         } else if phase == "InProgress" {
             clear_draft(&app, &shared);
 
@@ -372,7 +383,7 @@ pub async fn run(app: AppHandle, shared: Arc<Shared>) {
                 Err(err) => tracing::trace!(%err, "Live Client ainda não responde"),
             }
 
-            tokio::time::sleep(POLL_LIVE).await;
+            tokio::time::sleep(ritmo(&phase)).await;
         } else {
             clear_draft(&app, &shared);
             buff_tracker = BuffTracker::default();
@@ -385,7 +396,7 @@ pub async fn run(app: AppHandle, shared: Arc<Shared>) {
             // rende relatório, então isto não dispara duas vezes.
             close_recording(&app, &shared);
 
-            tokio::time::sleep(POLL_IDLE).await;
+            tokio::time::sleep(ritmo(&phase)).await;
         }
     }
 }
@@ -427,6 +438,16 @@ mod tests {
         fn status(&self, status: ConnStatus) {
             self.status.borrow_mut().push(status);
         }
+    }
+
+    #[test]
+    fn o_ritmo_segue_a_fase() {
+        // R-18 e RNF-4: tempo real no champ select, um segundo na partida, mais
+        // devagar parado; sem cliente, o teste de baixo.
+        assert_eq!(ritmo("ChampSelect"), Duration::from_millis(350));
+        assert_eq!(ritmo("InProgress"), Duration::from_millis(1000));
+        assert_eq!(ritmo("Lobby"), Duration::from_millis(1500));
+        assert_eq!(ritmo(""), Duration::from_millis(1500));
     }
 
     #[test]

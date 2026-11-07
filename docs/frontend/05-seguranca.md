@@ -16,7 +16,7 @@ está em [arquitetura 07](../arquitetura/07-seguranca.md).
 | URL de imagem sobre host fixo | O retrato e o ícone de item são `https://ddragon.leagueoflegends.com/cdn/{versão}/img/…` (`ddragon.ts:40`, `:52`); a runa é o mesmo host mais o caminho que a casca manda (`Runas.tsx:9`) | Uma resposta estranha apontar a imagem para outro servidor; a CSP recusa de qualquer jeito |
 | Sem link para fora | Nenhum `<a>`, `window.open` ou plugin de shell. As notas da versão (`update.body`) aparecem como texto | Notas de versão com link enganoso; navegar a webview para fora do app |
 | Comandos fechados | A webview só alcança os 26 comandos de `generate_handler!`, cada um com tipo de argumento ([12](../arquitetura/12-contrato-da-casca.md)) | Um canal genérico para o processo nativo |
-| Permissões mínimas de plugin | `capabilities/default.json`: `core:default`, `updater:default`, `process:allow-restart`. Nada de shell, sistema de arquivos ou HTTP pelo front | O front ler disco ou executar programa |
+| Permissões mínimas de plugin, por janela | `capabilities/main.json`: `core:default`, `updater:default`, `process:allow-restart`; `capabilities/overlay.json`: só `core:default`. Nada de shell, sistema de arquivos ou HTTP pelo front. Um teste de arquitetura trava isso (T-CASCA-29) | O front ler disco ou executar programa; o overlay atualizar ou reiniciar o app |
 | Nenhum dado no navegador | Nenhum `localStorage`, `sessionStorage` ou IndexedDB; o que persiste vai por `set_*` para `%LOCALAPPDATA%\Presage` | Dado do jogador num segundo lugar, fora do que a casca controla |
 | Riot ID de terceiros fora da tela | O `displayName` dos outros nove só vira `key` do React | Expor terceiros numa captura de tela ou numa transmissão |
 | O simulador não confia na tela | O `DraftState` montado à mão passa por `DraftState::normalized` na casca, que refaz indisponíveis e a sua rota | Um draft incoerente chegar ao motor |
@@ -41,9 +41,8 @@ do ponto de vista da tela.
 
 ## 3. O que a webview pode chamar
 
-- **Duas janelas, uma capability.** `default.json` vale para `main` e para
-  `overlay`. O overlay ganha, sem precisar, `updater:default` e
-  `process:allow-restart`.
+- **Uma capability por janela.** `main.json` tem o atualizador e o reinício;
+  `overlay.json`, só o padrão do Tauri (A33).
 - **Os comandos do app valem para as duas.** O projeto não declara manifesto de
   comandos (`build.rs` é só `tauri_build::build()`), então o Tauri deixa qualquer
   janela chamar os 26. O overlay usa cinco: `get_overlay_prefs`, `get_live`,

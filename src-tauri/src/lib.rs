@@ -9,6 +9,9 @@ pub mod riot;
 pub mod storage;
 pub mod watcher;
 
+#[cfg(test)]
+mod arquitetura;
+
 use serde::Serialize;
 use std::sync::Arc;
 use tauri::{Emitter, Manager};
@@ -496,12 +499,22 @@ fn bandeja(app: &tauri::App) -> tauri::Result<()> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "presage_lib=debug,warn".into()),
-        )
-        .init();
+    // O app de lançamento não tem console (`windows_subsystem = "windows"`): o
+    // registro vai para um arquivo que o jogador consegue abrir,
+    // `%LOCALAPPDATA%\Presage\presage.log`, refeito a cada abertura (A14). Sem
+    // a pasta, fica na saída padrão, como no desenvolvimento.
+    let filtro = || {
+        tracing_subscriber::EnvFilter::try_from_default_env()
+            .unwrap_or_else(|_| "presage_lib=debug,warn".into())
+    };
+    match storage::abrir_log() {
+        Some(arquivo) => tracing_subscriber::fmt()
+            .with_env_filter(filtro())
+            .with_ansi(false)
+            .with_writer(std::sync::Mutex::new(arquivo))
+            .init(),
+        None => tracing_subscriber::fmt().with_env_filter(filtro()).init(),
+    }
 
     // O atualizador não pode impedir o app de abrir.
     //
@@ -611,6 +624,16 @@ fn montar(com_atualizador: bool) -> tauri::Builder<tauri::Wry> {
                 })
                 .build(),
         )
+        // Fechar a janela principal só a esconde: o app segue na bandeja, e
+        // "Mostrar o Presage" a traz de volta. Destruída, ela não voltava (A16).
+        .on_window_event(|janela, evento| {
+            if janela.label() == "main" {
+                if let tauri::WindowEvent::CloseRequested { api, .. } = evento {
+                    api.prevent_close();
+                    let _ = janela.hide();
+                }
+            }
+        })
         .setup(|app| {
             let shared = Arc::new(Shared::new());
             if let Some(saved) = storage::read_json::<Pool>(POOL_CACHE) {

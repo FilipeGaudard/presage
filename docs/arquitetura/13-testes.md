@@ -538,6 +538,14 @@ pedem a árvore do Tauri para compilar ([08 §4](08-desenvolvimento-e-testes.md#
 | T-CASCA-19 | `remake_de_tres_minutos_nao_rende_leitura_nem_apaga_a_anterior` | regressão | 181 quadros (0 a 3:00): `finish` devolve `None` e a gravação fica vazia. Antes, passava do piso de 60 quadros e gravava um "curta demais" por cima de `ultima-partida.json`, com o aviso que traz a aba Pós-jogo | R-16, A6 |
 | T-CASCA-20 | `perder_o_cliente_avisa_a_tela_e_espera_antes_de_procurar_de_novo` | regressão | Com a leitura da fase falhando ("conexão recusada"): o draft é encerrado com aviso (não apagado calado), sai um `ConnStatus` desconectado com `phase = "Disconnected"` e o erro em `detail`, e a próxima volta espera `POLL_DISCONNECTED`. Antes, voltava na hora, sem aviso nem status | R-18, RNF-4, A5, A11 |
 | T-CASCA-21 | `escrita_que_morre_no_meio_deixa_o_arquivo_anterior_inteiro`, `escrita_que_termina_troca_o_arquivo_e_nao_deixa_resto` | regressão | Com `pool.json` = `[1, 2, 3]` e o temporário impossível de criar, a escrita de `[9, 9]` volta como erro e o arquivo continua `[1, 2, 3]`; a escrita que termina troca o arquivo e não deixa `pool.json.parcial`. Antes, a escrita ia direto no arquivo final | R-9, R-15, A7 |
+| T-CASCA-22 | `o_ritmo_segue_a_fase` | unidade | `ritmo` dá 350 ms no champ select, 1 s na partida e 1,5 s em qualquer outra fase; sem cliente, os 3 s vêm de `perdeu_o_cliente` (T-CASCA-20) | R-18, RNF-4, B7 |
+| T-CASCA-23 | `o_registro_comeca_do_zero_a_cada_abertura` | unidade | Com um `presage.log` da abertura anterior na pasta, `abrir_log` devolve o arquivo vazio | A14 |
+| T-CASCA-24 | `a_casca_nunca_escreve_no_lcu_nem_em_api_nenhuma` | arquitetura | Nenhum fonte da casca tem `.post(`, `.put(`, `.patch(`, `.delete(` nem `Method::` de escrita | R-18, B10 |
+| T-CASCA-25 | `a_casca_so_fala_com_a_riot_e_com_a_propria_maquina` | arquitetura | Todo texto `http(s)://` e `ws(s)://` da casca é do loopback ou de um domínio da Riot (`riotgames.com`, `leagueoflegends.com`), e o da Riot Web API está lá | C-2, B2 |
+| T-CASCA-26 | `nada_le_memoria_do_jogo_nem_injeta_input` | arquitetura | Nenhum fonte da casca chama `ReadProcessMemory`, `SendInput`, `SetWindowsHookEx` e afins, e o `Cargo.lock` não tem `enigo`, `rdev`, `inputbot`, `read-process-memory` nem outra crate de input ou memória | C-2, C-3, B3 |
+| T-CASCA-27 | `iniciar_com_o_windows_so_quando_o_jogador_liga` | arquitetura | `lib.rs` tem um `.enable()` só, e dentro de `set_autostart` | R-19, B11 |
+| T-CASCA-28 | `fechar_a_janela_principal_esconde_em_vez_de_destruir` | arquitetura | O `on_window_event` da casca pega `CloseRequested` da `main`, chama `prevent_close` e esconde a janela | R-19, A16 |
+| T-CASCA-29 | `cada_janela_tem_so_o_que_precisa` | arquitetura | Nas capabilities, o overlay não tem permissão de `updater:` nem de `process:`, e a janela principal tem o atualizador | A33 |
 
 ## 3. Rodando um teste
 

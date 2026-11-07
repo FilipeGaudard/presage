@@ -150,6 +150,11 @@ export default function App() {
     ler<OverlayPrefs>("ler as preferências do overlay", "get_overlay_prefs", setOverlayPrefs);
     ler<DraftPrefs>("ler as preferências do draft", "get_draft_prefs", setDraftPrefs);
     ler<boolean>("ler o início com o Windows", "get_autostart", setAutostart);
+    // As rotas marcadas nos inimigos vivem na casca: depois de recarregar a tela
+    // no meio do champ select, ela as pede de volta em vez de perdê-las (A2).
+    ler<[number, Role][]>("ler as rotas marcadas", "get_enemy_roles", (pares) =>
+      setEnemyRoles(Object.fromEntries(pares))
+    );
 
     const unlisteners = [
       listen<ConnStatus>(EVENT_STATUS, (event) => setStatus(event.payload)),

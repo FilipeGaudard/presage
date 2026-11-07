@@ -5,9 +5,6 @@
 todo src-tauri/src/lcu/client.rs TODO(segurança) | P-8: pinning do root CA da Riot antes do release público
 todo src-tauri/src/watcher.rs TODO(fase 1) | ADR-0002: polling até reagirmos a hover de aliado
 
-# A casca registra e o front não chama.
-command get_enemy_roles | A2: registrado no generate_handler! e nunca chamado pelo front
-
 # O front tem harness (Vitest) desde a correção da A3. Cada linha do frontend 06
 # sem teste escrito fica adiada aqui, uma por uma: linha nova sem teste nem
 # adiamento falha o doccheck.
@@ -47,8 +44,6 @@ ui-test TF-OVERLAY-5 | P-16: teste do front ainda não escrito
 
 # Requisitos que nenhum teste prova. Cada um diz o que o garante hoje, e a linha
 # B-n do build/audit.md acompanha o teste que falta.
-trace C-2 | B2: estrutural, a casca só fala HTTP com LCU, Live Client, Riot e Data Dragon (12 §5)
-trace C-3 | B3: estrutural, overlay é janela externa (ADR-0003); nenhum hook nem input sintético
 trace C-8 | regra de cobrança, não de código: conferida antes de cobrar (P-2, 00 §4)
 trace C-10 | regra de distribuição: chave de produção antes de distribuir (06, ADR-0004)
 trace RNF-9 | provado pelo próprio gate: cargo test -p presage-core roda sem MSVC e sem Tauri (ADR-0001)

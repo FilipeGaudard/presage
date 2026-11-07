@@ -18,6 +18,7 @@ const PADRAO: Record<string, Resposta> = {
   get_overlay_prefs: () => ({ hidden: [] }),
   get_draft_prefs: () => ({ showAllChampions: false }),
   get_autostart: () => false,
+  get_enemy_roles: () => [],
   rank_draft: () => [],
   minimax_draft: () => [],
   ban_suggestions: () => [],
@@ -253,6 +254,22 @@ describe("App e a casca", () => {
     render(<App />);
     await screen.findByText("A base é do patch 16.20 e o jogo está no 16.21.1. Os números são de outro patch.");
     expect(screen.queryByText(/Sem base estatística: o ranking/)).toBeNull();
+  });
+
+  it("TF-DRAFT-11: recarregar a tela no meio do champ select traz as marcas que a casca guarda", async () => {
+    // A casca guarda a rota marcada em cada inimigo; a tela, só na memória dela.
+    // Depois de recarregar, a tela pede as marcas de volta (A2).
+    casca({
+      get_snapshot: () => [
+        { connected: true, phase: "ChampSelect", summoner: null, detail: null },
+        draft(25000, { theirTeam: [slot({ cellId: 5, championId: 238, locked: true })], unavailable: [238] }),
+      ],
+      engine_status: () => engine,
+      get_enemy_roles: () => [[238, "Mid"]],
+    });
+    render(<App />);
+    const seletor = (await screen.findByTitle(/Rota (presumida pelo Presage|marcada por você)/)) as HTMLSelectElement;
+    await waitFor(() => expect(seletor.value).toBe("Mid"));
   });
 });
 

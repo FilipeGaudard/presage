@@ -25,6 +25,20 @@ fn write_json_in<T: Serialize>(dir: &Path, name: &str, value: &T) -> Result<()> 
     Ok(())
 }
 
+/// O arquivo de registro do app, na pasta dos outros arquivos dele.
+pub const LOG_FILE: &str = "presage.log";
+
+/// Abre o registro do zero: cada abertura do app começa um arquivo novo, e ele
+/// não cresce para sempre (A14).
+pub fn abrir_log() -> Option<std::fs::File> {
+    abrir_log_em(&cache_dir()?)
+}
+
+fn abrir_log_em(dir: &Path) -> Option<std::fs::File> {
+    std::fs::create_dir_all(dir).ok()?;
+    std::fs::File::create(dir.join(LOG_FILE)).ok()
+}
+
 pub fn read_json<T: DeserializeOwned>(name: &str) -> Option<T> {
     let raw = std::fs::read(cache_dir()?.join(name)).ok()?;
     serde_json::from_slice(&raw).ok()
@@ -57,6 +71,15 @@ mod tests {
 
         assert!(r.is_err(), "a escrita que não terminou volta como erro");
         assert_eq!(ler(&dir), vec![1, 2, 3], "o arquivo anterior continua inteiro (A7)");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn o_registro_comeca_do_zero_a_cada_abertura() {
+        let dir = pasta("log");
+        std::fs::write(dir.join(LOG_FILE), "da abertura anterior").unwrap();
+        let arquivo = abrir_log_em(&dir).expect("o registro abre");
+        assert_eq!(arquivo.metadata().unwrap().len(), 0);
         let _ = std::fs::remove_dir_all(&dir);
     }
 

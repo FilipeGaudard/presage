@@ -24,8 +24,14 @@ chave da Riot: uma derruba uma função, a outra entrega a máquina de cada usu�
 - **CSP** em `tauri.conf.json`:
   `default-src 'self'; img-src 'self' https://ddragon.leagueoflegends.com data:; connect-src 'self' ipc: http://ipc.localhost https://ddragon.leagueoflegends.com; style-src 'self' 'unsafe-inline'`.
   Sem `unsafe-eval`, sem script de fora. `'unsafe-inline'` só em estilo.
-- **Permissões** em `capabilities/default.json`: `core:default`, `updater:default`,
-  `process:allow-restart`. Nada de shell, nada de sistema de arquivos pelo front.
+- **Permissões** por janela: `capabilities/main.json` com `core:default`,
+  `updater:default` e `process:allow-restart`; `capabilities/overlay.json` só com
+  `core:default` (A33). Nada de shell, nada de sistema de arquivos pelo front.
+- **Testes de arquitetura** (`src-tauri/src/arquitetura.rs`) leem o código da
+  casca, o `Cargo.lock` e as capabilities: nenhum verbo HTTP que escreve, nenhum
+  endereço fora do loopback e da Riot, nenhuma API ou crate de leitura de memória
+  e injeção de input, autostart só pelo comando, e o overlay sem atualizador nem
+  reinício (C-2, C-3, ADR-0026; T-CASCA-24 a T-CASCA-29).
 - **Nenhum `dangerouslySetInnerHTML`** no front. Todo texto passa pelo escape do
   React.
 - **Comandos fechados.** A interface só alcança os comandos registrados em

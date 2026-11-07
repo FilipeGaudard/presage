@@ -138,7 +138,7 @@ coluna. As linhas de "Quem chama" são de `src/`.
 | `rank_draft` | — | `Vec<Scored>` → `ScoredChampion[]`; vazio sem draft | nenhum | `App.tsx:177` (Draft e Simulador), quando muda draft, pool, rota, marca ou preferência |
 | `set_draft_role` | `role: Option<String>`, vocabulário do LCU; `null` volta para a rota da pool | `()` | nenhum; string desconhecida apaga a escolha | `App.tsx:266` (seletor de rota do painel de recomendação) |
 | `set_enemy_role` | `championId: i64`, `role: Option<String>` (LCU); `null` desfaz a marca | `()` | nenhum; string desconhecida desfaz a marca | `App.tsx:274` (quadro do draft) |
-| `get_enemy_roles` | — | `Vec<(i64, Role)>` → `[number, Role][]`, rota no vocabulário de saída | nenhum | **ninguém.** Registrado (`lib.rs:727`), sem `invoke` em `src/`: a interface guarda as marcas no próprio estado (`App.tsx:74`) |
+| `get_enemy_roles` | — | `Vec<(i64, Role)>` → `[number, Role][]`, rota no vocabulário de saída | nenhum | `App.tsx`, na carga inicial: depois de recarregar a tela no meio do champ select, ela pede as marcas de volta em vez de perdê-las (A2, TF-DRAFT-11) |
 | `set_simulated_draft` | `draft: Option<DraftState>`; `null` volta para o cliente | `()`; o draft passa por `DraftState::normalized` (`lib.rs:193`) | nenhum | `App.tsx:157` (aba Simulador), `App.tsx:153` (`null` ao sair dela) |
 | `get_draft_prefs` | — | `DraftPrefs` | nenhum | `App.tsx:111`, ao montar |
 | `set_draft_prefs` | `prefs: DraftPrefs` | `Result<(), String>` | `Err` se `draft.json` não gravou; a memória fica como estava | `App.tsx:297` |
@@ -433,9 +433,21 @@ borda, sempre no topo, fora da barra de tarefas, sem foco e escondida. Ela carre
 `bandeja` (`lib.rs:472`): ícone `presage` com dois itens.
 
 - **"Mostrar o Presage"** (`mostrar`): desminimiza, mostra e foca a janela `main`.
-- **"Sair"** (`sair`): `app.exit(0)`.
+- **"Sair"** (`sair`): `app.exit(0)`. É o único jeito de fechar o app.
+
+Fechar a janela principal a **esconde** (`on_window_event`, `CloseRequested` com
+`prevent_close`): o app segue na bandeja, e "Mostrar o Presage" a traz de volta.
+Até a 0.7.0 fechar a destruía, e o item da bandeja não achava nada (A16).
 
 Se o ícone não sobe, o app segue sem ele.
+
+### Registro
+
+O app de lançamento não tem console. O `tracing` escreve em
+`%LOCALAPPDATA%\Presage\presage.log` (`storage::LOG_FILE`), refeito a cada
+abertura: um erro que a tela não mostra (o Data Dragon da casca, o histórico
+pessoal, o atalho que não registrou) fica num arquivo que o jogador consegue
+abrir (A14). Sem a pasta, o registro vai para a saída padrão.
 
 ### Iniciar com o Windows
 
