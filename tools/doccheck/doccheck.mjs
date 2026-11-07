@@ -426,9 +426,12 @@ export function resolveAll(inv, code, deferred, warn) {
       }
       case 'trace': {
         if (!it.row) { why = 'sem linha na matriz'; break; }
-        const cited = [...(it.row.cells[2] ?? '').matchAll(/\bT-[A-Z]+-\d+\b/g)].map((m) => m[0]);
-        const bad = cited.filter((t) => !inv.catalog.has(t));
-        if (bad.length) why = `T-ID fora do catálogo: ${bad.join(', ')}`;
+        // Prova um requisito um teste do 13 (T-) ou um teste do front que
+        // existe (TF- com marcador num *.test.ts(x)).
+        const cited = [...(it.row.cells[2] ?? '').matchAll(/\bTF?-[A-Z]+-\d+\b/g)].map((m) => m[0]);
+        const front = new Set(items.filter((x) => x.kind === 'ui-test' && code.ts.tests.some((t) => t.id === x.name)).map((x) => x.name));
+        const bad = cited.filter((t) => (t.startsWith('TF-') ? !front.has(t) : !inv.catalog.has(t)));
+        if (bad.length) why = `teste fora do catálogo, ou do front sem teste escrito: ${bad.join(', ')}`;
         else if (!cited.length) why = 'nenhum teste na matriz';
         else found = `${DOCS.reqs}:${it.row.line}`;
         break;

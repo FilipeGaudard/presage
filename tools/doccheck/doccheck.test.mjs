@@ -228,6 +228,23 @@ test('a checagem inteira sobre um repositório mínimo', () => {
   }
 });
 
+test('a matriz aceita teste do front escrito, e só escrito', () => {
+  const dir = fixture();
+  try {
+    writeFileSync(join(dir, 'docs/frontend/06-testes.md'), '# 06\n\n| TF-ID | Tipo | O que prova | Regra |\n|---|---|---|---|\n| TF-DRAFT-1 | componente | x | C-1 |\n| TF-DRAFT-2 | componente | y | C-1 |\n');
+    writeFileSync(join(dir, 'src/App.test.tsx'), 'it("TF-DRAFT-1: prova", () => {});\n');
+    const req = (cite) => `# R\n\n### R-1 — Ranking\n\n| ID | Regra |\n|---|---|\n| C-1 | x |\n\n## 4. Matriz de rastreabilidade\n\n| Requisito | Funções | Testes |\n|---|---|---|\n| R-1 | \`rank\` | T-DRAFT-1 |\n| C-1 | — | ${cite} |\n`;
+    writeFileSync(join(dir, 'docs/produto/requisitos.md'), req('TF-DRAFT-1'));
+    let { items } = run(dir, { write: false });
+    assert.equal(items.find((x) => x.kind === 'trace' && x.name === 'C-1').state, 'done');
+    writeFileSync(join(dir, 'docs/produto/requisitos.md'), req('TF-DRAFT-2'));
+    ({ items } = run(dir, { write: false }));
+    assert.equal(items.find((x) => x.kind === 'trace' && x.name === 'C-1').state, 'pending', 'TF sem teste escrito não prova');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test('dois testes com o mesmo nome viram aviso', () => {
   const dir = fixture();
   try {

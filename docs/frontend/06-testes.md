@@ -51,8 +51,9 @@ com `mockIPC`, que é onde mora o tratamento de erro.
 | TF-CASCA-2 | componente | Hoje. Com `check()` resolvendo a versão 0.8.0, aparece "Versão 0.8.0 disponível"; `downloadAndInstall` só é chamado no clique de "Atualizar e reiniciar"; "Depois" esconde o aviso; com `check()` rejeitando, nada aparece | RNF-7, R-19 |
 | TF-CASCA-3 | componente | Hoje. Na aba Pool, um `presage://review` com uma leitura troca a aba para Pós-jogo e mostra o campeão da leitura | R-16 |
 | TF-CASCA-4 | componente | Hoje. Um `rank_draft` que rejeita mostra um aviso que nomeia o ranking; a lista anterior não continua na tela como se fosse atual | GC-1 |
-| TF-CASCA-5 | estático | Hoje. Em `src/`, só `App.tsx` e `overlay.tsx` importam `@tauri-apps/api`, e nenhum arquivo usa `dangerouslySetInnerHTML`, `innerHTML`, `eval`, `localStorage` ou `<a href` | 05 §1 |
+| TF-CASCA-5 | estático | Hoje. Em `src/`, só `App.tsx` e `overlay.tsx` importam `@tauri-apps/api`, e só `Atualizacao.tsx` importa um plugin; nenhum arquivo usa `dangerouslySetInnerHTML`, `innerHTML`, `eval`, `localStorage` ou `<a href` | 05 §1 |
 | TF-CASCA-6 | componente | Hoje. Um motivo `<img src=x onerror=alert(1)>` em `ScoredChampion.reasons` aparece como texto no detalhe, e o DOM não ganha nenhum `<img>` com `onerror` | 05 §1 |
+| TF-CASCA-7 | estático | Hoje. Nenhuma regra de CSS de cor para número (`.good`, `.bad`, `.even`, `.warn-line`) usa o violeta da marca (`--halo`, `#7b6cff`) | RNF-12 |
 | TF-DRAFT-1 | componente | Hoje. `draft: null` com `connected: false` mostra "Sem draft ativo" e "Abra o League of Legends."; com `connected: true` e `phase: "Lobby"`, "Cliente conectado (Lobby)." | R-18 |
 | TF-DRAFT-2 | unidade | Hoje. Um evento com `timeLeftMs: 20000` e 5 s de relógio falso depois mostram 15 no `DraftBoard`; 25 s depois, 0, nunca negativo | RNF-4 |
 | TF-DRAFT-3 | componente | Hoje. Inimigo travado sem `position`, com presumida `Top`, mostra "TOP (presumida)"; escolher MID chama `onEnemyRole(id, "Mid")`, e `App` manda `set_enemy_role` com `{ championId: id, role: "middle" }`; a opção vazia manda `role: null` | R-4 |
@@ -88,6 +89,7 @@ com `mockIPC`, que é onde mora o tratamento de erro.
 | TF-OVERLAY-3 | componente | Hoje. Com snapshot, o overlay chama `build_suggestions` com `{ limit: 2 }` e mostra no máximo dois itens | C-5 |
 | TF-OVERLAY-4 | componente | Desejado. Com uma sétima seção em `OVERLAY_SECTIONS`, seis escondidas não apagam o overlay | GC-11 |
 | TF-OVERLAY-5 | ponta a ponta | Desejado. Em modo clicável, arrastar a cabeça move a janela, e a posição volta depois de reiniciar | R-15, GC-8 |
+| TF-OVERLAY-6 | estático | Hoje. Nenhuma dependência do `package.json` é de anúncio (ads, AdSense, AdMob, Overwolf…), e nenhuma página nem arquivo de `src/` tem `<iframe>`, script de anúncio ou `<script src>` de fora | C-9 |
 
 ## 4. No CI
 

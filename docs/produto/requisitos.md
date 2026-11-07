@@ -270,15 +270,15 @@ não tem.
 | R-1 — Ranking do draft pela sua rota | `to_draft_state`, `rank`, `rank_with`, `resolve_role`, `plays`, `profile`, `damage_balance_gain`, `frontline_need` e mais 17 | T-DRAFT-4, T-DRAFT-5, T-DRAFT-8, T-DRAFT-10, T-DRAFT-11, T-DRAFT-12, T-DRAFT-13, T-DRAFT-14, T-DRAFT-15, T-DRAFT-16, T-DRAFT-17, T-DRAFT-18, T-DRAFT-19, T-DRAFT-20, T-DRAFT-25, T-DRAFT-26, T-DRAFT-27, T-DRAFT-28, T-DRAFT-29, T-DRAFT-37, T-DRAFT-38, T-DRAFT-40, T-DRAFT-41, T-DRAFT-42, T-DRAFT-61, T-DRAFT-62, T-ENTRADA-6, T-ENTRADA-7, T-ENTRADA-8, T-ENTRADA-9, T-ENTRADA-35, T-ENTRADA-39, T-JOGO-1, T-JOGO-2, T-JOGO-5, T-PERFIL-8, T-STATS-10 |
 | R-2 — Resposta adversária | `others_play`, `team_value`, `minimax`, `minimax_with`, `open_enemy_roles`, `enemy_ids`, `ids` | T-DRAFT-43, T-DRAFT-44, T-DRAFT-45, T-DRAFT-46, T-DRAFT-47, T-DRAFT-48, T-DRAFT-49, T-DRAFT-50, T-DRAFT-51, T-DRAFT-52, T-DRAFT-64 |
 | R-3 — Sugestão de ban, com a sua lista na frente | `team_value`, `suggest_bans`, `bans_with_pool` | T-DRAFT-53, T-DRAFT-54, T-DRAFT-55, T-DRAFT-56, T-DRAFT-57, T-DRAFT-58, T-DRAFT-59, T-ENTRADA-6 |
-| R-4 — Rota do inimigo presumida e corrigível | `role_share`, `role_fit`, `seats`, `new_with`, `from_lcu` | T-CASCA-3, T-DRAFT-6, T-DRAFT-13, T-DRAFT-22, T-DRAFT-23, T-DRAFT-24, T-DRAFT-30, T-DRAFT-31, T-DRAFT-32, T-DRAFT-33, T-DRAFT-39, T-PREVIA-5, T-PREVIA-13 |
+| R-4 — Rota do inimigo presumida e corrigível | `role_share`, `role_fit`, `seats`, `new_with`, `from_lcu` | T-CASCA-3, T-DRAFT-6, T-DRAFT-13, T-DRAFT-22, T-DRAFT-23, T-DRAFT-24, T-DRAFT-30, T-DRAFT-31, T-DRAFT-32, T-DRAFT-33, T-DRAFT-39, T-PREVIA-5, T-PREVIA-13, TF-DRAFT-10 |
 | R-5 — Só quem a sua conta pode escolher | `selectable`, `new_with` | T-DRAFT-34, T-DRAFT-35, T-ENTRADA-11, T-ENTRADA-12 |
-| R-6 — Prévia do candidato | `profile`, `estimate`, `analyze`, `build`, `from_context`, `grown`, `lane_outlooks`, `skirmishes` e mais 8 | T-CASCA-1, T-CASCA-2, T-CASCA-4, T-CASCA-5, T-CASCA-6, T-CASCA-7, T-DRAFT-36, T-JOGO-3, T-JOGO-4, T-PREVIA-6, T-PREVIA-7, T-PREVIA-10, T-PREVIA-11, T-PREVIA-12, T-PREVIA-13, T-PREVIA-14, T-ROTA-19, T-ROTA-20, T-ROTA-21, T-ROTA-22, T-ROTA-23, T-ROTA-25 |
-| R-7 — Runas do confronto | `plan`, `RuneIndex::get`, `RuneIndex::is_empty` | T-RUNAS-1, T-RUNAS-2, T-RUNAS-3, T-RUNAS-4, T-RUNAS-5, T-RUNAS-6, T-RUNAS-7, T-RUNAS-8, T-RUNAS-9, T-RUNAS-10 |
+| R-6 — Prévia do candidato | `profile`, `estimate`, `analyze`, `build`, `from_context`, `grown`, `lane_outlooks`, `skirmishes` e mais 8 | T-CASCA-1, T-CASCA-2, T-CASCA-4, T-CASCA-5, T-CASCA-6, T-CASCA-7, T-DRAFT-36, T-JOGO-3, T-JOGO-4, T-PREVIA-6, T-PREVIA-7, T-PREVIA-10, T-PREVIA-11, T-PREVIA-12, T-PREVIA-13, T-PREVIA-14, T-ROTA-19, T-ROTA-20, T-ROTA-21, T-ROTA-22, T-ROTA-23, T-ROTA-25, TF-DRAFT-10, TF-ROTAS-3 |
+| R-7 — Runas do confronto | `plan`, `RuneIndex::get`, `RuneIndex::is_empty` | T-RUNAS-1, T-RUNAS-2, T-RUNAS-3, T-RUNAS-4, T-RUNAS-5, T-RUNAS-6, T-RUNAS-7, T-RUNAS-8, T-RUNAS-9, T-RUNAS-10, TF-ROTAS-2, TF-ROTAS-3 |
 | R-8 — Simulador de draft | `normalized` | T-ENTRADA-13 |
 | R-9 — Construtor de pool | `plays`, `robustness`, `analyze`, `suggest`, `weight`, `is_empty`, `ids`, `ids_for_role` e mais 5 | T-CASCA-21, T-DRAFT-38, T-DRAFT-42, T-ENTRADA-33, T-ENTRADA-34, T-ENTRADA-35, T-ENTRADA-36, T-ENTRADA-37, T-ENTRADA-38, T-ENTRADA-39, T-POOL-1, T-POOL-2, T-POOL-3, T-POOL-4, T-POOL-5, T-POOL-6, T-POOL-7, T-POOL-8, T-POOL-9, T-POOL-10, T-POOL-11, T-POOL-12, T-POOL-13 |
 | R-10 — Build adaptativa | `to_live_game`, `grown`, `parse_stats`, `effective_resist`, `damage_multiplier`, `suggest`, `loadout`, `incoming_physical_share` e mais 15 | T-BUILD-1, T-BUILD-2, T-BUILD-3, T-BUILD-4, T-BUILD-5, T-BUILD-6, T-BUILD-7, T-BUILD-8, T-BUILD-9, T-BUILD-10, T-ENTRADA-20, T-JOGO-1, T-JOGO-3, T-JOGO-4, T-JOGO-6, T-JOGO-7, T-JOGO-8, T-JOGO-9, T-JOGO-10, T-JOGO-11, T-JOGO-12, T-JOGO-13, T-JOGO-14 |
 | R-11 — Rotas e escaramuças ao vivo | `to_live_game`, `champion_key`, `analyze`, `build`, `report`, `standing`, `lane_outlooks`, `skirmishes` e mais 8 | T-CASCA-1, T-ENTRADA-14, T-ENTRADA-15, T-ENTRADA-16, T-ENTRADA-18, T-ENTRADA-47, T-JOGO-5, T-RIVAL-1, T-RIVAL-2, T-RIVAL-3, T-RIVAL-4, T-RIVAL-5, T-ROTA-1, T-ROTA-2, T-ROTA-3, T-ROTA-5, T-ROTA-6, T-ROTA-7, T-ROTA-8, T-ROTA-9, T-ROTA-10, T-ROTA-11, T-ROTA-12, T-ROTA-13, T-ROTA-19, T-ROTA-20, T-ROTA-23, T-ROTA-24, T-ROTA-25, T-ROTA-26 |
-| R-12 — Ouro dos dez | `to_live_game`, `earned_at`, `report`, `gold_invested` | T-ENTRADA-15, T-ENTRADA-17, T-ENTRADA-19, T-ENTRADA-47, T-OURO-1, T-OURO-2, T-OURO-3, T-OURO-4, T-OURO-5, T-OURO-6, T-OURO-7, T-OURO-8, T-OURO-9, T-OURO-10 |
+| R-12 — Ouro dos dez | `to_live_game`, `earned_at`, `report`, `gold_invested` | T-ENTRADA-15, T-ENTRADA-17, T-ENTRADA-19, T-ENTRADA-47, T-OURO-1, T-OURO-2, T-OURO-3, T-OURO-4, T-OURO-5, T-OURO-6, T-OURO-7, T-OURO-8, T-OURO-9, T-OURO-10, TF-PARTIDA-3 |
 | R-13 — Timers de objetivo, estruturas e buffs | `build`, `update` | T-OBJETIVO-1, T-OBJETIVO-2, T-OBJETIVO-3, T-OBJETIVO-4, T-OBJETIVO-5, T-OBJETIVO-6, T-OBJETIVO-7, T-OBJETIVO-8, T-OBJETIVO-9, T-OBJETIVO-10, T-OBJETIVO-11, T-OBJETIVO-12, T-OBJETIVO-13, T-OBJETIVO-14, T-OBJETIVO-15, T-OBJETIVO-16, T-OBJETIVO-17, T-OBJETIVO-18, T-PRIORIDADE-8 |
 | R-14 — Onde está o valor no mapa | `report` | T-PRIORIDADE-1, T-PRIORIDADE-2, T-PRIORIDADE-3, T-PRIORIDADE-4, T-PRIORIDADE-5, T-PRIORIDADE-6, T-PRIORIDADE-7, T-PRIORIDADE-8, T-PRIORIDADE-9, T-PRIORIDADE-10 |
 | R-15 — Overlay | `focus`, `label`, `detail`, `shows`, `set`, `anything_visible`, `visible` | T-CASCA-21, T-ENTRADA-40, T-ENTRADA-41, T-ENTRADA-42, T-ENTRADA-43, T-ENTRADA-44, T-ENTRADA-45, T-ROTA-13, T-ROTA-14, T-ROTA-15, T-ROTA-16, T-ROTA-17, T-ROTA-18 |
@@ -291,14 +291,14 @@ não tem.
 | C-1 — Nada de timer de ultimate inimiga | `build` | T-OBJETIVO-17 |
 | C-2 — Nada de leitura de memória do jogo | — | — |
 | C-3 — Nada de injeção nem automação de input | — | — |
-| C-4 — Nada que o jogador não saberia | `report`, `build`, `gold_invested`, `update` | T-ENTRADA-17, T-OBJETIVO-4, T-OBJETIVO-11, T-OURO-10, T-PRIORIDADE-7, T-ROTA-12 |
+| C-4 — Nada que o jogador não saberia | `report`, `build`, `gold_invested`, `update` | T-ENTRADA-17, T-OBJETIVO-4, T-OBJETIVO-11, T-OURO-10, T-PRIORIDADE-7, T-ROTA-12, TF-PARTIDA-3 |
 | C-5 — Destacar decisões, nunca tirá-las | `minimax_with`, `bans_with_pool`, `analyze`, `suggest`, `plan`, `report` | T-DRAFT-46, T-POOL-12, T-PREVIA-11, T-PRIORIDADE-2, T-RUNAS-7 |
 | C-6 — Aumentar a diversidade de decisões | `plan`, `suggest`, `incoming_physical_share` | T-BUILD-1, T-BUILD-2, T-BUILD-4, T-BUILD-5, T-RUNAS-3 |
 | C-7 — Nada de MMR, nota ou escada paralela | `build`, `review` | T-PERFIL-9, T-POS-25 |
 | C-8 — Cobrar só aprovado e com camada grátis | — | — |
-| C-9 — Nada de anúncio dentro do jogo | — | — |
+| C-9 — Nada de anúncio dentro do jogo | — | TF-OVERLAY-6 |
 | C-10 — Produto público só com chave de produção | — | — |
-| RNF-1 — Nenhum número inventado | `rank_with`, `estimate`, `analyze`, `suggest`, `plan`, `shrink`, `shrunk_delta`, `Dataset::is_usable` e mais 4 | T-CASCA-5, T-DRAFT-8, T-DRAFT-10, T-DRAFT-11, T-ENTRADA-19, T-OBJETIVO-1, T-OBJETIVO-2, T-OBJETIVO-14, T-POOL-12, T-POS-2, T-POS-3, T-PREVIA-1, T-PREVIA-4, T-PREVIA-8, T-PREVIA-10, T-PREVIA-14, T-PRIORIDADE-8, T-ROTA-2, T-ROTA-3, T-ROTA-26, T-RUNAS-1, T-RUNAS-7, T-RUNAS-8, T-STATS-1, T-STATS-8, T-STATS-9, T-STATS-16, T-STATS-18 |
+| RNF-1 — Nenhum número inventado | `rank_with`, `estimate`, `analyze`, `suggest`, `plan`, `shrink`, `shrunk_delta`, `Dataset::is_usable` e mais 4 | T-CASCA-5, T-DRAFT-8, T-DRAFT-10, T-DRAFT-11, T-ENTRADA-19, T-OBJETIVO-1, T-OBJETIVO-2, T-OBJETIVO-14, T-POOL-12, T-POS-2, T-POS-3, T-PREVIA-1, T-PREVIA-4, T-PREVIA-8, T-PREVIA-10, T-PREVIA-14, T-PRIORIDADE-8, T-ROTA-2, T-ROTA-3, T-ROTA-26, T-RUNAS-1, T-RUNAS-7, T-RUNAS-8, T-STATS-1, T-STATS-8, T-STATS-9, T-STATS-16, T-STATS-18, TF-DRAFT-7, TF-ROTAS-2 |
 | RNF-2 — O `±` conta a mesma história que a estimativa | `rank_with`, `estimate`, `Estimate::se`, `strength_for_sd`, `posterior_sd` | T-DRAFT-7, T-DRAFT-9, T-PREVIA-3, T-STATS-3, T-STATS-5, T-STATS-6 |
 | RNF-3 — Um efeito é medido contra o que as forças já explicam | `rank_with`, `estimate`, `shrunk_delta`, `lane_outlooks`, `expected_against`, `expected_together` | T-DRAFT-1, T-DRAFT-2, T-DRAFT-3, T-PREVIA-2, T-ROTA-4, T-STATS-7 |
 | RNF-4 — Tempo real para uma fase de 30 segundos | `minimax_with` | T-CASCA-20, T-DRAFT-48 |
@@ -309,5 +309,5 @@ não tem.
 | RNF-9 — O core testa em segundos, sem MSVC e sem Tauri | — | — |
 | RNF-10 — O executável não depende do Visual C++ Redistributable | — | — |
 | RNF-11 — O perfil e o pós-jogo apontam, não dão nota | `build`, `review`, `Reading::is_clear` | T-DRAFT-21, T-PERFIL-3, T-PERFIL-9, T-POS-25 |
-| RNF-12 — A cor da marca nunca carrega significado de dado | — | — |
+| RNF-12 — A cor da marca nunca carrega significado de dado | — | TF-CASCA-7 |
 

@@ -236,4 +236,23 @@ describe("App e a casca", () => {
     fireEvent.change(screen.getByTitle(/Rota presumida pelo Presage/), { target: { value: "Mid" } });
     await waitFor(() => expect(c.conta("lane_analysis", comCandidato)).toBe(2));
   });
+
+  it("TF-DRAFT-7: sem base, o ranking diz que é composição; com base de outro patch, diz isso (RNF-1)", async () => {
+    let comBase = false;
+    casca({
+      get_snapshot: () => [{ connected: true, phase: "ChampSelect", summoner: null, detail: null }, draft(25000)],
+      engine_status: () =>
+        comBase ? { ...engine, hasGlobal: true, globalPatch: "16.20", globalMatches: 1200 } : engine,
+      rank_draft: () => [candidato(103)],
+    });
+    const { unmount } = render(<App />);
+    await screen.findByText(/Sem base estatística: o ranking sai da composição dos times/);
+    unmount();
+
+    comBase = true;
+    render(<App />);
+    await screen.findByText("A base é do patch 16.20 e o jogo está no 16.21.1. Os números são de outro patch.");
+    expect(screen.queryByText(/Sem base estatística: o ranking/)).toBeNull();
+  });
 });
+

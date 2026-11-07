@@ -13,14 +13,14 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
 | test | 352 | 352 | 0 | 0 |
-| ui-test | 41 | 5 | 36 | 0 |
-| trace | 43 | 35 | 8 | 0 |
+| ui-test | 43 | 10 | 33 | 0 |
+| trace | 43 | 37 | 6 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
 - testes no código: 480; nomes no catálogo (13): 480; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 2922
+- IDs citados conferidos: 2937
 
 ## type
 
@@ -908,7 +908,6 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `TF-CASCA-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-CASCA-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-CASCA-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
-| `TF-CASCA-5` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-CASCA-6` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-DRAFT-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-DRAFT-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
@@ -916,7 +915,6 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `TF-DRAFT-4` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-DRAFT-5` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-DRAFT-6` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
-| `TF-DRAFT-7` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-DRAFT-8` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-DRAFT-9` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-OVERLAY-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
@@ -935,14 +933,18 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `TF-POS-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-POS-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-ROTAS-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
-| `TF-ROTAS-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-SIM-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-SIM-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-SIM-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-CASCA-4` | frontend/06-testes §3 | done | src/App.test.tsx:161 |
+| `TF-CASCA-5` | frontend/06-testes §3 | done | src/estatico.test.ts:21 |
+| `TF-CASCA-7` | frontend/06-testes §3 | done | src/estatico.test.ts:46 |
 | `TF-DRAFT-10` | frontend/06-testes §3 | done | src/App.test.tsx:218 |
+| `TF-DRAFT-7` | frontend/06-testes §3 | done | src/App.test.tsx:240 |
+| `TF-OVERLAY-6` | frontend/06-testes §3 | done | src/estatico.test.ts:34 |
 | `TF-PARTIDA-3` | frontend/06-testes §3 | done | src/components/GoldTracker.test.tsx:40 |
 | `TF-POOL-4` | frontend/06-testes §3 | done | src/App.test.tsx:134 |
+| `TF-ROTAS-2` | frontend/06-testes §3 | done | src/components/Runas.test.tsx:16 |
 | `TF-ROTAS-3` | frontend/06-testes §3 | done | src/App.test.tsx:186 |
 
 ## trace
@@ -953,15 +955,14 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `C-2` | produto/requisitos matriz | deferred | B2: estrutural, a casca só fala HTTP com LCU, Live Client, Riot e Data Dragon (12 §5) |
 | `C-3` | produto/requisitos matriz | deferred | B3: estrutural, overlay é janela externa (ADR-0003); nenhum hook nem input sintético |
 | `C-8` | produto/requisitos matriz | deferred | regra de cobrança, não de código: conferida antes de cobrar (P-2, 00 §4) |
-| `C-9` | produto/requisitos matriz | deferred | B5: nenhum código de anúncio existe; falta o teste que varra o overlay |
 | `RNF-10` | produto/requisitos matriz | deferred | provado pelo build do instalador: CRT estática (ADR-0014, .cargo/config.toml) |
-| `RNF-12` | produto/requisitos matriz | deferred | B6: regra de design (identidade); TF a escrever quando houver harness (P-16) |
 | `RNF-9` | produto/requisitos matriz | deferred | provado pelo próprio gate: cargo test -p presage-core roda sem MSVC e sem Tauri (ADR-0001) |
 | `C-1` | produto/requisitos matriz | done | docs/produto/requisitos.md:291 |
 | `C-4` | produto/requisitos matriz | done | docs/produto/requisitos.md:294 |
 | `C-5` | produto/requisitos matriz | done | docs/produto/requisitos.md:295 |
 | `C-6` | produto/requisitos matriz | done | docs/produto/requisitos.md:296 |
 | `C-7` | produto/requisitos matriz | done | docs/produto/requisitos.md:297 |
+| `C-9` | produto/requisitos matriz | done | docs/produto/requisitos.md:299 |
 | `R-1` | produto/requisitos matriz | done | docs/produto/requisitos.md:270 |
 | `R-10` | produto/requisitos matriz | done | docs/produto/requisitos.md:279 |
 | `R-11` | produto/requisitos matriz | done | docs/produto/requisitos.md:280 |
@@ -985,6 +986,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `R-9` | produto/requisitos matriz | done | docs/produto/requisitos.md:278 |
 | `RNF-1` | produto/requisitos matriz | done | docs/produto/requisitos.md:301 |
 | `RNF-11` | produto/requisitos matriz | done | docs/produto/requisitos.md:311 |
+| `RNF-12` | produto/requisitos matriz | done | docs/produto/requisitos.md:312 |
 | `RNF-2` | produto/requisitos matriz | done | docs/produto/requisitos.md:302 |
 | `RNF-3` | produto/requisitos matriz | done | docs/produto/requisitos.md:303 |
 | `RNF-4` | produto/requisitos matriz | done | docs/produto/requisitos.md:304 |
@@ -1092,4 +1094,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 46 | 16 | 0 | 38 |
+| 42 | 20 | 0 | 38 |

@@ -14,7 +14,6 @@ command get_enemy_roles | A2: registrado no generate_handler! e nunca chamado pe
 ui-test TF-CASCA-1 | P-16: teste do front ainda não escrito
 ui-test TF-CASCA-2 | P-16: teste do front ainda não escrito
 ui-test TF-CASCA-3 | P-16: teste do front ainda não escrito
-ui-test TF-CASCA-5 | P-16: teste do front ainda não escrito
 ui-test TF-CASCA-6 | P-16: teste do front ainda não escrito
 ui-test TF-DRAFT-1 | P-16: teste do front ainda não escrito
 ui-test TF-DRAFT-2 | P-16: teste do front ainda não escrito
@@ -22,14 +21,12 @@ ui-test TF-DRAFT-3 | P-16: teste do front ainda não escrito
 ui-test TF-DRAFT-4 | P-16: teste do front ainda não escrito
 ui-test TF-DRAFT-5 | P-16: teste do front ainda não escrito
 ui-test TF-DRAFT-6 | P-16: teste do front ainda não escrito
-ui-test TF-DRAFT-7 | P-16: teste do front ainda não escrito
 ui-test TF-DRAFT-8 | P-16: teste do front ainda não escrito
 ui-test TF-DRAFT-9 | P-16: teste do front ainda não escrito
 ui-test TF-SIM-1 | P-16: teste do front ainda não escrito
 ui-test TF-SIM-2 | P-16: teste do front ainda não escrito
 ui-test TF-SIM-3 | P-16: teste do front ainda não escrito
 ui-test TF-ROTAS-1 | P-16: teste do front ainda não escrito
-ui-test TF-ROTAS-2 | P-16: teste do front ainda não escrito
 ui-test TF-PARTIDA-1 | P-16: teste do front ainda não escrito
 ui-test TF-PARTIDA-2 | P-16: teste do front ainda não escrito
 ui-test TF-PARTIDA-4 | P-16: teste do front ainda não escrito
@@ -53,8 +50,6 @@ ui-test TF-OVERLAY-5 | P-16: teste do front ainda não escrito
 trace C-2 | B2: estrutural, a casca só fala HTTP com LCU, Live Client, Riot e Data Dragon (12 §5)
 trace C-3 | B3: estrutural, overlay é janela externa (ADR-0003); nenhum hook nem input sintético
 trace C-8 | regra de cobrança, não de código: conferida antes de cobrar (P-2, 00 §4)
-trace C-9 | B5: nenhum código de anúncio existe; falta o teste que varra o overlay
 trace C-10 | regra de distribuição: chave de produção antes de distribuir (06, ADR-0004)
 trace RNF-9 | provado pelo próprio gate: cargo test -p presage-core roda sem MSVC e sem Tauri (ADR-0001)
 trace RNF-10 | provado pelo build do instalador: CRT estática (ADR-0014, .cargo/config.toml)
-trace RNF-12 | B6: regra de design (identidade); TF a escrever quando houver harness (P-16)

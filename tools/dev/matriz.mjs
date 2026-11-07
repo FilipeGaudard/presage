@@ -4,7 +4,7 @@
 // coluna Atende do 13 (testes) e do 11 (funções). Um fato num lugar só (L-7):
 // quem atende um requisito é o catálogo; a matriz é a visão invertida dele.
 // Rodar depois de mexer no Atende de um catálogo; o doccheck confere o resultado.
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseMd, ticks } from '../doccheck/md.mjs';
@@ -54,6 +54,21 @@ for (const r of t13.rows) {
   if (!t) continue;
   const at = r.cells[r.cells.length - 1] ?? '';
   for (const m of at.matchAll(/\b(R-\d+|C-\d+|RNF-\d+)\b/g)) tests.get(m[1])?.push(t);
+}
+
+// Os testes do front que existem (o ID num *.test.ts(x) de src/) também provam.
+const escritos = new Set();
+const varrer = (d) => readdirSync(d).forEach((f) => {
+  const p = join(d, f);
+  if (statSync(p).isDirectory()) varrer(p);
+  else if (/\.(test|spec)\.tsx?$/.test(f)) for (const m of rd(p).matchAll(/\bTF-[A-Z]+-\d+\b/g)) escritos.add(m[0]);
+});
+varrer(join(ROOT, 'src'));
+const t06 = parseMd(rd(join(ROOT, 'docs/frontend/06-testes.md')));
+for (const r of t06.rows) {
+  const t = r.cells[0]?.match(/^(TF-[A-Z]+-\d+)$/)?.[1];
+  if (!t || !escritos.has(t)) continue;
+  for (const m of (r.cells[r.cells.length - 1] ?? '').matchAll(/\b(R-\d+|C-\d+|RNF-\d+)\b/g)) tests.get(m[1])?.push(t);
 }
 
 const funcs = new Map(ids.map((i) => [i, []]));
