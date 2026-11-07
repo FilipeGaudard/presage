@@ -522,6 +522,9 @@ pedem a árvore do Tauri para compilar ([08 §4](08-desenvolvimento-e-testes.md#
 | T-CASCA-16 | `evento_que_nao_e_fim_de_jogo_nao_decide_resultado`, `o_resultado_nao_e_reescrito_depois_de_conhecido` | unidade | `DragonKill` deixa `won = None`; um `Lose` depois de um `Win` não troca o `Some(true)` | R-16 |
 | T-CASCA-17 | `a_gravacao_tem_teto` | unidade | 6500 quadros observados, com o relógio andando, guardam 6000 (`MAX_FRAMES`) | R-16, RNF-8 |
 | T-CASCA-18 | `partida_curta_nao_rende_relatorio_mas_limpa_a_gravacao` | unidade | Com 10 quadros, abaixo de `MIN_FRAMES` (60), `finish` devolve `None` e a gravação fica vazia para a próxima partida | R-16 |
+| T-CASCA-19 | `remake_de_tres_minutos_nao_rende_leitura_nem_apaga_a_anterior` | regressão | 181 quadros (0 a 3:00): `finish` devolve `None` e a gravação fica vazia. Antes, passava do piso de 60 quadros e gravava um "curta demais" por cima de `ultima-partida.json`, com o aviso que traz a aba Pós-jogo | R-16, A6 |
+| T-CASCA-20 | `perder_o_cliente_avisa_a_tela_e_espera_antes_de_procurar_de_novo` | regressão | Com a leitura da fase falhando ("conexão recusada"): o draft é encerrado com aviso (não apagado calado), sai um `ConnStatus` desconectado com `phase = "Disconnected"` e o erro em `detail`, e a próxima volta espera `POLL_DISCONNECTED`. Antes, voltava na hora, sem aviso nem status | R-18, RNF-4, A5, A11 |
+| T-CASCA-21 | `escrita_que_morre_no_meio_deixa_o_arquivo_anterior_inteiro`, `escrita_que_termina_troca_o_arquivo_e_nao_deixa_resto` | regressão | Com `pool.json` = `[1, 2, 3]` e o temporário impossível de criar, a escrita de `[9, 9]` volta como erro e o arquivo continua `[1, 2, 3]`; a escrita que termina troca o arquivo e não deixa `pool.json.parcial`. Antes, a escrita ia direto no arquivo final | R-9, R-15, A7 |
 
 ## 3. Rodando um teste
 

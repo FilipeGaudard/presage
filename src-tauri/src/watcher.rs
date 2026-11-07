@@ -145,6 +145,40 @@ fn close_recording(app: &AppHandle, shared: &Shared) {
     }
 }
 
+/// Para onde vai o que o laço avisa quando perde o cliente. Existe para o teste
+/// trocar o app por um registro do que foi avisado.
+trait Saida {
+    /// Apaga o draft da memória sem avisar a tela.
+    fn apagar_draft(&self);
+    /// O champ select acabou: limpa marcas e lista da conta, e avisa a tela.
+    fn draft_encerrado(&self);
+    fn status(&self, status: ConnStatus);
+}
+
+struct SaidaDoApp<'a> {
+    app: &'a AppHandle,
+    shared: &'a Shared,
+}
+
+impl Saida for SaidaDoApp<'_> {
+    fn apagar_draft(&self) {
+        *self.shared.draft.lock().unwrap() = None;
+    }
+    fn draft_encerrado(&self) {
+        clear_draft(self.app, self.shared);
+    }
+    fn status(&self, status: ConnStatus) {
+        publish_status(self.app, self.shared, status);
+    }
+}
+
+/// A leitura da fase falhou: o cliente fechou ou as credenciais expiraram.
+/// Devolve quanto esperar antes de redescobrir.
+fn perdeu_o_cliente(saida: &impl Saida, _erro: &str) -> Duration {
+    saida.apagar_draft();
+    Duration::ZERO
+}
+
 fn clear_draft(app: &AppHandle, shared: &Shared) {
     // A marca e a lista da conta são deste champ select; no próximo, os
     // campeões e a fila são outros.
@@ -221,7 +255,9 @@ pub async fn run(app: AppHandle, shared: Arc<Shared>) {
                 tracing::debug!(%err, "perdemos o cliente, redescobrindo");
                 client = None;
                 summoner = None;
-                *shared.draft.lock().unwrap() = None;
+                let saida = SaidaDoApp { app: &app, shared: &shared };
+                let espera = perdeu_o_cliente(&saida, &err.to_string());
+                tokio::time::sleep(espera).await;
                 continue;
             }
         };
@@ -360,5 +396,48 @@ fn publish_status(app: &AppHandle, shared: &Shared, status: ConnStatus) {
     if cached.as_ref() != Some(&status) {
         let _ = app.emit(EVENT_STATUS, &status);
         *cached = Some(status);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::cell::RefCell;
+
+    #[derive(Default)]
+    struct Registro {
+        avisos: RefCell<Vec<String>>,
+        status: RefCell<Vec<ConnStatus>>,
+    }
+
+    impl Saida for Registro {
+        fn apagar_draft(&self) {
+            self.avisos.borrow_mut().push("apagou calado".into());
+        }
+        fn draft_encerrado(&self) {
+            self.avisos.borrow_mut().push("draft encerrado".into());
+        }
+        fn status(&self, status: ConnStatus) {
+            self.status.borrow_mut().push(status);
+        }
+    }
+
+    #[test]
+    fn perder_o_cliente_avisa_a_tela_e_espera_antes_de_procurar_de_novo() {
+        let registro = Registro::default();
+        let espera = perdeu_o_cliente(&registro, "conexão recusada");
+
+        // A tela perde o draft com aviso, como no fim do champ select (A11).
+        assert_eq!(*registro.avisos.borrow(), vec!["draft encerrado".to_string()]);
+
+        // O status diz que não há cliente, e por quê (A5).
+        let status = registro.status.borrow();
+        assert_eq!(status.len(), 1);
+        assert!(!status[0].connected);
+        assert_eq!(status[0].phase, "Disconnected");
+        assert_eq!(status[0].detail.as_deref(), Some("conexão recusada"));
+
+        // A próxima volta espera o ritmo de sem cliente: o laço não gira sem pausa (A5).
+        assert_eq!(espera, POLL_DISCONNECTED);
     }
 }

@@ -151,4 +151,19 @@ mod tests {
             "restos de uma partida contaminariam a próxima"
         );
     }
+
+    #[test]
+    fn remake_de_tres_minutos_nao_rende_leitura_nem_apaga_a_anterior() {
+        // Três minutos de partida, um quadro por segundo: passa do piso de
+        // quadros, mas não do piso de partida do pós-jogo. Não pode haver
+        // leitura: ela seria um "curta demais" gravado por cima da última
+        // partida de verdade, e o aviso traria a aba para a frente (A6).
+        let mut r = Recording::default();
+        for i in 0..=180 {
+            observe(&mut r, &game(i as f64), &[]);
+        }
+
+        assert!(finish(&mut r, &ItemIndex::default()).is_none());
+        assert!(r.frames.is_empty());
+    }
 }
