@@ -13,15 +13,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 375 | 375 | 0 | 0 |
+| test | 376 | 376 | 0 | 0 |
 | ui-test | 48 | 15 | 33 | 0 |
 | trace | 43 | 39 | 4 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 3 | 0 | 3 | 0 |
 
-- testes no código: 504; nomes no catálogo (13): 504; fora dele: 0
+- testes no código: 505; nomes no catálogo (13): 505; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 3080
+- IDs citados conferidos: 3084
 
 ## type
 
@@ -594,6 +594,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-CASCA-30` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:594 |
 | `T-CASCA-31` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:182 |
 | `T-CASCA-32` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:221 |
+| `T-CASCA-33` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:260 |
 | `T-CASCA-4` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:205 |
 | `T-CASCA-5` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:216 |
 | `T-CASCA-6` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:239 |
@@ -1135,4 +1136,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 18 | 45 | 0 | 38 |
+| 19 | 45 | 0 | 38 |

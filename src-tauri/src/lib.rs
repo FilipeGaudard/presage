@@ -649,8 +649,55 @@ mod tests {
     }
 }
 
+/// O `Shared` com o que está no disco: pool, base de partidas, última leitura e
+/// preferências. Fica pronto antes do `Builder`, porque no Tauri 2 as janelas do
+/// `tauri.conf.json` nascem antes do `setup`, e a tela chama comandos logo que
+/// carrega (A53).
+fn estado_inicial() -> Arc<Shared> {
+    let shared = Arc::new(Shared::new());
+    if let Some(saved) = storage::read_json::<Pool>(POOL_CACHE) {
+        tracing::info!(campeoes = saved.entries.len(), "pool carregado do disco");
+        *shared.pool.write().unwrap() = saved;
+    }
+
+    // Base de partidas, se alguém já a colocou no lugar. `is_usable`
+    // recusa arquivo truncado: melhor ficar sem base do que recomendar
+    // a partir de meia dúzia de linhas.
+    match storage::read_json::<Dataset>(DATASET_CACHE) {
+        Some(dataset) if dataset.is_usable() => {
+            tracing::info!(
+                patch = %dataset.patch,
+                partidas = dataset.matches,
+                "base de partidas carregada"
+            );
+            *shared.dataset.write().unwrap() = Some(dataset);
+        }
+        Some(_) => tracing::warn!("base de partidas incompleta, ignorada"),
+        None => tracing::info!("sem base de partidas: matchup e sinergia ficam em zero"),
+    }
+    rebuild_stats(&shared, PersonalStats::default());
+
+    if let Some(saved) = storage::read_json::<Report>(recorder::LAST_REVIEW) {
+        *shared.last_review.lock().unwrap() = Some(saved);
+    }
+
+    if let Some(saved) = storage::read_json::<DraftPrefs>(DRAFT_PREFS_CACHE) {
+        *shared.draft_prefs.write().unwrap() = saved;
+    }
+
+    if let Some(saved) = storage::read_json::<OverlayPrefs>(PREFS_CACHE) {
+        tracing::info!(
+            escondidas = saved.hidden.len(),
+            "preferências do overlay carregadas"
+        );
+        *shared.overlay_prefs.write().unwrap() = saved;
+    }
+    shared
+}
+
 fn montar(com_atualizador: bool) -> tauri::Builder<tauri::Wry> {
-    let mut builder = tauri::Builder::default();
+    // O estado entra no Builder, antes de qualquer janela existir (A53).
+    let mut builder = tauri::Builder::default().manage(estado_inicial());
 
     if com_atualizador {
         // Os dois andam juntos: um baixa e instala, o outro reinicia depois.
@@ -684,46 +731,7 @@ fn montar(com_atualizador: bool) -> tauri::Builder<tauri::Wry> {
             }
         })
         .setup(|app| {
-            let shared = Arc::new(Shared::new());
-            if let Some(saved) = storage::read_json::<Pool>(POOL_CACHE) {
-                tracing::info!(campeoes = saved.entries.len(), "pool carregado do disco");
-                *shared.pool.write().unwrap() = saved;
-            }
-
-            // Base de partidas, se alguém já a colocou no lugar. `is_usable`
-            // recusa arquivo truncado: melhor ficar sem base do que recomendar
-            // a partir de meia dúzia de linhas.
-            match storage::read_json::<Dataset>(DATASET_CACHE) {
-                Some(dataset) if dataset.is_usable() => {
-                    tracing::info!(
-                        patch = %dataset.patch,
-                        partidas = dataset.matches,
-                        "base de partidas carregada"
-                    );
-                    *shared.dataset.write().unwrap() = Some(dataset);
-                }
-                Some(_) => tracing::warn!("base de partidas incompleta, ignorada"),
-                None => tracing::info!("sem base de partidas: matchup e sinergia ficam em zero"),
-            }
-            rebuild_stats(&shared, PersonalStats::default());
-
-            if let Some(saved) = storage::read_json::<Report>(recorder::LAST_REVIEW) {
-                *shared.last_review.lock().unwrap() = Some(saved);
-            }
-
-            if let Some(saved) = storage::read_json::<DraftPrefs>(DRAFT_PREFS_CACHE) {
-                *shared.draft_prefs.write().unwrap() = saved;
-            }
-
-            if let Some(saved) = storage::read_json::<OverlayPrefs>(PREFS_CACHE) {
-                tracing::info!(
-                    escondidas = saved.hidden.len(),
-                    "preferências do overlay carregadas"
-                );
-                *shared.overlay_prefs.write().unwrap() = saved;
-            }
-
-            app.manage(shared.clone());
+            let shared = app.state::<Arc<Shared>>().inner().clone();
 
             if let Err(err) = bandeja(app) {
                 tracing::warn!(%err, "sem ícone na bandeja");

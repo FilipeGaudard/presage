@@ -256,3 +256,17 @@ fn cada_janela_so_alcanca_os_comandos_que_usa() {
     assert!(chamados.len() >= 3, "{chamados:?}");
     assert_eq!(liberados("overlay"), chamados, "o overlay alcança mais, ou menos, do que chama");
 }
+
+#[test]
+fn o_estado_existe_antes_de_qualquer_janela() {
+    // A53: no Tauri 2 as janelas do tauri.conf.json nascem antes do `setup`, e a
+    // tela chama comandos logo que carrega. Com o `Shared` registrado dentro do
+    // `setup`, toda leitura da abertura podia achar o estado ainda ausente.
+    let lib = ler(&raiz().join("src").join("lib.rs"));
+    let montar = lib.find("fn montar(").expect("fn montar");
+    let corpo = &lib[montar..montar + lib[montar..].find("\n}\n").unwrap()];
+    let setup = corpo.find(".setup(").expect("sem .setup em montar");
+    let antes = corpo[..setup].find(".manage(");
+    assert!(antes.is_some(), "o estado não é registrado no Builder, antes das janelas");
+    assert!(!corpo[setup..].contains("app.manage("), "o setup registra estado de novo, tarde demais");
+}

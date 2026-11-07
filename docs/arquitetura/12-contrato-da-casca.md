@@ -95,8 +95,9 @@ quatro `invoke` por segundo na janela principal e três no overlay.
 ### O estado compartilhado
 
 `Shared` (`watcher.rs:60`, campos em 10 §32.5) é o único estado da casca. Um
-`Arc<Shared>` vai para o `app.manage` (`lib.rs:652`) e para as três tarefas de
-fundo. Todo comando lê dele; nenhum comando fala com a rede.
+`Arc<Shared>` nasce em `estado_inicial`, com o que está no disco, e vai para o
+`Builder::manage` antes de qualquer janela existir (A53, L-30); o `setup` o lê
+e o passa às três tarefas de fundo. Todo comando lê dele; nenhum comando fala com a rede.
 
 | Campo | O quê | Quem escreve | Quem lê |
 |---|---|---|---|
@@ -106,16 +107,16 @@ fundo. Todo comando lê dele; nenhum comando fala com a rede.
 | `champions`, `items`, `runes` | os índices do Data Dragon | a tarefa de carga (`lib.rs:673`), uma vez | quase todos os comandos, e o watcher |
 | `live` | a última `LiveSnapshot` | watcher a cada 1 s (`watcher.rs:323`); `None` fora da partida | `get_live`, `build_suggestions`, `gold_report`, `skirmish_focus`, `lane_analysis`, `rune_plan` |
 | `stats` | a loja de estatísticas (`Layered`) | `rebuild_stats` (`lib.rs:89`): ao subir e quando o histórico pessoal termina | ranking, minimax, análise de rota, pool, runas, `lane_profile`, `engine_status` |
-| `dataset` | a base de partidas | setup, de `base-de-partidas.json` (`lib.rs:629`) | `rebuild_stats`, `engine_status` |
+| `dataset` | a base de partidas | `estado_inicial`, de `base-de-partidas.json` | `rebuild_stats`, `engine_status` |
 | `identity` | puuid, Riot ID e região da conta | watcher, ao conectar (`watcher.rs:188`) | `profile::refresh`, `engine_status` (só o Riot ID) |
-| `pool` | a pool | setup (`lib.rs:616`), `set_pool` | `get_pool`, contexto do draft, bans, `pool_suggestions` |
-| `draft_prefs` | preferência do draft | setup, `set_draft_prefs` | `get_draft_prefs`, contexto do draft |
-| `overlay_prefs` | seções escondidas | setup, `set_overlay_prefs` | `get_overlay_prefs` |
+| `pool` | a pool | `estado_inicial`, `set_pool` | `get_pool`, contexto do draft, bans, `pool_suggestions` |
+| `draft_prefs` | preferência do draft | `estado_inicial`, `set_draft_prefs` | `get_draft_prefs`, contexto do draft |
+| `overlay_prefs` | seções escondidas | `estado_inicial`, `set_overlay_prefs` | `get_overlay_prefs` |
 | `draft_role` | a rota escolhida na tela | `set_draft_role`; nunca é limpa | contexto do draft |
 | `enemy_roles` | as rotas marcadas nos inimigos | `set_enemy_role`; esvaziada por `clear_draft` (`watcher.rs:151`) | contexto do draft, `get_enemy_roles` |
 | `owned` | quem a conta pode escolher | watcher, uma vez por champ select (`watcher.rs:250`); `None` em `clear_draft` | contexto do draft, fora do simulador e sem "mostrar todos" (`lib.rs:132`) |
 | `recording` | a partida quadro a quadro | watcher (`recorder::observe`, `watcher.rs:291`) | `close_recording`, que a esvazia |
-| `last_review` | a última leitura pós-partida | setup, de `ultima-partida.json`; `close_recording` (`watcher.rs:144`) | `last_review` |
+| `last_review` | a última leitura pós-partida | `estado_inicial`, de `ultima-partida.json`; `close_recording` (`watcher.rs:144`) | `last_review` |
 
 As tarefas de fundo, todas lançadas no `setup` (`lib.rs:612`):
 
