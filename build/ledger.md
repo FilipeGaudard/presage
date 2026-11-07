@@ -12,15 +12,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 355 | 355 | 0 | 0 |
+| test | 356 | 356 | 0 | 0 |
 | ui-test | 43 | 10 | 33 | 0 |
 | trace | 43 | 37 | 6 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 484; nomes no catálogo (13): 484; fora dele: 0
+- testes no código: 485; nomes no catálogo (13): 485; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 2949
+- IDs citados conferidos: 2953
 
 ## type
 
@@ -134,7 +134,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::pool::Pool` | arquitetura/10-modelo-de-dados §7.4 | done | core/src/pool.rs:44 |
 | `core::pool::PoolEntry` | arquitetura/10-modelo-de-dados §7.2 | done | core/src/pool.rs:32 |
 | `core::pool::Tier` | arquitetura/10-modelo-de-dados §7.1 | done | core/src/pool.rs:13 |
-| `core::prefs::DraftPrefs` | arquitetura/10-modelo-de-dados §8.3 | done | core/src/prefs.rs:94 |
+| `core::prefs::DraftPrefs` | arquitetura/10-modelo-de-dados §8.3 | done | core/src/prefs.rs:121 |
 | `core::prefs::OverlayPrefs` | arquitetura/10-modelo-de-dados §8.2 | done | core/src/prefs.rs:64 |
 | `core::prefs::Section` | arquitetura/10-modelo-de-dados §8.1 | done | core/src/prefs.rs:13 |
 | `core::riot::Region` | arquitetura/10-modelo-de-dados §6.1 | done | core/src/riot.rs:3 |
@@ -296,10 +296,10 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::pool::Pool::tier_of` | arquitetura/11-catalogo-de-funcoes §7.2 | done | core/src/pool.rs:104 |
 | `core::pool::Pool::upsert` | arquitetura/11-catalogo-de-funcoes §7.2 | done | core/src/pool.rs:78 |
 | `core::pool::Tier::weight` | arquitetura/11-catalogo-de-funcoes §7.1 | done | core/src/pool.rs:23 |
-| `core::prefs::OverlayPrefs::anything_visible` | arquitetura/11-catalogo-de-funcoes §8.2 | done | core/src/prefs.rs:84 |
-| `core::prefs::OverlayPrefs::set` | arquitetura/11-catalogo-de-funcoes §8.2 | done | core/src/prefs.rs:75 |
-| `core::prefs::OverlayPrefs::shows` | arquitetura/11-catalogo-de-funcoes §8.2 | done | core/src/prefs.rs:71 |
-| `core::prefs::OverlayPrefs::visible` | arquitetura/11-catalogo-de-funcoes §8.2 | done | core/src/prefs.rs:88 |
+| `core::prefs::OverlayPrefs::anything_visible` | arquitetura/11-catalogo-de-funcoes §8.2 | done | core/src/prefs.rs:111 |
+| `core::prefs::OverlayPrefs::set` | arquitetura/11-catalogo-de-funcoes §8.2 | done | core/src/prefs.rs:102 |
+| `core::prefs::OverlayPrefs::shows` | arquitetura/11-catalogo-de-funcoes §8.2 | done | core/src/prefs.rs:98 |
+| `core::prefs::OverlayPrefs::visible` | arquitetura/11-catalogo-de-funcoes §8.2 | done | core/src/prefs.rs:115 |
 | `core::prefs::Section::detail` | arquitetura/11-catalogo-de-funcoes §8.1 | done | core/src/prefs.rs:46 |
 | `core::prefs::Section::label` | arquitetura/11-catalogo-de-funcoes §8.1 | done | core/src/prefs.rs:35 |
 | `core::riot::Region::from_lcu` | arquitetura/11-catalogo-de-funcoes §6.1 | done | core/src/riot.rs:16 |
@@ -409,7 +409,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `Candidate ↔ PoolCandidate` | arquitetura/10-modelo-de-dados §17.5 | done | core/src/engine/poolgap.rs:257 |
 | `ChampionLane ↔ ChampionLane` | arquitetura/10-modelo-de-dados §21.3 | done | core/src/engine/profile.rs:69 |
 | `ConnStatus ↔ ConnStatus` | arquitetura/10-modelo-de-dados §3.8 | done | core/src/draft.rs:116 |
-| `DraftPrefs ↔ DraftPrefs` | arquitetura/10-modelo-de-dados §8.3 | done | core/src/prefs.rs:94 |
+| `DraftPrefs ↔ DraftPrefs` | arquitetura/10-modelo-de-dados §8.3 | done | core/src/prefs.rs:121 |
 | `DraftSlot ↔ DraftSlot` | arquitetura/10-modelo-de-dados §3.6 | done | core/src/draft.rs:78 |
 | `DraftState ↔ DraftState` | arquitetura/10-modelo-de-dados §3.7 | done | core/src/draft.rs:95 |
 | `EngineStatus ↔ EngineStatus` | arquitetura/10-modelo-de-dados §32.1 | done | src-tauri/src/lib.rs:45 |
@@ -712,14 +712,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-ENTRADA-38` | arquitetura/13-testes §2 | done | core/src/pool.rs:197 |
 | `T-ENTRADA-39` | arquitetura/13-testes §2 | done | core/src/pool.rs:207 |
 | `T-ENTRADA-4` | arquitetura/13-testes §2 | done | core/src/lockfile.rs:83 |
-| `T-ENTRADA-40` | arquitetura/13-testes §2 | done | core/src/prefs.rs:106 |
-| `T-ENTRADA-41` | arquitetura/13-testes §2 | done | core/src/prefs.rs:115 |
-| `T-ENTRADA-42` | arquitetura/13-testes §2 | done | core/src/prefs.rs:134 |
-| `T-ENTRADA-43` | arquitetura/13-testes §2 | done | core/src/prefs.rs:145 |
-| `T-ENTRADA-44` | arquitetura/13-testes §2 | done | core/src/prefs.rs:161 |
-| `T-ENTRADA-45` | arquitetura/13-testes §2 | done | core/src/prefs.rs:193 |
+| `T-ENTRADA-40` | arquitetura/13-testes §2 | done | core/src/prefs.rs:133 |
+| `T-ENTRADA-41` | arquitetura/13-testes §2 | done | core/src/prefs.rs:142 |
+| `T-ENTRADA-42` | arquitetura/13-testes §2 | done | core/src/prefs.rs:161 |
+| `T-ENTRADA-43` | arquitetura/13-testes §2 | done | core/src/prefs.rs:172 |
+| `T-ENTRADA-44` | arquitetura/13-testes §2 | done | core/src/prefs.rs:188 |
+| `T-ENTRADA-45` | arquitetura/13-testes §2 | done | core/src/prefs.rs:234 |
 | `T-ENTRADA-46` | arquitetura/13-testes §2 | done | core/src/draft.rs:334 |
 | `T-ENTRADA-47` | arquitetura/13-testes §2 | done | core/src/live.rs:221 |
+| `T-ENTRADA-48` | arquitetura/13-testes §2 | done | core/src/prefs.rs:199 |
 | `T-ENTRADA-5` | arquitetura/13-testes §2 | done | core/src/lockfile.rs:88 |
 | `T-ENTRADA-6` | arquitetura/13-testes §2 | done | core/src/draft.rs:377 |
 | `T-ENTRADA-7` | arquitetura/13-testes §2 | done | core/src/draft.rs:384 |
@@ -1097,4 +1098,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 38 | 24 | 0 | 38 |
+| 37 | 25 | 0 | 38 |

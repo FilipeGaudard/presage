@@ -64,7 +64,34 @@ impl Section {
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase", default)]
 pub struct OverlayPrefs {
+    #[serde(deserialize_with = "secoes_conhecidas")]
     pub hidden: Vec<Section>,
+}
+
+/// Lê as seções escondidas uma a uma: a que esta versão não conhece fica de fora,
+/// e a repetida entra uma vez. Uma seção estranha no arquivo, ou vinda da tela,
+/// não derruba a escolha inteira (A31).
+fn secoes_conhecidas<'de, D>(d: D) -> Result<Vec<Section>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    /// Uma seção que esta versão conhece, ou qualquer outra coisa.
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum Talvez {
+        Secao(Section),
+        Outra(serde::de::IgnoredAny),
+    }
+
+    let mut secoes = Vec::new();
+    for item in Vec::<Talvez>::deserialize(d)? {
+        if let Talvez::Secao(secao) = item {
+            if !secoes.contains(&secao) {
+                secoes.push(secao);
+            }
+        }
+    }
+    Ok(secoes)
 }
 
 impl OverlayPrefs {
@@ -167,6 +194,20 @@ mod tests {
 
         assert!(!p.shows(Section::Gold));
         assert!(p.shows(Section::Skirmish), "o que é novo tem de aparecer");
+    }
+
+    #[test]
+    fn secao_desconhecida_ou_repetida_nao_derruba_a_escolha() {
+        // Uma seção que esta versão não conhece (de uma versão mais nova, ou
+        // escrita à mão) e uma repetida: o resto da escolha continua valendo.
+        // Antes, o arquivo inteiro deixava de ler, e tudo voltava a aparecer (A31).
+        let lido = serde_json::from_str::<OverlayPrefs>(r#"{ "hidden": ["gold", "radar", "gold", "nextItem"] }"#).ok();
+        assert_eq!(
+            lido,
+            Some(OverlayPrefs {
+                hidden: vec![Section::Gold, Section::NextItem]
+            })
+        );
     }
 
     #[test]

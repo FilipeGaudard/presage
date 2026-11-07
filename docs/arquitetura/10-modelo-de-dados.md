@@ -726,14 +726,17 @@ a do TS.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase", default)]
 pub struct OverlayPrefs {
+    #[serde(deserialize_with = "secoes_conhecidas")]
     pub hidden: Vec<Section>, // as seções desligadas, não as ligadas: seção nova nasce visível
 }
 ```
 
 **Invariantes:**
-- `set` nunca deixa a mesma seção duas vezes em `hidden`.
-- Vazio quer dizer tudo visível. Um nome de seção que esta versão não conhece
-  faz o arquivo inteiro falhar na leitura, e a casca volta ao padrão.
+- `hidden` nunca tem a mesma seção duas vezes: nem por `set`, nem na leitura, que
+  passa por `secoes_conhecidas`.
+- Vazio quer dizer tudo visível. Um nome de seção que esta versão não conhece fica
+  de fora na leitura, e o resto da escolha vale (A31, T-ENTRADA-48). Vale para o
+  arquivo e para o que a tela manda em `set_overlay_prefs`.
 
 ### 8.3 `DraftPrefs` ↔ `DraftPrefs`
 
@@ -2647,7 +2650,7 @@ deixa log. A lista de quem escreve e quem lê cada arquivo está em 12 §6.
 | Arquivo | Tipo | Chaves no JSON | Quando falta | Quando não desserializa |
 |---|---|---|---|---|
 | `pool.json` | `Pool` (10 §7) | `entries` (lista de `{championId, role, tier}`), `bans` (ids) | pool vazia | pool vazia; o próximo `set_pool` sobrescreve o arquivo |
-| `overlay.json` | `OverlayPrefs` (10 §8) | `hidden` (lista de `Section`, `"nextItem"`) | tudo visível | tudo visível, inclusive com uma seção que esta versão não conhece |
+| `overlay.json` | `OverlayPrefs` (10 §8) | `hidden` (lista de `Section`, `"nextItem"`) | tudo visível | JSON quebrado: tudo visível. Seção que esta versão não conhece, ou repetida: ela sai, e o resto vale (A31) |
 | `draft.json` | `DraftPrefs` (10 §8) | `showAllChampions` | filtro da conta ligado | idem |
 | `base-de-partidas.json` | `Dataset` (10 §20) | `patch`, `region`, `tier`, `generatedAt`, `matches`, e as tabelas `base`, `matchup`, `synergy`, `versus`, `length` (chave texto → `{games, wins}`) | sem base: os componentes estatísticos valem zero | sem base. JSON válido mas truncado carrega pelos `default`, e `is_usable` (`matches > 0` e `base` não vazia) decide se serve |
 | `personal-v2.json` | `PersonalStats` (10 §19) | `puuid`, `by_champion` (id → `{games, wins}`), `seen` (ids de partida), `lanes` (lista de `LaneGame`) | histórico refeito do zero na próxima atualização | idem; e um `puuid` diferente do da conta também zera o histórico (`profile.rs:48`) |
