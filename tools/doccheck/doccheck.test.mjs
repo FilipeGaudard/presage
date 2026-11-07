@@ -270,6 +270,51 @@ test('um campo a mais no TS quebra o wire', () => {
   }
 });
 
+test('constante do TS que espelha o core é comparada pelo valor (P3)', () => {
+  const dir = fixture();
+  try {
+    writeFileSync(join(dir, 'core/src/engine/mod.rs'), [
+      '#[serde(rename_all = "camelCase")]',
+      'pub struct Scored { pub champion_id: i64, pub in_pool: bool }',
+      'pub fn rank(x: u8) -> Vec<Scored> { vec![] }',
+      'pub const LIMITE: usize = 5;',
+      '#[serde(rename_all = "camelCase")]',
+      'pub enum Cor { Azul, VerdeEscuro }',
+      'impl Cor {',
+      '    pub const ALL: [Cor; 2] = [',
+      '        Cor::VerdeEscuro,',
+      '        Cor::Azul,',
+      '    ];',
+      '}',
+    ].join('\n'));
+    writeFileSync(join(dir, 'src/espelhos.ts'), [
+      '/** Espelha `core::engine::LIMITE`. */',
+      'export const LIMITE = 5;',
+      '/** Espelha `core::engine::LIMITE` também. */',
+      'export const OUTRO_LIMITE = 6;',
+      '/** Espelha `core::engine::Cor::ALL`, na ordem. */',
+      'export const CORES: { id: string; label: string }[] = [',
+      '  { id: "verdeEscuro", label: "a primeira" },',
+      '  { id: "azul", label: "a segunda" },',
+      '];',
+      '/** Espelha `core::engine::Nada`. */',
+      'export const NADA = 1;',
+    ].join('\n'));
+    const { items } = run(dir, { write: false });
+    const m = (n) => items.find((x) => x.kind === 'mirror' && x.name.startsWith(`${n} ↔`));
+    assert.equal(m('LIMITE').state, 'done');
+    assert.equal(m('OUTRO_LIMITE').state, 'pending');
+    assert.match(m('OUTRO_LIMITE').where, /TS `6` ≠ Rust `5`/);
+    assert.equal(m('CORES').state, 'done', m('CORES').where);
+    assert.equal(m('NADA').state, 'pending');
+    writeFileSync(join(dir, 'src/espelhos.ts'), '/** Espelha `core::engine::Cor::ALL`. */\nexport const CORES = [{ id: "azul" }, { id: "verdeEscuro" }];\n');
+    const { items: depois } = run(dir, { write: false });
+    assert.match(depois.find((x) => x.kind === 'mirror').where, /azul, verdeEscuro.*verdeEscuro, azul/, 'a ordem conta');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test('o repositório real: o scanner não perde itens', () => {
   const { code } = run(ROOT, { write: false });
   assert.ok(code.tests.length >= 460, `testes: ${code.tests.length}`);

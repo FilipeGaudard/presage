@@ -33,6 +33,7 @@ O que ele confere:
 |---|---|---|
 | 10 e 11, blocos `rust` | tipo, função, método, constante | existe no módulo do título; mesma assinatura, mesmos campos `nome:tipo`, mesmas variantes, mesmo valor |
 | 10, título com `↔` | tipo da ponte | campos do doc = campos do Rust; nomes serializados (serde) = campos da interface TS |
+| `src/` (TS), comentário `Espelha \`core::…\`` | constante do front que copia o core | mesmo valor do `const` do core; numa lista, os `id` na ordem das variantes de `Tipo::ALL` (P3) |
 | 12 | comando, evento, arquivo | `#[tauri::command]` registrado e chamado pelo front; evento emitido e ouvido; literal do arquivo no código |
 | 05 | opção do coletor | o coletor lê |
 | 13 | linha `T-…` | cada teste nomeado existe; todo `#[test]` está numa linha |

@@ -329,9 +329,9 @@ export interface CoachReport {
   series: Series;
 }
 
-/** A pool completa, e quantos dela o jogador escolhe: `POOL_SIZE` e
- *  `CORE_SIZE` no core. */
+/** A pool completa. Espelha `core::engine::poolgap::POOL_SIZE` (P3). */
 export const POOL_SIZE = 8;
+/** Quantos da pool o jogador escolhe. Espelha `core::engine::poolgap::CORE_SIZE`. */
 export const CORE_SIZE = 3;
 
 /** O que a pool cobre ou não: os mesmos nomes de `Trait` no core. */
@@ -409,6 +409,7 @@ export interface OverlayPrefs {
   hidden: OverlaySection[];
 }
 
+/** As seções na ordem do overlay. Espelha `core::prefs::Section::ALL` (P3). */
 export const OVERLAY_SECTIONS: {
   id: OverlaySection;
   label: string;
@@ -453,6 +454,7 @@ export interface Pool {
   bans?: number[];
 }
 
+/** Espelha `core::pool::BAN_POOL_MAX` (P3). */
 export const BAN_POOL_MAX = 5;
 
 export interface DraftPrefs {

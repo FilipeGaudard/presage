@@ -3,6 +3,7 @@
 # é erro, e um adiamento que não casa com nenhum item vira aviso.
 
 todo src-tauri/src/lcu/client.rs TODO(segurança) | P-8: pinning do root CA da Riot antes do release público
+todo src-tauri/src/live.rs TODO(segurança) | P-8: o mesmo pinning, na Live Client (127.0.0.1:2999)
 todo src-tauri/src/watcher.rs TODO(fase 1) | ADR-0002: polling até reagirmos a hover de aliado
 
 # O front tem harness (Vitest) desde a correção da A3. Cada linha do frontend 06

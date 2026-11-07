@@ -40,9 +40,12 @@ pub struct LiveClient {
 
 impl LiveClient {
     pub fn new() -> Result<Self> {
-        // Mesmo certificado autoassinado do cliente da Riot. Ver a nota em
-        // lcu/client.rs: o destino é loopback, e o pinning do root CA entra
-        // antes de qualquer release.
+        // Mesmo certificado autoassinado do cliente da Riot.
+        //
+        // TODO(segurança): antes do release público, o mesmo pinning do root CA
+        // da Riot que lcu/client.rs pede, aqui também: esta é a segunda conexão
+        // que desliga a verificação (127.0.0.1:2999), e a correção de uma não
+        // pode esquecer a outra (P-8).
         let http = reqwest::Client::builder()
             .danger_accept_invalid_certs(true)
             .timeout(Duration::from_secs(3))

@@ -87,6 +87,31 @@ function members(body, strings) {
   return names;
 }
 
+/** O valor de `: Tipo = valor;`, sem o tipo: número, ou os `id` de uma lista. */
+function constValueTs(rest, strings) {
+  let depth = 0;
+  let eq = -1;
+  for (let i = 0; i < rest.length; i++) {
+    const c = rest[i];
+    if ('([{<'.includes(c)) depth++;
+    else if (')]}>'.includes(c)) depth--;
+    else if (c === '=' && depth === 0 && rest[i + 1] !== '>') { eq = i; break; }
+    else if (c === ';' && depth === 0) break;
+  }
+  if (eq < 0) return null;
+  let end = eq + 1;
+  for (depth = 0; end < rest.length; end++) {
+    const c = rest[end];
+    if ('([{'.includes(c)) depth++;
+    else if (')]}'.includes(c)) depth--;
+    else if (c === ';' && depth === 0) break;
+  }
+  const v = rest.slice(eq + 1, end).trim();
+  if (/^-?\d+(\.\d+)?$/.test(v)) return v;
+  if (v.startsWith('[')) return [...v.matchAll(/\bid\s*:\s*"@(\d+)"/g)].map((x) => strings[Number(x[1])].value);
+  return v.replace(/\s+/g, '');
+}
+
 export function scanTs(src, { file = '' } = {}) {
   const { code, strings, comments } = stripTs(src);
   const interfaces = [];
@@ -124,5 +149,23 @@ export function scanTs(src, { file = '' } = {}) {
   for (const m of code.matchAll(/\b(?:chamar|ler)\s*(?:<[^(]*?>)?\s*\(\s*"@\d+"\s*,\s*"@(\d+)"/g)) {
     invokes.push({ name: strings[Number(m[1])].value, file, line: lineAt(code, m.index) });
   }
-  return { interfaces, unions, invokes, strings, comments };
+  // `/** Espelha `core::x::Y`. */` logo antes de `export const NOME = …`: uma
+  // constante do front que copia uma do core (P3). O valor é o número, ou, numa
+  // lista de objetos, os `id` em ordem.
+  const mirrors = [];
+  const lines = code.split('\n');
+  for (const c of comments) {
+    const m = c.text.match(/[Ee]spelha `((?:core|casca|coletor)(?:::\w+)+)`/);
+    if (!m) continue;
+    const last = c.line + (c.text.match(/\n/g) || []).length;
+    for (let l = last; l < Math.min(lines.length, last + 2); l++) {
+      const mm = lines[l].match(/^export\s+const\s+(\w+)/);
+      if (!mm) continue;
+      const start = code.split('\n', l).join('\n').length + (l ? 1 : 0) + mm[0].length;
+      const value = constValueTs(code.slice(start), strings);
+      mirrors.push({ name: mm[1], of: m[1], value, file, line: l + 1 });
+      break;
+    }
+  }
+  return { interfaces, unions, invokes, strings, comments, mirrors };
 }

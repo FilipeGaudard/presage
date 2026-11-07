@@ -45,7 +45,7 @@ const CRATES = [
   ['coletor', 'tools/ingest/src'],
 ];
 
-export const KINDS = ['type', 'func', 'const', 'wire', 'command', 'event', 'file', 'flag', 'test', 'ui-test', 'trace', 'itero', 'undoc', 'todo'];
+export const KINDS = ['type', 'func', 'const', 'wire', 'mirror', 'command', 'event', 'file', 'flag', 'test', 'ui-test', 'trace', 'itero', 'undoc', 'todo'];
 export const DECISIONS = ['copiar', 'mudar', 'rejeitar', 'adiar', 'fora'];
 const TYPE_KINDS = new Set(['struct', 'enum', 'trait', 'type']);
 
@@ -87,13 +87,28 @@ export function scanCode(root) {
       code.comments.push(...r.comments.map((c) => ({ ...c, file: rel })));
     }
   }
-  code.ts = { interfaces: [], unions: [], invokes: [], strings: [], tests: [] };
+  // Constantes associadas que são lista de variantes, `pub const ALL: [Section; 6] = [Section::Gold, …]`:
+  // o scanner de itens não as guarda, e o front copia (P3).
+  code.arrays = [];
+  for (const [crate, dir] of CRATES) {
+    const base = join(root, dir);
+    for (const f of walk(base, (p) => p.endsWith('.rs'))) {
+      const text = readFileSync(f, 'utf8');
+      const module = modulePath(crate, posix(relative(base, f)));
+      for (const m of text.matchAll(/pub const (\w+)\s*:\s*\[(\w+);\s*\d+\]\s*=\s*\[([^\]]*)\]/g)) {
+        const items = [...m[3].matchAll(new RegExp(`\\b${m[2]}::(\\w+)`, 'g'))].map((v) => v[1]);
+        code.arrays.push({ key: `${module}::${m[2]}::${m[1]}`, module, type: m[2], items, file: posix(relative(root, f)), line: text.slice(0, m.index).split('\n').length });
+      }
+    }
+  }
+  code.ts = { interfaces: [], unions: [], invokes: [], strings: [], tests: [], mirrors: [] };
   for (const f of walk(join(root, 'src'), (p) => /\.(ts|tsx)$/.test(p))) {
     const rel = posix(relative(root, f));
     const r = scanTs(readFileSync(f, 'utf8'), { file: rel });
     code.ts.interfaces.push(...r.interfaces);
     code.ts.unions.push(...r.unions);
     code.ts.invokes.push(...r.invokes);
+    code.ts.mirrors.push(...r.mirrors);
     code.ts.strings.push(...r.strings.map((s) => ({ ...s, file: rel })));
     code.comments.push(...r.comments.map((c) => ({ ...c, file: rel })));
     if (/\.(test|spec)\.tsx?$/.test(f)) {
@@ -500,6 +515,30 @@ export function resolveAll(inv, code, deferred, warn) {
   }
   items.push(...undoc);
 
+  // Constantes do front que copiam o core (P3): o valor tem de ser o mesmo.
+  for (const m of code.ts.mirrors) {
+    const it = { kind: 'mirror', name: `${m.name} ↔ ${m.of}`, source: `${m.file}:${m.line}` };
+    // Um `const` de várias linhas fica sem valor no scanner de itens; a lista de
+    // variantes sai de `code.arrays`.
+    const c = (byKey.get(m.of) ?? []).find((x) => x.kind === 'const' && x.value !== null && x.value !== undefined);
+    const arr = code.arrays.find((a) => a.key === m.of);
+    let rust = null;
+    if (c) {
+      rust = c.value;
+      it.at = where(c);
+    } else if (arr) {
+      const ty = code.items.find((x) => x.kind === 'enum' && x.module === arr.module && x.name === arr.type);
+      rust = arr.items.map((v) => ty?.variants?.find((x) => x.name === v)?.wire ?? v);
+      it.at = `${arr.file}:${arr.line}`;
+    }
+    const show = (v) => (Array.isArray(v) ? v.join(', ') : String(v));
+    const same = (a, b) => (Array.isArray(a) || Array.isArray(b) ? show(a) === show(b) : a === b || (!Number.isNaN(Number(a)) && Number(a) === Number(b)));
+    if (rust === null || rust === undefined) { it.state = 'pending'; it.where = `não existe \`${m.of}\``; }
+    else if (!same(m.value, rust)) { it.state = 'pending'; it.where = `valor: TS \`${show(m.value)}\` ≠ Rust \`${show(rust)}\``; }
+    else { it.state = 'done'; it.where = it.at; }
+    items.push(it);
+  }
+
   // TODOs in code
   for (const c of code.comments) {
     const m = c.text.match(/\bTODO(\([^)]*\))?/);
@@ -605,7 +644,10 @@ export function auditProblems(rows, items, warn) {
   for (const r of rows) {
     if (r.state === 'BUILT') {
       const ids = [...r.proof.matchAll(/\bTF?-[A-Z]+-\d+\b/g)].map((m) => m[0]);
-      if (!ids.length) warn(`build/audit.md:${r.line}: ${r.id} BUILT sem T-ID na prova`);
+      // Uma linha P de ferramenta se prova pelo teste do próprio doccheck, que não
+      // é `#[test]` e por isso não tem T-ID no 13.
+      const ferramenta = /^P\d+$/.test(r.id) && /doccheck\.test\.mjs/.test(r.proof);
+      if (!ids.length && !ferramenta) warn(`build/audit.md:${r.line}: ${r.id} BUILT sem T-ID na prova`);
       for (const id of ids) if (!done.has(id)) warn(`build/audit.md:${r.line}: ${r.id} cita ${id}, que não está feito no catálogo`);
     }
     if ((r.state === 'DEFERRED' || r.state === 'DOC') && !r.proof) warn(`build/audit.md:${r.line}: ${r.id} ${r.state} sem prova`);

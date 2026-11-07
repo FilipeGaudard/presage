@@ -8,6 +8,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | func | 167 | 167 | 0 | 0 |
 | const | 84 | 84 | 0 | 0 |
 | wire | 55 | 55 | 0 | 0 |
+| mirror | 4 | 4 | 0 | 0 |
 | command | 26 | 26 | 0 | 0 |
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
@@ -16,7 +17,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | ui-test | 48 | 15 | 33 | 0 |
 | trace | 43 | 39 | 4 | 0 |
 | itero | 83 | 83 | 0 | 0 |
-| todo | 2 | 0 | 2 | 0 |
+| todo | 3 | 0 | 3 | 0 |
 
 - testes no código: 504; nomes no catálogo (13): 504; fora dele: 0
 - links relativos conferidos: 871
@@ -459,6 +460,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `Timeline ↔ Timeline` | arquitetura/10-modelo-de-dados §29.6 | done | core/src/engine/timeline.rs:128 |
 | `Trait ↔ PoolTrait` | arquitetura/10-modelo-de-dados §17.2 | done | core/src/engine/poolgap.rs:41 |
 | `WinCondition ↔ WinCondition` | arquitetura/10-modelo-de-dados §15.4 | done | core/src/engine/wincon.rs:63 |
+
+## mirror
+
+| Item | Fonte | Estado | Onde / motivo |
+|---|---|---|---|
+| `BAN_POOL_MAX ↔ core::pool::BAN_POOL_MAX` | src/lib/types.ts:458 | done | core/src/pool.rs:42 |
+| `CORE_SIZE ↔ core::engine::poolgap::CORE_SIZE` | src/lib/types.ts:335 | done | core/src/engine/poolgap.rs:26 |
+| `OVERLAY_SECTIONS ↔ core::prefs::Section::ALL` | src/lib/types.ts:413 | done | core/src/prefs.rs:26 |
+| `POOL_SIZE ↔ core::engine::poolgap::POOL_SIZE` | src/lib/types.ts:333 | done | core/src/engine/poolgap.rs:25 |
 
 ## command
 
@@ -1118,6 +1128,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | Item | Fonte | Estado | Onde / motivo |
 |---|---|---|---|
 | `src-tauri/src/lcu/client.rs TODO(segurança)` | src-tauri/src/lcu/client.rs:28 | deferred | P-8: pinning do root CA da Riot antes do release público |
+| `src-tauri/src/live.rs TODO(segurança)` | src-tauri/src/live.rs:45 | deferred | P-8: o mesmo pinning, na Live Client (127.0.0.1:2999) |
 | `src-tauri/src/watcher.rs TODO(fase 1)` | src-tauri/src/watcher.rs:7 | deferred | ADR-0002: polling até reagirmos a hover de aliado |
 
 ## Auditoria da prosa

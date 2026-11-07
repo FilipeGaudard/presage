@@ -99,8 +99,8 @@ o documento afetado no mesmo commit.
 - **Por que importa:** a verificação de TLS está desligada para o LCU e para a
   porta 2999 ([07 §2](../arquitetura/07-seguranca.md#2-superfície)).
 - **Default:** desligada só no loopback. Antes de release público, pinning do
-  root CA da Riot em `lcu/client.rs`, e o mesmo na Live Client (`live.rs`), que
-  hoje só remete ao comentário do LCU.
+  root CA da Riot em `lcu/client.rs` e na Live Client (`live.rs`). Cada uma tem o
+  seu `TODO(segurança)`, adiado aqui em `tools/doccheck/deferred.txt` (P4).
 - **Dono:** técnica.
 
 ## P-9 — Separar o perfil de um campeão por rota? 🔵
