@@ -16,6 +16,12 @@ fn raiz() -> PathBuf {
         .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")))
 }
 
+/// O texto de um arquivo, com fim de linha `\n`: no Windows o checkout vem com
+/// `\r\n`, e o teste não pode depender disso.
+fn ler(p: &Path) -> String {
+    std::fs::read_to_string(p).unwrap().replace("\r\n", "\n")
+}
+
 /// Todo `.rs` da casca, menos este arquivo, que precisa citar o que proíbe.
 fn fontes() -> Vec<(String, String)> {
     fn varrer(dir: &Path, out: &mut Vec<(String, String)>) {
@@ -24,7 +30,7 @@ fn fontes() -> Vec<(String, String)> {
             if p.is_dir() {
                 varrer(&p, out);
             } else if p.extension().is_some_and(|e| e == "rs") && !p.ends_with("arquitetura.rs") {
-                out.push((p.display().to_string(), std::fs::read_to_string(&p).unwrap()));
+                out.push((p.display().to_string(), ler(&p)));
             }
         }
     }
@@ -101,7 +107,7 @@ fn nada_le_memoria_do_jogo_nem_injeta_input() {
             assert!(!texto.contains(api), "{nome} usa {api}");
         }
     }
-    let lock = std::fs::read_to_string(raiz().join("..").join("Cargo.lock")).unwrap();
+    let lock = ler(&raiz().join("..").join("Cargo.lock"));
     for cr in [
         "enigo",
         "rdev",
@@ -122,7 +128,7 @@ fn nada_le_memoria_do_jogo_nem_injeta_input() {
 fn iniciar_com_o_windows_so_quando_o_jogador_liga() {
     // ADR-0026, R-19: o autostart só é ligado pelo comando que a tela chama
     // quando o jogador marca a caixa. Nada liga sozinho na abertura.
-    let lib = std::fs::read_to_string(raiz().join("src").join("lib.rs")).unwrap();
+    let lib = ler(&raiz().join("src").join("lib.rs"));
     assert_eq!(lib.matches(".enable()").count(), 1, "quem mais liga o autostart?");
     let comando = lib.find("fn set_autostart").expect("set_autostart");
     let fim = lib[comando..].find("\n}\n").unwrap() + comando;
@@ -133,7 +139,7 @@ fn iniciar_com_o_windows_so_quando_o_jogador_liga() {
 fn fechar_a_janela_principal_esconde_em_vez_de_destruir() {
     // A16: o ícone da bandeja traz a janela de volta. Para isso fechar a `main`
     // tem de escondê-la: destruída, "Mostrar o Presage" não acha nada.
-    let lib = std::fs::read_to_string(raiz().join("src").join("lib.rs")).unwrap();
+    let lib = ler(&raiz().join("src").join("lib.rs"));
     let evento = lib.find("on_window_event").expect("sem on_window_event");
     let trecho = &lib[evento..(evento + 600).min(lib.len())];
     for parte in ["\"main\"", "CloseRequested", "prevent_close", ".hide()"] {
@@ -151,7 +157,7 @@ fn cada_janela_tem_so_o_que_precisa() {
         if p.extension().map_or(true, |e| e != "json") {
             continue;
         }
-        let texto = std::fs::read_to_string(&p).unwrap();
+        let texto = ler(&p);
         let cap: serde_json::Value = serde_json::from_str(&texto).unwrap();
         let janelas: Vec<String> = cap["windows"].as_array().unwrap().iter().map(|j| j.as_str().unwrap().to_string()).collect();
         let permissoes: Vec<String> = cap["permissions"]

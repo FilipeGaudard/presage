@@ -20,7 +20,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 - testes no código: 498; nomes no catálogo (13): 498; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 3014
+- IDs citados conferidos: 3015
 
 ## type
 
@@ -573,12 +573,12 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-CASCA-21` | arquitetura/13-testes §2 | done | src-tauri/src/storage.rs:62 |
 | `T-CASCA-22` | arquitetura/13-testes §2 | done | src-tauri/src/watcher.rs:443 |
 | `T-CASCA-23` | arquitetura/13-testes §2 | done | src-tauri/src/storage.rs:77 |
-| `T-CASCA-24` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:37 |
-| `T-CASCA-25` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:48 |
-| `T-CASCA-26` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:86 |
-| `T-CASCA-27` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:121 |
-| `T-CASCA-28` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:132 |
-| `T-CASCA-29` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:144 |
+| `T-CASCA-24` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:43 |
+| `T-CASCA-25` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:54 |
+| `T-CASCA-26` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:92 |
+| `T-CASCA-27` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:127 |
+| `T-CASCA-28` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:138 |
+| `T-CASCA-29` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:150 |
 | `T-CASCA-3` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:192 |
 | `T-CASCA-4` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:205 |
 | `T-CASCA-5` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:216 |
