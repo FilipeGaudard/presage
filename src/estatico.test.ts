@@ -1,15 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+import { dirname, join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 
 // Testes estáticos do front (frontend 06 §1): leem o código, não o montam. São
 // as regras que nenhuma tela mostra, mas que uma mudança distraída quebra.
 
-const RAIZ = join(__dirname, "..");
+const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = join(RAIZ, "src");
 
 function arquivos(dir: string): string[] {
-  return readdirSync(dir).flatMap((f) => {
+  return readdirSync(dir).flatMap((f: string) => {
     const p = join(dir, f);
     return statSync(p).isDirectory() ? arquivos(p) : /\.(ts|tsx)$/.test(f) && !/\.test\./.test(f) ? [p] : [];
   });

@@ -937,11 +937,11 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `TF-SIM-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-SIM-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-CASCA-4` | frontend/06-testes §3 | done | src/App.test.tsx:161 |
-| `TF-CASCA-5` | frontend/06-testes §3 | done | src/estatico.test.ts:21 |
-| `TF-CASCA-7` | frontend/06-testes §3 | done | src/estatico.test.ts:46 |
+| `TF-CASCA-5` | frontend/06-testes §3 | done | src/estatico.test.ts:22 |
+| `TF-CASCA-7` | frontend/06-testes §3 | done | src/estatico.test.ts:47 |
 | `TF-DRAFT-10` | frontend/06-testes §3 | done | src/App.test.tsx:218 |
 | `TF-DRAFT-7` | frontend/06-testes §3 | done | src/App.test.tsx:240 |
-| `TF-OVERLAY-6` | frontend/06-testes §3 | done | src/estatico.test.ts:34 |
+| `TF-OVERLAY-6` | frontend/06-testes §3 | done | src/estatico.test.ts:35 |
 | `TF-PARTIDA-3` | frontend/06-testes §3 | done | src/components/GoldTracker.test.tsx:40 |
 | `TF-POOL-4` | frontend/06-testes §3 | done | src/App.test.tsx:134 |
 | `TF-ROTAS-2` | frontend/06-testes §3 | done | src/components/Runas.test.tsx:16 |

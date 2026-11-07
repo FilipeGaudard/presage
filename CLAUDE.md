@@ -85,6 +85,11 @@ sentences and the name is the rule.
 | Anywhere | `npm run build` (`tsc --noEmit` + Vite) |
 | When `docs/referencia/itero/` changes | `python3 -I docs/referencia/itero/conferir.py <extracted iTero dir>` |
 
+- In WSL, `bash tools/dev/gates.sh` runs every gate that runs here (doccheck,
+  the checker's own tests, `npm test` with the test type check, `npm run build`,
+  the core tests) and fails if any fails. Run it before every commit: a commit
+  once went out with the checker's own test red, and another broke
+  `npm run build`, because only some gates were run.
 - Commit only when green, behind the doccheck:
   `bash -c 'npm run -s doccheck -- -strict >/dev/null && git add build/ledger.md && git commit -F msg.txt'`.
 - Messages are in pt-BR, like the history, and end with the model's

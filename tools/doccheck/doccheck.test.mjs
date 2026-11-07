@@ -231,6 +231,7 @@ test('a checagem inteira sobre um repositório mínimo', () => {
 test('a matriz aceita teste do front escrito, e só escrito', () => {
   const dir = fixture();
   try {
+    mkdirSync(join(dir, 'docs/frontend'), { recursive: true });
     writeFileSync(join(dir, 'docs/frontend/06-testes.md'), '# 06\n\n| TF-ID | Tipo | O que prova | Regra |\n|---|---|---|---|\n| TF-DRAFT-1 | componente | x | C-1 |\n| TF-DRAFT-2 | componente | y | C-1 |\n');
     writeFileSync(join(dir, 'src/App.test.tsx'), 'it("TF-DRAFT-1: prova", () => {});\n');
     const req = (cite) => `# R\n\n### R-1 — Ranking\n\n| ID | Regra |\n|---|---|\n| C-1 | x |\n\n## 4. Matriz de rastreabilidade\n\n| Requisito | Funções | Testes |\n|---|---|---|\n| R-1 | \`rank\` | T-DRAFT-1 |\n| C-1 | — | ${cite} |\n`;

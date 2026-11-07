@@ -1,0 +1,13 @@
+{
+  "//": "Os testes do front: o app (tsconfig.json) não vê os tipos do Node, os testes veem.",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": []
+}
