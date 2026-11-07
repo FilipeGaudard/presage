@@ -139,6 +139,7 @@ dado e não só sem dado, teste primeiro contra o código velho) está em
 | T-COLETOR-38 | `a_fila_escolhe_a_liga_semeada` | unidade | `liga_da_fila(420)` é `RANKED_SOLO_5x5`, `440` é `RANKED_FLEX_SR`, e `400` e `0` são erro | R-20, A28 |
 | T-COLETOR-39 | `so_resposta_definitiva_marca_a_partida_como_vista` | unidade | Partida contada (`Ok(Some)`) e recusada pela Riot (`Ok(None)`) marcam como vista; erro (`Err`, um 500 depois das tentativas) não | R-20, A26 |
 | T-COLETOR-40 | `estado_que_nao_le_e_erro_e_nao_comeco_do_zero` | unidade | Sem arquivo, `ler_estado` dá `None`; com `{ quebrado`, dá erro dizendo que não lê; com um `Estado` de verdade, dá o estado | R-20, A27 |
+| T-COLETOR-41 | `os_cortes_comuns_sao_os_do_historico` | unidade | A mesma partida pelo coletor e por `history::corte_comum`: `ARAM` dá `Modo` nos dois, `Abort_AntiCheatExit` dá `Terminada`, um remake dá `Remake`, 299 s dá `Curta`, e 300 s com fim vazio e 1500 s com `GameComplete` passam nos dois. Com `MIN_DURATION` em 240, o coletor deixa passar os 299 s | R-17, R-20, A18 |
 
 ### 2.3 Draft — ranking, contexto, resposta e composição
 

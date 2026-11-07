@@ -30,9 +30,7 @@ use presage_core::engine::dataset::{
     base_key, length_key, matchup_key, synergy_key, versus_key, Dataset,
 };
 use presage_core::engine::stats::{expected_against, Length, Record};
-
-/// Abaixo disto é remake ou abandono precoce, independente das flags.
-const MIN_DURATION: i64 = 300;
+use presage_core::history;
 
 const TEAM_SIZE: usize = 5;
 const PARTICIPANTS: usize = 10;
@@ -92,6 +90,18 @@ pub enum Skip {
 }
 
 impl Skip {
+    /// O motivo do coletor para um corte comum com o histórico.
+    fn do_historico(corte: history::Skip) -> Skip {
+        match corte {
+            history::Skip::Modo => Skip::Modo,
+            history::Skip::Terminada => Skip::Terminada,
+            history::Skip::Remake => Skip::Remake,
+            history::Skip::Curta => Skip::Curta,
+            // `Ausente` é só do histórico: o coletor não procura um jogador.
+            history::Skip::Ausente => Skip::Incompleta,
+        }
+    }
+
     pub fn motivo(self) -> &'static str {
         match self {
             Skip::Fila => "fila diferente",
@@ -162,27 +172,14 @@ impl Counts {
         if info.queue_id != filter.queue {
             return skip(self, Skip::Fila);
         }
-        if !info.game_mode.eq_ignore_ascii_case("CLASSIC") {
-            return skip(self, Skip::Modo);
-        }
-        // Campo novo: vazio em respostas antigas, e aí a regra não se aplica.
-        if !info.end_of_game_result.is_empty()
-            && !info.end_of_game_result.eq_ignore_ascii_case("GameComplete")
-        {
-            return skip(self, Skip::Terminada);
+        // Os quatro cortes que o histórico pessoal também faz, pela mesma função
+        // (A18): modo, fim, remake e duração.
+        let remake = info.participants.iter().any(|p| p.game_ended_in_early_surrender);
+        if let Some(corte) = history::corte_comum(&info.game_mode, &info.end_of_game_result, remake, info.game_duration) {
+            return skip(self, Skip::do_historico(corte));
         }
         if info.participants.len() != PARTICIPANTS {
             return skip(self, Skip::Incompleta);
-        }
-        if info
-            .participants
-            .iter()
-            .any(|p| p.game_ended_in_early_surrender)
-        {
-            return skip(self, Skip::Remake);
-        }
-        if info.game_duration < MIN_DURATION {
-            return skip(self, Skip::Curta);
         }
 
         let patch = patch_of(&info.game_version);
@@ -567,6 +564,32 @@ mod tests {
         assert_eq!(c.synergy[&synergy_key(11, 12)], Record::new(1, 0));
         // 1 e 11 estavam em times opostos: não é observação de sinergia.
         assert!(!c.synergy.contains_key(&synergy_key(1, 11)));
+    }
+
+    #[test]
+    fn os_cortes_comuns_sao_os_do_historico() {
+        // Modo, fim, remake e duração: o coletor descarta pela mesma regra do
+        // histórico pessoal, e pelo mesmo motivo (A18).
+        // Cada caso com o motivo escrito aqui, e não recalculado: o teste não
+        // pode passar pelo mesmo caminho que ele confere.
+        let casos: [(&str, &str, bool, i64, Option<Skip>, Option<history::Skip>); 6] = [
+            ("ARAM", "GameComplete", false, 1500, Some(Skip::Modo), Some(history::Skip::Modo)),
+            ("CLASSIC", "Abort_AntiCheatExit", false, 1500, Some(Skip::Terminada), Some(history::Skip::Terminada)),
+            ("CLASSIC", "GameComplete", true, 1500, Some(Skip::Remake), Some(history::Skip::Remake)),
+            ("CLASSIC", "GameComplete", false, 299, Some(Skip::Curta), Some(history::Skip::Curta)),
+            ("CLASSIC", "", false, 300, None, None),
+            ("CLASSIC", "GameComplete", false, 1500, None, None),
+        ];
+        for (modo, fim, remake, duracao, no_coletor, no_historico) in casos {
+            let mut info = partida(true);
+            info.game_mode = modo.into();
+            info.end_of_game_result = fim.into();
+            info.game_duration = duracao;
+            info.participants[3].game_ended_in_early_surrender = remake;
+            let caso = format!("{modo} {fim:?} remake={remake} {duracao}s");
+            assert_eq!(Counts::default().add(&info, &filtro()).err(), no_coletor, "coletor: {caso}");
+            assert_eq!(history::corte_comum(modo, fim, remake, duracao), no_historico, "histórico: {caso}");
+        }
     }
 
     #[test]

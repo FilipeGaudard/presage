@@ -163,27 +163,29 @@ coletar em várias multiplica a vazão. Ainda não testado
 ## 5. A duplicação com `history.rs`
 
 O coletor tem os próprios tipos crus da match-v5 (`Match`, `Info`,
-`Participant`) e as próprias regras de descarte (`Skip`, em `aggregate.rs`); o
-histórico pessoal (`core/src/history.rs`) tem os seus. São duas cópias, e só em
-parte as mesmas regras:
+`Participant`) e o próprio `Skip`, em `aggregate.rs`; o histórico pessoal
+(`core/src/history.rs`) tem os seus. Os cortes que valem para os dois saem de
+uma função só, `history::corte_comum` (11 §5.3); os outros são de cada um:
 
 | Regra | Coletor | Histórico pessoal |
 |---|---|---|
 | Modo `CLASSIC` | `Skip::Modo` | `Skip::Modo` |
 | `endOfGameResult` vazio ou `GameComplete` | `Skip::Terminada` | `Skip::Terminada` |
 | Ninguém com `gameEndedInEarlySurrender` | `Skip::Remake` | `Skip::Remake` |
-| Pelo menos 300 s | `Skip::Curta` (`MIN_DURATION`) | `Skip::Curta` (outro `MIN_DURATION`) |
+| Pelo menos 300 s (`history::MIN_DURATION`) | `Skip::Curta` | `Skip::Curta` |
 | A fila pedida | `Skip::Fila` | não confere: a casca já pede só a solo/duo |
 | Um patch só | `Skip::Patch` | não há |
 | Dez participantes, cinco por time | `Skip::Incompleta` | não confere |
 | Rota em branco | descarta a partida (`Skip::SemRota`) | conta para vitória e derrota, sem comparação de rota |
 | Rotas que fecham cinco por time | `Skip::RotaRepetida` | dois na sua rota do outro lado só tiram a comparação |
 
-As quatro primeiras são a mesma regra escrita duas vezes, com os mesmos textos
-(`CLASSIC`, `GameComplete`) e o mesmo `300` em cada arquivo, e nada obriga as
-duas a andarem juntas. As outras diferem de propósito: a base mede a partida
-inteira, o histórico mede você. Até unificar, uma mudança nas quatro precisa da
-outra cópia no mesmo commit ([L-4](09-licoes-do-prototipo.md)).
+As quatro primeiras são `corte_comum`, chamada pelos dois, nesta ordem; o
+coletor troca o motivo pelo seu `Skip` de mesmo nome, e só confere os dez
+participantes depois delas. Mudar uma das quatro muda as duas bases, e
+`os_cortes_comuns_sao_os_do_historico` (T-COLETOR-41) passa a mesma partida
+pelos dois e confere o motivo de cada lado (A18). As outras diferem de
+propósito: a base mede a partida inteira, o histórico mede você. Os tipos crus
+continuam duas cópias ([L-4](09-licoes-do-prototipo.md)).
 
 ## 6. Quanto tempo leva, de verdade
 

@@ -230,10 +230,8 @@ pub fn played(game: &MatchDto, puuid: &str) -> Result<PlayedGame, Skip>;
 
 - **Faz:**
   1. Acha o participante de `puuid`.
-  2. Aplica os cortes, nesta ordem: modo `CLASSIC`, `endOfGameResult` vazio ou
-     `GameComplete`, ninguém com `gameEndedInEarlySurrender`, duração de pelo
-     menos 300 s. Valem também para vitória e derrota
-     ([L-5](09-licoes-do-prototipo.md)).
+  2. Aplica os cortes de `corte_comum` (5.3). Valem também para vitória e
+     derrota ([L-5](09-licoes-do-prototipo.md)).
   3. Rota pelo `team_position` (`Role::from_lcu`). Em branco: a partida conta,
      sem `lane`.
   4. O oponente direto é quem tem o mesmo `team_position` no outro time. Nenhum,
@@ -259,6 +257,24 @@ impl Metric {
 |---|---|---|
 | `higher_is_better` | `false` só para `Deaths`. Nenhum código do produto chama | R-17 |
 | `phrase` | A diferença em texto para uma razão do draft, com sinal: `+12 tropas aos 10`, `+5pp de participação em abates`, `+5pp da fatia de dano`, `+0.3 de visão por minuto`, `-1.5 mortes por partida`. Inteiro nas três primeiras, uma casa nas outras duas | R-1, R-17, ADR-0011 |
+
+### 5.3 `corte_comum`
+
+```rust
+pub fn corte_comum(modo: &str, fim: &str, algum_remake: bool, duracao: i64) -> Option<Skip>;
+```
+
+- **Faz:** os quatro cortes que o histórico pessoal e o coletor fazem do mesmo
+  jeito, nesta ordem: `modo` que não é `CLASSIC`, `fim` não vazio e diferente de
+  `GameComplete` (vazio é resposta antiga, em que a regra não se aplica), algum
+  participante com `gameEndedInEarlySurrender`, `duracao` abaixo de
+  `MIN_DURATION` (300 s, RN-30). Maiúsculas e minúsculas não contam.
+- **Retorno:** o primeiro corte que pega, ou `None` quando a partida passa.
+- **Erros:** nenhum. Nunca devolve `Skip::Ausente`.
+- **Quem usa:** `played` aqui e `Counts::add` no coletor, que troca o motivo
+  pelo seu `Skip` de mesmo nome. Um lugar só, para as duas bases não divergirem
+  caladas (A18, T-COLETOR-41; 05 §5).
+- **Atende:** R-17, R-20, L-5
 
 ## 6. `core::riot` — Endereçamento da Riot Web API (`core`, pura)
 

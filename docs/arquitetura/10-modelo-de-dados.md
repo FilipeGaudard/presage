@@ -602,13 +602,13 @@ pub enum Skip {
     Modo,      // `gameMode` não é `CLASSIC`
     Terminada, // `endOfGameResult` não vazio e diferente de `GameComplete`
     Remake,    // algum participante com `gameEndedInEarlySurrender`
-    Curta,     // `gameDuration` abaixo de 300 s (`MIN_DURATION`, privada)
+    Curta,     // `gameDuration` abaixo de 300 s (`MIN_DURATION`)
 }
 ```
 
 O coletor tem o próprio `Skip`, com nove motivos
 (`tools/ingest/src/aggregate.rs:82`). `Modo`, `Terminada`, `Remake` e `Curta`
-são a mesma regra escrita duas vezes, com o mesmo `300` em cada arquivo
+saem de `history::corte_comum` (11 §5.3) nos dois, com o mesmo `MIN_DURATION`
 ([05 §5](05-coletor.md#5-a-duplicação-com-historyrs)).
 
 ## 6. `core::riot` — Endereçamento da Riot Web API

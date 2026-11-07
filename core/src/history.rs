@@ -17,8 +17,9 @@ use std::collections::BTreeMap;
 
 use crate::engine::champion::Role;
 
-/// O mesmo corte do coletor: abaixo disto é remake ou abandono precoce.
-const MIN_DURATION: i64 = 300;
+/// Abaixo disto, em segundos de partida, é remake ou abandono precoce. O
+/// histórico pessoal e o coletor cortam aqui, pelo mesmo `corte_comum`.
+pub const MIN_DURATION: i64 = 300;
 
 // ---------------------------------------------------------------------------
 // Formato cru da match-v5
@@ -175,6 +176,26 @@ pub enum Skip {
     Curta,
 }
 
+/// Os quatro cortes que o histórico pessoal e o coletor fazem do mesmo jeito,
+/// nesta ordem: modo que não é a Fenda, partida que não terminou, remake e
+/// partida curta. Um lugar só, para os dois não divergirem calados (A18).
+/// `fim` vazio é resposta antiga, em que a regra não se aplica.
+pub fn corte_comum(modo: &str, fim: &str, algum_remake: bool, duracao: i64) -> Option<Skip> {
+    if !modo.eq_ignore_ascii_case("CLASSIC") {
+        return Some(Skip::Modo);
+    }
+    if !fim.is_empty() && !fim.eq_ignore_ascii_case("GameComplete") {
+        return Some(Skip::Terminada);
+    }
+    if algum_remake {
+        return Some(Skip::Remake);
+    }
+    if duracao < MIN_DURATION {
+        return Some(Skip::Curta);
+    }
+    None
+}
+
 /// Lê a partida do ponto de vista de `puuid`.
 ///
 /// Os cortes são os do coletor, e valem também para vitória e derrota: uma
@@ -187,23 +208,9 @@ pub fn played(game: &MatchDto, puuid: &str) -> Result<PlayedGame, Skip> {
         .find(|p| p.puuid == puuid)
         .ok_or(Skip::Ausente)?;
 
-    if !info.game_mode.eq_ignore_ascii_case("CLASSIC") {
-        return Err(Skip::Modo);
-    }
-    if !info.end_of_game_result.is_empty()
-        && !info.end_of_game_result.eq_ignore_ascii_case("GameComplete")
-    {
-        return Err(Skip::Terminada);
-    }
-    if info
-        .participants
-        .iter()
-        .any(|p| p.game_ended_in_early_surrender)
-    {
-        return Err(Skip::Remake);
-    }
-    if info.game_duration < MIN_DURATION {
-        return Err(Skip::Curta);
+    let remake = info.participants.iter().any(|p| p.game_ended_in_early_surrender);
+    if let Some(corte) = corte_comum(&info.game_mode, &info.end_of_game_result, remake, info.game_duration) {
+        return Err(corte);
     }
 
     Ok(PlayedGame {

@@ -5,22 +5,22 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | Tipo | Total | Feito | Adiado | Pendente |
 |---|---|---|---|---|
 | type | 112 | 112 | 0 | 0 |
-| func | 165 | 165 | 0 | 0 |
-| const | 85 | 85 | 0 | 0 |
+| func | 166 | 166 | 0 | 0 |
+| const | 84 | 84 | 0 | 0 |
 | wire | 55 | 55 | 0 | 0 |
 | command | 26 | 26 | 0 | 0 |
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 369 | 369 | 0 | 0 |
+| test | 370 | 370 | 0 | 0 |
 | ui-test | 44 | 11 | 33 | 0 |
 | trace | 43 | 39 | 4 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 498; nomes no catálogo (13): 498; fora dele: 0
+- testes no código: 499; nomes no catálogo (13): 499; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 3015
+- IDs citados conferidos: 3025
 
 ## type
 
@@ -117,14 +117,14 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::wincon::Side` | arquitetura/10-modelo-de-dados §15.1 | done | core/src/engine/wincon.rs:38 |
 | `core::engine::wincon::Source` | arquitetura/10-modelo-de-dados §15.2 | done | core/src/engine/wincon.rs:46 |
 | `core::engine::wincon::WinCondition` | arquitetura/10-modelo-de-dados §15.4 | done | core/src/engine/wincon.rs:63 |
-| `core::history::Challenges` | arquitetura/10-modelo-de-dados §5.4 | done | core/src/history.rs:60 |
-| `core::history::LaneGame` | arquitetura/10-modelo-de-dados §5.7 | done | core/src/history.rs:156 |
-| `core::history::MatchDto` | arquitetura/10-modelo-de-dados §5.1 | done | core/src/history.rs:29 |
-| `core::history::MatchInfo` | arquitetura/10-modelo-de-dados §5.2 | done | core/src/history.rs:35 |
-| `core::history::MatchParticipant` | arquitetura/10-modelo-de-dados §5.3 | done | core/src/history.rs:45 |
-| `core::history::Metric` | arquitetura/10-modelo-de-dados §5.5 | done | core/src/history.rs:89 |
-| `core::history::PlayedGame` | arquitetura/10-modelo-de-dados §5.6 | done | core/src/history.rs:147 |
-| `core::history::Skip` | arquitetura/10-modelo-de-dados §5.8 | done | core/src/history.rs:169 |
+| `core::history::Challenges` | arquitetura/10-modelo-de-dados §5.4 | done | core/src/history.rs:61 |
+| `core::history::LaneGame` | arquitetura/10-modelo-de-dados §5.7 | done | core/src/history.rs:157 |
+| `core::history::MatchDto` | arquitetura/10-modelo-de-dados §5.1 | done | core/src/history.rs:30 |
+| `core::history::MatchInfo` | arquitetura/10-modelo-de-dados §5.2 | done | core/src/history.rs:36 |
+| `core::history::MatchParticipant` | arquitetura/10-modelo-de-dados §5.3 | done | core/src/history.rs:46 |
+| `core::history::Metric` | arquitetura/10-modelo-de-dados §5.5 | done | core/src/history.rs:90 |
+| `core::history::PlayedGame` | arquitetura/10-modelo-de-dados §5.6 | done | core/src/history.rs:148 |
+| `core::history::Skip` | arquitetura/10-modelo-de-dados §5.8 | done | core/src/history.rs:170 |
 | `core::live::LiveGame` | arquitetura/10-modelo-de-dados §4.5 | done | core/src/live.rs:72 |
 | `core::live::LivePlayer` | arquitetura/10-modelo-de-dados §4.4 | done | core/src/live.rs:54 |
 | `core::live::RawItem` | arquitetura/10-modelo-de-dados §4.2 | done | core/src/live.rs:35 |
@@ -274,9 +274,10 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::timeline::build` | arquitetura/11-catalogo-de-funcoes §29.1 | done | core/src/engine/timeline.rs:332 |
 | `core::engine::timeline::RawEvent::outcome` | arquitetura/11-catalogo-de-funcoes §29.2 | done | core/src/engine/timeline.rs:93 |
 | `core::engine::wincon::analyze` | arquitetura/11-catalogo-de-funcoes §15.1 | done | core/src/engine/wincon.rs:179 |
-| `core::history::Metric::higher_is_better` | arquitetura/11-catalogo-de-funcoes §5.2 | done | core/src/history.rs:113 |
-| `core::history::Metric::phrase` | arquitetura/11-catalogo-de-funcoes §5.2 | done | core/src/history.rs:118 |
-| `core::history::played` | arquitetura/11-catalogo-de-funcoes §5.1 | done | core/src/history.rs:182 |
+| `core::history::corte_comum` | arquitetura/11-catalogo-de-funcoes §5.3 | done | core/src/history.rs:183 |
+| `core::history::Metric::higher_is_better` | arquitetura/11-catalogo-de-funcoes §5.2 | done | core/src/history.rs:114 |
+| `core::history::Metric::phrase` | arquitetura/11-catalogo-de-funcoes §5.2 | done | core/src/history.rs:119 |
+| `core::history::played` | arquitetura/11-catalogo-de-funcoes §5.1 | done | core/src/history.rs:203 |
 | `core::live::champion_key` | arquitetura/11-catalogo-de-funcoes §4.2 | done | core/src/live.rs:129 |
 | `core::live::LiveGame::allies` | arquitetura/11-catalogo-de-funcoes §4.3 | done | core/src/live.rs:84 |
 | `core::live::LiveGame::enemies` | arquitetura/11-catalogo-de-funcoes §4.3 | done | core/src/live.rs:95 |
@@ -315,11 +316,10 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 |---|---|---|---|
 | `casca::recorder::MAX_FRAMES` | produto/regras-e-pesos RN-28 — O teto e o piso da gravação (`ca | done | src-tauri/src/recorder.rs:23 |
 | `casca::riot::RANKED_SOLO_QUEUE` | produto/regras-e-pesos RN-31 — O histórico pessoal da casca (`c | done | src-tauri/src/riot.rs:26 |
-| `coletor::aggregate::MIN_DURATION` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:35 |
-| `coletor::aggregate::MIN_SPREAD_ENTRIES` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:345 |
-| `coletor::aggregate::PARTICIPANTS` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:38 |
-| `coletor::aggregate::TEAM_SIZE` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:37 |
-| `coletor::aggregate::USEFUL` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:393 |
+| `coletor::aggregate::MIN_SPREAD_ENTRIES` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:342 |
+| `coletor::aggregate::PARTICIPANTS` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:36 |
+| `coletor::aggregate::TEAM_SIZE` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:35 |
+| `coletor::aggregate::USEFUL` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:390 |
 | `core::draft::RANKED_QUEUES` | arquitetura/10-modelo-de-dados §3.13 | done | core/src/draft.rs:274 |
 | `core::engine::BASE_STRENGTH` | produto/regras-e-pesos RN-2 — A força da winrate base é escolhi | done | core/src/engine/mod.rs:36 |
 | `core::engine::build::MIN_ITEM_COST` | produto/regras-e-pesos RN-19 — O que entra na lista e como o it | done | core/src/engine/build.rs:24 |
@@ -394,8 +394,8 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::wincon::MAX_EDGES` | produto/regras-e-pesos RN-13 — O que a condição de vitória afir | done | core/src/engine/wincon.rs:32 |
 | `core::engine::wincon::MIN_KNOWN` | produto/regras-e-pesos RN-13 — O que a condição de vitória afir | done | core/src/engine/wincon.rs:30 |
 | `core::engine::wincon::ONE_SIDED` | produto/regras-e-pesos RN-13 — O que a condição de vitória afir | done | core/src/engine/wincon.rs:24 |
-| `core::history::Metric::ALL` | arquitetura/10-modelo-de-dados §5.5 | done | core/src/history.rs:105 |
-| `core::history::MIN_DURATION` | produto/regras-e-pesos RN-30 — Os cortes de partida do históric | done | core/src/history.rs:21 |
+| `core::history::Metric::ALL` | arquitetura/10-modelo-de-dados §5.5 | done | core/src/history.rs:106 |
+| `core::history::MIN_DURATION` | produto/regras-e-pesos RN-30 — Os cortes de partida do históric | done | core/src/history.rs:22 |
 | `core::pool::BAN_POOL_MAX` | arquitetura/10-modelo-de-dados §7.3 | done | core/src/pool.rs:42 |
 | `core::prefs::Section::ALL` | arquitetura/10-modelo-de-dados §8.1 | done | core/src/prefs.rs:26 |
 
@@ -428,7 +428,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `LivePlayer ↔ LivePlayer` | arquitetura/10-modelo-de-dados §4.4 | done | core/src/live.rs:54 |
 | `LiveSnapshot ↔ LiveSnapshot` | arquitetura/10-modelo-de-dados §32.3 | done | src-tauri/src/live.rs:17 |
 | `MatchupLane ↔ MatchupLane` | arquitetura/10-modelo-de-dados §21.2 | done | core/src/engine/profile.rs:61 |
-| `Metric ↔ LaneMetric` | arquitetura/10-modelo-de-dados §5.5 | done | core/src/history.rs:89 |
+| `Metric ↔ LaneMetric` | arquitetura/10-modelo-de-dados §5.5 | done | core/src/history.rs:90 |
 | `MinimaxPick ↔ MinimaxPick` | arquitetura/10-modelo-de-dados §12.1 | done | core/src/engine/minimax.rs:34 |
 | `Note ↔ CoachNote` | arquitetura/10-modelo-de-dados §31.3 | done | core/src/engine/coach.rs:111 |
 | `OverlayPrefs ↔ OverlayPrefs` | arquitetura/10-modelo-de-dados §8.2 | done | core/src/prefs.rs:64 |
@@ -591,23 +591,23 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-COLETOR-11` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:321 |
 | `T-COLETOR-12` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:328 |
 | `T-COLETOR-13` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:338 |
-| `T-COLETOR-14` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:451 |
-| `T-COLETOR-15` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:529 |
-| `T-COLETOR-16` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:540 |
-| `T-COLETOR-17` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:559 |
-| `T-COLETOR-18` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:459 |
-| `T-COLETOR-19` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:475 |
+| `T-COLETOR-14` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:448 |
+| `T-COLETOR-15` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:526 |
+| `T-COLETOR-16` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:537 |
+| `T-COLETOR-17` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:556 |
+| `T-COLETOR-18` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:456 |
+| `T-COLETOR-19` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:472 |
 | `T-COLETOR-2` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:760 |
-| `T-COLETOR-20` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:590 |
-| `T-COLETOR-21` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:637 |
-| `T-COLETOR-22` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:648 |
-| `T-COLETOR-23` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:679 |
-| `T-COLETOR-24` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:716 |
-| `T-COLETOR-25` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:517 |
-| `T-COLETOR-26` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:732 |
-| `T-COLETOR-27` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:747 |
-| `T-COLETOR-28` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:769 |
-| `T-COLETOR-29` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:505 |
+| `T-COLETOR-20` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:613 |
+| `T-COLETOR-21` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:660 |
+| `T-COLETOR-22` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:671 |
+| `T-COLETOR-23` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:702 |
+| `T-COLETOR-24` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:739 |
+| `T-COLETOR-25` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:514 |
+| `T-COLETOR-26` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:755 |
+| `T-COLETOR-27` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:770 |
+| `T-COLETOR-28` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:792 |
+| `T-COLETOR-29` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:502 |
 | `T-COLETOR-3` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:786 |
 | `T-COLETOR-30` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:161 |
 | `T-COLETOR-31` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:169 |
@@ -621,6 +621,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-COLETOR-39` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:729 |
 | `T-COLETOR-4` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:804 |
 | `T-COLETOR-40` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:738 |
+| `T-COLETOR-41` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:569 |
 | `T-COLETOR-5` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:827 |
 | `T-COLETOR-6` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:859 |
 | `T-COLETOR-7` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:890 |
@@ -703,14 +704,14 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-ENTRADA-19` | arquitetura/13-testes §2 | done | core/src/live.rs:317 |
 | `T-ENTRADA-2` | arquitetura/13-testes §2 | done | core/src/lockfile.rs:57 |
 | `T-ENTRADA-20` | arquitetura/13-testes §2 | done | core/src/live.rs:327 |
-| `T-ENTRADA-21` | arquitetura/13-testes §2 | done | core/src/history.rs:297 |
-| `T-ENTRADA-22` | arquitetura/13-testes §2 | done | core/src/history.rs:307 |
-| `T-ENTRADA-23` | arquitetura/13-testes §2 | done | core/src/history.rs:322 |
-| `T-ENTRADA-24` | arquitetura/13-testes §2 | done | core/src/history.rs:345 |
-| `T-ENTRADA-25` | arquitetura/13-testes §2 | done | core/src/history.rs:352 |
-| `T-ENTRADA-26` | arquitetura/13-testes §2 | done | core/src/history.rs:372 |
-| `T-ENTRADA-27` | arquitetura/13-testes §2 | done | core/src/history.rs:388 |
-| `T-ENTRADA-28` | arquitetura/13-testes §2 | done | core/src/history.rs:396 |
+| `T-ENTRADA-21` | arquitetura/13-testes §2 | done | core/src/history.rs:304 |
+| `T-ENTRADA-22` | arquitetura/13-testes §2 | done | core/src/history.rs:314 |
+| `T-ENTRADA-23` | arquitetura/13-testes §2 | done | core/src/history.rs:329 |
+| `T-ENTRADA-24` | arquitetura/13-testes §2 | done | core/src/history.rs:352 |
+| `T-ENTRADA-25` | arquitetura/13-testes §2 | done | core/src/history.rs:359 |
+| `T-ENTRADA-26` | arquitetura/13-testes §2 | done | core/src/history.rs:379 |
+| `T-ENTRADA-27` | arquitetura/13-testes §2 | done | core/src/history.rs:395 |
+| `T-ENTRADA-28` | arquitetura/13-testes §2 | done | core/src/history.rs:403 |
 | `T-ENTRADA-29` | arquitetura/13-testes §2 | done | core/src/riot.rs:111 |
 | `T-ENTRADA-3` | arquitetura/13-testes §2 | done | core/src/lockfile.rs:67 |
 | `T-ENTRADA-30` | arquitetura/13-testes §2 | done | core/src/riot.rs:132 |
@@ -1113,4 +1114,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 33 | 30 | 0 | 38 |
+| 32 | 31 | 0 | 38 |

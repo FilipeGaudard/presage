@@ -759,7 +759,7 @@ const EPS: f64 = 1e-9;
 ### RN-30 — Os cortes de partida do histórico (`core::history`)
 
 ```rust
-const MIN_DURATION: i64 = 300;
+pub const MIN_DURATION: i64 = 300;
 ```
 
 - **Regra:** fora da Fenda (`CLASSIC`), terminada por erro, remake e menos de
@@ -768,10 +768,11 @@ const MIN_DURATION: i64 = 300;
 - **Origem:** os literais `CLASSIC` e `GameComplete` são da Riot; os 300 s, escolha
   à mão, acima da janela de remake.
 - **Confiança:** regra.
-- **Onde:** `core/src/history.rs:21`, regras em `history.rs:182-207`; 04 §3
-  (Os cortes). O coletor tem as mesmas quatro escritas de novo (RN-32).
-- **Quando a base existir:** a distribuição de duração diria onde cortar. Uma
-  constante só para os dois.
+- **Onde:** `core/src/history.rs:22`, regras em `corte_comum`
+  (`history.rs:183`); 04 §3 (Os cortes). O coletor corta pela mesma função
+  (RN-32, A18).
+- **Quando a base existir:** a distribuição de duração diria onde cortar; a
+  constante já é uma só para os dois.
 
 ### RN-31 — O histórico pessoal da casca (`casca::riot`)
 
@@ -793,7 +794,6 @@ const RANKED_SOLO_QUEUE: u32 = 420;
 ### RN-32 — O que entra na base
 
 ```rust
-const MIN_DURATION: i64 = 300;
 const TEAM_SIZE: usize = 5;
 const PARTICIPANTS: usize = 10;
 const MIN_SPREAD_ENTRIES: usize = 30;
@@ -804,11 +804,12 @@ pub const USEFUL: u32 = 200;
   `CLASSIC`, terminada, dez participantes, sem remake, 5 minutos ou mais, toda rota
   preenchida e uma de cada lado. Uma célula com 200 partidas ou mais é útil; o
   espalhamento do contra só é medido com 30 pares úteis.
-- **Origem:** dez participantes e cinco por time são mecânica; os 300 s, os 200 e
-  os 30, escolha à mão.
+- **Origem:** dez participantes e cinco por time são mecânica; os 200 e os 30,
+  escolha à mão. Modo, fim, remake e os 300 s são os de RN-30, pela mesma
+  `history::corte_comum`.
 - **Confiança:** regra.
-- **Onde:** `tools/ingest/src/aggregate.rs:35-38`, `aggregate.rs:345`,
-  `aggregate.rs:393`; 05 §3, 05 §5. O comentário de `USEFUL` ("mais de um ponto")
+- **Onde:** `tools/ingest/src/aggregate.rs:35-36`, `aggregate.rs:342`,
+  `aggregate.rs:390`; 05 §3, 05 §5. O comentário de `USEFUL` ("mais de um ponto")
   depende de `MATCHUP_PRIOR_SD` (RN-3) e não o lê.
 - **Quando a base existir:** `USEFUL` passa a sair de `strength_for_sd` do motor;
   os 300 s, da distribuição de duração (RN-30).
