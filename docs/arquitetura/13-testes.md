@@ -136,6 +136,9 @@ dado e não só sem dado, teste primeiro contra o código velho) está em
 | T-COLETOR-35 | `o_429_para_tudo_pelo_tempo_pedido`, `dois_429_seguidos_nao_encurtam_a_pausa` | unidade | `penalize(10, 5)` dá espera 5 em t = 10, 2 em t = 13 e 0 em t = 15; uma pausa de 30 s seguida de uma de 2 s espera 29 em t = 1 | R-20 |
 | T-COLETOR-36 | `adotar_o_limite_do_servidor_nao_esquece_o_que_ja_saiu`, `adotar_o_mesmo_limite_nao_mexe_em_nada`, `adotar_lixo_mantem_o_limite_atual` | unidade | Três chamadas sob `100:1` e depois `adopt(2:10)` esperam 9,7 s em t = 0,3; adotar o mesmo formato mantém o histórico de 1 chamada; adotar um limitador vazio mantém `5:1` | R-20 |
 | T-COLETOR-37 | `a_taxa_sustentavel_sai_da_janela_mais_apertada` | unidade | `20:1,100:120` sustenta 100/120 ≈ 0,83/s, não 20/s; `500:10,30000:600` sustenta 50/s | R-20 |
+| T-COLETOR-38 | `a_fila_escolhe_a_liga_semeada` | unidade | `liga_da_fila(420)` é `RANKED_SOLO_5x5`, `440` é `RANKED_FLEX_SR`, e `400` e `0` são erro | R-20, A28 |
+| T-COLETOR-39 | `so_resposta_definitiva_marca_a_partida_como_vista` | unidade | Partida contada (`Ok(Some)`) e recusada pela Riot (`Ok(None)`) marcam como vista; erro (`Err`, um 500 depois das tentativas) não | R-20, A26 |
+| T-COLETOR-40 | `estado_que_nao_le_e_erro_e_nao_comeco_do_zero` | unidade | Sem arquivo, `ler_estado` dá `None`; com `{ quebrado`, dá erro dizendo que não lê; com um `Estado` de verdade, dá o estado | R-20, A27 |
 
 ### 2.3 Draft — ranking, contexto, resposta e composição
 

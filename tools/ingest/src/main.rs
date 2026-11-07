@@ -107,7 +107,7 @@ Coletor da base de partidas do Presage.
   --tier <EMERALD>        elo mínimo; tudo acima entra junto
   --jogadores <20000>     quantos jogadores semear
   --por-jogador <20>      partidas pedidas por jogador
-  --fila <420>            420 = ranqueada solo
+  --fila <420>            420 = ranqueada solo/duo, 440 = flex
   --patch <15.21>         trava o patch; sem isto, trava no da 1ª partida
   --min-jogos <20>        corta entradas com amostra menor que isto
   --paralelo <8>          chamadas simultâneas
@@ -154,7 +154,44 @@ fn ler_opcoes() -> Result<Opcoes> {
         }
     }
 
+    // A fila escolhe a liga semeada; fila que não tem liga é erro já aqui, antes
+    // de horas de coleta da fila errada (A28).
+    liga_da_fila(o.fila)?;
     Ok(o)
+}
+
+/// A liga da `league-v4` que corresponde à fila da base: a semeadura e a busca
+/// de partidas olham a mesma fila. Só as ranqueadas têm liga.
+fn liga_da_fila(fila: i64) -> Result<&'static str> {
+    match fila {
+        420 => Ok("RANKED_SOLO_5x5"),
+        440 => Ok("RANKED_FLEX_SR"),
+        outra => bail!("--fila {outra} não tem liga para semear: a base é de ranqueada, 420 (solo/duo) ou 440 (flex)"),
+    }
+}
+
+/// A partida já tem a resposta que vai ter? Contada ou recusada pela Riot (404,
+/// `Ok(None)`), sim: insistir numa partida que a Riot não entrega trava o crawl.
+/// Erro de rede, 5xx depois das tentativas ou 429 seguidos são passageiros: a
+/// partida não é marcada como vista, e volta a ser pedida (A26).
+fn resposta_definitiva<T>(resultado: &Result<Option<T>>) -> bool {
+    resultado.is_ok()
+}
+
+/// O estado salvo, se houver. Arquivo que não existe é começar do zero; arquivo
+/// que existe e não lê é erro: começar do zero por cima dele apagaria horas de
+/// coleta sem ninguém pedir (A27).
+fn ler_estado(bruto: Option<Vec<u8>>, caminho: &std::path::Path) -> Result<Option<Estado>> {
+    let Some(bruto) = bruto else {
+        return Ok(None);
+    };
+    serde_json::from_slice::<Estado>(&bruto).map(Some).with_context(|| {
+        format!(
+            "o estado em {} não lê (de outra versão do coletor?). Renomeie-o para guardar, \
+             ou apague-o para começar do zero",
+            caminho.display()
+        )
+    })
 }
 
 /// O que sobrevive a uma interrupção.
@@ -333,7 +370,7 @@ fn mostrar_plano(o: &Opcoes) -> Result<()> {
 async fn semear(riot: &Riot, o: &Opcoes) -> Result<(Vec<String>, Vec<String>)> {
     let tiers = tiers_from(&o.tier)
         .with_context(|| format!("{} não é um tier conhecido", o.tier))?;
-    let fila = "RANKED_SOLO_5x5";
+    let fila = liga_da_fila(o.fila)?;
 
     let mut puuids = Vec::new();
     let mut vistos = HashSet::new();
@@ -459,9 +496,9 @@ async fn coletar(riot: Arc<Riot>, o: &Opcoes, estado: &mut Estado) -> Result<()>
 
             while let Some(terminada) = tarefas.join_next().await {
                 let (id, resultado) = terminada.context("tarefa de download")?;
-                // Marca como vista mesmo quando falha: insistir numa partida
-                // que a Riot não entrega trava o crawl.
-                estado.vistas.insert(id);
+                if resposta_definitiva(&resultado) {
+                    estado.vistas.insert(id);
+                }
 
                 match resultado {
                     Ok(Some(partida)) => {
@@ -580,9 +617,7 @@ async fn main() -> Result<()> {
     )?);
 
     let mut estado = if o.retomar {
-        match std::fs::read(&o.estado).ok().and_then(|bruto| {
-            serde_json::from_slice::<Estado>(&bruto).ok()
-        }) {
+        match ler_estado(std::fs::read(&o.estado).ok(), &o.estado)? {
             Some(salvo) if salvo.combina(&o) => {
                 if !salvo.contagens.resumable() {
                     bail!(
@@ -689,6 +724,37 @@ mod tests {
 
         let ano: i64 = agora[..4].parse().unwrap();
         assert!((2024..2100).contains(&ano), "{agora}");
+    }
+
+    #[test]
+    fn so_resposta_definitiva_marca_a_partida_como_vista() {
+        // Contada ou recusada pela Riot (404): vista. Erro passageiro: volta a
+        // ser pedida (A26).
+        assert!(resposta_definitiva::<u8>(&Ok(Some(1))));
+        assert!(resposta_definitiva::<u8>(&Ok(None)));
+        assert!(!resposta_definitiva::<u8>(&Err(anyhow::anyhow!("500 depois de cinco tentativas"))));
+    }
+
+    #[test]
+    fn estado_que_nao_le_e_erro_e_nao_comeco_do_zero() {
+        // Sem arquivo, começa do zero; arquivo que não lê para a coleta com o
+        // motivo, em vez de ser sobrescrito (A27).
+        let caminho = std::path::Path::new("coleta-em-andamento.json");
+        assert!(ler_estado(None, caminho).unwrap().is_none());
+        let erro = ler_estado(Some(b"{ quebrado".to_vec()), caminho).unwrap_err();
+        assert!(erro.to_string().contains("não lê"), "{erro}");
+        let ok = serde_json::to_vec(&Estado::default()).unwrap();
+        assert!(ler_estado(Some(ok), caminho).unwrap().is_some());
+    }
+
+    #[test]
+    fn a_fila_escolhe_a_liga_semeada() {
+        // A semeadura usava sempre a solo/duo: `--fila 440` semeava solo/duo e
+        // contava flex (A28). Fila sem liga é erro, não coleta errada.
+        assert_eq!(liga_da_fila(420).unwrap(), "RANKED_SOLO_5x5");
+        assert_eq!(liga_da_fila(440).unwrap(), "RANKED_FLEX_SR");
+        assert!(liga_da_fila(400).is_err());
+        assert!(liga_da_fila(0).is_err());
     }
 
     #[test]

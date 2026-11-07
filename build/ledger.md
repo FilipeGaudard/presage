@@ -12,15 +12,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 366 | 366 | 0 | 0 |
+| test | 369 | 369 | 0 | 0 |
 | ui-test | 44 | 11 | 33 | 0 |
 | trace | 43 | 39 | 4 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 495; nomes no catálogo (13): 495; fora dele: 0
+- testes no código: 498; nomes no catálogo (13): 498; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 3005
+- IDs citados conferidos: 3014
 
 ## type
 
@@ -586,7 +586,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-CASCA-7` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:255 |
 | `T-CASCA-8` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:181 |
 | `T-CASCA-9` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:192 |
-| `T-COLETOR-1` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:682 |
+| `T-COLETOR-1` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:717 |
 | `T-COLETOR-10` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:303 |
 | `T-COLETOR-11` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:321 |
 | `T-COLETOR-12` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:328 |
@@ -597,7 +597,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-COLETOR-17` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:559 |
 | `T-COLETOR-18` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:459 |
 | `T-COLETOR-19` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:475 |
-| `T-COLETOR-2` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:694 |
+| `T-COLETOR-2` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:760 |
 | `T-COLETOR-20` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:590 |
 | `T-COLETOR-21` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:637 |
 | `T-COLETOR-22` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:648 |
@@ -608,7 +608,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-COLETOR-27` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:747 |
 | `T-COLETOR-28` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:769 |
 | `T-COLETOR-29` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:505 |
-| `T-COLETOR-3` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:720 |
+| `T-COLETOR-3` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:786 |
 | `T-COLETOR-30` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:161 |
 | `T-COLETOR-31` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:169 |
 | `T-COLETOR-32` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:183 |
@@ -617,10 +617,13 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-COLETOR-35` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:226 |
 | `T-COLETOR-36` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:244 |
 | `T-COLETOR-37` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:274 |
-| `T-COLETOR-4` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:738 |
-| `T-COLETOR-5` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:761 |
-| `T-COLETOR-6` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:793 |
-| `T-COLETOR-7` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:824 |
+| `T-COLETOR-38` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:750 |
+| `T-COLETOR-39` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:729 |
+| `T-COLETOR-4` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:804 |
+| `T-COLETOR-40` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:738 |
+| `T-COLETOR-5` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:827 |
+| `T-COLETOR-6` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:859 |
+| `T-COLETOR-7` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:890 |
 | `T-COLETOR-8` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:286 |
 | `T-COLETOR-9` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:295 |
 | `T-DRAFT-1` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:781 |
@@ -1110,4 +1113,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 36 | 27 | 0 | 38 |
+| 33 | 30 | 0 | 38 |

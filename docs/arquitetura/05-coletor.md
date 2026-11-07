@@ -33,7 +33,7 @@ ele não conhece é erro, e a mensagem traz a ajuda.
 | `--tier` | `EMERALD` | Elo mínimo; tudo acima entra junto (`tiers_from`). Lido em maiúsculas. Tier desconhecido é erro |
 | `--jogadores` | `20000` | Quantos jogadores semear. A semeadura para ao bater a cota, e pode parar ainda no primeiro tier |
 | `--por-jogador` | `20` | Quantas partidas pedir a cada jogador semeado (`count` do `match-v5`) |
-| `--fila` | `420` | A fila das partidas: vai na busca (`queue=`) e no descarte (`Skip::Fila`). A semeadura usa sempre a lista solo/duo (`RANKED_SOLO_5x5`), e a busca sempre `type=ranked` |
+| `--fila` | `420` | A fila da base: 420 (solo/duo) ou 440 (flex). Escolhe a liga semeada (`liga_da_fila`: `RANKED_SOLO_5x5` ou `RANKED_FLEX_SR`), vai na busca (`queue=`, com `type=ranked`) e no descarte (`Skip::Fila`). Outra fila é erro na partida, antes de coletar (A28) |
 | `--patch` | o da 1ª partida aceita | Trava o patch (`15.21`). Partida de outro patch é descartada (`Skip::Patch`) |
 | `--min-jogos` | `20` | Na hora de gravar, corta as entradas com menos partidas que isto (§7). O total de partidas do cabeçalho não é podado |
 | `--paralelo` | `8` | Quantas partidas baixar ao mesmo tempo, por lote. Abaixo de 1 vira 1 |
@@ -96,7 +96,7 @@ sobrevive a uma interrupção:
 | `jogadores` | O puuid de cada jogador semeado, na ordem |
 | `tiers_semeados` | Os tiers que de fato deram jogadores. O rótulo de elo do cabeçalho sai daqui: `EMERALD+` só quando a semeadura chegou ao topo |
 | `proximo` | Até onde a lista de jogadores já foi consumida |
-| `vistas` | Todo id de partida já pedido, inclusive os que falharam: insistir numa partida que a Riot não entrega trava o crawl |
+| `vistas` | Todo id de partida com resposta definitiva: contada, ou recusada pela Riot (404). Insistir numa partida que a Riot não entrega trava o crawl; já erro passageiro (rede, 5xx depois das tentativas, 429 seguidos) não marca, e a partida volta a ser pedida (A26) |
 | `contagens` | As tabelas em memória (`Counts`): base, matchup, sinergia, contra, duração, o total de partidas, `versus_matches`, o patch travado e os descartes por motivo |
 
 **Quando é gravado:** logo depois da semeadura, para uma queda no começo não
@@ -112,7 +112,9 @@ para outro.
 
 **Quando é recusado:** `--retomar` com estado de outro recorte para o coletor, e
 estado de uma versão sem as tabelas de contra e duração também (§3). Estado que
-não existe ou não desserializa vira começo do zero, com um aviso no log.
+não existe vira começo do zero; estado que existe e não desserializa para a
+coleta com o motivo, em vez de virar começo do zero e ser sobrescrito depois da
+semeadura (`ler_estado`, A27).
 
 ## 3. Três decisões que mudam o resultado
 
