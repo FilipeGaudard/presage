@@ -210,7 +210,7 @@ aliado: a Live Client não entrega, e o que entrega isso (o GEP do Overwolf) nã
 informa para os dez. A rota decide a métrica pela mesma `cobranca` do pós-jogo
 (§8): tropas por minuto para quem farma, **placar de visão por minuto para o
 suporte, nunca tropas**. Atrás, igual ou à frente sai do ouro em itens (exato),
-com a margem `max(300, 10% do que ele investiu)` — regra, não estatística.
+com a margem `max(300, 10% da média dos dois)`, a mesma vista dos dois lados — regra, não estatística.
 Antes de 1:30 não há painel: a taxa por minuto ainda é ruído.
 
 ## 7. Prioridade

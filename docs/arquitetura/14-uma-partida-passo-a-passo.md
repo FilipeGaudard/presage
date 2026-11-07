@@ -784,7 +784,7 @@ as razões procurando linguagem de posição (T-PRIORIDADE-7).
 1:30 não há painel. O oponente é o inimigo da mesma posição. A métrica sai de
 `cobranca`: tropas por minuto para quem farma, visão por minuto para o suporte.
 `standing` (`core/src/engine/rival.rs:69`) põe você à frente ou atrás pelo ouro
-em itens, com margem `max(300, 10% do que ele investiu)`.
+em itens, com margem `max(300, 10% da média dos dois)`.
 
 **Por quê.**
 - **O suporte nunca é cobrado por tropas** (L-27, R-11).
@@ -1191,7 +1191,7 @@ tropas.
 
 | Na tela | No exemplo | Quem produz |
 |---|---|---|
-| Sua rota | MID contra Zed: 7,4 contra 8,1 tropas por minuto, −1.950 em itens, atrás | `rival::report`; a margem é `max(300, 10% de 6.100)` = 610 |
+| Sua rota | MID contra Zed: 7,4 contra 8,1 tropas por minuto, −1.950 em itens, atrás | `rival::report`; a margem é `max(300, 10% da média de 4.150 e 6.100)` = 512 |
 | Objetivos | Dragão em 0:43 e Barão em 5:13, os dois observados | `timeline::build`: dragão morto aos 14:50 + 5:00; Barão aos 18:20 + 6:00 |
 | Estrutura | Inibidor do meio, deles, volta em 2:23 | `Respawn`: caído aos 16:30 + 5:00 |
 | Buff | Barão do seu time, 2:13, com Ahri, Garen e Ashe | `BuffTracker::update`: 18:20 + 3:00; Lee Sin e Thresh já não estão em `holders` |

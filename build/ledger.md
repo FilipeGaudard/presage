@@ -12,15 +12,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 352 | 352 | 0 | 0 |
+| test | 353 | 353 | 0 | 0 |
 | ui-test | 43 | 10 | 33 | 0 |
 | trace | 43 | 37 | 6 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 480; nomes no catálogo (13): 480; fora dele: 0
+- testes no código: 481; nomes no catálogo (13): 481; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 2937
+- IDs citados conferidos: 2941
 
 ## type
 
@@ -233,8 +233,8 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::rank_with` | arquitetura/11-catalogo-de-funcoes §9.2 | done | core/src/engine/mod.rs:86 |
 | `core::engine::report::build` | arquitetura/11-catalogo-de-funcoes §16.1 | done | core/src/engine/report.rs:35 |
 | `core::engine::report::from_context` | arquitetura/11-catalogo-de-funcoes §16.2 | done | core/src/engine/report.rs:62 |
-| `core::engine::rival::report` | arquitetura/11-catalogo-de-funcoes §22.1 | done | core/src/engine/rival.rs:80 |
-| `core::engine::rival::standing` | arquitetura/11-catalogo-de-funcoes §22.2 | done | core/src/engine/rival.rs:69 |
+| `core::engine::rival::report` | arquitetura/11-catalogo-de-funcoes §22.1 | done | core/src/engine/rival.rs:84 |
+| `core::engine::rival::standing` | arquitetura/11-catalogo-de-funcoes §22.2 | done | core/src/engine/rival.rs:72 |
 | `core::engine::roles::others_play` | arquitetura/11-catalogo-de-funcoes §11.4 | done | core/src/engine/roles.rs:86 |
 | `core::engine::roles::plays` | arquitetura/11-catalogo-de-funcoes §11.3 | done | core/src/engine/roles.rs:74 |
 | `core::engine::roles::role_fit` | arquitetura/11-catalogo-de-funcoes §11.2 | done | core/src/engine/roles.rs:55 |
@@ -838,11 +838,12 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-PRIORIDADE-7` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:425 |
 | `T-PRIORIDADE-8` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:445 |
 | `T-PRIORIDADE-9` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:453 |
-| `T-RIVAL-1` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:154 |
-| `T-RIVAL-2` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:172 |
-| `T-RIVAL-3` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:189 |
-| `T-RIVAL-4` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:210 |
-| `T-RIVAL-5` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:227 |
+| `T-RIVAL-1` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:158 |
+| `T-RIVAL-2` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:176 |
+| `T-RIVAL-3` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:193 |
+| `T-RIVAL-4` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:214 |
+| `T-RIVAL-5` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:250 |
+| `T-RIVAL-6` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:236 |
 | `T-ROTA-1` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:683 |
 | `T-ROTA-10` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:883 |
 | `T-ROTA-11` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:894 |
@@ -1094,4 +1095,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 42 | 20 | 0 | 38 |
+| 41 | 21 | 0 | 38 |

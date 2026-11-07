@@ -164,7 +164,7 @@ código. Quando o doc diz "confronto", o código diz `matchup`.
 | foco do objetivo | `PriorityReport::focus` | O texto do objetivo mais próximo a até 90 s. Não é o destaque |
 | agrupamento | `GROUPS`, `Skirmish::key` | Topo, meio, bot, dragão, arauto: quem briga junto numa escaramuça |
 | na frente, igual, atrás | `rival::Standing` | `Ahead`, `Even`, `Behind`: você contra o oponente direto, pela margem de ouro em itens |
-| margem de ouro | `AHEAD_FLOOR`, `AHEAD_SHARE` | `max(300, 10% do ouro em itens do oponente)` |
+| margem de ouro | `AHEAD_FLOOR`, `AHEAD_SHARE` | `max(300, 10% da média do ouro em itens dos dois)`: a mesma vista dos dois lados |
 | estrutura | `Respawn` | Inibidor ou torre do nexo esperando voltar |
 | buff | `Buff`, `BuffTracker` | Barão ou Ancião: tempo restante e quem ainda tem (`holders`) |
 | cobrança | `coach::cobranca` | O que a rota tem como trabalho, e portanto o que se cobra: farm, visão e os limiares de participação. `rival.rs` usa a mesma |

@@ -66,8 +66,12 @@ fn per_min(player: &LivePlayer, metric: Metric, minutes: f64) -> f64 {
     ((total / minutes) * 10.0).round() / 10.0
 }
 
-pub fn standing(gold_diff: f64, theirs: f64) -> Standing {
-    let limite = AHEAD_FLOOR.max(AHEAD_SHARE * theirs);
+/// À frente, igual ou atrás, pelo ouro em itens dos dois. A margem sai dos dois
+/// (`AHEAD_SHARE` da média, nunca abaixo de `AHEAD_FLOOR`), então o veredito de
+/// um lado é sempre o espelho do outro (A24).
+pub fn standing(mine: f64, theirs: f64) -> Standing {
+    let gold_diff = mine - theirs;
+    let limite = AHEAD_FLOOR.max(AHEAD_SHARE * (mine + theirs) / 2.0);
     if gold_diff >= limite {
         Standing::Ahead
     } else if gold_diff <= -limite {
@@ -114,7 +118,7 @@ pub fn report(game: &LiveGame) -> Option<Rival> {
         mine_per_min,
         theirs_per_min,
         gold_diff,
-        standing: standing(gold_diff, opponent.gold_invested),
+        standing: standing(me.gold_invested, opponent.gold_invested),
     })
 }
 
@@ -224,14 +228,34 @@ mod tests {
         assert!(report(&em(MIN_SECONDS)).is_some());
     }
 
+    /// O veredito de quem tem `meu` contra quem tem `dele`, em ouro de itens.
+    fn veredito(meu: f64, dele: f64) -> Standing {
+        standing(meu, dele)
+    }
+
+    #[test]
+    fn a_margem_e_a_mesma_dos_dois_lados() {
+        // À frente de um lado é atrás do outro, sempre (A24): 11 000 contra
+        // 10 000 não pode ser "à frente" para um e "igual" para o outro.
+        let espelho = |s: Standing| match s {
+            Standing::Ahead => Standing::Behind,
+            Standing::Behind => Standing::Ahead,
+            Standing::Even => Standing::Even,
+        };
+        for (a, b) in [(11_000.0, 10_000.0), (1_300.0, 1_000.0), (5_000.0, 4_520.0), (20_000.0, 18_100.0)] {
+            assert_eq!(veredito(a, b), espelho(veredito(b, a)), "{a} contra {b}");
+        }
+    }
+
     #[test]
     fn na_frente_pelo_ouro_em_itens_com_piso_e_proporcao() {
         // Cedo vale o piso de 300.
-        assert_eq!(standing(300.0, 1000.0), Standing::Ahead);
-        assert_eq!(standing(299.0, 1000.0), Standing::Even);
-        assert_eq!(standing(-300.0, 1000.0), Standing::Behind);
-        // Tarde vale 10% do que ele investiu: 500 de 10.000 é igual.
-        assert_eq!(standing(500.0, 10_000.0), Standing::Even);
-        assert_eq!(standing(1000.0, 10_000.0), Standing::Ahead);
+        assert_eq!(standing(1300.0, 1000.0), Standing::Ahead);
+        assert_eq!(standing(1299.0, 1000.0), Standing::Even);
+        assert_eq!(standing(700.0, 1000.0), Standing::Behind);
+        // Tarde vale 10% da média dos dois: 500 em 10 250 de média é igual;
+        // 1100 em 10 550, à frente.
+        assert_eq!(standing(10_500.0, 10_000.0), Standing::Even);
+        assert_eq!(standing(11_100.0, 10_000.0), Standing::Ahead);
     }
 }

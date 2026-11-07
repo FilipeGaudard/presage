@@ -601,13 +601,12 @@ pub const AHEAD_SHARE: f64 = 0.10;
 ```
 
 - **Regra:** antes de 1:30 não há painel: a taxa por minuto é ruído. À frente ou
-  atrás quando a diferença de ouro em itens chega a `max(300, 10% do que o
-  oponente investiu)`. A métrica é a da `cobranca` (RN-26).
+  atrás quando a diferença de ouro em itens chega a `max(300, 10% da média dos
+  dois)`. A métrica é a da `cobranca` (RN-26).
 - **Origem:** escolha à mão.
 - **Confiança:** regra; o ouro em itens comparado é exato.
-- **Onde:** `core/src/engine/rival.rs:21-27`, `standing` em `rival.rs:69-78`;
-  10 §22.1. A margem só olha o ouro do oponente, então o mesmo par não é
-  simétrico (defeito no `build/audit.md`).
+- **Onde:** `core/src/engine/rival.rs:21-27`, `standing`; 10 §22.1. Até a 0.7.0
+  a margem só olhava o ouro do oponente, e o mesmo par não era simétrico (A24).
 - **Quando a base existir:** a chance de vitória por diferença de ouro no minuto
   calibraria a margem; nada a substitui hoje.
 

@@ -1266,13 +1266,14 @@ pub fn report(game: &LiveGame) -> Option<Rival>;
 ### 22.2 `standing`
 
 ```rust
-pub fn standing(gold_diff: f64, theirs: f64) -> Standing;
+pub fn standing(mine: f64, theirs: f64) -> Standing;
 ```
 
-- **Faz:** a margem é `max(AHEAD_FLOOR, AHEAD_SHARE × theirs)`. `Ahead` com
-  `gold_diff ≥ margem`, `Behind` com `gold_diff ≤ −margem`, `Even` no meio.
-- **Params:** `gold_diff` e `theirs` em ouro; `theirs` é o ouro em itens do
-  oponente.
+- **Faz:** a margem é `max(AHEAD_FLOOR, AHEAD_SHARE × média dos dois)`. `Ahead`
+  com `mine − theirs ≥ margem`, `Behind` com `≤ −margem`, `Even` no meio. Como a
+  margem sai dos dois, o veredito de um lado é sempre o espelho do outro (A24,
+  T-RIVAL-6).
+- **Params:** `mine` e `theirs` em ouro: o seu ouro em itens e o do oponente.
 - **Confiança:** regra.
 - **Atende:** R-11
 

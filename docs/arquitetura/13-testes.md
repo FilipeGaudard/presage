@@ -325,7 +325,8 @@ em tropas aos 10.
 | T-RIVAL-2 | `quem_farma_e_comparado_em_tropas_contra_o_da_mesma_rota` | unidade | O meio com 70 tropas aos 10 minutos é comparado com o meio inimigo (85), não com o topo (95): 7,0 contra 8,5 por minuto | R-11 |
 | T-RIVAL-3 | `sem_oponente_na_rota_ou_sem_rota_nao_ha_painel` | unidade | Sem inimigo na sua rota, ou com a sua posição em branco, `report` devolve `None` | R-11 |
 | T-RIVAL-4 | `antes_de_um_minuto_e_meio_a_taxa_e_ruido` | unidade | Na borda de `MIN_SECONDS`: aos 89 s não há painel; aos 90 s há. Antes o teste usava 1:00, e o limite podia ir a 61 s sem ninguém ver | R-11, A20 |
-| T-RIVAL-5 | `na_frente_pelo_ouro_em_itens_com_piso_e_proporcao` | unidade | Contra 1000 de ouro em itens, +300 é na frente, +299 igual e −300 atrás; contra 10 000, +500 é igual e +1000 na frente | R-11 |
+| T-RIVAL-5 | `na_frente_pelo_ouro_em_itens_com_piso_e_proporcao` | unidade | Cedo vale o piso de 300: 1 300 contra 1 000 é na frente, 1 299 igual e 700 atrás; tarde vale 10% da média dos dois: 10 500 contra 10 000 é igual e 11 100 contra 10 000 na frente | R-11 |
+| T-RIVAL-6 | `a_margem_e_a_mesma_dos_dois_lados` | regressão | Para 11 000 contra 10 000, 1 300 contra 1 000, 5 000 contra 4 520 e 20 000 contra 18 100, o veredito de um lado é o espelho do outro. Antes da correção, 11 000 contra 10 000 era "à frente" de um lado e "igual" do outro | R-11, A24 |
 
 ### 2.10 Jogo — campeão, itens e dano
 
