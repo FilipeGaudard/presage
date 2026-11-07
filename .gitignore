@@ -43,3 +43,6 @@ Thumbs.db
 
 # Anotações de teste de segurança: locais, nunca no repositório.
 .pentest/
+
+# Cache do Python (conferir.py)
+__pycache__/

@@ -28,6 +28,8 @@ check "senhas" '(password|passwd|senha)[A-Za-z_]*["'"'"']?\s*[:=]\s*["'"'"']?[^ 
 # puuid: 78 caracteres base64url; Riot ID: nome#TAG com a tag em maiúsculas
 check "puuid" '[A-Za-z0-9_-]{78}'
 check "riot id (nome#TAG)" '\b[A-Za-z][A-Za-z0-9]{2,15}#[A-Z0-9]{2,5}\b' 30
+# entre aspas, com espaço e tag minúscula: "nome com espaço#tag" (fixture fictícia como alguem#BR1 também aparece)
+check "riot id entre aspas" '"[^"#]{3,16}#[A-Za-z0-9]{2,5}"' 30
 { git config user.email; git log --format='%ae%n%ce' $RANGE; } | sort -u | while read -r EMAIL; do
   [ -n "$EMAIL" ] || continue
   n=$(grep -cF -- "$EMAIL" "$ADDED")

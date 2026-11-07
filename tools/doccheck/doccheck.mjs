@@ -66,7 +66,7 @@ function walk(dir, keep) {
 }
 
 const posix = (p) => p.split(sep).join('/');
-const read = (root, rel) => (existsSync(join(root, rel)) ? readFileSync(join(root, rel), 'utf8') : null);
+const read = (root, rel) => (existsSync(resolve(root, rel)) ? readFileSync(resolve(root, rel), 'utf8') : null);
 
 // ---------------------------------------------------------------------------
 // Code
@@ -126,7 +126,8 @@ function docKind(k) {
   return null;
 }
 
-export function inventory(root, warn) {
+export function inventory(root, warn, paths = DOCS) {
+  const DOCS = paths;
   const items = [];
   const docs = {};
   for (const [key, rel] of Object.entries(DOCS)) {
@@ -137,7 +138,7 @@ export function inventory(root, warn) {
 
   // types, functions, constants, wire types: the rust blocks of 10 and 11
   const wires = [];
-  for (const key of ['model', 'catalog']) {
+  for (const key of ['model', 'catalog', 'rules']) {
     const md = docs[key];
     if (!md) continue;
     for (const b of md.blocks) {
@@ -265,6 +266,18 @@ export function readDeferred(text, warn) {
   return out;
 }
 
+/** A deferral by exact name, or by a pattern with `*` (`ui-test TF-* | P-16`). */
+export function findDeferral(deferred, key) {
+  const exact = deferred.get(key);
+  if (exact) return exact;
+  for (const [k, d] of deferred) {
+    if (!k.includes('*')) continue;
+    const re = new RegExp(`^${k.split('*').map((x) => x.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('.*')}$`);
+    if (re.test(key)) return d;
+  }
+  return null;
+}
+
 function wireCompare(item, code, warnings) {
   const rust = code.items.find((x) => x.module === item.module && x.name === item.rust && (x.kind === 'struct' || x.kind === 'enum'));
   if (!rust) return `\`${item.rust}\` não existe em \`${item.module}\``;
@@ -339,8 +352,23 @@ export function resolveAll(inv, code, deferred, warn) {
       case 'func':
       case 'const': {
         const cand = (byKey.get(it.name) ?? []).filter((x) => docKind(x.kind) === it.kind);
-        if (cand.length) found = where(cand[0]);
-        else why = `não existe em \`${it.module}\``;
+        if (!cand.length) { why = `não existe em \`${it.module}\``; break; }
+        const c = cand[0];
+        const d = it.doc;
+        if (it.kind === 'func' && d.sig && c.sig && d.sig !== c.sig) { why = `assinatura: doc \`${d.sig}\` ≠ código \`${c.sig}\``; break; }
+        if (it.kind === 'const' && d.value !== null && d.value !== undefined && c.value !== null && c.value !== undefined && d.value !== c.value) { why = `valor: doc \`${d.value}\` ≠ código \`${c.value}\``; break; }
+        if (it.kind === 'type' && d.kind === 'struct' && d.fields && c.fields) {
+          const f = (xs) => xs.map((x) => `${x.name}:${x.ty}`).sort();
+          const a = f(d.fields);
+          const b = f(c.fields);
+          if (a.join() !== b.join()) { why = `campos: ${diff(a, b)} (doc / código)`; break; }
+        }
+        if (it.kind === 'type' && d.kind === 'enum' && d.variants && c.variants) {
+          const a = d.variants.map((v) => v.name).sort();
+          const b = c.variants.map((v) => v.name).sort();
+          if (a.join() !== b.join()) { why = `variantes: ${diff(a, b)} (doc / código)`; break; }
+        }
+        found = where(c);
         break;
       }
       case 'wire': {
@@ -415,7 +443,7 @@ export function resolveAll(inv, code, deferred, warn) {
       it.where = found;
       continue;
     }
-    const d = deferred.get(`${it.kind} ${it.name}`);
+    const d = findDeferral(deferred, `${it.kind} ${it.name}`);
     if (d) {
       d.used = true;
       it.state = 'deferred';
@@ -433,7 +461,14 @@ export function resolveAll(inv, code, deferred, warn) {
   for (const x of code.items) {
     const coreApi = x.crate === 'core' && x.isPub && !x.trait && docKind(x.kind);
     const wire = x.crate === 'casca' && TYPE_KINDS.has(x.kind) && x.attrs.some((a) => /^derive\(.*\bSerialize\b/.test(a));
-    if ((coreApi || wire) && !docNames.has(`${x.module}::${x.name}`)) undoc.push({ kind: 'undoc', name: `${x.module}::${x.name}`, source: where(x), why: `${x.kind} público fora do 10/11` });
+    if ((coreApi || wire) && !docNames.has(`${x.module}::${x.name}`)) undoc.push({ kind: 'undoc', name: `${x.module}::${x.name}`, module: x.module, source: where(x), why: `${x.kind} público fora do 10/11` });
+  }
+  const catalogued = new Set(items.filter((x) => x.kind === 'test').flatMap((x) => x.tests));
+  const seenT = new Set();
+  for (const t of code.tests) {
+    if (catalogued.has(t.name) || seenT.has(t.name)) continue;
+    seenT.add(t.name);
+    undoc.push({ kind: 'undoc', name: `test ${t.name}`, module: t.module, source: where(t), why: 'teste fora do catálogo (13)' });
   }
   const cmdDoc = docKinds('command');
   for (const c of code.commands) if (!cmdDoc.has(c.name)) undoc.push({ kind: 'undoc', name: `command ${c.name}`, source: where(c), why: 'comando fora do 12' });
@@ -450,7 +485,7 @@ export function resolveAll(inv, code, deferred, warn) {
   const seenFl = new Set();
   for (const s of code.strings.coletor) if (/^--[a-z][a-z-]*$/.test(s.value) && !flagDoc.has(s.value) && !seenFl.has(s.value)) { seenFl.add(s.value); undoc.push({ kind: 'undoc', name: `flag ${s.value}`, source: `${s.file}:${s.line}`, why: 'opção fora do 05' }); }
   for (const u of undoc) {
-    const d = deferred.get(`undoc ${u.name}`);
+    const d = findDeferral(deferred, `undoc ${u.name}`);
     if (d) { d.used = true; u.state = 'deferred'; u.where = d.reason; }
     else { u.state = 'pending'; u.where = u.why; }
   }
@@ -462,7 +497,7 @@ export function resolveAll(inv, code, deferred, warn) {
     if (!m) continue;
     const name = `${c.file} TODO${m[1] ?? ''}`;
     const it = { kind: 'todo', name, source: `${c.file}:${c.line}` };
-    const d = deferred.get(`todo ${name}`);
+    const d = findDeferral(deferred, `todo ${name}`);
     if (/deferred:/.test(c.text)) { it.state = 'deferred'; it.where = c.text.split('deferred:')[1].trim(); }
     else if (d) { d.used = true; it.state = 'deferred'; it.where = d.reason; }
     else { it.state = 'pending'; it.where = c.text.replace(/^\/\/[!/]?\s*/, '').slice(0, 90); }
@@ -618,10 +653,10 @@ export function render(items, warnings, audit, extra) {
 // Main
 // ---------------------------------------------------------------------------
 
-export function run(root, { out = 'build/ledger.md', write = true } = {}) {
+export function run(root, { out = 'build/ledger.md', write = true, docs = {} } = {}) {
   const warnings = [];
   const warn = (w) => warnings.push(w);
-  const inv = inventory(root, warn);
+  const inv = inventory(root, warn, { ...DOCS, ...docs });
   const code = scanCode(root);
   const deferred = readDeferred(read(root, 'tools/doccheck/deferred.txt'), warn);
   const items = resolveAll(inv, code, deferred, warn);
@@ -631,7 +666,7 @@ export function run(root, { out = 'build/ledger.md', write = true } = {}) {
   auditProblems(audit, items, warn);
   const catalogued = new Set(items.filter((x) => x.kind === 'test').flatMap((x) => x.tests));
   const extra = [
-    `testes no código: ${code.tests.length}; no catálogo (13): ${catalogued.size}; fora dele: ${code.tests.length - [...new Set(code.tests.map((t) => t.name))].filter((n) => catalogued.has(n)).length}`,
+    `testes no código: ${code.tests.length}; nomes no catálogo (13): ${catalogued.size}; fora dele: ${code.tests.filter((t) => !catalogued.has(t.name)).length}`,
     `links relativos conferidos: ${linkStats.total}`,
     `IDs citados conferidos: ${cited}`,
   ];

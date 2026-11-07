@@ -173,6 +173,24 @@ const RE = {
   impl: /^(?:unsafe\s+)?impl\b/,
 };
 
+/** A fn signature with visibility and whitespace removed: `fnrank(x:u8)->Vec<Scored>`. */
+export function signature(rest) {
+  return rest.replace(new RegExp(`^${VIS}`), '').replace(/\s+/g, '');
+}
+
+/** A const initializer, when the header holds it whole (ended at ';', brackets balanced). */
+export function constValue(rest, end) {
+  const eq = rest.indexOf('=');
+  if (eq < 0 || end !== ';') return null;
+  const v = rest.slice(eq + 1).trim();
+  let depth = 0;
+  for (const c of v) {
+    if ('([{'.includes(c)) depth++;
+    else if (')]}'.includes(c)) depth--;
+  }
+  return depth === 0 && v ? v.replace(/\s+/g, '') : null;
+}
+
 /** What an item header declares, or null. */
 export function parseHeader(rest) {
   const isPub = /^pub\b/.test(rest) && !/^pub\s*\(\s*(?:crate|super|self|in\b)/.test(rest);
@@ -273,6 +291,7 @@ function parseFields(body, strings, renameAll) {
     const s = serdeOf(attrs);
     fields.push({
       name: m[1],
+      ty: rest.slice(m[0].length).replace(/\s+/g, ''),
       wire: s.skip || s.skip_serializing ? null : typeof s.rename === 'string' ? s.rename : wireName(m[1], renameAll, false),
       flatten: !!s.flatten,
     });
@@ -323,7 +342,8 @@ export function scanRust(src, { file = '', module = '' } = {}) {
   const stack = [{ kind: 'mod', path: module, cfgTest: false }];
   let segStart = 0;
 
-  const record = (info, attrs, top, pos) => {
+  let end = '';
+  const record = (info, attrs, top, pos, rest) => {
     const line = lineOf(pos);
     const cfgTest = top.cfgTest || attrs.some((a) => /^cfg\s*\(\s*test\s*\)$/.test(a));
     if (info.kind === 'fn') {
@@ -343,8 +363,12 @@ export function scanRust(src, { file = '', module = '' } = {}) {
       kind = 'method';
     }
     const isPub = top.kind === 'trait' ? top.isPub : top.kind === 'impl' && top.trait ? top.typePub : info.isPub;
-    items.push({ kind, name, module: top.path, file, line, isPub, trait: top.kind === 'impl' ? top.trait : null, attrs });
-    return items[items.length - 1];
+    const it = { kind, name, module: top.path, file, line, isPub, trait: top.kind === 'impl' ? top.trait : null, attrs };
+    // strings are placeholders ("@k") numbered per file: resolve them before comparing
+    if (info.kind === 'fn') it.sig = signature(resolveStrings(rest, strings));
+    if (info.kind === 'const') it.value = constValue(resolveStrings(rest, strings), end);
+    items.push(it);
+    return it;
   };
 
   for (let i = 0; i < code.length; i++) {
@@ -356,13 +380,14 @@ export function scanRust(src, { file = '', module = '' } = {}) {
       continue;
     }
     const header = code.slice(segStart, i);
+    end = ch;
     const lead = header.length - header.trimStart().length;
     const { attrs, rest } = splitAttrs(header, strings);
     const top = stack[stack.length - 1];
     const recording = top.kind === 'mod' || top.kind === 'impl' || top.kind === 'trait';
     const info = recording ? parseHeader(rest) : null;
     let rec = null;
-    if (info && info.kind !== 'impl' && info.kind !== 'mod') rec = record(info, attrs, top, segStart + lead);
+    if (info && info.kind !== 'impl' && info.kind !== 'mod') rec = record(info, attrs, top, segStart + lead, rest);
     if (ch === '{') {
       if (info && (info.kind === 'struct' || info.kind === 'enum')) {
         const end = matchBrace(code, i);

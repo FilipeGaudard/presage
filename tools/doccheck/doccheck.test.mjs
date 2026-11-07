@@ -97,6 +97,18 @@ mod tests {
   assert.deepEqual(r.handlers, ['get_snapshot', 'outro']);
 });
 
+test('constante de texto é comparada pelo valor, não pelo marcador', () => {
+  const code = scanRust('const A: &str = "x";\npub const B: &str = "presage://draft";\n', { module: 'casca' });
+  const doc = scanRust('pub const B: &str = "presage://draft";\n', { module: 'casca' });
+  const errado = scanRust('pub const B: &str = "presage://drafts";\n', { module: 'casca' });
+  const v = (r) => r.items.find((i) => i.name === 'B').value;
+  assert.equal(v(doc), v(code));
+  assert.notEqual(v(errado), v(code));
+  const s1 = scanRust('pub extern "C" fn f(x: u8) {}', { module: 'core' }).items[0].sig;
+  const s2 = scanRust('const Z: &str = "z";\npub extern "C" fn f(x: u8);', { module: 'core' }).items.find((i) => i.name === 'f').sig;
+  assert.equal(s1, s2);
+});
+
 test('modulePath e wireName', () => {
   assert.equal(modulePath('core', 'lib.rs'), 'core');
   assert.equal(modulePath('core', 'engine/mod.rs'), 'core::engine');
