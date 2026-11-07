@@ -1135,4 +1135,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 21 | 42 | 0 | 38 |
+| 18 | 45 | 0 | 38 |
