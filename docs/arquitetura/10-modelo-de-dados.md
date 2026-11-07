@@ -2468,7 +2468,7 @@ pub struct Report {
     pub champion: String,    // `champion_key` do jogador local no último quadro; vazio sem jogador local
     #[serde(default = "sem_rota")]
     pub role: Role,          // `Role::from_lcu` da posição no último quadro; `Unknown` em arquivo antigo
-    pub duration: f64,       // s gravados: último `game_time` menos o primeiro, não a duração da partida
+    pub duration: f64,       // s: a duração da partida, o `game_time` do último quadro, mesmo quando a gravação começou tarde (A9)
     pub won: Option<bool>,   // cópia de `Recording::won`
     pub good: Vec<Note>,     // a manter, da mais pesada para a menos
     pub bad: Vec<Note>,      // a corrigir, da mais pesada para a menos

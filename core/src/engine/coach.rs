@@ -213,8 +213,11 @@ fn opponent_in<'a>(frame: &'a LiveGame, me: &LivePlayer) -> Option<&'a LivePlaye
 /// Sem jogador local, sem quadros ou com partida curta demais devolve um
 /// relatório vazio em vez de inventar observação.
 pub fn review(recording: &Recording, items: &ItemIndex) -> Report {
-    let duration = recording.duration();
     let last = recording.frames.last();
+    // A duração da partida é o relógio dela no último quadro, não o tempo
+    // gravado: o placar da Live Client é da partida inteira, e um app aberto aos
+    // 20:00 dividiria 30 minutos de tropas por 10 (A9).
+    let duration = last.map_or(0.0, |f| f.game_time);
     let me = last.and_then(me_in);
 
     let role = me.map_or(Role::Unknown, |m| Role::from_lcu(&m.position));
@@ -559,13 +562,25 @@ fn death_clusters(recording: &Recording) -> Vec<Note> {
 
 /// Quando saiu o primeiro item grande.
 fn first_legendary(recording: &Recording, items: &ItemIndex) -> Vec<Note> {
-    let quando = recording.frames.iter().find_map(|frame| {
-        let me = me_in(frame)?;
-        me.items
-            .iter()
-            .any(|id| items.get(*id).is_some_and(|item| item.cost >= LEGENDARY_COST))
-            .then_some(frame.game_time)
-    });
+    let tem_lendario = |frame: &LiveGame| {
+        me_in(frame).is_some_and(|me| {
+            me.items
+                .iter()
+                .any(|id| items.get(*id).is_some_and(|item| item.cost >= LEGENDARY_COST))
+        })
+    };
+
+    // Item que já estava no primeiro quadro foi comprado antes de a gravação
+    // começar: quando, ela não viu, e chutar a hora seria inventar (A9).
+    if recording.frames.first().is_some_and(tem_lendario) {
+        return vec![];
+    }
+
+    let quando = recording
+        .frames
+        .iter()
+        .find(|frame| tem_lendario(frame))
+        .map(|frame| frame.game_time);
 
     let Some(t) = quando else {
         // Sem índice de itens carregado não dá para afirmar nada; calar é
@@ -900,6 +915,40 @@ mod tests {
         let r = review(&gravar(reta, 120.0), &items());
         assert!(r.good.is_empty() && r.bad.is_empty());
         assert!(r.summary.contains("curta"));
+    }
+
+    #[test]
+    fn gravacao_que_comeca_tarde_usa_o_relogio_da_partida() {
+        // O app abriu aos 20:00 e gravou até 30:00. O placar da Live Client é da
+        // partida inteira: 270 tropas contra 300 aos 30:00 são 9,0 contra 10,0
+        // por minuto, não 27 contra 30 (A9).
+        let mut rec = Recording::default();
+        let mut t = 1200.0;
+        while t <= 1800.0 {
+            rec.push(frame(Quadro {
+                cs: (t * 0.15) as i64,
+                rival_cs: (t / 6.0) as i64,
+                items: vec![3089],
+                ..reta(t)
+            }));
+            t += 1.0;
+        }
+        let r = review(&rec, &items());
+        assert_eq!(r.duration, 1800.0);
+
+        let notas: Vec<&Note> = r.bad.iter().chain(&r.good).collect();
+        let farm = notas
+            .iter()
+            .find(|n| n.title.contains("tropas por minuto"))
+            .unwrap_or_else(|| panic!("sem nota de farm: {notas:?}"));
+        assert_eq!(farm.title, "9.0 tropas por minuto contra 10.0");
+
+        // O Rabadon já estava no primeiro quadro: quando ele foi comprado, a
+        // gravação não viu.
+        assert!(
+            !notas.iter().any(|n| n.title.starts_with("Primeiro item grande")),
+            "{notas:?}"
+        );
     }
 
     #[test]

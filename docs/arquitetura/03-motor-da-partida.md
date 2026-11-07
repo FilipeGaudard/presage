@@ -231,9 +231,10 @@ quadro por segundo da Live Client Data API **em memória** (`Shared::recording`)
 no fim, `coach::review` lê essa gravação e devolve o que foi bem e o que foi mal
 (`Report`, salvo em `ultima-partida.json`). Só então a gravação vai para
 `gravacao.json`, que nada no app relê ([P-26](../produto/perguntas-em-aberto.md)).
-Se o app cair no meio da partida, não sobra nada em disco. "Por minuto" divide
-pelo tempo gravado, não pelo relógio da partida: gravação que começou tarde
-distorce as taxas (defeito A9 em `build/audit.md`).
+Se o app cair no meio da partida, não sobra nada em disco. "Por minuto" divide o
+placar pelo relógio da partida, não pelo tempo gravado, e o primeiro item grande
+só é comentado quando a gravação viu a compra: assim uma gravação que começou
+tarde não distorce as taxas nem inventa a hora do item (A9).
 
 Cada observação precisa ser verificável pela própria pessoa: um número que ela
 poderia ter conferido na aba de pontuação. Nada de "jogue mais seguro". E nada

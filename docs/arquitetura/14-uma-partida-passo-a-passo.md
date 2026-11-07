@@ -914,10 +914,10 @@ escondidas, não desenha nada (`src/overlay.tsx:94`).
 12 §7 (Gravação da partida).
 
 **O que pode dar errado.**
-- Abrir o app no meio da partida começa a gravação tarde. Toda taxa "por minuto"
-  do pós-jogo divide pelo tempo **gravado** (`Recording::duration`), não pelo
-  relógio da partida (11 §31.1), e as tropas contam desde o começo: a taxa sai
-  inflada.
+- Abrir o app no meio da partida começa a gravação tarde. O pós-jogo divide pelo
+  relógio da partida, não pelo tempo gravado, e não comenta o item que já estava
+  comprado no primeiro quadro (A9, corrigido; 11 §31.1). O que a gravação não
+  viu, como mortes antes dela, fica fora das observações de morte.
 - Se a Live Client parar antes do `GameEnd`, `won` fica `None` e a tela não diz
   vitória nem derrota.
 

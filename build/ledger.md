@@ -12,15 +12,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 341 | 341 | 0 | 0 |
+| test | 342 | 342 | 0 | 0 |
 | ui-test | 41 | 3 | 38 | 0 |
 | trace | 43 | 33 | 10 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 468; nomes no catálogo (13): 466; fora dele: 0
+- testes no código: 469; nomes no catálogo (13): 467; fora dele: 0
 - links relativos conferidos: 869
-- IDs citados conferidos: 2850
+- IDs citados conferidos: 2853
 
 ## type
 
@@ -780,28 +780,29 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-POOL-7` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:561 |
 | `T-POOL-8` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:569 |
 | `T-POOL-9` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:575 |
-| `T-POS-1` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:880 |
-| `T-POS-10` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:986 |
-| `T-POS-11` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1013 |
-| `T-POS-12` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1043 |
-| `T-POS-13` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1049 |
-| `T-POS-14` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1089 |
-| `T-POS-15` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1122 |
-| `T-POS-16` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1141 |
-| `T-POS-17` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1156 |
-| `T-POS-18` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1191 |
-| `T-POS-19` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1202 |
-| `T-POS-2` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:891 |
-| `T-POS-20` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1219 |
-| `T-POS-21` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1237 |
-| `T-POS-22` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1259 |
-| `T-POS-3` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:898 |
-| `T-POS-4` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:905 |
-| `T-POS-5` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:940 |
-| `T-POS-6` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:949 |
-| `T-POS-7` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:959 |
-| `T-POS-8` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:967 |
-| `T-POS-9` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1272 |
+| `T-POS-1` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:895 |
+| `T-POS-10` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1035 |
+| `T-POS-11` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1062 |
+| `T-POS-12` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1092 |
+| `T-POS-13` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1098 |
+| `T-POS-14` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1138 |
+| `T-POS-15` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1171 |
+| `T-POS-16` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1190 |
+| `T-POS-17` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1205 |
+| `T-POS-18` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1240 |
+| `T-POS-19` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1251 |
+| `T-POS-2` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:906 |
+| `T-POS-20` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1268 |
+| `T-POS-21` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1286 |
+| `T-POS-22` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1308 |
+| `T-POS-23` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:920 |
+| `T-POS-3` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:913 |
+| `T-POS-4` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:954 |
+| `T-POS-5` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:989 |
+| `T-POS-6` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:998 |
+| `T-POS-7` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1008 |
+| `T-POS-8` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1016 |
+| `T-POS-9` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1321 |
 | `T-PREVIA-1` | arquitetura/13-testes §2 | done | core/src/engine/team.rs:285 |
 | `T-PREVIA-10` | arquitetura/13-testes §2 | done | core/src/engine/wincon.rs:373 |
 | `T-PREVIA-11` | arquitetura/13-testes §2 | done | core/src/engine/wincon.rs:388 |
@@ -1080,4 +1081,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 56 | 6 | 0 | 38 |
+| 55 | 7 | 0 | 38 |

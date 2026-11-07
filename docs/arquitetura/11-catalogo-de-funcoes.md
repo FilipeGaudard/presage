@@ -1837,8 +1837,9 @@ pub fn review(recording: &Recording, items: &ItemIndex) -> Report;
 
 - **Faz:**
   1. Lê o jogador local e a rota no último quadro. Sem jogador local ou sem
-     quadros, devolve o relatório vazio `Sem gravação desta partida.`. Com menos
-     de 300 s gravados, devolve o vazio `… curta demais para tirar conclusão.`.
+     quadros, devolve o relatório vazio `Sem gravação desta partida.`. Com a
+     partida abaixo de 300 s no relógio do último quadro, devolve o vazio
+     `… curta demais para tirar conclusão.`.
   2. Monta as curvas (`Series`), reamostradas a cada 30 s. Mortes e abates do
      time entram com o instante exato.
   3. Roda as observações da tabela abaixo. Farm e visão só entram quando a
@@ -1856,8 +1857,13 @@ pub fn review(recording: &Recording, items: &ItemIndex) -> Report;
   - os limiares são regra.
 - **Atende:** R-16, RNF-5, RNF-8, RNF-11, C-7, L-27
 
-As observações. "Por minuto" divide pelo tempo gravado (`Recording::duration`),
-não pelo relógio da partida. Todo limiar é escrito à mão.
+As observações. "Por minuto" divide o placar, que é da partida inteira, pelo
+relógio da partida no último quadro, e não pelo tempo gravado: um app aberto aos
+20:00 não divide 30 minutos de tropas por 10 (A9, T-POS-23). A fatia de tempo
+morto continua sobre o tempo gravado, porque as duas pontas dela são gravação.
+O primeiro item grande só vira observação quando a gravação viu a compra: item
+que já estava no primeiro quadro não tem hora conhecida. Todo limiar é escrito à
+mão.
 
 | Observação | Ruim | Boa | `weight` | Onde |
 |---|---|---|---|---|
