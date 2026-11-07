@@ -150,9 +150,16 @@ export default function RecommendationPanel({
         </div>
       )}
 
-      {!engine?.ready && (
-        <div className="banner banner-warn">Carregando dados de campeões…</div>
-      )}
+      {!engine?.ready &&
+        (engine?.championsError ? (
+          // A carga roda uma vez, na abertura (A32): sem ela, o ranking não volta sozinho.
+          <div className="banner banner-warn">
+            Não consegui os dados de campeão: {engine.championsError}. O ranking volta quando o Presage
+            abrir de novo com internet.
+          </div>
+        ) : (
+          <div className="banner banner-warn">Carregando dados de campeões…</div>
+        ))}
 
       {engine?.ready && !engine.hasGlobal && (
         <div className="banner banner-mock">

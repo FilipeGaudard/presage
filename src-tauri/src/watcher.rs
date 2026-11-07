@@ -63,6 +63,11 @@ pub struct Shared {
     pub champions: RwLock<ChampionIndex>,
     pub items: RwLock<ItemIndex>,
     pub runes: RwLock<RuneIndex>,
+    /// Por que os campeões não vieram: o Data Dragon e o cache falharam. `None`
+    /// enquanto carrega e depois de carregar (A32).
+    pub champions_error: Mutex<Option<String>>,
+    /// Por que os itens não vieram, do mesmo jeito.
+    pub items_error: Mutex<Option<String>>,
     pub live: Mutex<Option<LiveSnapshot>>,
     pub stats: RwLock<Arc<dyn StatsStore>>,
     pub identity: Mutex<Option<Identity>>,
@@ -99,6 +104,8 @@ impl Shared {
             champions: RwLock::new(ChampionIndex::default()),
             items: RwLock::new(ItemIndex::default()),
             runes: RwLock::new(RuneIndex::default()),
+            champions_error: Mutex::new(None),
+            items_error: Mutex::new(None),
             live: Mutex::new(None),
             stats: RwLock::new(Arc::new(NoStats)),
             identity: Mutex::new(None),

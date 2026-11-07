@@ -45,6 +45,8 @@ const engine: EngineStatus = {
   account: null,
   globalPatch: null,
   globalMatches: 0,
+  championsError: null,
+  itemsError: null,
 };
 
 function slot(over: Partial<DraftSlot>): DraftSlot {

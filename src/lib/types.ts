@@ -551,6 +551,10 @@ export interface EngineStatus {
   account: string | null;
   globalPatch: string | null;
   globalMatches: number;
+  /** Por que não há campeões: o Data Dragon e o cache falharam. Nulo enquanto carrega e depois de carregar. */
+  championsError: string | null;
+  /** Por que não há itens, do mesmo jeito. */
+  itemsError: string | null;
 }
 
 export const POSITION_LABEL: Record<string, string> = {

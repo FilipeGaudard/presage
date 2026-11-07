@@ -114,8 +114,9 @@ condição de vitória.
   em violeta.
 - Slot vazio: "Aguardando"; campeão sem dado estático: `#103`; hover de aliado:
   "· hover".
-- Motor carregando: "Carregando dados de campeões…" — também para sempre, se a
-  casca não conseguir os campeões ([GC-7](07-lacunas-da-casca.md)).
+- Motor carregando: "Carregando dados de campeões…"; se a casca não conseguiu os
+  campeões, "Não consegui os dados de campeão: {motivo}. O ranking volta quando o
+  Presage abrir de novo com internet." (A32, [GC-7](07-lacunas-da-casca.md)).
 - Sem base global: "Sem base estatística: o ranking sai da composição dos times
   e do seu histórico (N partidas, Riot ID). Winrate base, matchup e sinergia
   precisam do pipeline de partidas — nenhum dos três sai de uma conta só."
@@ -263,9 +264,10 @@ os próximos itens e os itens de cada inimigo.
 - Sua rota: `Ouro em itens é exato. "À frente" a partir de 300 ou de 10% do que
   ele investiu, o maior — regra, não estatística.` O 300 e o 10% são cópia em
   texto de `rival::AHEAD_FLOOR` e `AHEAD_SHARE` ([GC-9](07-lacunas-da-casca.md)).
-- Build sem contexto: "Build adaptativa" e "Carregando os dados de item…" —
-  também quando `build_suggestions` devolve `None` porque o jogador local não foi
-  achado. Sem item: "Sem dados de item carregados."; inimigo sem item: "sem
+- Build sem contexto (`build_suggestions` devolve `None` só sem partida ou sem o
+  jogador local): "A build precisa do seu campeão, e a partida ainda não disse
+  qual é". Itens que falharam: "Não consegui os dados de item: {motivo}" (A32).
+  Sem item: "Sem dados de item carregados."; inimigo sem item: "sem
   itens"; morto: "morto 12s".
 - Ouro: "A coluna em negrito é exata: sai do preço de cada item no inventário. O
   valor claro ao lado do seu nome é estimativa do seu ouro em mão. O dos outros

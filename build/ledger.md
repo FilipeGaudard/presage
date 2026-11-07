@@ -12,15 +12,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 371 | 371 | 0 | 0 |
-| ui-test | 46 | 13 | 33 | 0 |
+| test | 372 | 372 | 0 | 0 |
+| ui-test | 48 | 15 | 33 | 0 |
 | trace | 43 | 39 | 4 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 500; nomes no catálogo (13): 500; fora dele: 0
+- testes no código: 501; nomes no catálogo (13): 501; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 3042
+- IDs citados conferidos: 3066
 
 ## type
 
@@ -28,7 +28,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 |---|---|---|---|
 | `casca::EngineStatus` | arquitetura/10-modelo-de-dados §32.1 | done | src-tauri/src/lib.rs:48 |
 | `casca::live::LiveSnapshot` | arquitetura/10-modelo-de-dados §32.3 | done | src-tauri/src/live.rs:17 |
-| `casca::PoolPlan` | arquitetura/10-modelo-de-dados §32.2 | done | src-tauri/src/lib.rs:347 |
+| `casca::PoolPlan` | arquitetura/10-modelo-de-dados §32.2 | done | src-tauri/src/lib.rs:371 |
 | `casca::watcher::Identity` | arquitetura/10-modelo-de-dados §32.4 | done | src-tauri/src/watcher.rs:52 |
 | `casca::watcher::Shared` | arquitetura/10-modelo-de-dados §32.5 | done | src-tauri/src/watcher.rs:60 |
 | `core::draft::ConnStatus` | arquitetura/10-modelo-de-dados §3.8 | done | core/src/draft.rs:116 |
@@ -436,7 +436,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `Point ↔ WinPoint` | arquitetura/10-modelo-de-dados §15.3 | done | core/src/engine/wincon.rs:55 |
 | `Pool ↔ Pool` | arquitetura/10-modelo-de-dados §7.4 | done | core/src/pool.rs:44 |
 | `PoolEntry ↔ PoolEntry` | arquitetura/10-modelo-de-dados §7.2 | done | core/src/pool.rs:32 |
-| `PoolPlan ↔ PoolPlan` | arquitetura/10-modelo-de-dados §32.2 | done | src-tauri/src/lib.rs:347 |
+| `PoolPlan ↔ PoolPlan` | arquitetura/10-modelo-de-dados §32.2 | done | src-tauri/src/lib.rs:371 |
 | `PriorityReport ↔ PriorityReport` | arquitetura/10-modelo-de-dados §30.2 | done | core/src/engine/priority.rs:42 |
 | `RawScores ↔ LiveScores` | arquitetura/10-modelo-de-dados §4.3 | done | core/src/live.rs:44 |
 | `Reading ↔ LaneReading` | arquitetura/10-modelo-de-dados §21.1 | done | core/src/engine/profile.rs:37 |
@@ -463,32 +463,32 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Item | Fonte | Estado | Onde / motivo |
 |---|---|---|---|
-| `ban_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:232 |
-| `build_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:249 |
-| `engine_status` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:105 |
-| `get_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:454 |
-| `get_draft_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:199 |
-| `get_enemy_roles` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:181 |
-| `get_live` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:243 |
-| `get_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:431 |
-| `get_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:417 |
-| `get_snapshot` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:97 |
-| `gold_report` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:335 |
-| `lane_analysis` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:282 |
-| `lane_profile` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:213 |
-| `last_review` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:342 |
-| `minimax_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:219 |
-| `pool_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:360 |
-| `rank_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:144 |
-| `rune_plan` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:384 |
-| `set_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:460 |
-| `set_draft_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:204 |
-| `set_draft_role` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:158 |
-| `set_enemy_role` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:167 |
-| `set_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:440 |
-| `set_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:422 |
-| `set_simulated_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:194 |
-| `skirmish_focus` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:313 |
+| `ban_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:256 |
+| `build_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:273 |
+| `engine_status` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:129 |
+| `get_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:478 |
+| `get_draft_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:223 |
+| `get_enemy_roles` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:205 |
+| `get_live` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:267 |
+| `get_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:455 |
+| `get_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:441 |
+| `get_snapshot` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:121 |
+| `gold_report` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:359 |
+| `lane_analysis` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:306 |
+| `lane_profile` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:237 |
+| `last_review` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:366 |
+| `minimax_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:243 |
+| `pool_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:384 |
+| `rank_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:168 |
+| `rune_plan` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:408 |
+| `set_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:484 |
+| `set_draft_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:228 |
+| `set_draft_role` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:182 |
+| `set_enemy_role` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:191 |
+| `set_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:464 |
+| `set_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:446 |
+| `set_simulated_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:218 |
+| `skirmish_focus` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:337 |
 
 ## event
 
@@ -561,17 +561,17 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-CASCA-10` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:211 |
 | `T-CASCA-11` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:225 |
 | `T-CASCA-12` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:236 |
-| `T-CASCA-13` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:568 |
-| `T-CASCA-14` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:587 |
+| `T-CASCA-13` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:615 |
+| `T-CASCA-14` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:634 |
 | `T-CASCA-15` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:96 |
 | `T-CASCA-16` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:113 |
 | `T-CASCA-17` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:132 |
 | `T-CASCA-18` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:141 |
 | `T-CASCA-19` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:155 |
 | `T-CASCA-2` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:182 |
-| `T-CASCA-20` | arquitetura/13-testes §2 | done | src-tauri/src/watcher.rs:453 |
+| `T-CASCA-20` | arquitetura/13-testes §2 | done | src-tauri/src/watcher.rs:460 |
 | `T-CASCA-21` | arquitetura/13-testes §2 | done | src-tauri/src/storage.rs:62 |
-| `T-CASCA-22` | arquitetura/13-testes §2 | done | src-tauri/src/watcher.rs:443 |
+| `T-CASCA-22` | arquitetura/13-testes §2 | done | src-tauri/src/watcher.rs:450 |
 | `T-CASCA-23` | arquitetura/13-testes §2 | done | src-tauri/src/storage.rs:77 |
 | `T-CASCA-24` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:43 |
 | `T-CASCA-25` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:54 |
@@ -580,6 +580,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-CASCA-28` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:138 |
 | `T-CASCA-29` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:150 |
 | `T-CASCA-3` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:192 |
+| `T-CASCA-30` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:592 |
 | `T-CASCA-4` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:205 |
 | `T-CASCA-5` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:216 |
 | `T-CASCA-6` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:239 |
@@ -956,19 +957,21 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `TF-SIM-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-SIM-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-SIM-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
-| `TF-CASCA-4` | frontend/06-testes §3 | done | src/App.test.tsx:162 |
+| `TF-CASCA-4` | frontend/06-testes §3 | done | src/App.test.tsx:164 |
 | `TF-CASCA-5` | frontend/06-testes §3 | done | src/estatico.test.ts:22 |
 | `TF-CASCA-7` | frontend/06-testes §3 | done | src/estatico.test.ts:47 |
-| `TF-DRAFT-10` | frontend/06-testes §3 | done | src/App.test.tsx:219 |
-| `TF-DRAFT-11` | frontend/06-testes §3 | done | src/App.test.tsx:259 |
+| `TF-DRAFT-10` | frontend/06-testes §3 | done | src/App.test.tsx:221 |
+| `TF-DRAFT-11` | frontend/06-testes §3 | done | src/App.test.tsx:261 |
 | `TF-DRAFT-12` | frontend/06-testes §3 | done | src/components/RecommendationPanel.test.tsx:41 |
 | `TF-DRAFT-13` | frontend/06-testes §3 | done | src/components/RecommendationPanel.test.tsx:69 |
-| `TF-DRAFT-7` | frontend/06-testes §3 | done | src/App.test.tsx:241 |
+| `TF-DRAFT-14` | frontend/06-testes §3 | done | src/components/RecommendationPanel.test.tsx:92 |
+| `TF-DRAFT-7` | frontend/06-testes §3 | done | src/App.test.tsx:243 |
 | `TF-OVERLAY-6` | frontend/06-testes §3 | done | src/estatico.test.ts:35 |
 | `TF-PARTIDA-3` | frontend/06-testes §3 | done | src/components/GoldTracker.test.tsx:40 |
-| `TF-POOL-4` | frontend/06-testes §3 | done | src/App.test.tsx:135 |
+| `TF-PARTIDA-5` | frontend/06-testes §3 | done | src/components/LiveBuild.test.tsx:14 |
+| `TF-POOL-4` | frontend/06-testes §3 | done | src/App.test.tsx:137 |
 | `TF-ROTAS-2` | frontend/06-testes §3 | done | src/components/Runas.test.tsx:16 |
-| `TF-ROTAS-3` | frontend/06-testes §3 | done | src/App.test.tsx:187 |
+| `TF-ROTAS-3` | frontend/06-testes §3 | done | src/App.test.tsx:189 |
 
 ## trace
 

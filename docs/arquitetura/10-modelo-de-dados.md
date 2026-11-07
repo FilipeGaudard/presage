@@ -2515,6 +2515,8 @@ struct EngineStatus {
     account: Option<String>,       // Riot ID `nome#tag` da conta do LCU; `None` antes de conectar
     global_patch: Option<String>,  // patch da base de partidas (`Dataset::patch`); `None` sem base
     global_matches: u64,           // contagem de partidas da base; 0 sem base
+    champions_error: Option<String>, // por que não há campeões: o Data Dragon e o cache falharam; `None` enquanto carrega e depois de carregar
+    items_error: Option<String>,     // por que não há itens, do mesmo jeito
 }
 ```
 
@@ -2524,6 +2526,9 @@ struct EngineStatus {
 - `global_patch` é `Some` exatamente quando `has_global`: `Shared::dataset` só
   recebe base que passou em `Dataset::is_usable` (`lib.rs:623`).
 - `account` nunca leva o puuid: só o `riot_id` de `Identity` (`lib.rs:78`).
+- `ready` falso com `champions_error` `None` é "ainda carrega"; com `Some`, a
+  carga falhou, e a tela diz o motivo (A32, T-CASCA-30, TF-DRAFT-14). A carga
+  roda uma vez por abertura, então o motivo fica até o app abrir de novo.
 
 ### 32.2 `PoolPlan` ↔ `PoolPlan`
 
@@ -2601,6 +2606,8 @@ pub struct Shared {
     pub champions: RwLock<ChampionIndex>,        // Data Dragon; vazio até a carga
     pub items: RwLock<ItemIndex>,                // Data Dragon; vazio até a carga
     pub runes: RwLock<RuneIndex>,                // Data Dragon; vazio até a carga
+    pub champions_error: Mutex<Option<String>>,  // por que os campeões não vieram; `None` enquanto carrega e depois de carregar (A32)
+    pub items_error: Mutex<Option<String>>,      // por que os itens não vieram; o mesmo
     pub live: Mutex<Option<LiveSnapshot>>,       // a última leitura da partida; `None` fora dela
     pub stats: RwLock<Arc<dyn StatsStore>>,      // `NoStats` ao nascer, `Layered` depois do setup
     pub identity: Mutex<Option<Identity>>,       // conta do LCU; `None` até conectar

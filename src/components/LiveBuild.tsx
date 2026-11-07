@@ -6,14 +6,17 @@ interface Props {
   context: BuildContext | null;
   suggestions: ItemSuggestion[];
   staticData: StaticData | null;
+  /** Por que os itens não vieram (`EngineStatus.itemsError`). */
+  itemsError?: string | null;
 }
 
-export default function LiveBuild({ game, context, suggestions, staticData }: Props) {
+export default function LiveBuild({ game, context, suggestions, staticData, itemsError = null }: Props) {
   if (!context) {
+    // `build_suggestions` só volta nulo sem partida ou sem o jogador local (A32).
     return (
       <div className="empty">
         <h2>Build adaptativa</h2>
-        <p>Carregando os dados de item…</p>
+        <p>A build precisa do seu campeão, e a partida ainda não disse qual é (espectador, ou o jogo acabou de abrir).</p>
       </div>
     );
   }
@@ -30,6 +33,13 @@ export default function LiveBuild({ game, context, suggestions, staticData }: Pr
           <span className="muted">reage aos itens que eles têm agora</span>
         </div>
       </div>
+
+      {itemsError && (
+        <div className="banner banner-warn">
+          Não consegui os dados de item: {itemsError}. A build fica sem sugestão até o Presage abrir de novo com
+          internet.
+        </div>
+      )}
 
       <div className="section">
         <h3>Dano que vem contra você</h3>

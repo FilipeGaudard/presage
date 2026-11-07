@@ -324,7 +324,9 @@ entra no perfil na abertura seguinte ([04 §7](04-perfil-de-rota.md#7-o-cache)).
 por abertura, em sequência: campeões, itens, runas (`lib.rs:674`). Cada uma das
 três pede `versions.json` de novo e usa o primeiro da lista. As URLs estão em §6.
 Se o download falha, a carga cai para o cache em disco; sem cache, o índice fica
-vazio e o motor, inativo (`EngineStatus.ready = false`).
+vazio e o motor, inativo (`EngineStatus.ready = false`), e o motivo vai para
+`EngineStatus.champions_error` ou `items_error` (`guardar_carga`, A32). As runas
+ainda falham só no log (GC-7).
 
 A interface baixa o Data Dragon por conta própria para nomes e ícones
 (`src/lib/ddragon.ts:23`): outra chamada a `versions.json` e a `champion.json`,

@@ -99,6 +99,8 @@ const engine: EngineStatus = {
   account: "crit is back#split",
   globalPatch: "16.21",
   globalMatches: 1_240_000,
+  championsError: null,
+  itemsError: null,
 };
 
 const draft: DraftState = {

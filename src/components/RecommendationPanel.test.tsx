@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import RecommendationPanel from "./RecommendationPanel";
 import type { StaticData } from "../lib/ddragon";
-import type { DraftState, MinimaxPick, ScoredChampion } from "../lib/types";
+import type { DraftState, EngineStatus, MinimaxPick, ScoredChampion } from "../lib/types";
 
 afterEach(cleanup);
 
@@ -87,5 +87,33 @@ describe("RecommendationPanel", () => {
     const linha = screen.getByText(/Melhor resposta deles/);
     expect(linha.textContent).toMatch(/1\.9 pontos da composição/);
     expect(linha.textContent).not.toMatch(/pp/);
+  });
+
+  it("TF-DRAFT-14: sem campeões, a faixa diz se ainda carrega ou por que falhou (A32)", () => {
+    const motor = (championsError: string | null) =>
+      ({
+        ready: false,
+        version: "",
+        champions: 0,
+        hasGlobal: false,
+        hasPersonal: false,
+        personalGames: 0,
+        account: null,
+        globalPatch: null,
+        globalMatches: 0,
+        championsError,
+        itemsError: null,
+      }) as EngineStatus;
+    const painel = (engine: EngineStatus) => (
+      <RecommendationPanel recommendations={[]} minimax={[]} bans={[]} staticData={null} draft={draft} engine={engine} />
+    );
+
+    const { rerender } = render(painel(motor(null)));
+    expect(screen.getByText("Carregando dados de campeões…")).toBeTruthy();
+
+    rerender(painel(motor("Data Dragon fora do ar, e não há cache")));
+    expect(screen.queryByText("Carregando dados de campeões…")).toBeNull();
+    expect(screen.getByText(/Não consegui os dados de campeão/)).toBeTruthy();
+    expect(screen.getByText(/Data Dragon fora do ar, e não há cache/)).toBeTruthy();
   });
 });

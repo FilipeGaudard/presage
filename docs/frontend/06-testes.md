@@ -67,6 +67,7 @@ com `mockIPC`, que é onde mora o tratamento de erro.
 | TF-DRAFT-11 | componente | Hoje. Com a casca guardando `[[238, "Mid"]]` e o inimigo 238 travado sem posição, a tela recém-aberta mostra MID marcado no seletor dele. Até a 0.7.0 mostrava "(presumida)" | R-4, A2 |
 | TF-DRAFT-12 | componente | Hoje. Com 16 candidatos fora da pool e o 16º o menos exposto de todos, "Menos expostos ao contra-pick" traz os campeões 1 a 5, sem o 16º, que não está na tela; abrir o 15º mostra a linha "Melhor resposta deles". Até a 0.7.0 o 16º vinha primeiro (A21) | R-2, A21 |
 | TF-DRAFT-13 | componente | Hoje. A seção "Menos expostos ao contra-pick" diz que o número é da composição, e o detalhe de um candidato com exposição 0,019 diz "tira 1.9 pontos da composição", sem "pp". Até a 0.7.0 dizia "custa 1.9pp", logo abaixo da chance do ranking em % (A22) | RNF-1, R-2, A22 |
+| TF-DRAFT-14 | componente | Hoje. Com `ready: false` e `championsError: null`, a faixa diz "Carregando dados de campeões…"; com `championsError` preenchido, diz "Não consegui os dados de campeão" com o motivo, e não "Carregando". Até a 0.7.0 dizia "Carregando" para sempre (A32) | R-1, RNF-1, A32 |
 | TF-SIM-1 | componente | Hoje. Abrir a aba chama `set_simulated_draft` com o draft da tela, e `rank_draft` só é chamado depois que ele resolve | R-8 |
 | TF-SIM-2 | componente | Hoje. Trocar para a aba Draft chama `set_simulated_draft` com `{ draft: null }` | R-8 |
 | TF-SIM-3 | componente | Hoje. Digitar "Ahri" e sair do campo grava `championId: 103` e `locked: true`; "Ahrii" não muda nada | R-8 |
@@ -77,6 +78,7 @@ com `mockIPC`, que é onde mora o tratamento de erro.
 | TF-PARTIDA-2 | componente | Hoje. Um `Spawn` com `observed: false` leva "estimado"; com `secondsLeft: 0`, "disponível" | R-13 |
 | TF-PARTIDA-3 | componente | Hoje. Um inimigo com `unspent: 1200` não ganha `+1.200` na linha dele; o jogador local ainda ganha | C-4, R-12, GC-2 |
 | TF-PARTIDA-4 | componente | Hoje. A prioridade sempre traz "Ranking de valor, não de posição.", com ou sem rotas | R-14, C-4 |
+| TF-PARTIDA-5 | componente | Hoje. Sem contexto de build, a tela não diz "Carregando os dados de item": diz que precisa do seu campeão; com `itemsError`, diz "Não consegui os dados de item" com o motivo (A32) | R-10, RNF-1, A32 |
 | TF-POS-1 | componente | Hoje. `review: null` mostra "Nenhuma partida lida ainda" | R-16 |
 | TF-POS-2 | componente | Hoje. `role: "Support"` desenha "Visão, você menos o outro suporte" e não desenha "Tropas, você menos o seu oponente" | R-16, L-27 |
 | TF-POS-3 | componente | Hoje. No perfil, `value: 3, sd: 1` ganha `good`, `value: 1, sd: 1` fica `even`, e `deaths` com `value: 3, sd: 1` ganha `bad`; nenhuma linha soma as métricas | R-17, C-7, RNF-11 |

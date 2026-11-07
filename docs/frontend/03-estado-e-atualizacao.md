@@ -172,9 +172,11 @@ O que a faixa não cobre:
   lançamento não tem console (A14).
 - **A forma do erro:** ele chega como texto livre (`Result<(), String>`, 12 §1),
   sem código para a tela escolher o que dizer.
-- **Motor que não carrega fica "carregando".** `engine.ready` é "há campeões"
-  (`lib.rs:67`). Se a casca não conseguir os campeões nem pelo cache, a tela diz
-  "Carregando dados de campeões…" para sempre ([GC-7](07-lacunas-da-casca.md)).
+- **Motor que não carrega diz por quê.** `engine.ready` é "há campeões". Se a
+  casca não conseguir os campeões nem pelo cache, `engine.championsError` traz
+  o motivo e a faixa diz "Não consegui os dados de campeão: …"; até a 0.7.0
+  dizia "Carregando dados de campeões…" para sempre (A32, TF-DRAFT-14,
+  [GC-7](07-lacunas-da-casca.md)).
 
 Provas: TF-POOL-4 (escrita recusada volta e avisa) e TF-CASCA-4 (ranking que
 falha avisa e sai da tela).

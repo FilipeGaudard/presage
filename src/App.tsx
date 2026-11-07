@@ -564,6 +564,7 @@ export default function App() {
                 context={buildContext}
                 suggestions={suggestions}
                 staticData={staticData}
+                itemsError={engine?.itemsError ?? null}
               />
             </section>
           </main>

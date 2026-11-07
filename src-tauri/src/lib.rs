@@ -13,7 +13,7 @@ pub mod watcher;
 mod arquitetura;
 
 use serde::Serialize;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex, RwLock};
 use tauri::{Emitter, Manager};
 
 use analysis::LaneReport;
@@ -59,6 +59,28 @@ struct EngineStatus {
     /// para ninguém confiar numa base de dois patches atrás sem saber.
     global_patch: Option<String>,
     global_matches: u64,
+    /// Por que não há campeões. Com `ready` falso e isto `None`, ainda carrega.
+    champions_error: Option<String>,
+    /// Por que não há itens.
+    items_error: Option<String>,
+}
+
+/// Guarda o que uma carga do Data Dragon trouxe: o índice, ou por que ele não
+/// veio. A falha não apaga o índice que já havia, e chega à tela pelo
+/// `EngineStatus` em vez de ficar só no log (A32).
+fn guardar_carga<T>(resultado: anyhow::Result<T>, indice: &RwLock<T>, falha: &Mutex<Option<String>>) -> Result<(), String> {
+    match resultado {
+        Ok(novo) => {
+            *indice.write().unwrap() = novo;
+            *falha.lock().unwrap() = None;
+            Ok(())
+        }
+        Err(err) => {
+            let motivo = format!("{err:#}");
+            *falha.lock().unwrap() = Some(motivo.clone());
+            Err(motivo)
+        }
+    }
 }
 
 fn engine_status_of(shared: &Shared) -> EngineStatus {
@@ -81,6 +103,8 @@ fn engine_status_of(shared: &Shared) -> EngineStatus {
             .map(|id| id.riot_id.clone()),
         global_patch: dataset.as_ref().map(|d| d.patch.clone()),
         global_matches: dataset.as_ref().map_or(0, |d| d.matches),
+        champions_error: shared.champions_error.lock().unwrap().clone(),
+        items_error: shared.items_error.lock().unwrap().clone(),
     }
 }
 
@@ -566,6 +590,29 @@ mod tests {
         must use a secure protocol like `https`.\")";
 
     #[test]
+    fn uma_carga_que_falha_diz_por_que_e_nao_apaga_o_indice() {
+        // A32: a falha do Data Dragon chegava só ao log, e a tela dizia
+        // "Carregando" para sempre. Agora o motivo vai para o `EngineStatus`.
+        let shared = Shared::new();
+        let falhou: anyhow::Result<ChampionIndex> = Err(anyhow::anyhow!("sem rede").context("Data Dragon e cache"));
+        assert!(guardar_carga(falhou, &shared.champions, &shared.champions_error).is_err());
+        let status = engine_status_of(&shared);
+        assert!(!status.ready);
+        assert_eq!(status.champions_error.as_deref(), Some("Data Dragon e cache: sem rede"));
+        assert_eq!(status.items_error, None);
+
+        // Um índice que já havia fica, e a carga que dá certo limpa o motivo.
+        let mut um = ChampionIndex::default();
+        um.version = "16.21.1".into();
+        assert!(guardar_carga(Ok(um), &shared.champions, &shared.champions_error).is_ok());
+        let falhou_de_novo: anyhow::Result<ChampionIndex> = Err(anyhow::anyhow!("sem rede"));
+        assert!(guardar_carga(falhou_de_novo, &shared.champions, &shared.champions_error).is_err());
+        assert_eq!(engine_status_of(&shared).version, "16.21.1");
+        assert!(guardar_carga(Ok(ChampionIndex::default()), &shared.champions, &shared.champions_error).is_ok());
+        assert_eq!(engine_status_of(&shared).champions_error, None);
+    }
+
+    #[test]
     fn reconhece_a_mensagem_real_do_tauri() {
         assert!(
             erro_do_atualizador(MENSAGEM_REAL),
@@ -696,23 +743,17 @@ fn montar(com_atualizador: bool) -> tauri::Builder<tauri::Wry> {
             let handle = app.handle().clone();
             let champions_shared = shared.clone();
             tauri::async_runtime::spawn(async move {
-                match ddragon::load_champions("pt_BR").await {
-                    Ok(index) => {
-                        tracing::info!(
-                            version = %index.version,
-                            campeoes = index.by_id.len(),
-                            "campeões carregados"
-                        );
-                        *champions_shared.champions.write().unwrap() = index;
+                let s = &champions_shared;
+                match guardar_carga(ddragon::load_champions("pt_BR").await, &s.champions, &s.champions_error) {
+                    Ok(()) => {
+                        let index = s.champions.read().unwrap();
+                        tracing::info!(version = %index.version, campeoes = index.by_id.len(), "campeões carregados");
                     }
                     Err(err) => tracing::error!(%err, "sem dados de campeão, motor fica inativo"),
                 }
 
-                match ddragon::load_items("pt_BR").await {
-                    Ok(index) => {
-                        tracing::info!(itens = index.by_id.len(), "itens carregados");
-                        *champions_shared.items.write().unwrap() = index;
-                    }
+                match guardar_carga(ddragon::load_items("pt_BR").await, &s.items, &s.items_error) {
+                    Ok(()) => tracing::info!(itens = s.items.read().unwrap().by_id.len(), "itens carregados"),
                     Err(err) => tracing::error!(%err, "sem dados de item, build adaptativa inativa"),
                 }
 

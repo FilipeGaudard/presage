@@ -715,8 +715,9 @@ a primeira leitura.
 
 **O que pode dar errado.**
 - Sem jogador local (o nome de `/activeplayername` não casa), `me()` é `None`:
-  a build não sai, a tela diz "Carregando os dados de item…", não há "sua rota"
-  nem notas de ouro.
+  a build não sai, a tela diz que precisa do seu campeão e a partida ainda não
+  disse qual é (até a 0.7.0, "Carregando os dados de item…", A32), não há "sua
+  rota" nem notas de ouro.
 - Campeão que o índice não conhece fica com id 0.
 
 ## 10. A partida na tela

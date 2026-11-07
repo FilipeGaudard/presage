@@ -24,7 +24,7 @@ de vir da casca, e não ser adivinhado ou copiado no TypeScript.
 | GC-4 | Marcas e rota escolhida vivem em dois lugares; `get_enemy_roles` sem uso | P1 | parcial: as marcas voltam depois de recarregar (TF-DRAFT-11); a rota escolhida, não |
 | GC-5 | A rota que o motor usou não volta para a tela | P1 | aberta |
 | GC-6 | Dois vocabulários de rota na mesma ponte | P1 | parcial: os comandos aceitam os dois (T-JOGO-15); unificar a ponte fica |
-| GC-7 | Motor sem campeões fica "carregando" para sempre | P1 | aberta |
+| GC-7 | Motor sem campeões fica "carregando" para sempre | P1 | parcial: campeões e itens dizem o motivo (A32); runas ainda falham só no log |
 | GC-8 | O overlay não arrasta e não diz o próprio estado | P1 | aberta |
 | GC-9 | Regras do core copiadas no front | P1 | aberta |
 | GC-10 | Rótulos escritos dos dois lados | P2 | aberta |
@@ -174,7 +174,10 @@ somem da mesma forma, sem estado próprio.
 `pronto`, `falhou` com o motivo) para campeões, itens e runas. A tela troca
 "Carregando" por "Não consegui os dados de campeão" quando falhou.
 
-**Enquanto isso:** a falha só aparece no log da casca.
+**Feito (A32):** `EngineStatus` ganhou `champions_error` e `items_error`, que
+`guardar_carga` preenche; a faixa do draft e a build dizem o motivo
+(T-CASCA-30, TF-DRAFT-14, TF-PARTIDA-5). Falta: as runas, e um "carregando" de
+item e de runa separado do de campeão.
 
 ## GC-8 — O overlay não arrasta e não diz o próprio estado (P1)
 

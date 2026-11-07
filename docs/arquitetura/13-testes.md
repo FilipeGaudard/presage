@@ -551,6 +551,7 @@ pedem a árvore do Tauri para compilar ([08 §4](08-desenvolvimento-e-testes.md#
 | T-CASCA-27 | `iniciar_com_o_windows_so_quando_o_jogador_liga` | arquitetura | `lib.rs` tem um `.enable()` só, e dentro de `set_autostart` | R-19, B11 |
 | T-CASCA-28 | `fechar_a_janela_principal_esconde_em_vez_de_destruir` | arquitetura | O `on_window_event` da casca pega `CloseRequested` da `main`, chama `prevent_close` e esconde a janela | R-19, A16 |
 | T-CASCA-29 | `cada_janela_tem_so_o_que_precisa` | arquitetura | Nas capabilities, o overlay não tem permissão de `updater:` nem de `process:`, e a janela principal tem o atualizador | A33 |
+| T-CASCA-30 | `uma_carga_que_falha_diz_por_que_e_nao_apaga_o_indice` | unidade | Uma carga de campeões com erro `"Data Dragon e cache"` sobre `"sem rede"` deixa `ready` falso e `champions_error` = `"Data Dragon e cache: sem rede"`, sem tocar em `items_error`; uma falha depois de um índice da 16.21.1 mantém a versão, e uma carga que dá certo limpa o motivo | R-1, R-10, RNF-1, A32 |
 
 ## 3. Rodando um teste
 
