@@ -1086,4 +1086,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 54 | 8 | 0 | 38 |
+| 50 | 12 | 0 | 38 |
