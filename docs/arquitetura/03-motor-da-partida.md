@@ -35,9 +35,10 @@ O que o motor reage, com teste para cada caso:
   (T-BUILD-3);
 - o inimigo comprar armadura faz penetração subir na sua lista.
 
-Um limite que a ordem herda: o dano efetivo soma AD e AP um para um, sem saber
-com o que o campeão bate. Entre itens ofensivos de tipos diferentes a lista pode
-pôr um item de AP no topo para um campeão de AD (defeito A4 em `build/audit.md`).
+O dano efetivo da build pesa AD e AP pelo jeito que o seu campeão bate: as
+notas de ataque e magia do Data Dragon, normalizadas ([RN-19](../produto/regras-e-pesos.md#rn-19--o-que-entra-na-lista-e-como-o-item-é-pesado)).
+Sem isso, o Bastão, que dá mais pontos por ouro, passava à frente da Lâmina de um
+lutador (A4, T-BUILD-10). O peso é regra sobre uma nota, não dano medido.
 
 ### De onde vêm os números
 

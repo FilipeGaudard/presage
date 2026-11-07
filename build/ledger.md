@@ -12,15 +12,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 338 | 338 | 0 | 0 |
+| test | 339 | 339 | 0 | 0 |
 | ui-test | 41 | 3 | 38 | 0 |
 | trace | 43 | 33 | 10 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 464; nomes no catálogo (13): 462; fora dele: 0
-- links relativos conferidos: 868
-- IDs citados conferidos: 2833
+- testes no código: 466; nomes no catálogo (13): 464; fora dele: 0
+- links relativos conferidos: 869
+- IDs citados conferidos: 2841
 
 ## type
 
@@ -147,13 +147,13 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::draft::selectable` | arquitetura/11-catalogo-de-funcoes §3.3 | done | core/src/draft.rs:280 |
 | `core::draft::to_draft_state` | arquitetura/11-catalogo-de-funcoes §3.1 | done | core/src/draft.rs:129 |
 | `core::engine::build::effective_hp_against` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:94 |
-| `core::engine::build::incoming_physical_share` | arquitetura/11-catalogo-de-funcoes §26.3 | done | core/src/engine/build.rs:133 |
+| `core::engine::build::incoming_physical_share` | arquitetura/11-catalogo-de-funcoes §26.3 | done | core/src/engine/build.rs:152 |
 | `core::engine::build::loadout` | arquitetura/11-catalogo-de-funcoes §26.2 | done | core/src/engine/build.rs:69 |
 | `core::engine::build::offense_against` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:112 |
-| `core::engine::build::side_power` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:167 |
-| `core::engine::build::skirmish_odds` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:194 |
-| `core::engine::build::suggest` | arquitetura/11-catalogo-de-funcoes §26.1 | done | core/src/engine/build.rs:228 |
-| `core::engine::build::team_penetration` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:209 |
+| `core::engine::build::side_power` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:186 |
+| `core::engine::build::skirmish_odds` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:213 |
+| `core::engine::build::suggest` | arquitetura/11-catalogo-de-funcoes §26.1 | done | core/src/engine/build.rs:247 |
+| `core::engine::build::team_penetration` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:228 |
 | `core::engine::champion::BaseStats::armor_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:69 |
 | `core::engine::champion::BaseStats::attack_damage_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:75 |
 | `core::engine::champion::BaseStats::health_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:66 |
@@ -544,15 +544,16 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Item | Fonte | Estado | Onde / motivo |
 |---|---|---|---|
-| `T-BUILD-1` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:426 |
-| `T-BUILD-2` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:440 |
-| `T-BUILD-3` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:455 |
-| `T-BUILD-4` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:465 |
-| `T-BUILD-5` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:489 |
-| `T-BUILD-6` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:479 |
-| `T-BUILD-7` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:509 |
-| `T-BUILD-8` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:526 |
-| `T-BUILD-9` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:535 |
+| `T-BUILD-1` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:473 |
+| `T-BUILD-10` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:451 |
+| `T-BUILD-2` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:487 |
+| `T-BUILD-3` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:502 |
+| `T-BUILD-4` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:512 |
+| `T-BUILD-5` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:536 |
+| `T-BUILD-6` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:526 |
+| `T-BUILD-7` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:556 |
+| `T-BUILD-8` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:573 |
+| `T-BUILD-9` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:582 |
 | `T-CASCA-1` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:165 |
 | `T-CASCA-10` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:211 |
 | `T-CASCA-11` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:225 |
@@ -1076,4 +1077,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 60 | 2 | 0 | 38 |
+| 59 | 3 | 0 | 38 |

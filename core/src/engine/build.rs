@@ -16,7 +16,7 @@
 
 use serde::Serialize;
 
-use super::champion::ChampionIndex;
+use super::champion::{Champion, ChampionIndex};
 use super::damage::{damage_multiplier, effective_resist, Penetration};
 use super::items::{ItemIndex, ItemStats};
 
@@ -110,15 +110,34 @@ pub fn effective_hp_against(
 
 /// Proxy de saída de dano contra as resistências reais dos alvos.
 pub fn offense_against(me: &Loadout, targets: &[Loadout]) -> f64 {
+    offense_weighted(me, targets, (1.0, 1.0))
+}
+
+/// Quanto do dano do campeão é AD e quanto é AP, pelas notas de ataque e magia
+/// do Data Dragon (`info.attack`, `info.magic`, de 0 a 10). Sem nota nenhuma,
+/// metade de cada, que é a soma um para um de antes.
+///
+/// Serve à build: um ponto de AP não vira dano para quem bate com AD, e o
+/// Bastão, que dá mais pontos por ouro, não pode passar à frente da Lâmina de um
+/// lutador (A4). É regra escrita à mão sobre uma nota da Riot, não medição.
+fn damage_weights(champion: &Champion) -> (f64, f64) {
+    let total = champion.attack + champion.magic;
+    if total <= 0.0 {
+        return (0.5, 0.5);
+    }
+    (champion.attack / total, champion.magic / total)
+}
+
+fn offense_weighted(me: &Loadout, targets: &[Loadout], (ad, ap): (f64, f64)) -> f64 {
     if targets.is_empty() {
-        return me.attack_damage + me.ability_power;
+        return me.attack_damage * ad + me.ability_power * ap;
     }
 
     let sum: f64 = targets
         .iter()
         .map(|target| {
-            me.attack_damage * damage_multiplier(effective_resist(target.armor, &me.physical_pen))
-                + me.ability_power
+            ad * me.attack_damage * damage_multiplier(effective_resist(target.armor, &me.physical_pen))
+                + ap * me.ability_power
                     * damage_multiplier(effective_resist(target.magic_resist, &me.magic_pen))
         })
         .sum();
@@ -243,8 +262,14 @@ pub fn suggest(
         .filter_map(|enemy| loadout(enemy, champions, items))
         .collect();
 
+    // O dano que conta é o do jeito que você bate (A4).
+    let weights = champions
+        .get(you.champion_id)
+        .map(damage_weights)
+        .unwrap_or((0.5, 0.5));
+
     let base_ehp = effective_hp_against(&mine, share, &enemy_physical_pen, &enemy_magic_pen);
-    let base_offense = offense_against(&mine, &targets);
+    let base_offense = offense_weighted(&mine, &targets, weights);
     let base_power = base_ehp * base_offense;
 
     let context = BuildContext {
@@ -276,7 +301,7 @@ pub fn suggest(
             );
 
             let ehp = effective_hp_against(&with_item, share, &enemy_physical_pen, &enemy_magic_pen);
-            let offense = offense_against(&with_item, &targets);
+            let offense = offense_weighted(&with_item, &targets, weights);
             let power = ehp * offense;
 
             let gain = (power / base_power - 1.0) * 100.0;
@@ -421,6 +446,28 @@ mod tests {
 
     fn rank_of(suggestions: &[ItemSuggestion], id: i64) -> usize {
         suggestions.iter().position(|s| s.item_id == id).expect("item no ranking")
+    }
+
+    #[test]
+    fn para_um_campeao_de_ad_a_lamina_fica_acima_do_bastao() {
+        // Eu: lutador com ataque 7 e magia 3 no Data Dragon. O Bastão dá mais
+        // pontos por ouro que a Lâmina, mas ponto de AP não é dano para quem bate
+        // com AD (A4).
+        let inimigos = vec![enemy(20, vec![DANO]), enemy(20, vec![DANO])];
+        let (_, sugestoes) = suggest(&me(), &inimigos, &champions(), &items(), 10);
+        let lamina = sugestoes.iter().find(|s| s.item_id == DANO).unwrap().value_per_1000g;
+        let bastao = sugestoes.iter().find(|s| s.item_id == PODER).unwrap().value_per_1000g;
+        assert!(lamina > bastao, "Lâmina {lamina} por 1000, Bastão {bastao}");
+    }
+
+    #[test]
+    fn para_um_mago_o_bastao_fica_acima_da_lamina() {
+        let mago = Combatant { champion_id: 21, level: 11, items: vec![] };
+        let inimigos = vec![enemy(20, vec![DANO]), enemy(20, vec![DANO])];
+        let (_, sugestoes) = suggest(&mago, &inimigos, &champions(), &items(), 10);
+        let lamina = sugestoes.iter().find(|s| s.item_id == DANO).unwrap().value_per_1000g;
+        let bastao = sugestoes.iter().find(|s| s.item_id == PODER).unwrap().value_per_1000g;
+        assert!(bastao > lamina, "Bastão {bastao} por 1000, Lâmina {lamina}");
     }
 
     #[test]

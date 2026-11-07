@@ -363,6 +363,7 @@ Bastão (120 de AP), a 3000.
 | T-BUILD-7 | `campeao_desconhecido_devolve_vazio_sem_panico`, `sem_inimigos_ainda_ranqueia` | unidade | O campeão 9999, fora do índice, dá lista vazia sem pânico; você conhecido sem nenhum inimigo dá lista não vazia | R-10 |
 | T-BUILD-8 | `limite_e_respeitado_e_a_ordem_e_estavel` | propriedade | Com `limit = 3` saem exatamente 3 sugestões, e duas chamadas com a mesma entrada devolvem vetores iguais | R-10 |
 | T-BUILD-9 | `a_razao_cita_o_numero_real` | unidade | Contra dois atiradores com Lâmina, alguma razão da Placas contém "físico", a frase com a porcentagem de dano físico deles | R-10 |
+| T-BUILD-10 | `para_um_campeao_de_ad_a_lamina_fica_acima_do_bastao`, `para_um_mago_o_bastao_fica_acima_da_lamina` | regressão | Contra dois atiradores com a Lâmina, no nível 11: para o lutador (ataque 7, magia 3) a Lâmina (70 AD, 3000) vale mais por 1000 de ouro que o Bastão (120 AP, 3000); para o mago (ataque 2, magia 9), o contrário. Antes da correção, o lutador via o Bastão em primeiro | R-10, A4 |
 
 ### 2.12 Rotas, escaramuças e destaque
 

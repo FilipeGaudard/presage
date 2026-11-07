@@ -1455,8 +1455,11 @@ pub fn suggest(
   2. Lê o time inimigo: a divisão do dano que vem (`incoming_physical_share`), a
      maior penetração de cada componente (`team_penetration`) e os `Loadout` dos
      alvos.
-  3. Poder base = vida efetiva × dano efetivo. Poder não positivo ou infinito:
-     devolve o contexto preenchido e a lista vazia.
+  3. Poder base = vida efetiva × dano efetivo. O dano efetivo pesa AD e AP pelo
+     jeito que o seu campeão bate: as notas de ataque e magia do Data Dragon,
+     `attack / (attack + magic)` para o AD e o resto para o AP; sem nota, metade
+     de cada (A4). Poder não positivo ou infinito: devolve o contexto preenchido e
+     a lista vazia.
   4. Para cada item comprável de custo ≥ `MIN_ITEM_COST` que você não tem, soma o
      item aos seus e mede o ganho de poder em % por 1000 de ouro, a vida efetiva a
      mais, o ganho de dano efetivo e até duas razões (`reasons_for`).
@@ -1467,8 +1470,9 @@ pub fn suggest(
 - **Retorno:** o `BuildContext` e as sugestões. Na ponte, a tupla vira o par JSON
   `[contexto, lista]` de `build_suggestions`.
 - **Erros:** nenhum. Campeão desconhecido ou poder base inválido dão lista vazia.
-- **Confiança:** alta na ordem; o `value_per_1000g` é índice, não DPS
-  ([visão geral §2](../produto/visao-geral.md#2-de-onde-vem-cada-número)).
+- **Confiança:** alta na ordem entre itens do mesmo tipo de dano; regra entre AD
+  e AP (o peso sai de uma nota da Riot, não de dano medido); o `value_per_1000g` é
+  índice, não DPS ([visão geral §2](../produto/visao-geral.md#2-de-onde-vem-cada-número)).
 - **Atende:** R-10, C-6, ADR-0015
 
 O desenho, os limites e o que o motor não trata estão em

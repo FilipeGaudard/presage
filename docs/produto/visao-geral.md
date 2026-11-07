@@ -55,7 +55,7 @@ resposta honesta é que eles **não têm todos a mesma qualidade**.
 | O que aparece | De onde sai | Confiança |
 |---|---|---|
 | Ouro em itens, CS, nível, mortes, timers | medição direta da partida | **exata** |
-| Valor de item por 1000 de ouro | fórmulas de resistência e penetração do jogo | **alta na ordem** entre itens do mesmo tipo de dano, índice no valor; entre AD e AP, **fraca** (pesam um para um) |
+| Valor de item por 1000 de ouro | fórmulas de resistência e penetração do jogo | **alta na ordem** entre itens do mesmo tipo de dano, índice no valor; entre AD e AP, **regra** (pesam pela nota de ataque e magia do campeão, RN-19) |
 | Divisão do dano que vem (`81% físico`) | itens que eles compraram | alta depois dos primeiros itens |
 | A mesma, antes de eles comprarem | prior de classe escrito à mão | **fraca** |
 | Chance por rota e escaramuça | razão de poder de combate × peso escolhido à mão | **fraca como probabilidade** |
@@ -93,9 +93,9 @@ A ressalva: `offense_against` é um **proxy** de saída de dano — `AD × mult 
 AP × mult`. Não simula rotações de habilidade, velocidade de ataque, crítico nem
 cooldown. Por isso a *ordem* dos itens é confiável entre itens do mesmo tipo de
 dano, e o `6.8` é um índice relativo, não um ganho medido de DPS. Entre um item
-de AD e um de AP a ordem não é confiável: o proxy soma os dois um para um, sem
-saber com o que o campeão bate, e um item de AP pode ir ao topo para um campeão
-de AD (defeito A4 em `build/audit.md`).
+de AD e um de AP, a build pesa os dois pela nota de ataque e magia do campeão no
+Data Dragon (RN-19): uma regra que põe a Lâmina antes do Bastão para um lutador,
+não uma medida de quanto cada ponto rende nele.
 
 ### O que é regra escrita à mão
 

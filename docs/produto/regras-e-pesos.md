@@ -477,16 +477,21 @@ const MIN_ITEM_COST: f64 = 1000.0;
 ```
 
 - **Regra:** só item comprável de 1000 de ouro ou mais. Poder é vida efetiva ×
-  dano efetivo, e o dano efetivo soma AD e AP um para um, passados pelas
-  resistências do alvo. A penetração inimiga é o pior caso: o maior percentual e
-  a maior letalidade entre eles, juntos.
+  dano efetivo, e o dano efetivo pesa AD e AP pelo jeito que o seu campeão bate:
+  `attack / (attack + magic)` para o AD e `magic / (attack + magic)` para o AP,
+  com as notas de 0 a 10 do Data Dragon (`info`); sem nota, metade de cada. Tudo
+  passa pelas resistências do alvo. A penetração inimiga é o pior caso: o maior
+  percentual e a maior letalidade entre eles, juntos. Na escaramuça (RN-21) o
+  dano continua somando AD e AP um para um, porque lá os itens são os de verdade.
 - **Origem:** o produto vida × dano e as resistências são mecânica; o corte de
-  custo, o peso 1 para 1 e o pior caso são escolha à mão.
-- **Confiança:** alta na ordem entre itens do mesmo tipo de dano; fraca entre AD e
-  AP (o peso 1 para 1 põe item de AP no topo para campeão de AD, defeito no
-  `build/audit.md`).
-- **Onde:** `core/src/engine/build.rs:24`, `build.rs:112-127` (dano efetivo),
-  `build.rs:219-222` (pior caso), `build.rs:266` (corte); 11 §26, 03 §2.
+  custo, o peso pela nota e o pior caso são escolha à mão.
+- **Confiança:** alta na ordem entre itens do mesmo tipo de dano; **regra** entre
+  AD e AP: a nota da Riot diz com o que o campeão bate, não quanto cada ponto
+  rende nele. Até a 0.7.0 o peso era 1 para 1 e punha item de AP no topo para
+  campeão de AD (A4, T-BUILD-10).
+- **Onde:** `core/src/engine/build.rs:24`, `damage_weights` e `offense_weighted`
+  (dano efetivo da build), `build.rs:219-222` (pior caso), `build.rs:266`
+  (corte); 11 §26, 03 §2.
 - **Quando a base existir:** o peso entre AD e AP sai da divisão de dano real do
   campeão (match-v5); o corte de custo, da árvore do item no Data Dragon
   (`into`, `depth`); a penetração, ponderada pela fatia de dano de cada inimigo.
@@ -856,7 +861,7 @@ Valor no código, não conferido pelo doccheck:
 | RN-16 | `LEVEL`, `ROBUST`, `RELEVANT` | escolha à mão | alta / regra | fica |
 | RN-17 | `weight` por rota, `½ⁿ` | escolha à mão | regra | matchup da pool |
 | RN-18 | `REGRAS`, `SECUNDARIAS` | escolha à mão | regra | winrate da runa no confronto |
-| RN-19 | `MIN_ITEM_COST`, AD e AP 1 para 1 | mecânica / escolha à mão | alta / fraca | divisão de dano real; árvore do item |
+| RN-19 | `MIN_ITEM_COST`, AD e AP pela nota do Data Dragon | mecânica / escolha à mão | alta / regra | divisão de dano real; árvore do item |
 | RN-20 | `W_DUEL`, `FLOOR`, `CEILING` (rota) | escolha à mão | fraca | regressão; calibração |
 | RN-21 | `GROUPS`, `OBJECTIVE_WINDOW` (destaque) | escolha à mão | regra | timeline |
 | RN-22 | renda reconstruída | mecânica / escolha à mão | fraca | timeline; `currentGold` |
