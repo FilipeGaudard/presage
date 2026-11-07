@@ -1341,6 +1341,7 @@ pp é quem mostra (`Scored::delta`, 10 §9).
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(from = "RecordCru")]
 pub struct Record {
     pub games: u32, // contagem de partidas; da match-v5 (coletor ou conta)
     pub wins: u32,  // contagem de vitórias entre essas partidas
@@ -1351,9 +1352,10 @@ Sem `rename_all`: no disco é `{"games": 40000, "wins": 21000}`, tanto em
 `base-de-partidas.json` quanto em `personal-v2.json`.
 
 **Invariantes:**
-- `wins ≤ games` só quando o registro nasce de `Record::new` (`stats.rs:14`), que
-  corta `wins` em `games`. O literal `Record { games, wins }` e o `Deserialize`
-  não passam por ali: um arquivo com `wins > games` carrega como está.
+- `wins ≤ games` quando o registro nasce de `Record::new`, que corta `wins` em
+  `games`, e também quando ele vem do disco: o `Deserialize` passa por
+  `RecordCru` e `Record::new` (A25, T-STATS-20). Só o literal
+  `Record { games, wins }` no próprio código fura o corte.
 
 ### 19.2 `Estimate`
 

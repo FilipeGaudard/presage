@@ -50,12 +50,35 @@ pub struct Dataset {
     pub length: HashMap<String, Record>,
 }
 
+/// O nome da rota na chave da base. Escrito à mão, e não `{role:?}`: o arquivo
+/// dura entre versões, e renomear uma variante em Rust não pode invalidar toda
+/// base gravada sem erro (A25). Variante nova obriga a escolher o texto aqui.
+fn rota(role: Role) -> &'static str {
+    match role {
+        Role::Top => "Top",
+        Role::Jungle => "Jungle",
+        Role::Mid => "Mid",
+        Role::Bot => "Bot",
+        Role::Support => "Support",
+        Role::Unknown => "Unknown",
+    }
+}
+
+/// O nome da faixa de duração na chave, pelo mesmo motivo de `rota`.
+fn faixa(bucket: Length) -> &'static str {
+    match bucket {
+        Length::Curta => "Curta",
+        Length::Media => "Media",
+        Length::Longa => "Longa",
+    }
+}
+
 pub fn base_key(champion: i64, role: Role) -> String {
-    format!("{champion}:{role:?}")
+    format!("{champion}:{}", rota(role))
 }
 
 pub fn matchup_key(champion: i64, opponent: i64, role: Role) -> String {
-    format!("{champion}:{opponent}:{role:?}")
+    format!("{champion}:{opponent}:{}", rota(role))
 }
 
 /// Sinergia não tem ordem: o par é sempre guardado com o menor id antes.
@@ -70,7 +93,7 @@ pub fn versus_key(champion: i64, opponent: i64) -> String {
 }
 
 pub fn length_key(champion: i64, role: Role, bucket: Length) -> String {
-    format!("{champion}:{role:?}:{bucket:?}")
+    format!("{champion}:{}:{}", rota(role), faixa(bucket))
 }
 
 impl Dataset {
@@ -190,6 +213,34 @@ mod tests {
                 Record::new(9_000, 4_900),
             )]),
         }
+    }
+
+    #[test]
+    fn as_chaves_da_base_nao_mudam() {
+        // O formato das chaves é o do arquivo da base, que dura entre versões:
+        // ele não pode depender do nome de uma variante em Rust (A25).
+        assert_eq!(base_key(103, Role::Mid), "103:Mid");
+        assert_eq!(matchup_key(103, 238, Role::Support), "103:238:Support");
+        assert_eq!(length_key(103, Role::Top, Length::Media), "103:Top:Media");
+        let rotas: Vec<String> = [Role::Top, Role::Jungle, Role::Mid, Role::Bot, Role::Support, Role::Unknown]
+            .into_iter()
+            .map(|r| base_key(1, r))
+            .collect();
+        assert_eq!(rotas, ["1:Top", "1:Jungle", "1:Mid", "1:Bot", "1:Support", "1:Unknown"]);
+        let faixas: Vec<String> = [Length::Curta, Length::Media, Length::Longa]
+            .into_iter()
+            .map(|b| length_key(1, Role::Mid, b))
+            .collect();
+        assert_eq!(faixas, ["1:Mid:Curta", "1:Mid:Media", "1:Mid:Longa"]);
+    }
+
+    #[test]
+    fn registro_lido_do_disco_nunca_tem_mais_vitorias_que_partidas() {
+        // `Record::new` corta as vitórias nas partidas; a leitura do arquivo
+        // tem de cortar também (A25).
+        let r: Record = serde_json::from_str(r#"{ "games": 10, "wins": 12 }"#).unwrap();
+        assert!(r.wins <= r.games, "{r:?}");
+        assert_eq!(r, Record::new(10, 12));
     }
 
     #[test]

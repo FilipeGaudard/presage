@@ -1152,11 +1152,11 @@ pub fn length_key(champion: i64, role: Role, bucket: Length) -> String;
 
 | Função | Faz | Atende |
 |---|---|---|
-| `base_key` | `"103:Mid"`: id e o `Debug` da rota | R-21 |
+| `base_key` | `"103:Mid"`: id e o nome da rota escrito à mão em `rota` (não o `Debug`: renomear a variante não muda o arquivo, A25) | R-21 |
 | `matchup_key` | `"103:238:Mid"`: direcional, conta o resultado do primeiro | R-21 |
 | `synergy_key` | `"64:103"`: o menor id sempre antes, para o par não ter ordem | R-21 |
 | `versus_key` | `"103:64"`: direcional, o primeiro contra o segundo em qualquer rota inimiga | R-21, ADR-0019 |
-| `length_key` | `"103:Mid:Longa"`: id, rota e faixa, pelo `Debug` | R-21, ADR-0018 |
+| `length_key` | `"103:Mid:Longa"`: id, rota e faixa, com os nomes escritos à mão em `rota` e `faixa` | R-21, ADR-0018 |
 
 O coletor grava com as mesmas funções (`aggregate.rs`), e o formato do arquivo está
 em 10 §20.2.

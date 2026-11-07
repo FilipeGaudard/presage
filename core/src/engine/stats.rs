@@ -5,9 +5,24 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(from = "RecordCru")]
 pub struct Record {
     pub games: u32,
     pub wins: u32,
+}
+
+/// O registro como está no arquivo. Ler passa por `Record::new`, que corta as
+/// vitórias nas partidas: o invariante vale também para o que vem do disco (A25).
+#[derive(Deserialize)]
+struct RecordCru {
+    games: u32,
+    wins: u32,
+}
+
+impl From<RecordCru> for Record {
+    fn from(cru: RecordCru) -> Self {
+        Record::new(cru.games, cru.wins)
+    }
 }
 
 impl Record {

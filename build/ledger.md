@@ -12,15 +12,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 354 | 354 | 0 | 0 |
+| test | 355 | 355 | 0 | 0 |
 | ui-test | 43 | 10 | 33 | 0 |
 | trace | 43 | 37 | 6 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 482; nomes no catálogo (13): 482; fora dele: 0
+- testes no código: 484; nomes no catálogo (13): 484; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 2945
+- IDs citados conferidos: 2949
 
 ## type
 
@@ -63,7 +63,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::context::Placed` | arquitetura/10-modelo-de-dados §10.2 | done | core/src/engine/context.rs:38 |
 | `core::engine::damage::Penetration` | arquitetura/10-modelo-de-dados §25.1 | done | core/src/engine/damage.rs:11 |
 | `core::engine::dataset::Dataset` | arquitetura/10-modelo-de-dados §20.1 | done | core/src/engine/dataset.rs:27 |
-| `core::engine::dataset::Layered` | arquitetura/10-modelo-de-dados §20.3 | done | core/src/engine/dataset.rs:113 |
+| `core::engine::dataset::Layered` | arquitetura/10-modelo-de-dados §20.3 | done | core/src/engine/dataset.rs:136 |
 | `core::engine::gold::GoldPlayer` | arquitetura/10-modelo-de-dados §28.1 | done | core/src/engine/gold.rs:41 |
 | `core::engine::gold::GoldReport` | arquitetura/10-modelo-de-dados §28.2 | done | core/src/engine/gold.rs:61 |
 | `core::engine::items::Item` | arquitetura/10-modelo-de-dados §24.2 | done | core/src/engine/items.rs:84 |
@@ -95,12 +95,12 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::runes::RunePlan` | arquitetura/10-modelo-de-dados §18.4 | done | core/src/engine/runes.rs:72 |
 | `core::engine::runes::RuneSuggestion` | arquitetura/10-modelo-de-dados §18.3 | done | core/src/engine/runes.rs:59 |
 | `core::engine::Scored` | arquitetura/10-modelo-de-dados §9.1 | done | core/src/engine/mod.rs:57 |
-| `core::engine::stats::Estimate` | arquitetura/10-modelo-de-dados §19.2 | done | core/src/engine/stats.rs:22 |
-| `core::engine::stats::Length` | arquitetura/10-modelo-de-dados §19.3 | done | core/src/engine/stats.rs:116 |
-| `core::engine::stats::NoStats` | arquitetura/10-modelo-de-dados §19.5 | done | core/src/engine/stats.rs:182 |
-| `core::engine::stats::PersonalStats` | arquitetura/10-modelo-de-dados §19.6 | done | core/src/engine/stats.rs:206 |
+| `core::engine::stats::Estimate` | arquitetura/10-modelo-de-dados §19.2 | done | core/src/engine/stats.rs:37 |
+| `core::engine::stats::Length` | arquitetura/10-modelo-de-dados §19.3 | done | core/src/engine/stats.rs:131 |
+| `core::engine::stats::NoStats` | arquitetura/10-modelo-de-dados §19.5 | done | core/src/engine/stats.rs:197 |
+| `core::engine::stats::PersonalStats` | arquitetura/10-modelo-de-dados §19.6 | done | core/src/engine/stats.rs:221 |
 | `core::engine::stats::Record` | arquitetura/10-modelo-de-dados §19.1 | done | core/src/engine/stats.rs:7 |
-| `core::engine::stats::StatsStore` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:138 |
+| `core::engine::stats::StatsStore` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:153 |
 | `core::engine::team::Seat` | arquitetura/10-modelo-de-dados §14.1 | done | core/src/engine/team.rs:28 |
 | `core::engine::team::TeamEstimate` | arquitetura/10-modelo-de-dados §14.3 | done | core/src/engine/team.rs:47 |
 | `core::engine::team::TeamTerm` | arquitetura/10-modelo-de-dados §14.2 | done | core/src/engine/team.rs:38 |
@@ -191,15 +191,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::damage::damage_multiplier` | arquitetura/11-catalogo-de-funcoes §25.2 | done | core/src/engine/damage.rs:45 |
 | `core::engine::damage::effective_hp` | arquitetura/11-catalogo-de-funcoes §25.3 | done | core/src/engine/damage.rs:54 |
 | `core::engine::damage::effective_resist` | arquitetura/11-catalogo-de-funcoes §25.1 | done | core/src/engine/damage.rs:24 |
-| `core::engine::dataset::base_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:53 |
-| `core::engine::dataset::Dataset::is_usable` | arquitetura/11-catalogo-de-funcoes §20.2 | done | core/src/engine/dataset.rs:77 |
-| `core::engine::dataset::Layered::matches` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:129 |
-| `core::engine::dataset::Layered::patch` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:125 |
-| `core::engine::dataset::Layered::with_global` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:120 |
-| `core::engine::dataset::length_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:72 |
-| `core::engine::dataset::matchup_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:57 |
-| `core::engine::dataset::synergy_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:62 |
-| `core::engine::dataset::versus_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:68 |
+| `core::engine::dataset::base_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:76 |
+| `core::engine::dataset::Dataset::is_usable` | arquitetura/11-catalogo-de-funcoes §20.2 | done | core/src/engine/dataset.rs:100 |
+| `core::engine::dataset::Layered::matches` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:152 |
+| `core::engine::dataset::Layered::patch` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:148 |
+| `core::engine::dataset::Layered::with_global` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:143 |
+| `core::engine::dataset::length_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:95 |
+| `core::engine::dataset::matchup_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:80 |
+| `core::engine::dataset::synergy_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:85 |
+| `core::engine::dataset::versus_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:91 |
 | `core::engine::gold::earned_at` | arquitetura/11-catalogo-de-funcoes §28.1 | done | core/src/engine/gold.rs:77 |
 | `core::engine::gold::report` | arquitetura/11-catalogo-de-funcoes §28.2 | done | core/src/engine/gold.rs:90 |
 | `core::engine::items::ItemIndex::get` | arquitetura/11-catalogo-de-funcoes §24.3 | done | core/src/engine/items.rs:101 |
@@ -242,32 +242,32 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::runes::plan` | arquitetura/11-catalogo-de-funcoes §18.2 | done | core/src/engine/runes.rs:246 |
 | `core::engine::runes::RuneIndex::get` | arquitetura/11-catalogo-de-funcoes §18.1 | done | core/src/engine/runes.rs:51 |
 | `core::engine::runes::RuneIndex::is_empty` | arquitetura/11-catalogo-de-funcoes §18.1 | done | core/src/engine/runes.rs:54 |
-| `core::engine::stats::Estimate::se` | arquitetura/11-catalogo-de-funcoes §19.2 | done | core/src/engine/stats.rs:31 |
-| `core::engine::stats::expected_against` | arquitetura/11-catalogo-de-funcoes §19.7 | done | core/src/engine/stats.rs:104 |
-| `core::engine::stats::expected_together` | arquitetura/11-catalogo-de-funcoes §19.7 | done | core/src/engine/stats.rs:110 |
-| `core::engine::stats::Length::of` | arquitetura/11-catalogo-de-funcoes §19.8 | done | core/src/engine/stats.rs:129 |
-| `core::engine::stats::logistic` | arquitetura/11-catalogo-de-funcoes §19.7 | done | core/src/engine/stats.rs:94 |
-| `core::engine::stats::logit` | arquitetura/11-catalogo-de-funcoes §19.7 | done | core/src/engine/stats.rs:89 |
-| `core::engine::stats::PersonalStats::add_match` | arquitetura/11-catalogo-de-funcoes §19.9 | done | core/src/engine/stats.rs:238 |
-| `core::engine::stats::PersonalStats::add_played` | arquitetura/11-catalogo-de-funcoes §19.9 | done | core/src/engine/stats.rs:220 |
-| `core::engine::stats::PersonalStats::mark_seen` | arquitetura/11-catalogo-de-funcoes §19.9 | done | core/src/engine/stats.rs:232 |
-| `core::engine::stats::PersonalStats::total_games` | arquitetura/11-catalogo-de-funcoes §19.9 | done | core/src/engine/stats.rs:254 |
-| `core::engine::stats::posterior_sd` | arquitetura/11-catalogo-de-funcoes §19.6 | done | core/src/engine/stats.rs:85 |
-| `core::engine::stats::Record::new` | arquitetura/11-catalogo-de-funcoes §19.1 | done | core/src/engine/stats.rs:14 |
-| `core::engine::stats::shrink` | arquitetura/11-catalogo-de-funcoes §19.3 | done | core/src/engine/stats.rs:43 |
-| `core::engine::stats::shrunk_delta` | arquitetura/11-catalogo-de-funcoes §19.4 | done | core/src/engine/stats.rs:62 |
-| `core::engine::stats::StatsStore::base` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:139 |
-| `core::engine::stats::StatsStore::has_global` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:156 |
-| `core::engine::stats::StatsStore::has_personal` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:162 |
-| `core::engine::stats::StatsStore::lane_profile` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:172 |
-| `core::engine::stats::StatsStore::length` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:150 |
-| `core::engine::stats::StatsStore::matchup` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:140 |
-| `core::engine::stats::StatsStore::personal` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:142 |
-| `core::engine::stats::StatsStore::personal_games` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:166 |
-| `core::engine::stats::StatsStore::played_in` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:177 |
-| `core::engine::stats::StatsStore::synergy` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:141 |
-| `core::engine::stats::StatsStore::versus` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:145 |
-| `core::engine::stats::strength_for_sd` | arquitetura/11-catalogo-de-funcoes §19.5 | done | core/src/engine/stats.rs:77 |
+| `core::engine::stats::Estimate::se` | arquitetura/11-catalogo-de-funcoes §19.2 | done | core/src/engine/stats.rs:46 |
+| `core::engine::stats::expected_against` | arquitetura/11-catalogo-de-funcoes §19.7 | done | core/src/engine/stats.rs:119 |
+| `core::engine::stats::expected_together` | arquitetura/11-catalogo-de-funcoes §19.7 | done | core/src/engine/stats.rs:125 |
+| `core::engine::stats::Length::of` | arquitetura/11-catalogo-de-funcoes §19.8 | done | core/src/engine/stats.rs:144 |
+| `core::engine::stats::logistic` | arquitetura/11-catalogo-de-funcoes §19.7 | done | core/src/engine/stats.rs:109 |
+| `core::engine::stats::logit` | arquitetura/11-catalogo-de-funcoes §19.7 | done | core/src/engine/stats.rs:104 |
+| `core::engine::stats::PersonalStats::add_match` | arquitetura/11-catalogo-de-funcoes §19.9 | done | core/src/engine/stats.rs:253 |
+| `core::engine::stats::PersonalStats::add_played` | arquitetura/11-catalogo-de-funcoes §19.9 | done | core/src/engine/stats.rs:235 |
+| `core::engine::stats::PersonalStats::mark_seen` | arquitetura/11-catalogo-de-funcoes §19.9 | done | core/src/engine/stats.rs:247 |
+| `core::engine::stats::PersonalStats::total_games` | arquitetura/11-catalogo-de-funcoes §19.9 | done | core/src/engine/stats.rs:269 |
+| `core::engine::stats::posterior_sd` | arquitetura/11-catalogo-de-funcoes §19.6 | done | core/src/engine/stats.rs:100 |
+| `core::engine::stats::Record::new` | arquitetura/11-catalogo-de-funcoes §19.1 | done | core/src/engine/stats.rs:29 |
+| `core::engine::stats::shrink` | arquitetura/11-catalogo-de-funcoes §19.3 | done | core/src/engine/stats.rs:58 |
+| `core::engine::stats::shrunk_delta` | arquitetura/11-catalogo-de-funcoes §19.4 | done | core/src/engine/stats.rs:77 |
+| `core::engine::stats::StatsStore::base` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:154 |
+| `core::engine::stats::StatsStore::has_global` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:171 |
+| `core::engine::stats::StatsStore::has_personal` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:177 |
+| `core::engine::stats::StatsStore::lane_profile` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:187 |
+| `core::engine::stats::StatsStore::length` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:165 |
+| `core::engine::stats::StatsStore::matchup` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:155 |
+| `core::engine::stats::StatsStore::personal` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:157 |
+| `core::engine::stats::StatsStore::personal_games` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:181 |
+| `core::engine::stats::StatsStore::played_in` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:192 |
+| `core::engine::stats::StatsStore::synergy` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:156 |
+| `core::engine::stats::StatsStore::versus` | arquitetura/10-modelo-de-dados §19.4 | done | core/src/engine/stats.rs:160 |
+| `core::engine::stats::strength_for_sd` | arquitetura/11-catalogo-de-funcoes §19.5 | done | core/src/engine/stats.rs:92 |
 | `core::engine::team::estimate` | arquitetura/11-catalogo-de-funcoes §14.2 | done | core/src/engine/team.rs:98 |
 | `core::engine::team::seats` | arquitetura/11-catalogo-de-funcoes §14.1 | done | core/src/engine/team.rs:68 |
 | `core::engine::timeline::BuffTracker::update` | arquitetura/11-catalogo-de-funcoes §29.3 | done | core/src/engine/timeline.rs:246 |
@@ -379,7 +379,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::roles::ROLE_SHARE` | produto/regras-e-pesos RN-8 — Quem joga a rota (`core::engine:: | done | core/src/engine/roles.rs:18 |
 | `core::engine::roles::ROLES` | arquitetura/10-modelo-de-dados §11.1 | done | core/src/engine/roles.rs:15 |
 | `core::engine::runes::MAX_SUGGESTIONS` | produto/regras-e-pesos RN-18 — As regras do confronto | done | core/src/engine/runes.rs:26 |
-| `core::engine::stats::Length::ALL` | arquitetura/10-modelo-de-dados §19.3 | done | core/src/engine/stats.rs:127 |
+| `core::engine::stats::Length::ALL` | arquitetura/10-modelo-de-dados §19.3 | done | core/src/engine/stats.rs:142 |
 | `core::engine::SYNERGY_PRIOR_SD` | produto/regras-e-pesos RN-3 — O quanto cada efeito costuma se e | done | core/src/engine/mod.rs:42 |
 | `core::engine::team::CEILING` | produto/regras-e-pesos RN-12 — A trava da chance do time | done | core/src/engine/team.rs:24 |
 | `core::engine::team::FLOOR` | produto/regras-e-pesos RN-12 — A trava da chance do time | done | core/src/engine/team.rs:23 |
@@ -881,25 +881,26 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-RUNAS-7` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:495 |
 | `T-RUNAS-8` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:521 |
 | `T-RUNAS-9` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:530 |
-| `T-STATS-1` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:294 |
-| `T-STATS-10` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:380 |
-| `T-STATS-11` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:412 |
-| `T-STATS-12` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:437 |
-| `T-STATS-13` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:446 |
-| `T-STATS-14` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:195 |
-| `T-STATS-15` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:221 |
-| `T-STATS-16` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:228 |
-| `T-STATS-17` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:237 |
-| `T-STATS-18` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:277 |
-| `T-STATS-19` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:212 |
-| `T-STATS-2` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:307 |
-| `T-STATS-3` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:320 |
-| `T-STATS-4` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:327 |
-| `T-STATS-5` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:342 |
-| `T-STATS-6` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:352 |
-| `T-STATS-7` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:360 |
-| `T-STATS-8` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:373 |
-| `T-STATS-9` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:400 |
+| `T-STATS-1` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:309 |
+| `T-STATS-10` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:395 |
+| `T-STATS-11` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:427 |
+| `T-STATS-12` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:452 |
+| `T-STATS-13` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:461 |
+| `T-STATS-14` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:246 |
+| `T-STATS-15` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:272 |
+| `T-STATS-16` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:279 |
+| `T-STATS-17` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:288 |
+| `T-STATS-18` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:328 |
+| `T-STATS-19` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:263 |
+| `T-STATS-2` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:322 |
+| `T-STATS-20` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:218 |
+| `T-STATS-3` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:335 |
+| `T-STATS-4` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:342 |
+| `T-STATS-5` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:357 |
+| `T-STATS-6` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:367 |
+| `T-STATS-7` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:375 |
+| `T-STATS-8` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:388 |
+| `T-STATS-9` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:415 |
 
 ## ui-test
 
@@ -1096,4 +1097,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 39 | 23 | 0 | 38 |
+| 38 | 24 | 0 | 38 |
