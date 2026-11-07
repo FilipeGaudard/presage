@@ -1,11 +1,39 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "main",
-  "description": "A janela principal: o padrão do Tauri, o atualizador e o reinício depois de atualizar",
-  "windows": ["main"],
+  "description": "A janela principal: o padrão do Tauri, todos os comandos do app (A52), o atualizador e o reinício depois de atualizar",
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
     "updater:default",
-    "process:allow-restart"
+    "process:allow-restart",
+    "allow-get-snapshot",
+    "allow-engine-status",
+    "allow-lane-profile",
+    "allow-rank-draft",
+    "allow-set-draft-role",
+    "allow-set-enemy-role",
+    "allow-get-enemy-roles",
+    "allow-set-simulated-draft",
+    "allow-get-draft-prefs",
+    "allow-set-draft-prefs",
+    "allow-minimax-draft",
+    "allow-ban-suggestions",
+    "allow-get-pool",
+    "allow-set-pool",
+    "allow-get-live",
+    "allow-build-suggestions",
+    "allow-lane-analysis",
+    "allow-skirmish-focus",
+    "allow-gold-report",
+    "allow-last-review",
+    "allow-pool-suggestions",
+    "allow-rune-plan",
+    "allow-get-overlay-prefs",
+    "allow-set-overlay-prefs",
+    "allow-get-autostart",
+    "allow-set-autostart"
   ]
 }

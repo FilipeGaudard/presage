@@ -25,8 +25,10 @@ chave da Riot: uma derruba uma função, a outra entrega a máquina de cada usu�
   `default-src 'self'; img-src 'self' https://ddragon.leagueoflegends.com data:; connect-src 'self' ipc: http://ipc.localhost https://ddragon.leagueoflegends.com; style-src 'self' 'unsafe-inline'`.
   Sem `unsafe-eval`, sem script de fora. `'unsafe-inline'` só em estilo.
 - **Permissões** por janela: `capabilities/main.json` com `core:default`,
-  `updater:default` e `process:allow-restart`; `capabilities/overlay.json` só com
-  `core:default` (A33). Nada de shell, nada de sistema de arquivos pelo front.
+  `updater:default`, `process:allow-restart` e os 26 comandos do app;
+  `capabilities/overlay.json` com `core:default`, o arrasto da janela e os cinco
+  comandos que o overlay chama (A33, A15, A52; o manifesto de comandos está em
+  `src-tauri/build.rs`). Nada de shell, nada de sistema de arquivos pelo front.
 - **Testes de arquitetura** (`src-tauri/src/arquitetura.rs`) leem o código da
   casca, o `Cargo.lock` e as capabilities: nenhum verbo HTTP que escreve, nenhum
   endereço fora do loopback e da Riot, nenhuma API ou crate de leitura de memória

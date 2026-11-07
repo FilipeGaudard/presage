@@ -554,6 +554,7 @@ pedem a árvore do Tauri para compilar ([08 §4](08-desenvolvimento-e-testes.md#
 | T-CASCA-29 | `cada_janela_tem_so_o_que_precisa` | arquitetura | Nas capabilities, o overlay não tem permissão de `updater:` nem de `process:`, e a janela principal tem o atualizador | A33 |
 | T-CASCA-30 | `uma_carga_que_falha_diz_por_que_e_nao_apaga_o_indice` | unidade | Uma carga de campeões com erro `"Data Dragon e cache"` sobre `"sem rede"` deixa `ready` falso e `champions_error` = `"Data Dragon e cache: sem rede"`, sem tocar em `items_error`; uma falha depois de um índice da 16.21.1 mantém a versão, e uma carga que dá certo limpa o motivo | R-1, R-10, RNF-1, A32 |
 | T-CASCA-31 | `o_overlay_arrasta_pela_cabeca_e_so_pega_clique_quando_mostra_algo` | arquitetura | `capabilities/overlay.json` tem `core:window:allow-start-dragging`; a tag de `className="hud-head"` em `src/overlay.tsx` tem `data-tauri-drag-region`; `overlay.rs` chama `atravessa_o_mouse(` e tem um `set_ignore_cursor_events(` só. Falhou antes da A15 pela permissão | R-15, A15 |
+| T-CASCA-32 | `cada_janela_so_alcanca_os_comandos_que_usa` | arquitetura | Os comandos de `generate_handler!` em `lib.rs` são os de `COMANDOS` em `build.rs`, que vai para `.commands(COMANDOS)`; os `allow-…` de `main.json` são os mesmos 26; os de `overlay.json` são os comandos que `src/overlay.tsx` chama. Falhou antes da A52: o `build.rs` não tinha manifesto | A52 |
 
 ## 3. Rodando um teste
 

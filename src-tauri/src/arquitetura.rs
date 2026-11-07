@@ -196,3 +196,63 @@ fn o_overlay_arrasta_pela_cabeca_e_so_pega_clique_quando_mostra_algo() {
     assert!(overlay.contains("atravessa_o_mouse("), "o clique do overlay não segue OverlayPrefs::atravessa_o_mouse");
     assert_eq!(overlay.matches("set_ignore_cursor_events(").count(), 1, "outro lugar muda o clique sem a regra");
 }
+
+/// Os nomes entre aspas de um trecho, na ordem: `"a", "b"` dá `[a, b]`.
+fn entre_aspas(trecho: &str) -> Vec<String> {
+    trecho.split('"').skip(1).step_by(2).map(str::to_string).collect()
+}
+
+/// As permissões `allow-…` da capability de uma janela, sem o prefixo.
+fn liberados(janela: &str) -> Vec<String> {
+    let arquivo = raiz().join("capabilities").join(format!("{janela}.json"));
+    let cap: serde_json::Value = serde_json::from_str(&ler(&arquivo)).unwrap();
+    let mut out: Vec<String> = cap["permissions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter_map(|p| p.as_str())
+        .filter_map(|p| p.strip_prefix("allow-"))
+        .map(|p| p.replace('-', "_"))
+        .collect();
+    out.sort();
+    out
+}
+
+#[test]
+fn cada_janela_so_alcanca_os_comandos_que_usa() {
+    // A52: sem manifesto de comandos, as duas janelas alcançavam os 26. Com ele,
+    // cada comando registrado tem a sua permissão, a janela principal libera
+    // todos e o overlay só os que ele chama.
+    let lib = ler(&raiz().join("src").join("lib.rs"));
+    let i = lib.find("generate_handler![").expect("generate_handler");
+    let mut registrados: Vec<String> = lib[i + "generate_handler![".len()..lib[i..].find(']').unwrap() + i]
+        .split(',')
+        .map(|c| c.trim().to_string())
+        .filter(|c| !c.is_empty())
+        .collect();
+    registrados.sort();
+    assert!(registrados.len() >= 20, "{registrados:?}");
+
+    let build = ler(&raiz().join("build.rs"));
+    let m = build.find("COMANDOS: &[&str] = &[").expect("o build.rs não tem o manifesto de comandos");
+    let mut manifesto = entre_aspas(&build[m..m + build[m..].find("];").unwrap()]);
+    manifesto.sort();
+    assert!(build.contains(".commands(COMANDOS)"), "o manifesto não vai para o tauri-build");
+    assert_eq!(manifesto, registrados, "comando registrado sem permissão, ou permissão de comando que não existe");
+
+    assert_eq!(liberados("main"), registrados, "a janela principal não alcança todos os comandos");
+
+    let tela = ler(&raiz().join("..").join("src").join("overlay.tsx"));
+    let mut chamados: Vec<String> = tela
+        .match_indices("invoke")
+        .filter_map(|(i, _)| {
+            let resto = &tela[i..];
+            let aspas = resto.find("(\"")?;
+            (aspas < 80).then(|| resto[aspas + 2..aspas + 2 + resto[aspas + 2..].find('"').unwrap()].to_string())
+        })
+        .collect();
+    chamados.sort();
+    chamados.dedup();
+    assert!(chamados.len() >= 3, "{chamados:?}");
+    assert_eq!(liberados("overlay"), chamados, "o overlay alcança mais, ou menos, do que chama");
+}

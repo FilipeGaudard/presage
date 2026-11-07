@@ -30,7 +30,7 @@ de vir da casca, e não ser adivinhado ou copiado no TypeScript.
 | GC-10 | Rótulos escritos dos dois lados | P2 | aberta |
 | GC-11 | O número de seções do overlay escrito à mão | P2 | aberta |
 | GC-12 | O Data Dragon baixado duas vezes | P2 | aberta |
-| GC-13 | Uma capability para as duas janelas | P2 | parcial: uma capability por janela (T-CASCA-29); o manifesto de comandos fica (A52) |
+| GC-13 | Uma capability para as duas janelas | P2 | fechada: uma capability por janela (A33) e o manifesto de comandos (A52) |
 
 ## GC-1 — A falha de um comando não chega à tela (P0)
 
@@ -290,7 +290,7 @@ comandos. O overlay usa cinco ([05 §3](05-seguranca.md#3-o-que-a-webview-pode-c
 comandos que ele usa, declarados num manifesto do app
 (`tauri_build::Attributes::app_manifest`); a principal com o resto.
 
-> **Parcial.** Duas capabilities: `main.json` com o atualizador e o reinício,
-> `overlay.json` só com `core:default` (A33, T-CASCA-29). O manifesto de comandos do
-> app, que limitaria o overlay aos cinco comandos que ele usa, continua aberto
-> (A52).
+> **Fechada.** Duas capabilities: `main.json` com o atualizador e o reinício,
+> `overlay.json` sem eles (A33, T-CASCA-29). O manifesto de comandos do app em
+> `src-tauri/build.rs` limita o overlay aos cinco comandos que ele usa (A52,
+> T-CASCA-32).
