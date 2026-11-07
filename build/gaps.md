@@ -14,9 +14,23 @@ lacunas feitas entraram em três commits de 2026-10-28:
 | `33150d7` | o core da partida: sua rota ao vivo (`rival.rs`), estruturas e buffs (`timeline.rs`) |
 | `7e50a94` | a casca e a tela das oito, com os docs: `selectable` e `DraftState::normalized` (`draft.rs`), os comandos novos (`lib.rs`), o simulador, a bandeja e o iniciar com o Windows |
 
-**Mutantes: não rodados.** Nenhum teste destas lacunas foi provado com um mutante
-que ele mata (`python3 tools/dev/mutant.py`): a máquina em que este recibo foi
-escrito não tem cargo. A linha P2 do `build/audit.md` acompanha.
+**Mutantes (2026-11-07, WSL, `bash tools/dev/core-test.sh <teste>`).** Cada
+lacuna com teste tem uma linha do core trocada, e o teste dela tem de falhar por
+asserção, não por compilação:
+
+| # | Troca | Teste | Resultado |
+|---|---|---|---|
+| G-1 | `enemies[i].role = role` → `Role::Unknown` (`context.rs`) | `a_rota_marcada_vence_a_inferida` | morto (`context.rs:530`) |
+| G-2 | `Some(Metric::Vision)` → `Some(Metric::Farm)` (`rival.rs`) | `suporte_ao_vivo_e_comparado_pela_visao_e_nunca_por_tropas` | morto (`rival.rs:167`) |
+| G-3 | `timings.inhibitor_respawn` → `+ 1.0` (`timeline.rs`) | `inibidor_volta_em_cinco_minutos_nos_dois_formatos_de_nome` | morto (`timeline.rs:624`) |
+| G-4 | `!p.is_dead && !morreu` → `!p.is_dead` (`timeline.rs`) | `quem_morre_perde_o_buff_mesmo_depois_de_renascer` | morto (`timeline.rs:716`) |
+| G-5 | sem `!do_time.contains(&id)` (`minimax.rs`) | `nao_bane_o_que_o_time_quer_pegar_nem_o_que_ja_saiu` | morto (`minimax.rs:565`) |
+| G-6 | sem `!RANKED_QUEUES.contains(&q)` (`draft.rs`) | `na_ranqueada_a_rotacao_gratis_nao_vale` | morto (`draft.rs:387`) |
+| G-7 | `normalized` sem refazer `unavailable` (`draft.rs`) | `draft_montado_a_mao_ganha_indisponiveis_e_rota` | morto (`draft.rs:421`) |
+| G-8 | — | nenhum teste | não há o que matar: a casca não compila no WSL, e a bandeja não tem teste |
+
+A primeira rodada deu seis sobreviventes falsos: o cargo rodava o binário velho
+([L-28](../docs/arquitetura/09-licoes-do-prototipo.md)).
 
 ## As feitas
 

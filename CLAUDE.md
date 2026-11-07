@@ -80,7 +80,7 @@ sentences and the name is the rule.
 |---|---|
 | Anywhere | `npm run doccheck -- -strict` |
 | Anywhere | `node --test tools/doccheck/doccheck.test.mjs` (when the checker changes) |
-| Anywhere with cargo | `cargo test -p presage-core` |
+| Anywhere with cargo | `cargo test -p presage-core`; in WSL, `bash tools/dev/core-test.sh [filter]` (L-28) |
 | Windows / CI | `cargo test --workspace`; the shell only builds with MSVC (L-15) |
 | Anywhere | `npm run build` (`tsc --noEmit` + Vite) |
 | When `docs/referencia/itero/` changes | `python3 -I docs/referencia/itero/conferir.py <extracted iTero dir>` |
@@ -135,7 +135,13 @@ sentences and the name is the rule.
 - **Where things run:**
   - the repo sits on OneDrive and is worked from both Windows and WSL;
   - cargo and MSVC are on Windows;
-  - WSL has Node and Python, but no cargo.
+  - WSL has Node, Python and cargo (rustup, stable). It does **not** have
+    webkit2gtk, so `src-tauri` does not build there: core and collector tests run
+    in WSL, and shell tests run on Windows or on a pushed `ci/**` branch
+    (`instalador.yml` runs `cargo test --workspace`).
+- **Cargo in WSL:** `. ~/.cargo/env` and
+  `export CARGO_TARGET_DIR=$HOME/.cache/presage-target`. The target has to stay
+  off `/mnt/c`: OneDrive would sync gigabytes of build output.
 - **WSL git:**
   - `/mnt/c` shows every file as mode 755, and `core.fileMode false` (repo-local)
     keeps that out of commits;

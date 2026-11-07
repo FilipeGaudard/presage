@@ -19,8 +19,8 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | todo | 2 | 0 | 2 | 0 |
 
 - testes no código: 463; nomes no catálogo (13): 461; fora dele: 0
-- links relativos conferidos: 865
-- IDs citados conferidos: 2813
+- links relativos conferidos: 866
+- IDs citados conferidos: 2814
 
 ## type
 

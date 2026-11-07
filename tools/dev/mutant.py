@@ -11,9 +11,19 @@ Exemplos:
   python3 tools/dev/mutant.py core/src/engine/stats.rs "1.0 /" "2.0 /" -- cargo test -p presage-core shrink
   python3 tools/dev/mutant.py src/lib/types.ts "inPool: boolean;" "" -- npm run doccheck -- -strict
 """
+import os
 import re
 import subprocess
 import sys
+import time
+
+
+def stamp(f):
+    # No WSL, o mtime de /mnt/c fica uns 6 s atrás do relógio do Linux: uma
+    # escrita logo depois do último build parece mais velha que ele, e o cargo
+    # roda o binário velho (L-28). O carimbo explícito põe o mtime no presente.
+    now = time.time() + 1
+    os.utime(f, (now, now))
 
 sep = sys.argv.index('--')
 args, cmd = sys.argv[1:sep], sys.argv[sep + 1:]
@@ -28,6 +38,7 @@ try:
         if cur.count(old) != 1:
             sys.exit(f"OLD aparece {cur.count(old)} vezes em {f}: {old[:60]!r}")
         open(f, 'wb').write(cur.replace(old, new).encode('utf-8'))
+        stamp(f)
     r = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace',
                        shell=(sys.platform == 'win32'))
     out = re.sub(r'\x1b\[[0-9;]*m', '', r.stdout + r.stderr).strip().splitlines()
@@ -38,6 +49,7 @@ try:
 finally:
     for f, raw in orig.items():
         open(f, 'wb').write(raw)
+        stamp(f)
 for f, raw in orig.items():
     assert open(f, 'rb').read() == raw, f"a restauração falhou: {f}"
 print("restaurado, idêntico: True")
