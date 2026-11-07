@@ -153,7 +153,7 @@ coluna. As linhas de "Quem chama" são de `src/`.
 | `pool_suggestions` | `role: Option<String>` (LCU; `null` vira `Unknown`), `limit: Option<usize>`, padrão 6 (`lib.rs:372`) | `PoolPlan` (10 §32.2) | nenhum | `App.tsx:248` (`limit: 6`), pedido pelo construtor de pool no último passo |
 | `rune_plan` | — | `Option<runes::RunePlan>`; `None` sem análise de rota, sem a sua rota nela ou sem runas carregadas | nenhum | `App.tsx:232`, junto com `lane_analysis` |
 | `get_pool` | — | `Pool` | nenhum | `App.tsx:106`, ao montar |
-| `set_pool` | `pool: Pool`, rota no vocabulário de saída (`"Mid"`) | `Result<(), String>` | `Err` se `pool.json` não gravou | `App.tsx:314` |
+| `set_pool` | `pool: Pool`, rota no vocabulário de saída (`"Mid"`) | `Result<(), String>` | `Err` se `pool.json` não gravou | `App.tsx` (`savePool`). A casca passa a pool por `Pool::normalized` antes de gravar: par único, bans até cinco (A29) |
 | `get_overlay_prefs` | — | `OverlayPrefs` | nenhum | `App.tsx:110`, `overlay.tsx:43`, ao montar |
 | `set_overlay_prefs` | `prefs: OverlayPrefs` | `Result<(), String>`; com `Ok`, emite `presage://prefs` | `Err` se `overlay.json` não gravou, e aí não há evento | `App.tsx:321` (aba Ajustes) |
 | `get_autostart` | — | `bool`; erro do plugin vira `false` (`lib.rs:452`) | nenhum | `App.tsx:112`, ao montar |

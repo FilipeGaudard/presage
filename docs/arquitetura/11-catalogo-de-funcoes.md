@@ -312,6 +312,7 @@ impl Pool {
     pub fn ids(&self) -> Vec<i64>;
     pub fn ids_for_role(&self, role: Role) -> Vec<i64>;
     pub fn upsert(&mut self, entry: PoolEntry);
+    pub fn normalized(self) -> Pool;
     pub fn remove(&mut self, champion_id: i64, role: Option<Role>);
     pub fn ids_for_role_tier(&self, role: Role, tier: Tier) -> Vec<i64>;
     pub fn tier_of(&self, champion_id: i64, role: Role) -> Option<Tier>;
@@ -324,6 +325,7 @@ impl Pool {
 | `ids` | Todos os campeões da pool, ordenados e sem repetição | R-9 |
 | `ids_for_role` | Os marcados na rota mais os sem rota, ordenados e sem repetição | R-1, R-9 |
 | `upsert` | Insere, ou troca o tier se o par (campeão, rota) já existe | R-9 |
+| `normalized` | A pool com os invariantes: um par (campeão, rota) por entrada, o tier da última vencendo; só id positivo; bans sem repetição, positivos, na ordem, até `BAN_POOL_MAX`. `set_pool` passa por aqui antes de gravar (A29) | R-9, R-3 |
 | `remove` | Tira só a entrada daquele par (campeão, rota) | R-9 |
 | `ids_for_role_tier` | Os de um tier marcados **naquela** rota, sem os curingas, na ordem de inserção | R-9, ADR-0016 |
 | `tier_of` | O tier mais forte do campeão entre a entrada da rota e a sem rota; `None` fora da pool | R-1, R-9 |

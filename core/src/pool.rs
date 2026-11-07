@@ -86,6 +86,25 @@ impl Pool {
         }
     }
 
+    /// A pool com os invariantes que o resto do código supõe: um par (campeão,
+    /// rota) por entrada, o tier da última vencendo; campeão de id positivo; e os
+    /// bans sem repetição, de id positivo, na ordem, até `BAN_POOL_MAX`.
+    ///
+    /// A casca grava o que a tela manda (`set_pool`); passar por aqui faz as
+    /// regras valerem no Rust, e não só no TS (A29).
+    pub fn normalized(self) -> Pool {
+        let mut pool = Pool::default();
+        for entry in self.entries.into_iter().filter(|e| e.champion_id > 0) {
+            pool.upsert(entry);
+        }
+        for id in self.bans {
+            if id > 0 && !pool.bans.contains(&id) && pool.bans.len() < BAN_POOL_MAX {
+                pool.bans.push(id);
+            }
+        }
+        pool
+    }
+
     pub fn remove(&mut self, champion_id: i64, role: Option<Role>) {
         self.entries
             .retain(|entry| !(entry.champion_id == champion_id && entry.role == role));
@@ -123,6 +142,29 @@ mod tests {
             role,
             tier,
         }
+    }
+
+    #[test]
+    fn a_pool_gravada_guarda_os_invariantes() {
+        let mid = |id, tier| PoolEntry { champion_id: id, role: Some(Role::Mid), tier };
+        let bruta = Pool {
+            entries: vec![
+                mid(103, Tier::Core),
+                mid(103, Tier::Situational),
+                mid(0, Tier::Core),
+                PoolEntry { champion_id: 103, role: None, tier: Tier::Extra },
+            ],
+            bans: vec![1, 2, 2, 0, 3, -4, 5, 6, 7],
+        };
+        let p = bruta.normalized();
+        // Um par (campeão, rota) por entrada, com o tier da última; sem id 0.
+        assert_eq!(
+            p.entries,
+            vec![mid(103, Tier::Situational), PoolEntry { champion_id: 103, role: None, tier: Tier::Extra }]
+        );
+        // Bans sem repetição, positivos, na ordem, até cinco.
+        assert_eq!(p.bans, vec![1, 2, 3, 5, 6]);
+        assert_eq!(p.bans.len(), BAN_POOL_MAX);
     }
 
     #[test]

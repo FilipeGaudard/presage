@@ -418,6 +418,8 @@ fn get_pool(shared: tauri::State<'_, Arc<Shared>>) -> Pool {
 
 #[tauri::command]
 fn set_pool(pool: Pool, shared: tauri::State<'_, Arc<Shared>>) -> Result<(), String> {
+    // A tela manda a pool inteira; as regras dela valem aqui também (A29).
+    let pool = pool.normalized();
     storage::write_json(POOL_CACHE, &pool).map_err(|err| err.to_string())?;
     *shared.pool.write().unwrap() = pool;
     Ok(())

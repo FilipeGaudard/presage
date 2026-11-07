@@ -93,6 +93,7 @@ dado e não só sem dado, teste primeiro contra o código velho) está em
 | T-ENTRADA-46 | `le_os_nomes_de_campo_do_lcu` | fronteira | JSON de `/lol-champ-select/v1/session` e do invocador com os nomes do cliente (`actorCellId`, `type`, `championPickIntent`, `assignedPosition`, `spell1Id`, `adjustedTimeLeftInPhase`, `isSpectating`, `gameName`, `tagLine`…): cada campo chega com o valor escrito, nenhum no padrão | R-18, A19 |
 | T-ENTRADA-47 | `le_os_nomes_de_campo_da_live_client` | fronteira | JSON de um jogador de `/liveclientdata/playerlist` (`rawChampionName`, `riotId`, `isDead`, `respawnTimer`, `itemID`, `creepScore`, `wardScore`…): cada campo chega com o valor escrito | R-11, R-12, A19 |
 | T-ENTRADA-48 | `secao_desconhecida_ou_repetida_nao_derruba_a_escolha` | regressão | `{"hidden": ["gold", "radar", "gold", "nextItem"]}` lê como `[Gold, NextItem]`. Antes, a seção desconhecida derrubava a leitura inteira e tudo voltava a aparecer | R-15, A31 |
+| T-ENTRADA-49 | `a_pool_gravada_guarda_os_invariantes` | unidade | Uma pool com o Mid 103 duas vezes (core e situacional), um id 0, o 103 sem rota, e os bans `[1, 2, 2, 0, 3, -4, 5, 6, 7]`: `normalized` deixa o 103 do meio situacional e o 103 sem rota, e os bans `[1, 2, 3, 5, 6]` | R-3, R-9, A29 |
 
 ### 2.2 Coletor — opções, estado, cliente da Riot, agregação e limite de taxa
 

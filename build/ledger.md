@@ -5,22 +5,22 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | Tipo | Total | Feito | Adiado | Pendente |
 |---|---|---|---|---|
 | type | 112 | 112 | 0 | 0 |
-| func | 164 | 164 | 0 | 0 |
+| func | 165 | 165 | 0 | 0 |
 | const | 85 | 85 | 0 | 0 |
 | wire | 55 | 55 | 0 | 0 |
 | command | 26 | 25 | 1 | 0 |
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 356 | 356 | 0 | 0 |
+| test | 357 | 357 | 0 | 0 |
 | ui-test | 43 | 10 | 33 | 0 |
 | trace | 43 | 37 | 6 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 485; nomes no catálogo (13): 485; fora dele: 0
+- testes no código: 486; nomes no catálogo (13): 486; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 2953
+- IDs citados conferidos: 2960
 
 ## type
 
@@ -290,10 +290,11 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::lockfile::parse_lockfile` | arquitetura/11-catalogo-de-funcoes §2.2 | done | core/src/lockfile.rs:17 |
 | `core::pool::Pool::ids` | arquitetura/11-catalogo-de-funcoes §7.2 | done | core/src/pool.rs:57 |
 | `core::pool::Pool::ids_for_role` | arquitetura/11-catalogo-de-funcoes §7.2 | done | core/src/pool.rs:65 |
-| `core::pool::Pool::ids_for_role_tier` | arquitetura/11-catalogo-de-funcoes §7.2 | done | core/src/pool.rs:96 |
+| `core::pool::Pool::ids_for_role_tier` | arquitetura/11-catalogo-de-funcoes §7.2 | done | core/src/pool.rs:115 |
 | `core::pool::Pool::is_empty` | arquitetura/11-catalogo-de-funcoes §7.2 | done | core/src/pool.rs:53 |
-| `core::pool::Pool::remove` | arquitetura/11-catalogo-de-funcoes §7.2 | done | core/src/pool.rs:89 |
-| `core::pool::Pool::tier_of` | arquitetura/11-catalogo-de-funcoes §7.2 | done | core/src/pool.rs:104 |
+| `core::pool::Pool::normalized` | arquitetura/11-catalogo-de-funcoes §7.2 | done | core/src/pool.rs:95 |
+| `core::pool::Pool::remove` | arquitetura/11-catalogo-de-funcoes §7.2 | done | core/src/pool.rs:108 |
+| `core::pool::Pool::tier_of` | arquitetura/11-catalogo-de-funcoes §7.2 | done | core/src/pool.rs:123 |
 | `core::pool::Pool::upsert` | arquitetura/11-catalogo-de-funcoes §7.2 | done | core/src/pool.rs:78 |
 | `core::pool::Tier::weight` | arquitetura/11-catalogo-de-funcoes §7.1 | done | core/src/pool.rs:23 |
 | `core::prefs::OverlayPrefs::anything_visible` | arquitetura/11-catalogo-de-funcoes §8.2 | done | core/src/prefs.rs:111 |
@@ -466,10 +467,10 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `ban_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:229 |
 | `build_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:246 |
 | `engine_status` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:102 |
-| `get_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:449 |
+| `get_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:451 |
 | `get_draft_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:196 |
 | `get_live` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:240 |
-| `get_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:426 |
+| `get_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:428 |
 | `get_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:414 |
 | `get_snapshot` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:94 |
 | `gold_report` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:332 |
@@ -480,11 +481,11 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `pool_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:357 |
 | `rank_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:141 |
 | `rune_plan` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:381 |
-| `set_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:455 |
+| `set_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:457 |
 | `set_draft_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:201 |
 | `set_draft_role` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:155 |
 | `set_enemy_role` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:164 |
-| `set_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:435 |
+| `set_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:437 |
 | `set_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:419 |
 | `set_simulated_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:191 |
 | `skirmish_focus` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:310 |
@@ -560,8 +561,8 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-CASCA-10` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:211 |
 | `T-CASCA-11` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:225 |
 | `T-CASCA-12` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:236 |
-| `T-CASCA-13` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:553 |
-| `T-CASCA-14` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:572 |
+| `T-CASCA-13` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:555 |
+| `T-CASCA-14` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:574 |
 | `T-CASCA-15` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:96 |
 | `T-CASCA-16` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:113 |
 | `T-CASCA-17` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:132 |
@@ -704,13 +705,13 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-ENTRADA-30` | arquitetura/13-testes §2 | done | core/src/riot.rs:132 |
 | `T-ENTRADA-31` | arquitetura/13-testes §2 | done | core/src/riot.rs:142 |
 | `T-ENTRADA-32` | arquitetura/13-testes §2 | done | core/src/riot.rs:160 |
-| `T-ENTRADA-33` | arquitetura/13-testes §2 | done | core/src/pool.rs:128 |
-| `T-ENTRADA-34` | arquitetura/13-testes §2 | done | core/src/pool.rs:136 |
-| `T-ENTRADA-35` | arquitetura/13-testes §2 | done | core/src/pool.rs:148 |
-| `T-ENTRADA-36` | arquitetura/13-testes §2 | done | core/src/pool.rs:164 |
-| `T-ENTRADA-37` | arquitetura/13-testes §2 | done | core/src/pool.rs:186 |
-| `T-ENTRADA-38` | arquitetura/13-testes §2 | done | core/src/pool.rs:197 |
-| `T-ENTRADA-39` | arquitetura/13-testes §2 | done | core/src/pool.rs:207 |
+| `T-ENTRADA-33` | arquitetura/13-testes §2 | done | core/src/pool.rs:170 |
+| `T-ENTRADA-34` | arquitetura/13-testes §2 | done | core/src/pool.rs:178 |
+| `T-ENTRADA-35` | arquitetura/13-testes §2 | done | core/src/pool.rs:190 |
+| `T-ENTRADA-36` | arquitetura/13-testes §2 | done | core/src/pool.rs:206 |
+| `T-ENTRADA-37` | arquitetura/13-testes §2 | done | core/src/pool.rs:228 |
+| `T-ENTRADA-38` | arquitetura/13-testes §2 | done | core/src/pool.rs:239 |
+| `T-ENTRADA-39` | arquitetura/13-testes §2 | done | core/src/pool.rs:249 |
 | `T-ENTRADA-4` | arquitetura/13-testes §2 | done | core/src/lockfile.rs:83 |
 | `T-ENTRADA-40` | arquitetura/13-testes §2 | done | core/src/prefs.rs:133 |
 | `T-ENTRADA-41` | arquitetura/13-testes §2 | done | core/src/prefs.rs:142 |
@@ -721,6 +722,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-ENTRADA-46` | arquitetura/13-testes §2 | done | core/src/draft.rs:334 |
 | `T-ENTRADA-47` | arquitetura/13-testes §2 | done | core/src/live.rs:221 |
 | `T-ENTRADA-48` | arquitetura/13-testes §2 | done | core/src/prefs.rs:199 |
+| `T-ENTRADA-49` | arquitetura/13-testes §2 | done | core/src/pool.rs:147 |
 | `T-ENTRADA-5` | arquitetura/13-testes §2 | done | core/src/lockfile.rs:88 |
 | `T-ENTRADA-6` | arquitetura/13-testes §2 | done | core/src/draft.rs:377 |
 | `T-ENTRADA-7` | arquitetura/13-testes §2 | done | core/src/draft.rs:384 |
@@ -1098,4 +1100,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 37 | 25 | 0 | 38 |
+| 36 | 26 | 0 | 38 |
