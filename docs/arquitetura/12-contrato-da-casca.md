@@ -67,10 +67,11 @@ A rota entra num vocabulário e sai noutro:
 | entra em `set_pool` (`PoolEntry.role`) e sai em tudo que devolve `Role` | o do serde: `"Top"`, `"Jungle"`, `"Mid"`, `"Bot"`, `"Support"` | `#[derive(Serialize, Deserialize)]` de `Role` |
 | entra em `set_simulated_draft` (`DraftSlot.position`, `DraftState.localPosition`) | o do LCU, porque `DraftState` é o formato do champ select | `core/src/draft.rs` |
 
-Uma string que `from_lcu` não conhece vira `Role::Unknown`, e os três comandos a
-tratam como "sem rota", calados: `set_draft_role("Mid")` apaga a escolha em vez
-de escolher o meio. A interface converte com `ROLE_TO_LCU` (`src/lib/types.ts:473`)
-antes de chamar.
+`from_lcu` aceita os dois vocabulários nos comandos: `set_draft_role("Mid")` e
+`set_draft_role("middle")` escolhem o meio. Até a 0.7.0 só o do cliente valia, e o
+outro virava "sem rota" calado (A30). Texto que nenhum dos dois conhece continua
+virando `Role::Unknown`. A interface ainda converte com `ROLE_TO_LCU`
+(`src/lib/types.ts`).
 
 ### Ritmo
 

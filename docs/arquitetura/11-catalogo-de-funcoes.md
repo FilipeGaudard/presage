@@ -1292,7 +1292,7 @@ impl Role {
 
 | Método | Faz | Atende |
 |---|---|---|
-| `from_lcu` | `top`, `jungle`, `middle`, `bottom`, `utility` em qualquer caixa; o resto vira `Unknown`. Lê o LCU, a Live Client e a match-v5 | R-1, R-4, R-11 |
+| `from_lcu` | `top`, `jungle`, `middle`, `bottom`, `utility`, e também os nomes do serde `mid`, `bot`, `support`, em qualquer caixa; o resto vira `Unknown`. Lê o LCU, a Live Client, a match-v5 e os comandos da tela, que podem mandar qualquer um dos dois (A30) | R-1, R-4, R-11 |
 | `short` | o rótulo da tela: `TOP`, `JG`, `MID`, `ADC`, `SUP`, e `—` para `Unknown` | R-11 |
 
 ### 23.2 `grown`

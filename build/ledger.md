@@ -12,15 +12,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 357 | 357 | 0 | 0 |
+| test | 358 | 358 | 0 | 0 |
 | ui-test | 43 | 10 | 33 | 0 |
 | trace | 43 | 37 | 6 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 486; nomes no catálogo (13): 486; fora dele: 0
+- testes no código: 487; nomes no catálogo (13): 487; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 2960
+- IDs citados conferidos: 2967
 
 ## type
 
@@ -47,9 +47,9 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::build::Combatant` | arquitetura/10-modelo-de-dados §26.1 | done | core/src/engine/build.rs:26 |
 | `core::engine::build::ItemSuggestion` | arquitetura/10-modelo-de-dados §26.4 | done | core/src/engine/build.rs:56 |
 | `core::engine::build::Loadout` | arquitetura/10-modelo-de-dados §26.2 | done | core/src/engine/build.rs:33 |
-| `core::engine::champion::BaseStats` | arquitetura/10-modelo-de-dados §23.2 | done | core/src/engine/champion.rs:52 |
-| `core::engine::champion::Champion` | arquitetura/10-modelo-de-dados §23.3 | done | core/src/engine/champion.rs:80 |
-| `core::engine::champion::ChampionIndex` | arquitetura/10-modelo-de-dados §23.4 | done | core/src/engine/champion.rs:130 |
+| `core::engine::champion::BaseStats` | arquitetura/10-modelo-de-dados §23.2 | done | core/src/engine/champion.rs:57 |
+| `core::engine::champion::Champion` | arquitetura/10-modelo-de-dados §23.3 | done | core/src/engine/champion.rs:85 |
+| `core::engine::champion::ChampionIndex` | arquitetura/10-modelo-de-dados §23.4 | done | core/src/engine/champion.rs:135 |
 | `core::engine::champion::Role` | arquitetura/10-modelo-de-dados §23.1 | done | core/src/engine/champion.rs:4 |
 | `core::engine::coach::Note` | arquitetura/10-modelo-de-dados §31.3 | done | core/src/engine/coach.rs:111 |
 | `core::engine::coach::Point` | arquitetura/10-modelo-de-dados §31.4 | done | core/src/engine/coach.rs:122 |
@@ -154,21 +154,21 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::build::skirmish_odds` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:213 |
 | `core::engine::build::suggest` | arquitetura/11-catalogo-de-funcoes §26.1 | done | core/src/engine/build.rs:247 |
 | `core::engine::build::team_penetration` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:228 |
-| `core::engine::champion::BaseStats::armor_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:69 |
-| `core::engine::champion::BaseStats::attack_damage_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:75 |
-| `core::engine::champion::BaseStats::health_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:66 |
-| `core::engine::champion::BaseStats::magic_resist_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:72 |
-| `core::engine::champion::Champion::is_frontline` | arquitetura/11-catalogo-de-funcoes §23.4 | done | core/src/engine/champion.rs:125 |
-| `core::engine::champion::Champion::is_ranged` | arquitetura/11-catalogo-de-funcoes §23.4 | done | core/src/engine/champion.rs:121 |
-| `core::engine::champion::Champion::physical_share` | arquitetura/11-catalogo-de-funcoes §23.4 | done | core/src/engine/champion.rs:108 |
-| `core::engine::champion::Champion::primary_tag` | arquitetura/11-catalogo-de-funcoes §23.4 | done | core/src/engine/champion.rs:95 |
-| `core::engine::champion::ChampionIndex::by_key` | arquitetura/11-catalogo-de-funcoes §23.5 | done | core/src/engine/champion.rs:143 |
-| `core::engine::champion::ChampionIndex::get` | arquitetura/11-catalogo-de-funcoes §23.5 | done | core/src/engine/champion.rs:137 |
-| `core::engine::champion::ChampionIndex::ids` | arquitetura/11-catalogo-de-funcoes §23.5 | done | core/src/engine/champion.rs:153 |
-| `core::engine::champion::ChampionIndex::is_empty` | arquitetura/11-catalogo-de-funcoes §23.5 | done | core/src/engine/champion.rs:149 |
-| `core::engine::champion::grown` | arquitetura/11-catalogo-de-funcoes §23.2 | done | core/src/engine/champion.rs:47 |
-| `core::engine::champion::Role::from_lcu` | arquitetura/11-catalogo-de-funcoes §23.1 | done | core/src/engine/champion.rs:15 |
-| `core::engine::champion::Role::short` | arquitetura/11-catalogo-de-funcoes §23.1 | done | core/src/engine/champion.rs:27 |
+| `core::engine::champion::BaseStats::armor_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:74 |
+| `core::engine::champion::BaseStats::attack_damage_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:80 |
+| `core::engine::champion::BaseStats::health_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:71 |
+| `core::engine::champion::BaseStats::magic_resist_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:77 |
+| `core::engine::champion::Champion::is_frontline` | arquitetura/11-catalogo-de-funcoes §23.4 | done | core/src/engine/champion.rs:130 |
+| `core::engine::champion::Champion::is_ranged` | arquitetura/11-catalogo-de-funcoes §23.4 | done | core/src/engine/champion.rs:126 |
+| `core::engine::champion::Champion::physical_share` | arquitetura/11-catalogo-de-funcoes §23.4 | done | core/src/engine/champion.rs:113 |
+| `core::engine::champion::Champion::primary_tag` | arquitetura/11-catalogo-de-funcoes §23.4 | done | core/src/engine/champion.rs:100 |
+| `core::engine::champion::ChampionIndex::by_key` | arquitetura/11-catalogo-de-funcoes §23.5 | done | core/src/engine/champion.rs:148 |
+| `core::engine::champion::ChampionIndex::get` | arquitetura/11-catalogo-de-funcoes §23.5 | done | core/src/engine/champion.rs:142 |
+| `core::engine::champion::ChampionIndex::ids` | arquitetura/11-catalogo-de-funcoes §23.5 | done | core/src/engine/champion.rs:158 |
+| `core::engine::champion::ChampionIndex::is_empty` | arquitetura/11-catalogo-de-funcoes §23.5 | done | core/src/engine/champion.rs:154 |
+| `core::engine::champion::grown` | arquitetura/11-catalogo-de-funcoes §23.2 | done | core/src/engine/champion.rs:52 |
+| `core::engine::champion::Role::from_lcu` | arquitetura/11-catalogo-de-funcoes §23.1 | done | core/src/engine/champion.rs:20 |
+| `core::engine::champion::Role::short` | arquitetura/11-catalogo-de-funcoes §23.1 | done | core/src/engine/champion.rs:32 |
 | `core::engine::coach::Recording::duration` | arquitetura/11-catalogo-de-funcoes §31.2 | done | core/src/engine/coach.rs:96 |
 | `core::engine::coach::Recording::push` | arquitetura/11-catalogo-de-funcoes §31.2 | done | core/src/engine/coach.rs:85 |
 | `core::engine::coach::review` | arquitetura/11-catalogo-de-funcoes §31.1 | done | core/src/engine/coach.rs:229 |
@@ -728,16 +728,17 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-ENTRADA-7` | arquitetura/13-testes §2 | done | core/src/draft.rs:384 |
 | `T-ENTRADA-8` | arquitetura/13-testes §2 | done | core/src/draft.rs:394 |
 | `T-ENTRADA-9` | arquitetura/13-testes §2 | done | core/src/draft.rs:401 |
-| `T-JOGO-1` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:188 |
+| `T-JOGO-1` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:214 |
 | `T-JOGO-10` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:278 |
 | `T-JOGO-11` | arquitetura/13-testes §2 | done | core/src/engine/damage.rs:71 |
 | `T-JOGO-12` | arquitetura/13-testes §2 | done | core/src/engine/damage.rs:81 |
 | `T-JOGO-13` | arquitetura/13-testes §2 | done | core/src/engine/damage.rs:93 |
 | `T-JOGO-14` | arquitetura/13-testes §2 | done | core/src/engine/damage.rs:122 |
-| `T-JOGO-2` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:200 |
-| `T-JOGO-3` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:222 |
-| `T-JOGO-4` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:247 |
-| `T-JOGO-5` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:255 |
+| `T-JOGO-15` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:193 |
+| `T-JOGO-2` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:226 |
+| `T-JOGO-3` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:248 |
+| `T-JOGO-4` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:273 |
+| `T-JOGO-5` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:281 |
 | `T-JOGO-6` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:206 |
 | `T-JOGO-7` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:229 |
 | `T-JOGO-8` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:250 |
@@ -1100,4 +1101,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 36 | 26 | 0 | 38 |
+| 35 | 27 | 0 | 38 |

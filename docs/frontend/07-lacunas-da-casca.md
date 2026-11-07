@@ -23,7 +23,7 @@ de vir da casca, e não ser adivinhado ou copiado no TypeScript.
 | GC-3 | Perder o cliente não limpa o draft na tela | P1 | fechada (T-CASCA-20) |
 | GC-4 | Marcas e rota escolhida vivem em dois lugares; `get_enemy_roles` sem uso | P1 | aberta |
 | GC-5 | A rota que o motor usou não volta para a tela | P1 | aberta |
-| GC-6 | Dois vocabulários de rota na mesma ponte | P1 | aberta |
+| GC-6 | Dois vocabulários de rota na mesma ponte | P1 | parcial: os comandos aceitam os dois (T-JOGO-15); unificar a ponte fica |
 | GC-7 | Motor sem campeões fica "carregando" para sempre | P1 | aberta |
 | GC-8 | O overlay não arrasta e não diz o próprio estado | P1 | aberta |
 | GC-9 | Regras do core copiadas no front | P1 | aberta |
@@ -155,8 +155,10 @@ A tabela completa está no 12 §1, "Rota: dois vocabulários".
 **Proposta:** os três comandos recebem `Option<Role>` com o `serde` do enum, e
 `ROLE_TO_LCU` sai do front. A palavra do LCU fica só na fronteira com o LCU.
 
-**Enquanto isso:** toda rota que sai do front passa por `ROLE_TO_LCU`; quem
-esquecer recebe a pool errada em silêncio.
+> **Parcial.** `Role::from_lcu` passou a aceitar os dois vocabulários, então um
+> `"Mid"` num comando escolhe o meio em vez de apagar a escolha (A30, T-JOGO-15).
+> A proposta inteira, um vocabulário só na ponte e `ROLE_TO_LCU` fora do front,
+> continua aberta.
 
 ## GC-7 — Motor sem campeões fica "carregando" para sempre (P1)
 

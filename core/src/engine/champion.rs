@@ -12,13 +12,18 @@ pub enum Role {
 }
 
 impl Role {
+    /// A rota a partir do texto que chega: o vocabulário do cliente (`middle`,
+    /// `utility`, o dos comandos e da Live Client) ou o do serde (`Mid`,
+    /// `Support`, o de tudo que a casca manda para a tela). Aceitar os dois faz
+    /// o nome "errado" num comando funcionar em vez de virar "sem rota" calado
+    /// (A30).
     pub fn from_lcu(position: &str) -> Self {
         match position.to_ascii_lowercase().as_str() {
             "top" => Role::Top,
             "jungle" => Role::Jungle,
-            "middle" => Role::Mid,
-            "bottom" => Role::Bot,
-            "utility" => Role::Support,
+            "middle" | "mid" => Role::Mid,
+            "bottom" | "bot" => Role::Bot,
+            "utility" | "support" => Role::Support,
             _ => Role::Unknown,
         }
     }
@@ -184,6 +189,27 @@ pub(crate) fn fake(id: i64, name: &str, tag: &str, attack: f64, magic: f64, defe
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_rota_aceita_os_dois_vocabularios() {
+        // A ponte usa dois: o do cliente ("middle", "utility") nos comandos, e o
+        // do serde ("Mid", "Support") em tudo que sai. Um nome do segundo num
+        // comando não pode virar "sem rota" calado (A30).
+        for (texto, rota) in [
+            ("middle", Role::Mid),
+            ("Mid", Role::Mid),
+            ("utility", Role::Support),
+            ("Support", Role::Support),
+            ("bottom", Role::Bot),
+            ("Bot", Role::Bot),
+            ("TOP", Role::Top),
+            ("Jungle", Role::Jungle),
+        ] {
+            assert_eq!(Role::from_lcu(texto), rota, "{texto}");
+        }
+        assert_eq!(Role::from_lcu("radar"), Role::Unknown);
+        assert_eq!(Role::from_lcu(""), Role::Unknown);
+    }
 
     #[test]
     fn marksman_pende_para_fisico_mesmo_com_info_ruim() {
