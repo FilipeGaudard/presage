@@ -267,11 +267,18 @@ pub fn lane_outlooks(
     order
         .iter()
         .filter_map(|&role| {
-            let ally = find(allies, role)?;
-            let enemy = find(enemies, role)?;
+            let ally = find_known(allies, role, champions)?;
+            let enemy = find_known(enemies, role, champions)?;
             Some(one_lane(role, ally, enemy, champions, items, store))
         })
         .collect()
+}
+
+/// O jogador da rota, só se o campeão dele está no índice. Sem os atributos, o
+/// duelo cai no piso ou no teto por falta de dado, e a rota sairia decidida por
+/// isso: é melhor ela não aparecer (A13).
+fn find_known<'a>(lineups: &'a [Lineup], role: Role, champions: &ChampionIndex) -> Option<&'a Lineup> {
+    find(lineups, role).filter(|l| champions.get(l.combatant.champion_id).is_some())
 }
 
 fn one_lane(
@@ -421,8 +428,9 @@ pub fn skirmishes(
     GROUPS
         .iter()
         .filter_map(|(key, roles, detail)| {
-            let ours: Vec<&Lineup> = roles.iter().filter_map(|&r| find(allies, r)).collect();
-            let theirs: Vec<&Lineup> = roles.iter().filter_map(|&r| find(enemies, r)).collect();
+            // Briga com alguém fora do índice sai, pelo mesmo motivo da rota.
+            let ours: Vec<&Lineup> = roles.iter().filter_map(|&r| find_known(allies, r, champions)).collect();
+            let theirs: Vec<&Lineup> = roles.iter().filter_map(|&r| find_known(enemies, r, champions)).collect();
             if ours.len() != roles.len() || theirs.len() != roles.len() {
                 return None;
             }
@@ -1206,12 +1214,18 @@ mod tests {
     }
 
     #[test]
-    fn campeao_desconhecido_nao_derruba_a_analise() {
-        let mine = vec![lineup(Role::Mid, 999)];
-        let theirs = vec![lineup(Role::Mid, 2)];
+    fn campeao_desconhecido_tira_a_rota_e_a_briga_da_lista() {
+        // 999 não está no índice: a Live Client deu `champion_id = 0`, ou é um
+        // campeão novo antes do cache do Data Dragon. Sem os atributos dele, o
+        // duelo cai no piso; a rota e a briga em que ele está saem da lista, em
+        // vez de virar um palpite com cara de medida (A13).
+        let mine = vec![lineup(Role::Mid, 999), lineup(Role::Jungle, 4)];
+        let theirs = vec![lineup(Role::Mid, 2), lineup(Role::Jungle, 5)];
 
-        let out = lane_outlooks(&mine, &theirs, &champions(), &items(), &NoStats);
-        assert_eq!(out.len(), 1);
-        assert!(out[0].win_probability.is_finite());
+        let rotas = lane_outlooks(&mine, &theirs, &champions(), &items(), &NoStats);
+        assert_eq!(rotas.iter().map(|l| l.role).collect::<Vec<_>>(), vec![Role::Jungle]);
+
+        let brigas = skirmishes(&mine, &theirs, &champions(), &items());
+        assert!(brigas.iter().all(|b| b.key != "jg_mid"), "{:?}", brigas.iter().map(|b| b.key).collect::<Vec<_>>());
     }
 }

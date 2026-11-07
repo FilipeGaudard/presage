@@ -1586,8 +1586,9 @@ pub fn lane_outlooks(
 ```
 
 - **Faz:** para cada rota, na ordem Top, Jungle, Mid, Bot, Support, em que os dois
-  lados têm alguém (o primeiro `Lineup` com a rota), monta a `LaneOutlook`
-  (`one_lane`):
+  lados têm alguém (o primeiro `Lineup` com a rota) **com o campeão no índice**,
+  monta a `LaneOutlook` (`one_lane`). Rota com um campeão fora do índice sai da
+  lista: sem atributos, o duelo cairia no piso ou no teto por falta de dado (A13):
   1. `duel`: `skirmish_odds` 1v1 com os níveis e itens reais.
   2. A estimativa da base: o que as duas forças explicam (`expected_against` das
      duas `base_rate`) mais o matchup encolhido para essa referência, com
@@ -1625,7 +1626,8 @@ pub fn skirmishes(
 ```
 
 - **Faz:** para cada grupo de `GROUPS` (topo, meio, bot, dragão, arauto), na ordem,
-  quando os dois lados têm todas as rotas do grupo:
+  quando os dois lados têm todas as rotas do grupo, todas com o campeão no índice
+  (A13):
   - `odds`: `skirmish_odds` do grupo com os níveis e itens reais;
   - `by_level`: a mesma conta nivelada nos `BREAKPOINTS`;
   - razões (`skirmish_reasons`): quem mais pesa de cada lado, pelo `side_power`

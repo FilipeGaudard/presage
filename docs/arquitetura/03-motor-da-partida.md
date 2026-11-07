@@ -104,7 +104,10 @@ estimativa     = referência(base dele, base do oponente) + Δmatchup
   é a diferença de força dos dois na rota, e `from_data` fica verdadeiro.
 - Nenhuma rota está decidida antes de começar: daí o piso e o teto.
 - Rotas sem oponente identificado ficam de fora em vez de virarem 50%: um palpite
-  com cara de medida é pior que silêncio.
+  com cara de medida é pior que silêncio. O mesmo vale para rota ou briga com um
+  campeão fora do índice do Data Dragon (`champion_id = 0` da Live Client, ou
+  campeão novo antes do cache): sem os atributos dele, o duelo cairia no piso por
+  falta de dado, e a rota sai da lista (A13, T-ROTA-26).
 
 ### Curva por nível e vantagem de nível
 

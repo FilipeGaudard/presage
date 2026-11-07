@@ -402,7 +402,7 @@ lado.
 | T-ROTA-23 | `um_nivel_a_frente_nunca_piora`, `a_vantagem_de_nivel_respeita_o_1_e_o_18` | propriedade | Em cada nível de `BREAKPOINTS`, a linha +1 ≥ a nivelada ≥ a −1; `level_gaps` devolve 12 linhas (4 × 3), todas com o seu nível em 1..=18 | R-6, R-11 |
 | T-ROTA-24 | `o_ponto_de_agora_usa_os_niveis_reais` | unidade | Você no 9 e ele no 7: `(my_level, their_level) = (9, 7)` e `duel` acima do ponto 7 de `curve` | R-11 |
 | T-ROTA-25 | `os_itens_continuam_valendo_na_curva` | unidade | Você com Rabadon: cada ponto de `by_level` acima do mesmo ponto sem o item | R-6, R-11 |
-| T-ROTA-26 | `campeao_desconhecido_nao_derruba_a_analise` | unidade | O campeão 999, fora do índice, no meio: sai 1 rota, com `win_probability` finita. Não trava o valor, que é o piso | R-11 |
+| T-ROTA-26 | `campeao_desconhecido_tira_a_rota_e_a_briga_da_lista` | regressão | Com o meio aliado fora do índice (999) e as duas selvas conhecidas, `lane_outlooks` devolve só a selva, e `skirmishes` não traz `jg_mid`. Antes da correção, o meio entrava no piso de 28% e a briga da selva com o meio também, decididos por falta de dado | R-11, RNF-1, A13 |
 
 ### 2.13 Ouro dos dez
 

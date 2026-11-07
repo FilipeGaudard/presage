@@ -20,7 +20,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 - testes no código: 469; nomes no catálogo (13): 467; fora dele: 0
 - links relativos conferidos: 869
-- IDs citados conferidos: 2853
+- IDs citados conferidos: 2855
 
 ## type
 
@@ -69,7 +69,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::items::Item` | arquitetura/10-modelo-de-dados §24.2 | done | core/src/engine/items.rs:84 |
 | `core::engine::items::ItemIndex` | arquitetura/10-modelo-de-dados §24.3 | done | core/src/engine/items.rs:94 |
 | `core::engine::items::ItemStats` | arquitetura/10-modelo-de-dados §24.1 | done | core/src/engine/items.rs:20 |
-| `core::engine::lanes::Focus` | arquitetura/10-modelo-de-dados §27.6 | done | core/src/engine/lanes.rs:458 |
+| `core::engine::lanes::Focus` | arquitetura/10-modelo-de-dados §27.6 | done | core/src/engine/lanes.rs:466 |
 | `core::engine::lanes::LaneOutlook` | arquitetura/10-modelo-de-dados §27.3 | done | core/src/engine/lanes.rs:155 |
 | `core::engine::lanes::LevelOdds` | arquitetura/10-modelo-de-dados §27.2 | done | core/src/engine/lanes.rs:50 |
 | `core::engine::lanes::Lineup` | arquitetura/10-modelo-de-dados §27.5 | done | core/src/engine/lanes.rs:224 |
@@ -209,10 +209,10 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::items::ItemStats::physical_penetration` | arquitetura/11-catalogo-de-funcoes §24.2 | done | core/src/engine/items.rs:59 |
 | `core::engine::items::ItemStats::plus` | arquitetura/11-catalogo-de-funcoes §24.2 | done | core/src/engine/items.rs:42 |
 | `core::engine::items::parse_stats` | arquitetura/11-catalogo-de-funcoes §24.1 | done | core/src/engine/items.rs:127 |
-| `core::engine::lanes::focus` | arquitetura/11-catalogo-de-funcoes §27.3 | done | core/src/engine/lanes.rs:497 |
+| `core::engine::lanes::focus` | arquitetura/11-catalogo-de-funcoes §27.3 | done | core/src/engine/lanes.rs:505 |
 | `core::engine::lanes::lane_outlooks` | arquitetura/11-catalogo-de-funcoes §27.1 | done | core/src/engine/lanes.rs:258 |
 | `core::engine::lanes::Lineup::new` | arquitetura/11-catalogo-de-funcoes §27.4 | done | core/src/engine/lanes.rs:231 |
-| `core::engine::lanes::skirmishes` | arquitetura/11-catalogo-de-funcoes §27.2 | done | core/src/engine/lanes.rs:415 |
+| `core::engine::lanes::skirmishes` | arquitetura/11-catalogo-de-funcoes §27.2 | done | core/src/engine/lanes.rs:422 |
 | `core::engine::minimax::bans_with_pool` | arquitetura/11-catalogo-de-funcoes §12.5 | done | core/src/engine/minimax.rs:266 |
 | `core::engine::minimax::minimax` | arquitetura/11-catalogo-de-funcoes §12.2 | done | core/src/engine/minimax.rs:105 |
 | `core::engine::minimax::minimax_with` | arquitetura/11-catalogo-de-funcoes §12.3 | done | core/src/engine/minimax.rs:114 |
@@ -344,7 +344,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::lanes::CEILING` | produto/regras-e-pesos RN-20 — O peso do duelo na chance da rot | done | core/src/engine/lanes.rs:32 |
 | `core::engine::lanes::FLOOR` | produto/regras-e-pesos RN-20 — O peso do duelo na chance da rot | done | core/src/engine/lanes.rs:31 |
 | `core::engine::lanes::MAX_REASONS` | produto/regras-e-pesos RN-20 — O peso do duelo na chance da rot | done | core/src/engine/lanes.rs:34 |
-| `core::engine::lanes::OBJECTIVE_WINDOW` | produto/regras-e-pesos RN-21 — Quem briga junto, e qual escaram | done | core/src/engine/lanes.rs:456 |
+| `core::engine::lanes::OBJECTIVE_WINDOW` | produto/regras-e-pesos RN-21 — Quem briga junto, e qual escaram | done | core/src/engine/lanes.rs:464 |
 | `core::engine::lanes::W_DUEL` | produto/regras-e-pesos RN-20 — O peso do duelo na chance da rot | done | core/src/engine/lanes.rs:28 |
 | `core::engine::MATCHUP_PRIOR_SD` | produto/regras-e-pesos RN-3 — O quanto cada efeito costuma se e | done | core/src/engine/mod.rs:41 |
 | `core::engine::MAX_REASONS` | produto/regras-e-pesos RN-6 — O corte da winrate e os limiares  | done | core/src/engine/mod.rs:55 |
@@ -413,7 +413,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `DraftState ↔ DraftState` | arquitetura/10-modelo-de-dados §3.7 | done | core/src/draft.rs:95 |
 | `EngineStatus ↔ EngineStatus` | arquitetura/10-modelo-de-dados §32.1 | done | src-tauri/src/lib.rs:45 |
 | `Finding ↔ PoolFinding` | arquitetura/10-modelo-de-dados §17.3 | done | core/src/engine/poolgap.rs:241 |
-| `Focus ↔ SkirmishFocus` | arquitetura/10-modelo-de-dados §27.6 | done | core/src/engine/lanes.rs:458 |
+| `Focus ↔ SkirmishFocus` | arquitetura/10-modelo-de-dados §27.6 | done | core/src/engine/lanes.rs:466 |
 | `GoldPlayer ↔ GoldPlayer` | arquitetura/10-modelo-de-dados §28.1 | done | core/src/engine/gold.rs:41 |
 | `GoldReport ↔ GoldReport` | arquitetura/10-modelo-de-dados §28.2 | done | core/src/engine/gold.rs:61 |
 | `ItemSuggestion ↔ ItemSuggestion` | arquitetura/10-modelo-de-dados §26.4 | done | core/src/engine/build.rs:56 |
@@ -832,32 +832,32 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-RIVAL-3` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:189 |
 | `T-RIVAL-4` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:210 |
 | `T-RIVAL-5` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:222 |
-| `T-ROTA-1` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:675 |
-| `T-ROTA-10` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:875 |
-| `T-ROTA-11` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:886 |
-| `T-ROTA-12` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:927 |
-| `T-ROTA-13` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:965 |
-| `T-ROTA-14` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:977 |
-| `T-ROTA-15` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1009 |
-| `T-ROTA-16` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1023 |
-| `T-ROTA-17` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1030 |
-| `T-ROTA-18` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1035 |
-| `T-ROTA-19` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1047 |
-| `T-ROTA-2` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:686 |
-| `T-ROTA-20` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1062 |
-| `T-ROTA-21` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1092 |
-| `T-ROTA-22` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1126 |
-| `T-ROTA-23` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1134 |
-| `T-ROTA-24` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1162 |
-| `T-ROTA-25` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1187 |
-| `T-ROTA-26` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1208 |
-| `T-ROTA-3` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:703 |
-| `T-ROTA-4` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:720 |
-| `T-ROTA-5` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:758 |
-| `T-ROTA-6` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:799 |
-| `T-ROTA-7` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:811 |
-| `T-ROTA-8` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:821 |
-| `T-ROTA-9` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:864 |
+| `T-ROTA-1` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:683 |
+| `T-ROTA-10` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:883 |
+| `T-ROTA-11` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:894 |
+| `T-ROTA-12` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:935 |
+| `T-ROTA-13` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:973 |
+| `T-ROTA-14` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:985 |
+| `T-ROTA-15` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1017 |
+| `T-ROTA-16` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1031 |
+| `T-ROTA-17` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1038 |
+| `T-ROTA-18` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1043 |
+| `T-ROTA-19` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1055 |
+| `T-ROTA-2` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:694 |
+| `T-ROTA-20` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1070 |
+| `T-ROTA-21` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1100 |
+| `T-ROTA-22` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1134 |
+| `T-ROTA-23` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1142 |
+| `T-ROTA-24` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1170 |
+| `T-ROTA-25` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1195 |
+| `T-ROTA-26` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:1216 |
+| `T-ROTA-3` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:711 |
+| `T-ROTA-4` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:728 |
+| `T-ROTA-5` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:766 |
+| `T-ROTA-6` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:807 |
+| `T-ROTA-7` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:819 |
+| `T-ROTA-8` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:829 |
+| `T-ROTA-9` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:872 |
 | `T-RUNAS-1` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:399 |
 | `T-RUNAS-10` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:380 |
 | `T-RUNAS-2` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:411 |
@@ -1081,4 +1081,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 55 | 7 | 0 | 38 |
+| 54 | 8 | 0 | 38 |
