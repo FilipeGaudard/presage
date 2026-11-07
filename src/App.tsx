@@ -264,7 +264,9 @@ export default function App() {
   // sai dos níveis e itens reais. O comando decide sozinho qual fonte usar.
   useEffect(() => {
     if (!engine?.ready || (!activeDraft && !live)) {
+      // Sem draft e sem partida, rotas e runas saem juntas (A11).
       setLanes(null);
+      setRunas(null);
       return;
     }
     let cancelled = false;
@@ -279,7 +281,9 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [activeDraft, live, engine?.ready, enemyRoles, chamar]);
+    // A casca resolve a sua rota pela escolhida na tela e pela pool: as duas
+    // mudam a análise e a runa tanto quanto o draft (A11).
+  }, [activeDraft, live, engine?.ready, enemyRoles, draftRole, pool, chamar]);
 
   // O construtor pergunta o que falta só quando chega no último passo.
   // Quem chama precisa saber que falhou, para não mostrar "nada a recomendar"
@@ -297,13 +301,15 @@ export default function App() {
   );
 
   // A prévia de um candidato: a análise do draft com ele no seu lugar.
+  // Ela depende das rotas marcadas nos inimigos: marcar uma troca a função, e o
+  // painel refaz a prévia aberta com o oponente novo (A11).
   const previa = useCallback(
     (championId: number) =>
       chamar<LaneReport | null>("calcular a prévia", "lane_analysis", { candidate: championId }).then((r) => {
         if (!r.ok) throw new Error("lane_analysis falhou");
         return r.valor;
       }),
-    [chamar]
+    [chamar, enemyRoles]
   );
 
   // A rota só muda na tela depois que o backend guardou: a lista que volta já

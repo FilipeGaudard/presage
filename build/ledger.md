@@ -13,14 +13,14 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
 | test | 342 | 342 | 0 | 0 |
-| ui-test | 41 | 3 | 38 | 0 |
+| ui-test | 41 | 5 | 36 | 0 |
 | trace | 43 | 33 | 10 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
 - testes no código: 469; nomes no catálogo (13): 467; fora dele: 0
-- links relativos conferidos: 869
-- IDs citados conferidos: 2855
+- links relativos conferidos: 871
+- IDs citados conferidos: 2859
 
 ## type
 
@@ -900,7 +900,6 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `TF-CASCA-5` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-CASCA-6` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-DRAFT-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
-| `TF-DRAFT-10` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-DRAFT-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-DRAFT-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-DRAFT-4` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
@@ -926,13 +925,14 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `TF-POS-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-ROTAS-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-ROTAS-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
-| `TF-ROTAS-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-SIM-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-SIM-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-SIM-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
-| `TF-CASCA-4` | frontend/06-testes §3 | done | src/App.test.tsx:133 |
+| `TF-CASCA-4` | frontend/06-testes §3 | done | src/App.test.tsx:161 |
+| `TF-DRAFT-10` | frontend/06-testes §3 | done | src/App.test.tsx:218 |
 | `TF-PARTIDA-3` | frontend/06-testes §3 | done | src/components/GoldTracker.test.tsx:40 |
-| `TF-POOL-4` | frontend/06-testes §3 | done | src/App.test.tsx:106 |
+| `TF-POOL-4` | frontend/06-testes §3 | done | src/App.test.tsx:134 |
+| `TF-ROTAS-3` | frontend/06-testes §3 | done | src/App.test.tsx:186 |
 
 ## trace
 

@@ -3,7 +3,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-libra
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
 import { emit } from "@tauri-apps/api/event";
 import App from "./App";
-import type { DraftSlot, DraftState, EngineStatus, Pool, ScoredChampion } from "./lib/types";
+import type { DraftSlot, DraftState, EngineStatus, Pool, RunePlan, ScoredChampion } from "./lib/types";
 
 // A casca do front (frontend 06 §1): `App` montado com a IPC do Tauri simulada.
 // Cada teste diz o que cada comando responde; o que ele não conhece responde
@@ -61,7 +61,7 @@ function slot(over: Partial<DraftSlot>): DraftSlot {
   };
 }
 
-function draft(timeLeftMs: number): DraftState {
+function draft(timeLeftMs: number, over: Partial<DraftState> = {}): DraftState {
   return {
     phase: "BAN_PICK",
     timeLeftMs,
@@ -75,7 +75,35 @@ function draft(timeLeftMs: number): DraftState {
     currentAction: "pick",
     isLocalTurn: true,
     unavailable: [],
+    ...over,
   };
+}
+
+const plano: RunePlan = {
+  keystones: [
+    { key: "Electrocute", id: 8112, name: "Eletrocutar", icon: "", treeName: "Dominação", score: 1, reasons: ["explosão curta"] },
+  ],
+  secondary: null,
+  matchup: "Ahri contra Zed",
+  fromData: false,
+};
+
+/** Quantas vezes cada comando foi chamado, e com quê. */
+function contador() {
+  const chamadas: Array<{ cmd: string; args: Record<string, unknown> }> = [];
+  const conta = (cmd: string, pred: (a: Record<string, unknown>) => boolean = () => true) =>
+    chamadas.filter((c) => c.cmd === cmd && pred(c.args)).length;
+  const registra = (cmd: string, resposta: Resposta): Resposta => (args) => {
+    chamadas.push({ cmd, args });
+    return resposta(args);
+  };
+  return { conta, registra };
+}
+
+async function assentar() {
+  await act(async () => {
+    await new Promise((r) => setTimeout(r, 0));
+  });
 }
 
 function candidato(championId: number): ScoredChampion {
@@ -153,5 +181,59 @@ describe("App e a casca", () => {
     await screen.findByText(/Não consegui ler o ranking/);
     expect(screen.getByText(/motor ocupado/)).toBeTruthy();
     await waitFor(() => expect(screen.queryByText(/1 candidatos/)).toBeNull());
+  });
+
+  it("TF-ROTAS-3: escolher a rota refaz rotas e runas; sem draft e sem partida, a runa some", async () => {
+    const c = contador();
+    casca({
+      get_snapshot: () => [
+        { connected: true, phase: "ChampSelect", summoner: null, detail: null },
+        draft(25000, { localPosition: "", myTeam: [slot({ cellId: 0, isLocal: true, isActing: true })] }),
+      ],
+      engine_status: () => engine,
+      lane_analysis: c.registra("lane_analysis", () => null),
+      rune_plan: c.registra("rune_plan", () => plano),
+      set_draft_role: () => null,
+    });
+    render(<App />);
+    await assentar();
+    const antes = { rotas: c.conta("lane_analysis"), runas: c.conta("rune_plan") };
+    expect(antes.runas).toBeGreaterThan(0);
+
+    // Em blind a rota é escolhida na tela; a análise depende dela (A11).
+    fireEvent.click(screen.getByRole("button", { name: "MID" }));
+    await waitFor(() => expect(c.conta("lane_analysis")).toBeGreaterThan(antes.rotas));
+    expect(c.conta("rune_plan")).toBeGreaterThan(antes.runas);
+
+    fireEvent.click(screen.getByRole("button", { name: "Rotas" }));
+    await screen.findByText(/Ahri contra Zed/);
+
+    // O champ select acabou e não há partida: a runa sai junto com as rotas.
+    await act(async () => {
+      await emit("presage://draft", null);
+    });
+    await waitFor(() => expect(screen.queryByText(/Ahri contra Zed/)).toBeNull());
+  });
+
+  it("TF-DRAFT-10: com um candidato aberto, marcar a rota de um inimigo refaz a prévia", async () => {
+    const c = contador();
+    casca({
+      get_snapshot: () => [
+        { connected: true, phase: "ChampSelect", summoner: null, detail: null },
+        draft(25000, { theirTeam: [slot({ cellId: 5, championId: 238, locked: true })], unavailable: [238] }),
+      ],
+      engine_status: () => engine,
+      rank_draft: () => [candidato(103)],
+      lane_analysis: c.registra("lane_analysis", () => null),
+      set_enemy_role: () => null,
+    });
+    render(<App />);
+    fireEvent.click(await screen.findByTitle("#103"));
+    const comCandidato = (a: Record<string, unknown>) => a.candidate === 103;
+    await waitFor(() => expect(c.conta("lane_analysis", comCandidato)).toBe(1));
+
+    // O inimigo vira MID à mão: a prévia muda de oponente (A11).
+    fireEvent.change(screen.getByTitle(/Rota presumida pelo Presage/), { target: { value: "Mid" } });
+    await waitFor(() => expect(c.conta("lane_analysis", comCandidato)).toBe(2));
   });
 });

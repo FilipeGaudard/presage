@@ -75,27 +75,29 @@ comparação (`watcher.rs:261-269`), e por isso o front interpola o tempo.
 |---|---|---|---|
 | Ranking (`App.tsx:167-192`) | `activeDraft`, `engine.ready`, `pool`, `draftRole`, `enemyRoles`, `draftPrefs` | `rank_draft`, `minimax_draft`, `ban_suggestions`, juntos | zera as três listas |
 | Partida (`App.tsx:194-220`) | `live` | `build_suggestions` com `{ limit: 8 }`, `gold_report` | zera build e ouro |
-| Rotas (`App.tsx:224-243`) | `activeDraft`, `live`, `engine.ready`, `enemyRoles` | `lane_analysis` com `{ candidate: null }`, `rune_plan` | zera `lanes` (as runas ficam) |
+| Rotas (`App.tsx`) | `activeDraft`, `live`, `engine.ready`, `enemyRoles`, `draftRole`, `pool` | `lane_analysis` com `{ candidate: null }`, `rune_plan` | zera `lanes` e `runas` |
 | Simulador (`App.tsx:150-163`) | `view`, `simDraft` | `set_simulated_draft` | fora da aba, manda `null` |
-| Prévia (`RecommendationPanel.tsx:61-75`) | candidato, `draft`, `onPreview` | `lane_analysis` com `{ candidate }` | zera a prévia |
+| Prévia (`RecommendationPanel.tsx:61-75`) | candidato, `draft`, `onPreview` (que muda com `enemyRoles`) | `lane_analysis` com `{ candidate }` | zera a prévia |
 | Pool, passo 3 (`PoolBuilder.tsx:38-48`) | passo, rota, `pool` | `pool_suggestions` | — |
 | Overlay (`overlay.tsx:61-90`) | `snapshot` | `build_suggestions` com `{ limit: 2 }`, `gold_report`, `skirmish_focus` | zera tudo |
 
 `activeDraft` é `simAplicado` na aba Simulador e `draft` nas outras
 (`App.tsx:165`).
 
-Dependências que faltam, e o efeito na tela:
+Três dependências faltavam até a 0.7.0 (A11), e o teste de cada uma está no
+[06](06-testes.md):
 
-- **Rotas não dependem de `draftRole` nem de `pool`.** A casca resolve a sua
-  rota pela escolha e pela pool (`context::resolve_role`). Escolher "MID" em
-  blind refaz o ranking, mas a análise de rota, a runa e as rotas presumidas no
-  `DraftBoard` continuam as da rota anterior até o draft mudar.
-- **A prévia não depende de `enemyRoles`.** O comentário de `App.tsx:271` diz
-  que corrigir a rota de um inimigo refaz a prévia; não refaz, porque o efeito
-  da prévia só olha o candidato e o `draft`, e marcar não muda o `draft`.
-- **As runas não zeram.** Com `activeDraft` e `live` nulos, `lanes` vira `null` e
-  `runas` fica com o plano anterior. Na aba Rotas, depois da partida, aparece
-  "Sem rotas para comparar" e, embaixo, a runa do confronto que já acabou.
+- **Rotas e runas dependem de `draftRole` e `pool`.** A casca resolve a sua rota
+  pela escolha e pela pool (`context::resolve_role`). Escolher "MID" em blind
+  refaz o ranking **e** a análise de rota e a runa (TF-ROTAS-3).
+- **A prévia depende de `enemyRoles`.** A função da prévia muda quando uma rota
+  é marcada, e o painel refaz a prévia aberta com o oponente novo (TF-DRAFT-10).
+- **As runas zeram junto com as rotas.** Sem `activeDraft` e sem `live`, as
+  duas viram `null`: depois da partida, a aba Rotas não mostra mais a runa do
+  confronto que acabou (TF-ROTAS-3).
+
+Falta a parte da casca: perder o cliente apaga o draft sem emitir
+`presage://draft`, e a tela fica com o draft velho ([GC-3](07-lacunas-da-casca.md)).
 
 Cada `.then` confere um `cancelled` ou `vivo` antes de escrever: uma resposta
 atrasada de um draft antigo não sobrescreve a do novo.

@@ -25,13 +25,11 @@ ui-test TF-DRAFT-6 | P-16: teste do front ainda não escrito
 ui-test TF-DRAFT-7 | P-16: teste do front ainda não escrito
 ui-test TF-DRAFT-8 | P-16: teste do front ainda não escrito
 ui-test TF-DRAFT-9 | P-16: teste do front ainda não escrito
-ui-test TF-DRAFT-10 | P-16: teste do front ainda não escrito
 ui-test TF-SIM-1 | P-16: teste do front ainda não escrito
 ui-test TF-SIM-2 | P-16: teste do front ainda não escrito
 ui-test TF-SIM-3 | P-16: teste do front ainda não escrito
 ui-test TF-ROTAS-1 | P-16: teste do front ainda não escrito
 ui-test TF-ROTAS-2 | P-16: teste do front ainda não escrito
-ui-test TF-ROTAS-3 | P-16: teste do front ainda não escrito
 ui-test TF-PARTIDA-1 | P-16: teste do front ainda não escrito
 ui-test TF-PARTIDA-2 | P-16: teste do front ainda não escrito
 ui-test TF-PARTIDA-4 | P-16: teste do front ainda não escrito

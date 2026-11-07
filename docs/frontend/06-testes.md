@@ -62,13 +62,13 @@ com `mockIPC`, que é onde mora o tratamento de erro.
 | TF-DRAFT-7 | componente | Hoje. `hasGlobal: false` mostra a faixa "Sem base estatística"; `globalPatch: "16.20"` com `version: "16.21.1"` mostra "A base é do patch 16.20 e o jogo está no 16.21.1. Os números são de outro patch." | RNF-1 |
 | TF-DRAFT-8 | componente | Hoje. `currentAction: "ban"` com `bans: []` mostra "Nada travado do lado deles ainda…"; um ban com `fromPool: true` leva "sua lista" | R-3 |
 | TF-DRAFT-9 | componente | Hoje. Clicar um candidato chama `onPreview(id)` uma vez e mostra "Calculando a prévia…" até a promessa resolver | R-6 |
-| TF-DRAFT-10 | componente | Desejado. Com um candidato aberto, marcar a rota de um inimigo chama `lane_analysis` com `{ candidate }` de novo (hoje não chama) | R-6, R-4 |
+| TF-DRAFT-10 | componente | Hoje. Com um candidato aberto, marcar a rota de um inimigo chama `lane_analysis` com `{ candidate }` de novo (até a 0.7.0 não chamava, A11) | R-6, R-4 |
 | TF-SIM-1 | componente | Hoje. Abrir a aba chama `set_simulated_draft` com o draft da tela, e `rank_draft` só é chamado depois que ele resolve | R-8 |
 | TF-SIM-2 | componente | Hoje. Trocar para a aba Draft chama `set_simulated_draft` com `{ draft: null }` | R-8 |
 | TF-SIM-3 | componente | Hoje. Digitar "Ahri" e sair do campo grava `championId: 103` e `locked: true`; "Ahrii" não muda nada | R-8 |
 | TF-ROTAS-1 | componente | Hoje. Rota com `fromData: false` traz "sem base de partidas: só a conta do duelo"; `source: "partida"` troca o subtítulo para "níveis e itens reais da partida" e desenha o ponto de agora | RNF-1, R-11 |
 | TF-ROTAS-2 | componente | Hoje. `RunePlan` com `fromData: false` mostra "Isto sai de regras sobre a mecânica do confronto…" e não fala em partidas | R-7, RNF-1 |
-| TF-ROTAS-3 | componente | Desejado. Escolher a rota ou mudar a pool chama `lane_analysis` e `rune_plan` de novo; sem draft e sem partida, a runa some junto com as rotas | R-6, R-7 |
+| TF-ROTAS-3 | componente | Hoje. Escolher a rota ou mudar a pool chama `lane_analysis` e `rune_plan` de novo; sem draft e sem partida, a runa some junto com as rotas | R-6, R-7 |
 | TF-PARTIDA-1 | componente | Hoje. `live: null` com `connected: true` mostra "Entre numa partida e os timers e a build adaptativa ligam sozinhos."; sem cliente, "Abra o cliente do League of Legends." | R-11 |
 | TF-PARTIDA-2 | componente | Hoje. Um `Spawn` com `observed: false` leva "estimado"; com `secondsLeft: 0`, "disponível" | R-13 |
 | TF-PARTIDA-3 | componente | Hoje. Um inimigo com `unspent: 1200` não ganha `+1.200` na linha dele; o jogador local ainda ganha | C-4, R-12, GC-2 |
