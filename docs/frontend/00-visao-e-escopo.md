@@ -111,7 +111,7 @@ A última coluna é o que a tela escreve hoje perto do número.
 | Número | Onde | Etiqueta | O que a tela diz |
 |---|---|---|---|
 | Ouro em itens, do time e de cada um | Partida, overlay, pós-jogo | exata | "A coluna em negrito é exata" (`GoldTracker.tsx:93`); "O ouro em itens é soma exata dos preços" (`GraficoPartida.tsx:175`). O overlay não diz nada |
-| Ouro em mão estimado (`+N`) | Partida | estimativa | `title` "Estimativa do ouro em mão". Não deveria existir para os outros nove (GC-2) |
+| Ouro em mão estimado (`+N`) | Partida | estimativa | `title` "Estimativa do ouro em mão". Só na sua linha: o dos outros nove não cruza a ponte (GC-2, C-4) |
 | Timer de objetivo | Partida, overlay | exata quando observado; estimada no primeiro spawn | "estimado" (`LiveOverview.tsx:54`), "est" no overlay |
 | Tropas e visão por minuto contra o oponente; à frente, igual ou atrás | Partida | exata; o corte é regra | "Ouro em itens é exato", e o corte de 300 ou 10% é "regra, não estatística" (`LiveOverview.tsx:175`) |
 | Valor por 1000 de ouro | Partida | alta na ordem, índice no valor | "poder por 1000g". Não diz que é índice |

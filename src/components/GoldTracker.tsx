@@ -67,7 +67,7 @@ export default function GoldTracker({ report, staticData, compact = false }: Pro
                       <small>{POSITION_LABEL[player.position.toLowerCase()] ?? "—"}</small>
                     </span>
                     <span className="gold-num">{BR.format(player.invested)}</span>
-                    {player.unspent >= 800 && (
+                    {player.isLocal && player.unspent !== null && player.unspent >= 800 && (
                       <span className="gold-idle" title="Estimativa do ouro em mão">
                         +{BR.format(player.unspent)}
                       </span>
@@ -91,9 +91,8 @@ export default function GoldTracker({ report, staticData, compact = false }: Pro
       {!compact && (
         <p className="faint">
           A coluna em negrito é exata: sai do preço de cada item no inventário. O
-          valor claro ao lado é estimativa do ouro em mão — a API só entrega o
-          seu, então o dos outros nove é reconstruído a partir de tempo, tropas e
-          abates.
+          valor claro ao lado do seu nome é estimativa do seu ouro em mão. O dos
+          outros nove não aparece: não é algo que você saberia olhando o jogo.
         </p>
       )}
     </div>

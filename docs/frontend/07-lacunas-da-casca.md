@@ -19,7 +19,7 @@ de vir da casca, e não ser adivinhado ou copiado no TypeScript.
 | # | Lacuna | Prioridade | Estado |
 |---|---|---|---|
 | GC-1 | A falha de um comando não chega à tela | P0 | aberta |
-| GC-2 | O ouro em mão dos outros nove cruza a ponte e aparece | P0 | aberta |
+| GC-2 | O ouro em mão dos outros nove cruza a ponte e aparece | P0 | fechada (TF-PARTIDA-3, T-OURO-10) |
 | GC-3 | Perder o cliente não limpa o draft na tela | P1 | aberta |
 | GC-4 | Marcas e rota escolhida vivem em dois lugares; `get_enemy_roles` sem uso | P1 | aberta |
 | GC-5 | A rota que o motor usou não volta para a tela | P1 | aberta |
@@ -77,8 +77,12 @@ que não gravou só se descobre reabrindo o app.
 - Front: o `+N` e a frase do rodapé saem para os outros nove.
 - Prova: TF-PARTIDA-3.
 
-**Enquanto isso:** a aba Partida contraria uma regra da Riot. O overlay não
-mostra o ouro em mão de ninguém.
+> **Fechada.** Como proposto, nos dois lados: `GoldPlayer::unspent` virou
+> `Option<f64>`, `Some` só para o jogador local, e `GoldTracker` só desenha o
+> `+N` na linha `isLocal`. O rodapé foi reescrito. `earned` e `goldPerMinute`
+> continuam saindo para os dez, porque os totais por time precisam deles, e
+> nenhuma tela os mostra por jogador. Prova: T-OURO-10 e TF-PARTIDA-3, os dois
+> vermelhos antes da correção.
 
 ## GC-3 — Perder o cliente não limpa o draft na tela (P1)
 

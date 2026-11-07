@@ -1,15 +1,18 @@
 # 06 — Testes do frontend
 
-**O front não tem teste automatizado.** Não há `*.test.tsx`, Vitest, Testing
-Library nem Playwright no `package.json`; o único portão é o `tsc --noEmit` do
-`npm run build`, que prova que o front concorda com `lib/types.ts` e nada mais
+**O front tem harness desde 2026-11-07:** Vitest, Testing Library e jsdom
+(`vitest.config.ts`, `npm test`), e o `docs.yml` roda os testes a cada push. Os
+testes ficam ao lado do componente (`GoldTracker.test.tsx`), e o ID da linha vai
+no título do teste (`it("TF-PARTIDA-3: …")`): é o marcador que o doccheck
+procura em `*.test.ts(x)` de `src/`. O `tsc --noEmit` do `npm run build`
+continua provando que o front concorda com `lib/types.ts`
 ([08 §4](../arquitetura/08-desenvolvimento-e-testes.md#4-os-testes)).
 
-Este documento é o plano. O catálogo do §3 lista os comportamentos que um teste
-do front deve provar, cada um com uma entrada e uma saída concretas. **Todas as
-linhas estão pendentes** até existir um harness ([P-16](../produto/perguntas-em-aberto.md)):
-o doccheck lê cada `TF-*` daqui e só marca a linha como feita quando um arquivo
-`*.test.ts(x)` ou `*.spec.ts(x)` de `src/` cita o ID (`doccheck.mjs:99-101`).
+Este documento é o catálogo. Cada linha do §3 é um comportamento que um teste do
+front prova, com uma entrada e uma saída concretas. A linha sem teste fica adiada,
+uma por uma, em `tools/doccheck/deferred.txt` ([P-16](../produto/perguntas-em-aberto.md)),
+e sai de lá quando o teste chega. Linha nova sem teste nem adiamento falha o
+doccheck.
 
 Cada linha diz se descreve o comportamento **de hoje** (o teste passaria no
 código atual e trava o que já funciona) ou o **desejado** (o teste falharia hoje
@@ -68,7 +71,7 @@ com `mockIPC`, que é onde mora o tratamento de erro.
 | TF-ROTAS-3 | componente | Desejado. Escolher a rota ou mudar a pool chama `lane_analysis` e `rune_plan` de novo; sem draft e sem partida, a runa some junto com as rotas | R-6, R-7 |
 | TF-PARTIDA-1 | componente | Hoje. `live: null` com `connected: true` mostra "Entre numa partida e os timers e a build adaptativa ligam sozinhos."; sem cliente, "Abra o cliente do League of Legends." | R-11 |
 | TF-PARTIDA-2 | componente | Hoje. Um `Spawn` com `observed: false` leva "estimado"; com `secondsLeft: 0`, "disponível" | R-13 |
-| TF-PARTIDA-3 | componente | Desejado. Um inimigo com `unspent: 1200` não ganha `+1.200` na linha dele; o jogador local ainda ganha | C-4, R-12, GC-2 |
+| TF-PARTIDA-3 | componente | Hoje. Um inimigo com `unspent: 1200` não ganha `+1.200` na linha dele; o jogador local ainda ganha | C-4, R-12, GC-2 |
 | TF-PARTIDA-4 | componente | Hoje. A prioridade sempre traz "Ranking de valor, não de posição.", com ou sem rotas | R-14, C-4 |
 | TF-POS-1 | componente | Hoje. `review: null` mostra "Nenhuma partida lida ainda" | R-16 |
 | TF-POS-2 | componente | Hoje. `role: "Support"` desenha "Visão, você menos o outro suporte" e não desenha "Tropas, você menos o seu oponente" | R-16, L-27 |

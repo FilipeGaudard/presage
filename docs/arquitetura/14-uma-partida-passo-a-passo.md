@@ -847,23 +847,22 @@ fora e liga `roles_assumed`.
 - **ganho**, estimado por `earned_at` (`core/src/engine/gold.rs:76`): 500 de
   início, renda passiva desde 1:50, 21 por tropa, 300 por abate, 150 por
   assistência, nunca abaixo do investido;
-- `unspent = max(0, ganho − investido)`, para os dez;
+- `unspent = max(0, ganho − investido)`, só para você; `None` para os outros nove;
 - até três notas: a diferença de itens a partir de 1000, o **seu** ouro parado a
   partir de 1500, o inimigo mais adiantado.
 
 **Por quê.** A API só entrega o ouro em mão do jogador local. Ouro em mão de outro
-jogador nunca aparece (R-12, C-4). Testes: T-OURO-1 a T-OURO-9.
+jogador nunca aparece (R-12, C-4). Testes: T-OURO-1 a T-OURO-10, e TF-PARTIDA-3 na
+tela.
 
 **Onde.** `report`, `earned_at`; 11 §28, 10 §28,
 [03 §5](03-motor-da-partida.md#5-ouro).
 
 **O que pode dar errado.**
-- **Defeito conhecido.** `GoldReport.players` traz `unspent` para os dez
-  (`core/src/engine/gold.rs:115`), e `GoldTracker.tsx:70-74` mostra `+N` ao lado
-  de qualquer jogador com `unspent ≥ 800`, **inimigos inclusive**. O rodapé ainda
-  explica que "o dos outros nove é reconstruído" (`GoldTracker.tsx:91-97`). É o
-  contrário do que R-12 e C-4 pedem ([GC-2](../frontend/07-lacunas-da-casca.md)).
-  O overlay não mostra a coluna.
+- **Defeito corrigido (A3).** Até a 0.7.0, `unspent` saía para os dez e a tela
+  mostrava o `+N` de qualquer jogador com 800 ou mais, inimigos inclusive. Agora o
+  core manda `None` para os outros nove e a tela só desenha a sua linha
+  ([GC-2](../frontend/07-lacunas-da-casca.md)). O overlay nunca mostrou a coluna.
 - A estimativa é um piso: torres, placas e objetivos ficam de fora.
 
 ### 10.7 O overlay
@@ -1217,9 +1216,8 @@ Por que a tela mostra isso:
   6.750 + Lulu 500 = 22.150. As notas: "Seu time está 2950 atrás em itens", "Você
   tem ~1800 de ouro para gastar", "O mais adiantado deles é Jhin (6750 em
   itens)".
-- **O defeito aparece no exemplo.** O Zed tem `unspent = 1340`
-  (`src/demo.tsx:652`), e `GoldTracker` mostra "+1.340" ao lado dele: o ouro em
-  mão estimado de um inimigo, na tela, contra R-12 e C-4 (§10.6, GC-2).
+- **O ouro em mão é só o seu:** "+1.800" ao lado da Ahri. O exemplo manda
+  `unspent: null` para os outros nove, como a casca (§10.6, GC-2).
 
 ### 13.6 O overlay
 

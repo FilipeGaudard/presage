@@ -414,6 +414,7 @@ lado.
 | T-OURO-7 | `sem_jogador_local_nao_inventa_um_lado` | unidade | Dois jogadores, nenhum local: `ours_invested = 0`, `notes` vazio e ninguém com `is_ally` | R-12 |
 | T-OURO-8 | `ouro_por_minuto_nao_explode_no_segundo_zero` | unidade | Com `game_time = 0`, `gold_per_minute` é finito, pelo piso de 1 s no divisor. Não trava o valor, que é 30 000 por minuto | R-12 |
 | T-OURO-9 | `aponta_o_inimigo_mais_adiantado` | unidade | Inimigos com 4000 e 8000 investidos: alguma nota cita o de 8000 (Viego) | R-12 |
+| T-OURO-10 | `so_o_jogador_local_tem_ouro_em_mao` | regressão | Você (ORDER, local, 1000 investidos) e Zed (CHAOS, 2000 investidos, 150 tropas e 3 abates aos 1200 s): só o seu `unspent` existe; o de Zed é `None`, mesmo com a estimativa dele bem acima do investido. Antes da correção, Zed saía com `unspent = 4773,6`, e a tela o desenhava | C-4, R-12 |
 
 ### 2.14 Objetivos — timers, estruturas e buffs
 

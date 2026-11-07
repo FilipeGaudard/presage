@@ -12,15 +12,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 337 | 337 | 0 | 0 |
-| ui-test | 41 | 0 | 41 | 0 |
+| test | 338 | 338 | 0 | 0 |
+| ui-test | 41 | 1 | 40 | 0 |
 | trace | 43 | 33 | 10 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 463; nomes no catálogo (13): 461; fora dele: 0
+- testes no código: 464; nomes no catálogo (13): 462; fora dele: 0
 - links relativos conferidos: 866
-- IDs citados conferidos: 2814
+- IDs citados conferidos: 2826
 
 ## type
 
@@ -65,7 +65,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::dataset::Dataset` | arquitetura/10-modelo-de-dados §20.1 | done | core/src/engine/dataset.rs:27 |
 | `core::engine::dataset::Layered` | arquitetura/10-modelo-de-dados §20.3 | done | core/src/engine/dataset.rs:113 |
 | `core::engine::gold::GoldPlayer` | arquitetura/10-modelo-de-dados §28.1 | done | core/src/engine/gold.rs:41 |
-| `core::engine::gold::GoldReport` | arquitetura/10-modelo-de-dados §28.2 | done | core/src/engine/gold.rs:60 |
+| `core::engine::gold::GoldReport` | arquitetura/10-modelo-de-dados §28.2 | done | core/src/engine/gold.rs:61 |
 | `core::engine::items::Item` | arquitetura/10-modelo-de-dados §24.2 | done | core/src/engine/items.rs:84 |
 | `core::engine::items::ItemIndex` | arquitetura/10-modelo-de-dados §24.3 | done | core/src/engine/items.rs:94 |
 | `core::engine::items::ItemStats` | arquitetura/10-modelo-de-dados §24.1 | done | core/src/engine/items.rs:20 |
@@ -199,8 +199,8 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::dataset::matchup_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:57 |
 | `core::engine::dataset::synergy_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:62 |
 | `core::engine::dataset::versus_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:68 |
-| `core::engine::gold::earned_at` | arquitetura/11-catalogo-de-funcoes §28.1 | done | core/src/engine/gold.rs:76 |
-| `core::engine::gold::report` | arquitetura/11-catalogo-de-funcoes §28.2 | done | core/src/engine/gold.rs:89 |
+| `core::engine::gold::earned_at` | arquitetura/11-catalogo-de-funcoes §28.1 | done | core/src/engine/gold.rs:77 |
+| `core::engine::gold::report` | arquitetura/11-catalogo-de-funcoes §28.2 | done | core/src/engine/gold.rs:90 |
 | `core::engine::items::ItemIndex::get` | arquitetura/11-catalogo-de-funcoes §24.3 | done | core/src/engine/items.rs:101 |
 | `core::engine::items::ItemIndex::gold_invested` | arquitetura/11-catalogo-de-funcoes §24.3 | done | core/src/engine/items.rs:117 |
 | `core::engine::items::ItemIndex::is_empty` | arquitetura/11-catalogo-de-funcoes §24.3 | done | core/src/engine/items.rs:105 |
@@ -414,7 +414,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `Finding ↔ PoolFinding` | arquitetura/10-modelo-de-dados §17.3 | done | core/src/engine/poolgap.rs:241 |
 | `Focus ↔ SkirmishFocus` | arquitetura/10-modelo-de-dados §27.6 | done | core/src/engine/lanes.rs:458 |
 | `GoldPlayer ↔ GoldPlayer` | arquitetura/10-modelo-de-dados §28.1 | done | core/src/engine/gold.rs:41 |
-| `GoldReport ↔ GoldReport` | arquitetura/10-modelo-de-dados §28.2 | done | core/src/engine/gold.rs:60 |
+| `GoldReport ↔ GoldReport` | arquitetura/10-modelo-de-dados §28.2 | done | core/src/engine/gold.rs:61 |
 | `ItemSuggestion ↔ ItemSuggestion` | arquitetura/10-modelo-de-dados §26.4 | done | core/src/engine/build.rs:56 |
 | `LaneOutlook ↔ LaneOutlook` | arquitetura/10-modelo-de-dados §27.3 | done | core/src/engine/lanes.rs:155 |
 | `LanePriority ↔ LanePriority` | arquitetura/10-modelo-de-dados §30.1 | done | core/src/engine/priority.rs:32 |
@@ -746,15 +746,16 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-OBJETIVO-7` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:589 |
 | `T-OBJETIVO-8` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:615 |
 | `T-OBJETIVO-9` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:642 |
-| `T-OURO-1` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:221 |
-| `T-OURO-2` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:316 |
-| `T-OURO-3` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:234 |
-| `T-OURO-4` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:245 |
-| `T-OURO-5` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:261 |
-| `T-OURO-6` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:271 |
-| `T-OURO-7` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:292 |
-| `T-OURO-8` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:308 |
-| `T-OURO-9` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:326 |
+| `T-OURO-1` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:224 |
+| `T-OURO-10` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:330 |
+| `T-OURO-2` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:320 |
+| `T-OURO-3` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:237 |
+| `T-OURO-4` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:248 |
+| `T-OURO-5` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:264 |
+| `T-OURO-6` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:275 |
+| `T-OURO-7` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:296 |
+| `T-OURO-8` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:312 |
+| `T-OURO-9` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:349 |
 | `T-PERFIL-1` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:341 |
 | `T-PERFIL-2` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:348 |
 | `T-PERFIL-3` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:371 |
@@ -886,47 +887,47 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Item | Fonte | Estado | Onde / motivo |
 |---|---|---|---|
-| `TF-AJUSTES-1` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-AJUSTES-2` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-CASCA-1` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-CASCA-2` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-CASCA-3` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-CASCA-4` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-CASCA-5` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-CASCA-6` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-DRAFT-1` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-DRAFT-10` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-DRAFT-2` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-DRAFT-3` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-DRAFT-4` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-DRAFT-5` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-DRAFT-6` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-DRAFT-7` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-DRAFT-8` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-DRAFT-9` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-OVERLAY-1` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-OVERLAY-2` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-OVERLAY-3` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-OVERLAY-4` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-OVERLAY-5` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-PARTIDA-1` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-PARTIDA-2` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-PARTIDA-3` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-PARTIDA-4` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-POOL-1` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-POOL-2` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-POOL-3` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-POOL-4` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-POOL-5` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-POS-1` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-POS-2` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-POS-3` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-ROTAS-1` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-ROTAS-2` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-ROTAS-3` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-SIM-1` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-SIM-2` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
-| `TF-SIM-3` | frontend/06-testes §3 | deferred | P-16: sem harness de teste do front |
+| `TF-AJUSTES-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-AJUSTES-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-CASCA-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-CASCA-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-CASCA-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-CASCA-4` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-CASCA-5` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-CASCA-6` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-DRAFT-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-DRAFT-10` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-DRAFT-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-DRAFT-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-DRAFT-4` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-DRAFT-5` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-DRAFT-6` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-DRAFT-7` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-DRAFT-8` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-DRAFT-9` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-OVERLAY-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-OVERLAY-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-OVERLAY-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-OVERLAY-4` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-OVERLAY-5` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-PARTIDA-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-PARTIDA-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-PARTIDA-4` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-POOL-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-POOL-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-POOL-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-POOL-4` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-POOL-5` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-POS-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-POS-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-POS-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-ROTAS-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-ROTAS-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-ROTAS-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-SIM-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-SIM-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-SIM-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
+| `TF-PARTIDA-3` | frontend/06-testes §3 | done | src/components/GoldTracker.test.tsx:40 |
 
 ## trace
 
@@ -1075,4 +1076,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 62 | 0 | 0 | 38 |
+| 61 | 1 | 0 | 38 |

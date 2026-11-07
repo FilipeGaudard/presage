@@ -647,9 +647,9 @@ const goldReport: GoldReport = {
     "O mais adiantado deles é Jhin (6750 em itens)",
   ],
   players: live.game.players.map((player, i) => {
-    // Cada um com a própria sobra, senão a coluna vira uma coluna de "+900"
-    // que não parece dado de ninguém.
-    const unspent = player.isLocal ? 1800 : [320, 1150, 0, 640, 2210, 80, 470, 1340, 0][i % 9];
+    // Cada um com a própria renda estimada, para os totais não parecerem
+    // inventados; o ouro em mão, só o seu.
+    const sobra = player.isLocal ? 1800 : [320, 1150, 0, 640, 2210, 80, 470, 1340, 0][i % 9];
     return {
       championKey: player.championKey,
       championId: player.championId,
@@ -659,9 +659,10 @@ const goldReport: GoldReport = {
       isLocal: player.isLocal,
       isAlly: player.team === "ORDER",
       invested: player.goldInvested,
-      earned: player.goldInvested + unspent,
-      unspent,
-      goldPerMinute: (player.goldInvested + unspent) / (1147 / 60),
+      earned: player.goldInvested + sobra,
+      // Ouro em mão só do jogador local, como a casca manda (C-4).
+      unspent: player.isLocal ? sobra : null,
+      goldPerMinute: (player.goldInvested + sobra) / (1147 / 60),
     };
   }),
 };

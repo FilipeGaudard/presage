@@ -20,8 +20,9 @@ Assistente de draft, partida e pós-jogo para League of Legends. App de desktop
 >   esperam a base de partidas, que espera uma chave da Riot que dure
 >   ([P-1](produto/perguntas-em-aberto.md), [P-6](produto/perguntas-em-aberto.md)).
 > - **Defeitos conhecidos** no que já está construído ficam em `build/audit.md`,
->   abertos até o teste que falha antes da correção. O mais grave: a tela de ouro
->   mostra o ouro em mão estimado dos inimigos, contra o R-12 e o C-4 (A3).
+>   abertos até o teste que falha antes da correção. As linhas graves (A1, A3 a
+>   A13) são a próxima etapa; a A3, ouro em mão dos inimigos na tela contra o
+>   C-4, já está fechada.
 
 ## Por onde começar
 

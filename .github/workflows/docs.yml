@@ -1,7 +1,8 @@
 # Prova que os docs e o código concordam (ADR-0020), a cada push e pull request.
 #
 # Roda em Linux e só com Node: o doccheck lê o código como texto, não compila
-# nada, então não precisa de Rust, MSVC nem Tauri. Leva segundos.
+# nada, então não precisa de Rust, MSVC nem Tauri. Os testes do front (Vitest)
+# montam os componentes puros com dados no formato da casca, também sem Tauri.
 
 name: Docs
 
@@ -21,6 +22,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: npm
+
+      - name: Dependências do front
+        run: npm ci
+
+      - name: Testes do front
+        run: npm test
 
       - name: Testes do doccheck
         run: node --test tools/doccheck/doccheck.test.mjs

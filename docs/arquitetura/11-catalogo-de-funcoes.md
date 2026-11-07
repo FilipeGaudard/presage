@@ -1676,7 +1676,8 @@ pub fn report(game: &LiveGame) -> GoldReport;
 
 - **Faz:**
   1. Para cada jogador: `earned_at` com tempo, tropas, abates, assistências e o
-     investido; `unspent = max(0, earned − invested)`; ouro por minuto com piso de
+     investido; `unspent = max(0, earned − invested)` só para o jogador local, e
+     `None` para os outros nove (C-4); ouro por minuto com piso de
      1 s no divisor; `is_ally` pelo `team` do jogador local.
   2. Soma investido e ganho por lado.
   3. Com jogador local, até três notas: a diferença de investido, a partir de 1000
@@ -1687,7 +1688,7 @@ pub fn report(game: &LiveGame) -> GoldReport;
 - **Erros:** nenhum.
 - **Confiança:** exata no investido e em `invested_lead`; fraca em ganho,
   `unspent`, ouro por minuto e `earned_lead`.
-- **Atende:** R-12
+- **Atende:** R-12, C-4
 
 A casca chama a cada pedido do front (`gold_report`), sobre o último `LiveGame`
 lido. O desenho está em [03 §5](03-motor-da-partida.md#5-ouro).

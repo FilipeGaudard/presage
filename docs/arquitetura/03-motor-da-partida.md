@@ -159,9 +159,10 @@ travado (`a_previa_e_a_mesma_conta_de_quando_ele_estiver_travado`).
 
 `gold.rs` soma o preço de cada item no inventário dos dez: **investido** é exato.
 O **ganho** é estimado (`earned_at`) a partir de tempo, CS, abates, assistências
-e o investido. A regra é que ouro em mão de outro jogador nunca aparece (C-4,
-R-12). Hoje aparece: `GoldPlayer::unspent` sai para os dez e a tela mostra o
-`+N` de qualquer um a partir de 800 (defeito A3 em `build/audit.md`).
+e o investido. Ouro em mão de outro jogador nunca aparece (C-4, R-12), e a
+regra mora em dois lugares de propósito: o core só calcula `GoldPlayer::unspent`
+do jogador local (`None` para os outros nove), e a tela só desenha o `+N` ao lado
+do seu nome. Até a 0.7.0 os dois falhavam juntos (A3 em `build/audit.md`).
 
 ## 6. Timers
 

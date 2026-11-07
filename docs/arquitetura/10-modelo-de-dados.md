@@ -2090,14 +2090,16 @@ pub struct GoldPlayer {
     pub is_ally: bool,         // mesmo `team` do jogador local; falso para todos quando não há jogador local
     pub invested: f64,         // ouro, exato: soma dos `price` dos itens (`LivePlayer::gold_invested`)
     pub earned: f64,           // ouro, estimativa: `earned_at`, nunca abaixo de `invested`
-    pub unspent: f64,          // ouro, estimativa: `earned − invested`, nunca negativo; sai para os dez
+    pub unspent: Option<f64>,  // ouro, estimativa: `earned − invested`, nunca negativo; só do jogador local, `None` para os outros nove (C-4)
     pub gold_per_minute: f64,  // ouro por minuto: `earned` dividido pelos minutos de partida, com piso de 1 s no divisor
 }
 ```
 
 **Invariantes:**
-- `earned ≥ invested` e `unspent = earned − invested` (`earned_at` devolve o
-  máximo entre a estimativa e o investido).
+- `earned ≥ invested` e, para o jogador local, `unspent = Some(earned − invested)`
+  (`earned_at` devolve o máximo entre a estimativa e o investido).
+- `unspent` é `None` para todo jogador com `is_local = false`: ouro em mão de
+  outro jogador nunca cruza a ponte (C-4, R-12; T-OURO-10).
 
 ### 28.2 `GoldReport` ↔ `GoldReport`
 

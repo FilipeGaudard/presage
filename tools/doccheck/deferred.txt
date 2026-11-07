@@ -8,8 +8,49 @@ todo src-tauri/src/watcher.rs TODO(fase 1) | ADR-0002: polling até reagirmos a 
 # A casca registra e o front não chama.
 command get_enemy_roles | A2: registrado no generate_handler! e nunca chamado pelo front
 
-# O front não tem teste automatizado: o catálogo do frontend 06 é o plano.
-ui-test TF-* | P-16: sem harness de teste do front
+# O front tem harness (Vitest) desde a correção da A3. Cada linha do frontend 06
+# sem teste escrito fica adiada aqui, uma por uma: linha nova sem teste nem
+# adiamento falha o doccheck.
+ui-test TF-CASCA-1 | P-16: teste do front ainda não escrito
+ui-test TF-CASCA-2 | P-16: teste do front ainda não escrito
+ui-test TF-CASCA-3 | P-16: teste do front ainda não escrito
+ui-test TF-CASCA-4 | P-16: teste do front ainda não escrito
+ui-test TF-CASCA-5 | P-16: teste do front ainda não escrito
+ui-test TF-CASCA-6 | P-16: teste do front ainda não escrito
+ui-test TF-DRAFT-1 | P-16: teste do front ainda não escrito
+ui-test TF-DRAFT-2 | P-16: teste do front ainda não escrito
+ui-test TF-DRAFT-3 | P-16: teste do front ainda não escrito
+ui-test TF-DRAFT-4 | P-16: teste do front ainda não escrito
+ui-test TF-DRAFT-5 | P-16: teste do front ainda não escrito
+ui-test TF-DRAFT-6 | P-16: teste do front ainda não escrito
+ui-test TF-DRAFT-7 | P-16: teste do front ainda não escrito
+ui-test TF-DRAFT-8 | P-16: teste do front ainda não escrito
+ui-test TF-DRAFT-9 | P-16: teste do front ainda não escrito
+ui-test TF-DRAFT-10 | P-16: teste do front ainda não escrito
+ui-test TF-SIM-1 | P-16: teste do front ainda não escrito
+ui-test TF-SIM-2 | P-16: teste do front ainda não escrito
+ui-test TF-SIM-3 | P-16: teste do front ainda não escrito
+ui-test TF-ROTAS-1 | P-16: teste do front ainda não escrito
+ui-test TF-ROTAS-2 | P-16: teste do front ainda não escrito
+ui-test TF-ROTAS-3 | P-16: teste do front ainda não escrito
+ui-test TF-PARTIDA-1 | P-16: teste do front ainda não escrito
+ui-test TF-PARTIDA-2 | P-16: teste do front ainda não escrito
+ui-test TF-PARTIDA-4 | P-16: teste do front ainda não escrito
+ui-test TF-POS-1 | P-16: teste do front ainda não escrito
+ui-test TF-POS-2 | P-16: teste do front ainda não escrito
+ui-test TF-POS-3 | P-16: teste do front ainda não escrito
+ui-test TF-POOL-1 | P-16: teste do front ainda não escrito
+ui-test TF-POOL-2 | P-16: teste do front ainda não escrito
+ui-test TF-POOL-3 | P-16: teste do front ainda não escrito
+ui-test TF-POOL-4 | P-16: teste do front ainda não escrito
+ui-test TF-POOL-5 | P-16: teste do front ainda não escrito
+ui-test TF-AJUSTES-1 | P-16: teste do front ainda não escrito
+ui-test TF-AJUSTES-2 | P-16: teste do front ainda não escrito
+ui-test TF-OVERLAY-1 | P-16: teste do front ainda não escrito
+ui-test TF-OVERLAY-2 | P-16: teste do front ainda não escrito
+ui-test TF-OVERLAY-3 | P-16: teste do front ainda não escrito
+ui-test TF-OVERLAY-4 | P-16: teste do front ainda não escrito
+ui-test TF-OVERLAY-5 | P-16: teste do front ainda não escrito
 
 # Requisitos que nenhum teste prova. Cada um diz o que o garante hoje, e a linha
 # B-n do build/audit.md acompanha o teste que falta.

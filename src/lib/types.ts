@@ -276,7 +276,8 @@ export interface GoldPlayer {
   invested: number;
   /** Estimado. */
   earned: number;
-  unspent: number;
+  /** Ouro em mão: só do jogador local; `null` para os outros nove (C-4). */
+  unspent: number | null;
   goldPerMinute: number;
 }
 

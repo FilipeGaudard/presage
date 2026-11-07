@@ -52,8 +52,9 @@ pub struct GoldPlayer {
     pub invested: f64,
     /// Renda reconstruída. Estimativa, e piso.
     pub earned: f64,
-    /// O que provavelmente está no bolso: ganho menos investido.
-    pub unspent: f64,
+    /// O que provavelmente está no bolso: ganho menos investido. Só do jogador
+    /// local: ouro em mão de outro jogador nunca sai do core (C-4, R-12).
+    pub unspent: Option<f64>,
     pub gold_per_minute: f64,
 }
 
@@ -112,7 +113,9 @@ pub fn report(game: &LiveGame) -> GoldReport {
                 is_ally: my_team.as_deref() == Some(player.team.as_str()),
                 invested: player.gold_invested,
                 earned,
-                unspent: (earned - player.gold_invested).max(0.0),
+                unspent: player
+                    .is_local
+                    .then(|| (earned - player.gold_invested).max(0.0)),
                 gold_per_minute: earned / minutes,
             }
         })
@@ -143,8 +146,8 @@ pub fn report(game: &LiveGame) -> GoldReport {
         }
 
         if let Some(me) = players.iter().find(|p| p.is_local) {
-            if me.unspent >= UNSPENT_ALERT {
-                notes.push(format!("Você tem ~{:.0} de ouro para gastar", me.unspent));
+            if let Some(sobra) = me.unspent.filter(|&s| s >= UNSPENT_ALERT) {
+                notes.push(format!("Você tem ~{sobra:.0} de ouro para gastar"));
             }
         }
 
@@ -264,8 +267,9 @@ mod tests {
         let r = report(&g);
         let eu = &r.players[0];
 
-        assert!(eu.unspent > 0.0);
-        assert!((eu.earned - eu.invested - eu.unspent).abs() < 1e-9);
+        let sobra = eu.unspent.expect("o jogador local tem ouro em mão");
+        assert!(sobra > 0.0);
+        assert!((eu.earned - eu.invested - sobra).abs() < 1e-9);
     }
 
     #[test]
@@ -286,7 +290,7 @@ mod tests {
         let r = report(&g);
 
         assert!(!r.notes.iter().any(|n| n.contains("para gastar")));
-        assert_eq!(r.players[0].unspent, 0.0);
+        assert_eq!(r.players[0].unspent, Some(0.0));
     }
 
     #[test]
@@ -321,6 +325,25 @@ mod tests {
 
         assert!((com_abate - limpo - PER_KILL).abs() < 1e-9);
         assert!((com_assist - limpo - PER_ASSIST).abs() < 1e-9);
+    }
+
+    #[test]
+    fn so_o_jogador_local_tem_ouro_em_mao() {
+        let g = game(
+            vec![
+                player("Ahri", "ORDER", true, 1000.0, 120, 1, 2),
+                player("Zed", "CHAOS", false, 2000.0, 150, 3, 0),
+            ],
+            1200.0,
+        );
+        let r = report(&g);
+        let zed = r.players.iter().find(|p| p.champion_key == "Zed").unwrap();
+
+        // A estimativa de Zed passa do investido; mesmo assim, ouro em mão de
+        // outro jogador nunca sai do core (C-4).
+        assert!(zed.earned > zed.invested + 1000.0);
+        assert_eq!(zed.unspent, None, "ouro em mão de Zed: {:?}", zed.unspent);
+        assert!(r.players.iter().find(|p| p.is_local).unwrap().unspent.is_some());
     }
 
     #[test]

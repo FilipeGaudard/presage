@@ -185,7 +185,7 @@ o documento afetado no mesmo commit.
   Travar e banir sozinho fica fora de qualquer jeito.
 - **Dono:** produto.
 
-## P-16 — Que harness de teste o front ganha? 🟡
+## P-16 — Que harness de teste o front ganha? 🟢
 
 - **Pergunta:** o front não tem teste automatizado. Que camada vem primeiro,
   componente (Vitest + Testing Library sobre os componentes puros, com os dados do
@@ -195,6 +195,11 @@ o documento afetado no mesmo commit.
   exemplo, só se prova com um teste do front.
 - **Default:** componentes primeiro, porque já são puros e o `demo.tsx` já tem os
   dados. Os TF-* ficam adiados até lá.
+- **Resposta (2026-11-07):** componentes primeiro, com Vitest, Testing Library e
+  jsdom (`vitest.config.ts`, `npm test`, também no `docs.yml`). O ID da linha vai
+  no título do teste. TF-PARTIDA-3 foi o primeiro; os outros ficam adiados um a
+  um em `tools/doccheck/deferred.txt` até o teste existir. Ponta a ponta
+  (TF-OVERLAY-5) continua sem ferramenta.
 - **Dono:** técnica.
 
 ## P-17 — Uma partida real, anonimizada, para o passo a passo? 🔵

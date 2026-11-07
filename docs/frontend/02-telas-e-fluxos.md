@@ -267,10 +267,10 @@ os próximos itens e os itens de cada inimigo.
   achado. Sem item: "Sem dados de item carregados."; inimigo sem item: "sem
   itens"; morto: "morto 12s".
 - Ouro: "A coluna em negrito é exata: sai do preço de cada item no inventário. O
-  valor claro ao lado é estimativa do ouro em mão — a API só entrega o seu, então
-  o dos outros nove é reconstruído a partir de tempo, tropas e abates." O valor
-  claro aparece para qualquer jogador com `unspent ≥ 800`, inimigos inclusive
-  (`GoldTracker.tsx:70`), contra C-4 e R-12 ([GC-2](07-lacunas-da-casca.md)).
+  valor claro ao lado do seu nome é estimativa do seu ouro em mão. O dos outros
+  nove não aparece: não é algo que você saberia olhando o jogo." O valor claro só
+  aparece na linha do jogador local, com `unspent ≥ 800` (C-4, R-12;
+  [GC-2](07-lacunas-da-casca.md), fechada).
 
 ## 6. Pós-jogo
 
