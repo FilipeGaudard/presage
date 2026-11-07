@@ -65,6 +65,7 @@ com `mockIPC`, que é onde mora o tratamento de erro.
 | TF-DRAFT-9 | componente | Hoje. Clicar um candidato chama `onPreview(id)` uma vez e mostra "Calculando a prévia…" até a promessa resolver | R-6 |
 | TF-DRAFT-10 | componente | Hoje. Com um candidato aberto, marcar a rota de um inimigo chama `lane_analysis` com `{ candidate }` de novo (até a 0.7.0 não chamava, A11) | R-6, R-4 |
 | TF-DRAFT-11 | componente | Hoje. Com a casca guardando `[[238, "Mid"]]` e o inimigo 238 travado sem posição, a tela recém-aberta mostra MID marcado no seletor dele. Até a 0.7.0 mostrava "(presumida)" | R-4, A2 |
+| TF-DRAFT-12 | componente | Hoje. Com 16 candidatos fora da pool e o 16º o menos exposto de todos, "Menos expostos ao contra-pick" traz os campeões 1 a 5, sem o 16º, que não está na tela; abrir o 15º mostra "Melhor resposta deles custa 3.0pp". Até a 0.7.0 o 16º vinha primeiro (A21) | R-2, A21 |
 | TF-SIM-1 | componente | Hoje. Abrir a aba chama `set_simulated_draft` com o draft da tela, e `rank_draft` só é chamado depois que ele resolve | R-8 |
 | TF-SIM-2 | componente | Hoje. Trocar para a aba Draft chama `set_simulated_draft` com `{ draft: null }` | R-8 |
 | TF-SIM-3 | componente | Hoje. Digitar "Ahri" e sair do campo grava `championId: 103` e `locked: true`; "Ahrii" não muda nada | R-8 |

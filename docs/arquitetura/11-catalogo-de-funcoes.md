@@ -577,7 +577,7 @@ pub fn team_value(ours: &[i64], theirs: &[i64], index: &ChampionIndex) -> f64;
 ### 12.2 `minimax`
 
 ```rust
-pub fn minimax(draft: &DraftState, index: &ChampionIndex, pool: &[i64], breadth: usize) -> Vec<MinimaxPick>;
+pub fn minimax(draft: &DraftState, index: &ChampionIndex, pool: &[i64]) -> Vec<MinimaxPick>;
 ```
 
 - **Faz:** monta o contexto com a rota do cliente, `NoStats` e sem `Leitura`, e
@@ -590,26 +590,21 @@ pub fn minimax(draft: &DraftState, index: &ChampionIndex, pool: &[i64], breadth:
 ### 12.3 `minimax_with`
 
 ```rust
-pub fn minimax_with(
-    ctx: &DraftContext,
-    index: &ChampionIndex,
-    store: &dyn StatsStore,
-    breadth: usize,
-) -> Vec<MinimaxPick>;
+pub fn minimax_with(ctx: &DraftContext, index: &ChampionIndex, store: &dyn StatsStore) -> Vec<MinimaxPick>;
 ```
 
 - **Faz:** ([02 §6](02-motor-de-draft.md#6-draft-com-resposta))
-  1. as respostas possíveis: todo id do índice fora de `ctx.unavailable` que joga
-     (`roles::plays`) alguma rota de `open_enemy_roles`;
-  2. o guloso: `team_value(aliados + candidato, inimigos)` para cada candidato do
-     contexto, ordenado por valor e depois id, cortado em `max(breadth, 1)`;
+  1. as respostas possíveis: todo id do índice fora de `ctx.unavailable` que
+     outro jogador joga (`roles::others_play`) em alguma rota de
+     `open_enemy_roles`;
+  2. o guloso: `team_value(aliados + candidato, inimigos)` para **todo**
+     candidato do contexto, sem poda (A21);
   3. para cada um, põe cada resposta (menos ele mesmo) no time deles e guarda o
      menor valor e quem o deu;
   4. ordena por `after_response`, depois id.
-- **Params:** `breadth` é quantos candidatos passam da poda; a casca usa 12
-  (`src-tauri/src/lib.rs:226`). `store` só decide quem joga a rota, e o valor não
-  o lê.
-- **Retorno:** até `breadth` itens.
+- **Params:** `store` só decide quem joga a rota, e o valor não o lê.
+- **Retorno:** um item por candidato de `ctx.candidates`. Quem corta é a tela
+  (os menos expostos, TF-DRAFT-12).
 - **Erros:** nenhum. Índice vazio devolve vazio.
 - **Confiança:** fraca
 - **Atende:** R-2, C-5, RNF-4, L-24

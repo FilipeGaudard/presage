@@ -529,25 +529,27 @@ Soma tudo em log-odds, corta em [0,25; 0,75], monta até três razões e ordena 
 
 ### 7.2 A resposta deles
 
-**O que acontece.** `minimax_with` (`core/src/engine/minimax.rs:114`), com
-largura 12 fixa na casca (`lib.rs:226`):
+**O que acontece.** `minimax_with` (`core/src/engine/minimax.rs:115`), para
+todo candidato:
 1. as respostas possíveis: todo campeão fora de `unavailable` que joga uma rota
    inimiga ainda livre (`open_enemy_roles`);
-2. o guloso: `team_value` com cada candidato, cortado nos 12 melhores;
+2. o guloso: `team_value` com cada candidato;
 3. para cada um, a pior resposta deles e quem a deu;
 4. ordena pelo valor depois da resposta.
 
-A tela mostra os cinco **menos expostos**, reordenados por `exposure`
-(`src/components/RecommendationPanel.tsx:102`), e no detalhe "Melhor resposta
-deles custa x.xpp (Nome)".
+A tela mostra os cinco **menos expostos** entre os candidatos que ela lista,
+reordenados por `exposure` (`src/components/RecommendationPanel.tsx:102-108`), e
+no detalhe de qualquer candidato da lista "Melhor resposta deles custa x.xpp
+(Nome)".
 
 **Por quê.**
 - **Um pick bom no guloso pode ser o mais fácil de punir** (R-2,
   [02 §6](02-motor-de-draft.md#6-draft-com-resposta)).
 - **A resposta varre todo mundo:** a busca antiga olhava sempre os 32 campeões de
   id mais baixo (L-24).
-- **Podado para caber em 30 s** (RNF-4).
-- Testes: T-DRAFT-46, T-DRAFT-48, T-DRAFT-51.
+- **Sem poda, e cabe:** uns 4 ms com 171 candidatos, em release (RNF-4). A poda
+  antiga deixava o topo do ranking sem resposta (A21).
+- Testes: T-DRAFT-46, T-DRAFT-48, T-DRAFT-51, TF-DRAFT-12.
 
 **Onde.** `minimax_with`, `team_value`; 11 §12.1, 11 §12.3, 10 §12.1.
 

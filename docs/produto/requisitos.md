@@ -43,7 +43,7 @@ cobrar, e vale ter o produto funcionando sem o overlay caso a resposta seja não
 | RNF-1 | **Nenhum número inventado.** Componente sem amostra vale exatamente zero, e a interface diz de onde o número veio (`from_data`, "sem base estatística ainda") | [ADR-0007](../adr/0007-sem-dado-o-componente-vale-zero.md); `sem_amostra_o_desvio_e_zero`, `sem_base_de_partidas_o_numero_vem_so_do_duelo` |
 | RNF-2 | **O `±` conta a mesma história que a estimativa**, e encolhe com a raiz da amostra | [ADR-0009](../adr/0009-forca-do-shrinkage-derivada-do-desvio.md); `forca_e_desvio_sao_a_mesma_crenca`, `desvio_posterior_cai_com_a_raiz_da_amostra` |
 | RNF-3 | **Um efeito é medido contra o que as forças já explicam**, nunca contra a base de um lado só | [ADR-0008](../adr/0008-matchup-e-sinergia-contra-a-soma-das-forcas.md); `popularidade_nao_vira_matchup`, `sinergia_nao_herda_a_forca_do_aliado` |
-| RNF-4 | **Tempo real para uma fase de 30 segundos.** Draft lido a cada 350 ms; minimax podado | [ADR-0002](../adr/0002-polling-em-vez-de-websocket.md); [02 §6](../arquitetura/02-motor-de-draft.md#6-draft-com-resposta) |
+| RNF-4 | **Tempo real para uma fase de 30 segundos.** Draft lido a cada 350 ms; o minimax inteiro cabe nisso (medido: uns 4 ms com 171 candidatos, em release) | [ADR-0002](../adr/0002-polling-em-vez-de-websocket.md); [02 §6](../arquitetura/02-motor-de-draft.md#6-draft-com-resposta) |
 | RNF-5 | **Funciona sem chave.** Tudo menos histórico pessoal e base agregada | [00 §5](../arquitetura/00-contexto-e-limites.md#5-o-que-funciona-sem-chave) |
 | RNF-6 | **A chave da Riot nunca vai para binário, repositório, argumento ou URL** | [ADR-0004](../adr/0004-chave-da-riot-so-no-backend.md); [07 §3](../arquitetura/07-seguranca.md#3-a-chave-da-riot) |
 | RNF-7 | **A atualização nunca instala sozinha** e falha calada; só executa o que a chave privada assinou | [ADR-0005](../adr/0005-atualizador-assinado-com-endpoint-permanente.md) |
@@ -268,7 +268,7 @@ não tem.
 | Requisito | Funções principais | Testes |
 |---|---|---|
 | R-1 — Ranking do draft pela sua rota | `to_draft_state`, `rank`, `rank_with`, `resolve_role`, `plays`, `profile`, `damage_balance_gain`, `frontline_need` e mais 17 | T-DRAFT-4, T-DRAFT-5, T-DRAFT-8, T-DRAFT-10, T-DRAFT-11, T-DRAFT-12, T-DRAFT-13, T-DRAFT-14, T-DRAFT-15, T-DRAFT-16, T-DRAFT-17, T-DRAFT-18, T-DRAFT-19, T-DRAFT-20, T-DRAFT-25, T-DRAFT-26, T-DRAFT-27, T-DRAFT-28, T-DRAFT-29, T-DRAFT-37, T-DRAFT-38, T-DRAFT-40, T-DRAFT-41, T-DRAFT-42, T-DRAFT-61, T-DRAFT-62, T-ENTRADA-6, T-ENTRADA-7, T-ENTRADA-8, T-ENTRADA-9, T-ENTRADA-35, T-ENTRADA-39, T-JOGO-1, T-JOGO-2, T-JOGO-5, T-JOGO-15, T-PERFIL-8, T-STATS-10 |
-| R-2 — Resposta adversária | `others_play`, `team_value`, `minimax`, `minimax_with`, `open_enemy_roles`, `enemy_ids`, `ids` | T-DRAFT-43, T-DRAFT-44, T-DRAFT-45, T-DRAFT-46, T-DRAFT-47, T-DRAFT-48, T-DRAFT-49, T-DRAFT-50, T-DRAFT-51, T-DRAFT-52, T-DRAFT-64 |
+| R-2 — Resposta adversária | `others_play`, `team_value`, `minimax`, `minimax_with`, `open_enemy_roles`, `enemy_ids`, `ids` | T-DRAFT-43, T-DRAFT-44, T-DRAFT-45, T-DRAFT-46, T-DRAFT-47, T-DRAFT-48, T-DRAFT-49, T-DRAFT-50, T-DRAFT-51, T-DRAFT-52, T-DRAFT-64, TF-DRAFT-12 |
 | R-3 — Sugestão de ban, com a sua lista na frente | `team_value`, `suggest_bans`, `bans_with_pool`, `normalized` | T-DRAFT-53, T-DRAFT-54, T-DRAFT-55, T-DRAFT-56, T-DRAFT-57, T-DRAFT-58, T-DRAFT-59, T-ENTRADA-6, T-ENTRADA-49 |
 | R-4 — Rota do inimigo presumida e corrigível | `role_share`, `role_fit`, `seats`, `new_with`, `from_lcu` | T-CASCA-3, T-DRAFT-6, T-DRAFT-13, T-DRAFT-22, T-DRAFT-23, T-DRAFT-24, T-DRAFT-30, T-DRAFT-31, T-DRAFT-32, T-DRAFT-33, T-DRAFT-39, T-JOGO-15, T-PREVIA-5, T-PREVIA-13, TF-DRAFT-10, TF-DRAFT-11 |
 | R-5 — Só quem a sua conta pode escolher | `selectable`, `new_with` | T-DRAFT-34, T-DRAFT-35, T-ENTRADA-11, T-ENTRADA-12 |
@@ -301,7 +301,7 @@ não tem.
 | RNF-1 — Nenhum número inventado | `rank_with`, `estimate`, `analyze`, `suggest`, `plan`, `shrink`, `shrunk_delta`, `Dataset::is_usable` e mais 4 | T-CASCA-5, T-DRAFT-8, T-DRAFT-10, T-DRAFT-11, T-ENTRADA-19, T-OBJETIVO-1, T-OBJETIVO-2, T-OBJETIVO-14, T-POOL-12, T-POS-2, T-POS-3, T-PREVIA-1, T-PREVIA-4, T-PREVIA-8, T-PREVIA-10, T-PREVIA-14, T-PRIORIDADE-8, T-ROTA-2, T-ROTA-3, T-ROTA-26, T-RUNAS-1, T-RUNAS-7, T-RUNAS-8, T-STATS-1, T-STATS-8, T-STATS-9, T-STATS-16, T-STATS-18, TF-DRAFT-7, TF-ROTAS-2 |
 | RNF-2 — O `±` conta a mesma história que a estimativa | `rank_with`, `estimate`, `Estimate::se`, `strength_for_sd`, `posterior_sd` | T-DRAFT-7, T-DRAFT-9, T-PREVIA-3, T-STATS-3, T-STATS-5, T-STATS-6 |
 | RNF-3 — Um efeito é medido contra o que as forças já explicam | `rank_with`, `estimate`, `shrunk_delta`, `lane_outlooks`, `expected_against`, `expected_together` | T-DRAFT-1, T-DRAFT-2, T-DRAFT-3, T-PREVIA-2, T-ROTA-4, T-STATS-7 |
-| RNF-4 — Tempo real para uma fase de 30 segundos | `minimax_with` | T-CASCA-20, T-CASCA-22, T-DRAFT-48 |
+| RNF-4 — Tempo real para uma fase de 30 segundos | `minimax_with` | T-CASCA-20, T-CASCA-22 |
 | RNF-5 — Funciona sem chave | `review`, `outcome` | T-STATS-8 |
 | RNF-6 — A chave da Riot nunca vai para binário, repositório, argumento ou URL | — | T-COLETOR-11 |
 | RNF-7 — A atualização nunca instala sozinha | — | T-CASCA-13 |

@@ -230,11 +230,16 @@ frente e ordena pelo valor **depois** da melhor resposta deles. A diferença ent
 os dois números é a **exposição** do pick. O guloso aqui é o valor do time com o
 candidato (`MinimaxPick::greedy`, `team_value`), só composição, com pesos
 próprios ([P-11](../produto/perguntas-em-aberto.md)); não é o `winrate` do
-`rank()`, que soma a base. Por isso a poda também ignora a base.
+`rank()`, que soma a base.
 
-Os candidatos são os do contexto, podados pelo guloso (`breadth`). As respostas
-deles são **todas** as que jogam uma rota que eles ainda não fecharam — varrer
-tudo é barato, porque `team_value` é aritmética pura. Antes a busca olhava só os
+Os candidatos são **todos** os do contexto, e as respostas deles são **todas** as
+que jogam uma rota que eles ainda não fecharam. Varrer tudo é barato, porque
+`team_value` é aritmética pura: medido em 2026-11-07, uns 4 ms com 171
+candidatos num build de release (47 ms em debug). Até a 0.7.0 os candidatos eram
+podados nos 12 melhores pelo guloso: como o guloso ignora a base e o ranking não,
+o primeiro do ranking podia ficar sem resposta, e a tela mostra 15 (A21). Quem
+corta agora é a tela, que sabe o que mostra: os cinco menos expostos saem dos
+candidatos que ela lista. Antes a busca olhava só os
 32 primeiros ids, e o "melhor contra-pick" saía sempre dos campeões de id baixo
 ([L-24](09-licoes-do-prototipo.md)). "Joga a rota", aqui, é pela base ou pela
 classe (`roles::others_play`), nunca pelo seu histórico: o que você já jogou não

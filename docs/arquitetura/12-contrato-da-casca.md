@@ -143,7 +143,7 @@ coluna. As linhas de "Quem chama" são de `src/`.
 | `get_draft_prefs` | — | `DraftPrefs` | nenhum | `App.tsx:111`, ao montar |
 | `set_draft_prefs` | `prefs: DraftPrefs` | `Result<(), String>` | `Err` se `draft.json` não gravou; a memória fica como estava | `App.tsx:297` |
 | `lane_profile` | — | `Option<LaneProfile>`; `None` sem chave da Riot ou antes do histórico | nenhum | `App.tsx:109`, ao montar; `App.tsx:120`, a cada `presage://engine` |
-| `minimax_draft` | — (largura 12, fixa em `lib.rs:226`) | `Vec<MinimaxPick>`; vazio sem draft | nenhum | `App.tsx:178`, junto com `rank_draft` |
+| `minimax_draft` | — | `Vec<MinimaxPick>`, um por candidato; vazio sem draft | nenhum | `App.tsx:178`, junto com `rank_draft` |
 | `ban_suggestions` | — (10 sugestões, fixo em `lib.rs:237`) | `Vec<BanSuggestion>`; vazio sem draft | nenhum | `App.tsx:179`, junto com `rank_draft` |
 | `get_live` | — | `Option<LiveSnapshot>` (10 §32.3) | nenhum | `App.tsx:107`, `overlay.tsx:52`, ao montar |
 | `build_suggestions` | `limit: Option<usize>`, padrão 8 (`lib.rs:268`) | `Option<(BuildContext, Vec<ItemSuggestion>)>` → `[BuildContext, ItemSuggestion[]] \| null`; `None` sem partida ou sem jogador local | nenhum | `App.tsx:204` (`limit: 8`), `overlay.tsx:74` (`limit: 2`) |

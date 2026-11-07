@@ -206,7 +206,7 @@ faz contas além de formatar:
 | Largura da barra de ouro: `nosso / (nosso + deles)` | `GoldTracker.tsx:40` | razão de dois números exatos |
 | Ouro em mão só a partir de 800 | `GoldTracker.tsx:70` | o core avisa a partir de 1.500 (`gold.rs:39`); dois cortes |
 | A frase do gráfico: pico ≥ 1.000 e queda > 1.500 | `GraficoPartida.tsx:133` | regra de texto na tela |
-| Menos expostos: ordena `minimax` por `exposure` e corta em 5 | `RecommendationPanel.tsx:102` | ordem de exibição |
+| Menos expostos: dos candidatos que a tela lista (a pool e os 15 do geral), ordena `minimax` por `exposure` e corta em 5 | `RecommendationPanel.tsx:102-108` | corte de exibição; o minimax traz todo candidato (A21) |
 | Melhores no geral: os 15 primeiros fora da pool; bans: os 10 primeiros | `RecommendationPanel.tsx:99`, `:191` | corte de exibição |
 | Limiares de cor (55/45, 53/47, 52/48, delta 2/1) | [01 §7](01-arquitetura.md#7-cor-e-estilo) | três limiares diferentes para a mesma pergunta |
 | O relógio do draft | §8 | interpolação |

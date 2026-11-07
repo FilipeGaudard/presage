@@ -13,14 +13,14 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
 | test | 370 | 370 | 0 | 0 |
-| ui-test | 44 | 11 | 33 | 0 |
+| ui-test | 45 | 12 | 33 | 0 |
 | trace | 43 | 39 | 4 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
 - testes no código: 499; nomes no catálogo (13): 499; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 3027
+- IDs citados conferidos: 3029
 
 ## type
 
@@ -74,8 +74,8 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::lanes::LevelOdds` | arquitetura/10-modelo-de-dados §27.2 | done | core/src/engine/lanes.rs:50 |
 | `core::engine::lanes::Lineup` | arquitetura/10-modelo-de-dados §27.5 | done | core/src/engine/lanes.rs:224 |
 | `core::engine::lanes::Skirmish` | arquitetura/10-modelo-de-dados §27.4 | done | core/src/engine/lanes.rs:187 |
-| `core::engine::minimax::BanSuggestion` | arquitetura/10-modelo-de-dados §12.2 | done | core/src/engine/minimax.rs:48 |
-| `core::engine::minimax::MinimaxPick` | arquitetura/10-modelo-de-dados §12.1 | done | core/src/engine/minimax.rs:34 |
+| `core::engine::minimax::BanSuggestion` | arquitetura/10-modelo-de-dados §12.2 | done | core/src/engine/minimax.rs:50 |
+| `core::engine::minimax::MinimaxPick` | arquitetura/10-modelo-de-dados §12.1 | done | core/src/engine/minimax.rs:36 |
 | `core::engine::poolgap::Analysis` | arquitetura/10-modelo-de-dados §17.4 | done | core/src/engine/poolgap.rs:250 |
 | `core::engine::poolgap::Candidate` | arquitetura/10-modelo-de-dados §17.5 | done | core/src/engine/poolgap.rs:257 |
 | `core::engine::poolgap::Finding` | arquitetura/10-modelo-de-dados §17.3 | done | core/src/engine/poolgap.rs:241 |
@@ -214,11 +214,11 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::lanes::lane_outlooks` | arquitetura/11-catalogo-de-funcoes §27.1 | done | core/src/engine/lanes.rs:258 |
 | `core::engine::lanes::Lineup::new` | arquitetura/11-catalogo-de-funcoes §27.4 | done | core/src/engine/lanes.rs:231 |
 | `core::engine::lanes::skirmishes` | arquitetura/11-catalogo-de-funcoes §27.2 | done | core/src/engine/lanes.rs:422 |
-| `core::engine::minimax::bans_with_pool` | arquitetura/11-catalogo-de-funcoes §12.5 | done | core/src/engine/minimax.rs:266 |
-| `core::engine::minimax::minimax` | arquitetura/11-catalogo-de-funcoes §12.2 | done | core/src/engine/minimax.rs:105 |
-| `core::engine::minimax::minimax_with` | arquitetura/11-catalogo-de-funcoes §12.3 | done | core/src/engine/minimax.rs:114 |
-| `core::engine::minimax::suggest_bans` | arquitetura/11-catalogo-de-funcoes §12.4 | done | core/src/engine/minimax.rs:214 |
-| `core::engine::minimax::team_value` | arquitetura/11-catalogo-de-funcoes §12.1 | done | core/src/engine/minimax.rs:64 |
+| `core::engine::minimax::bans_with_pool` | arquitetura/11-catalogo-de-funcoes §12.5 | done | core/src/engine/minimax.rs:246 |
+| `core::engine::minimax::minimax` | arquitetura/11-catalogo-de-funcoes §12.2 | done | core/src/engine/minimax.rs:107 |
+| `core::engine::minimax::minimax_with` | arquitetura/11-catalogo-de-funcoes §12.3 | done | core/src/engine/minimax.rs:115 |
+| `core::engine::minimax::suggest_bans` | arquitetura/11-catalogo-de-funcoes §12.4 | done | core/src/engine/minimax.rs:194 |
+| `core::engine::minimax::team_value` | arquitetura/11-catalogo-de-funcoes §12.1 | done | core/src/engine/minimax.rs:66 |
 | `core::engine::poolgap::analyze` | arquitetura/11-catalogo-de-funcoes §17.3 | done | core/src/engine/poolgap.rs:275 |
 | `core::engine::poolgap::robustness` | arquitetura/11-catalogo-de-funcoes §17.2 | done | core/src/engine/poolgap.rs:224 |
 | `core::engine::poolgap::role_label` | arquitetura/11-catalogo-de-funcoes §17.5 | done | core/src/engine/poolgap.rs:403 |
@@ -350,9 +350,9 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::lanes::W_DUEL` | produto/regras-e-pesos RN-20 — O peso do duelo na chance da rot | done | core/src/engine/lanes.rs:28 |
 | `core::engine::MATCHUP_PRIOR_SD` | produto/regras-e-pesos RN-3 — O quanto cada efeito costuma se e | done | core/src/engine/mod.rs:41 |
 | `core::engine::MAX_REASONS` | produto/regras-e-pesos RN-6 — O corte da winrate e os limiares  | done | core/src/engine/mod.rs:55 |
-| `core::engine::minimax::FRONTLINE_FROM` | produto/regras-e-pesos RN-11 — O segundo modelo da composição | done | core/src/engine/minimax.rs:32 |
-| `core::engine::minimax::W_BALANCE` | produto/regras-e-pesos RN-11 — O segundo modelo da composição | done | core/src/engine/minimax.rs:28 |
-| `core::engine::minimax::W_FRONTLINE` | produto/regras-e-pesos RN-11 — O segundo modelo da composição | done | core/src/engine/minimax.rs:30 |
+| `core::engine::minimax::FRONTLINE_FROM` | produto/regras-e-pesos RN-11 — O segundo modelo da composição | done | core/src/engine/minimax.rs:34 |
+| `core::engine::minimax::W_BALANCE` | produto/regras-e-pesos RN-11 — O segundo modelo da composição | done | core/src/engine/minimax.rs:30 |
+| `core::engine::minimax::W_FRONTLINE` | produto/regras-e-pesos RN-11 — O segundo modelo da composição | done | core/src/engine/minimax.rs:32 |
 | `core::engine::PERSONAL_PRIOR_SD` | produto/regras-e-pesos RN-3 — O quanto cada efeito costuma se e | done | core/src/engine/mod.rs:43 |
 | `core::engine::poolgap::CORE_SIZE` | arquitetura/10-modelo-de-dados §17.1 | done | core/src/engine/poolgap.rs:26 |
 | `core::engine::poolgap::CORE_SIZE` | produto/regras-e-pesos RN-15 — Oito por rota, três escolhidos | done | core/src/engine/poolgap.rs:26 |
@@ -404,7 +404,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | Item | Fonte | Estado | Onde / motivo |
 |---|---|---|---|
 | `Analysis ↔ PoolAnalysis` | arquitetura/10-modelo-de-dados §17.4 | done | core/src/engine/poolgap.rs:250 |
-| `BanSuggestion ↔ BanSuggestion` | arquitetura/10-modelo-de-dados §12.2 | done | core/src/engine/minimax.rs:48 |
+| `BanSuggestion ↔ BanSuggestion` | arquitetura/10-modelo-de-dados §12.2 | done | core/src/engine/minimax.rs:50 |
 | `Buff ↔ Buff` | arquitetura/10-modelo-de-dados §29.8 | done | core/src/engine/timeline.rs:216 |
 | `BuildContext ↔ BuildContext` | arquitetura/10-modelo-de-dados §26.3 | done | core/src/engine/build.rs:45 |
 | `Candidate ↔ PoolCandidate` | arquitetura/10-modelo-de-dados §17.5 | done | core/src/engine/poolgap.rs:257 |
@@ -429,7 +429,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `LiveSnapshot ↔ LiveSnapshot` | arquitetura/10-modelo-de-dados §32.3 | done | src-tauri/src/live.rs:17 |
 | `MatchupLane ↔ MatchupLane` | arquitetura/10-modelo-de-dados §21.2 | done | core/src/engine/profile.rs:61 |
 | `Metric ↔ LaneMetric` | arquitetura/10-modelo-de-dados §5.5 | done | core/src/history.rs:90 |
-| `MinimaxPick ↔ MinimaxPick` | arquitetura/10-modelo-de-dados §12.1 | done | core/src/engine/minimax.rs:34 |
+| `MinimaxPick ↔ MinimaxPick` | arquitetura/10-modelo-de-dados §12.1 | done | core/src/engine/minimax.rs:36 |
 | `Note ↔ CoachNote` | arquitetura/10-modelo-de-dados §31.3 | done | core/src/engine/coach.rs:111 |
 | `OverlayPrefs ↔ OverlayPrefs` | arquitetura/10-modelo-de-dados §8.2 | done | core/src/prefs.rs:64 |
 | `Point ↔ Point` | arquitetura/10-modelo-de-dados §31.4 | done | core/src/engine/coach.rs:122 |
@@ -664,30 +664,30 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-DRAFT-40` | arquitetura/13-testes §2 | done | core/src/engine/roles.rs:156 |
 | `T-DRAFT-41` | arquitetura/13-testes §2 | done | core/src/engine/roles.rs:166 |
 | `T-DRAFT-42` | arquitetura/13-testes §2 | done | core/src/engine/roles.rs:173 |
-| `T-DRAFT-43` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:384 |
-| `T-DRAFT-44` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:390 |
-| `T-DRAFT-45` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:398 |
-| `T-DRAFT-46` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:406 |
-| `T-DRAFT-47` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:420 |
-| `T-DRAFT-48` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:430 |
-| `T-DRAFT-49` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:439 |
+| `T-DRAFT-43` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:364 |
+| `T-DRAFT-44` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:370 |
+| `T-DRAFT-45` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:378 |
+| `T-DRAFT-46` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:386 |
+| `T-DRAFT-47` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:400 |
+| `T-DRAFT-48` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:410 |
+| `T-DRAFT-49` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:431 |
 | `T-DRAFT-5` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:751 |
-| `T-DRAFT-50` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:451 |
-| `T-DRAFT-51` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:460 |
-| `T-DRAFT-52` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:517 |
-| `T-DRAFT-53` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:524 |
-| `T-DRAFT-54` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:530 |
-| `T-DRAFT-55` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:539 |
-| `T-DRAFT-56` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:548 |
-| `T-DRAFT-57` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:555 |
-| `T-DRAFT-58` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:579 |
-| `T-DRAFT-59` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:595 |
+| `T-DRAFT-50` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:443 |
+| `T-DRAFT-51` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:452 |
+| `T-DRAFT-52` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:509 |
+| `T-DRAFT-53` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:516 |
+| `T-DRAFT-54` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:522 |
+| `T-DRAFT-55` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:531 |
+| `T-DRAFT-56` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:540 |
+| `T-DRAFT-57` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:547 |
+| `T-DRAFT-58` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:571 |
+| `T-DRAFT-59` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:587 |
 | `T-DRAFT-6` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:767 |
 | `T-DRAFT-60` | arquitetura/13-testes §2 | done | core/src/engine/comp.rs:91 |
 | `T-DRAFT-61` | arquitetura/13-testes §2 | done | core/src/engine/comp.rs:104 |
 | `T-DRAFT-62` | arquitetura/13-testes §2 | done | core/src/engine/comp.rs:120 |
 | `T-DRAFT-63` | arquitetura/13-testes §2 | done | core/src/engine/comp.rs:132 |
-| `T-DRAFT-64` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:500 |
+| `T-DRAFT-64` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:492 |
 | `T-DRAFT-7` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:842 |
 | `T-DRAFT-8` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:654 |
 | `T-DRAFT-9` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:605 |
@@ -960,6 +960,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `TF-CASCA-7` | frontend/06-testes §3 | done | src/estatico.test.ts:47 |
 | `TF-DRAFT-10` | frontend/06-testes §3 | done | src/App.test.tsx:219 |
 | `TF-DRAFT-11` | frontend/06-testes §3 | done | src/App.test.tsx:259 |
+| `TF-DRAFT-12` | frontend/06-testes §3 | done | src/components/RecommendationPanel.test.tsx:41 |
 | `TF-DRAFT-7` | frontend/06-testes §3 | done | src/App.test.tsx:241 |
 | `TF-OVERLAY-6` | frontend/06-testes §3 | done | src/estatico.test.ts:35 |
 | `TF-PARTIDA-3` | frontend/06-testes §3 | done | src/components/GoldTracker.test.tsx:40 |
@@ -1114,4 +1115,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 23 | 40 | 0 | 38 |
+| 22 | 41 | 0 | 38 |

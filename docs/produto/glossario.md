@@ -100,7 +100,7 @@ código. Quando o doc diz "confronto", o código diz `matchup`.
 | linha de frente | `Champion::is_frontline` | Classe `Tank` ou defesa ≥ 7 no `info` do Data Dragon |
 | à distância | `Champion::is_ranged` | Alcance de ataque ≥ 500 |
 | fração física | `Champion::physical_share` | Quanto do dano do campeão sai físico: metade `info`, metade prior de classe, escritos à mão |
-| guloso | `MinimaxPick::greedy` | O valor do time com o candidato, sem a resposta deles. É também o que poda a busca (`breadth`). Não é o `rank()` |
+| guloso | `MinimaxPick::greedy` | O valor do time com o candidato, sem a resposta deles. Não é o `rank()` |
 | melhor resposta | `MinimaxPick::best_response` | O campeão deles que mais derruba o seu valor do time |
 | valor do time | `minimax::team_value` | Índice de composição de um time contra o outro, em torno de 0,5. Não é a chance do time |
 | ameaça | `BanSuggestion::threat` | Quanto um campeão completa a composição deles; é o que ordena o ban |

@@ -99,7 +99,13 @@ export default function RecommendationPanel({
   const overall = recommendations.filter((item) => !item.inPool).slice(0, OVERALL_COUNT);
   const detail = recommendations.find((item) => item.championId === selected) ?? null;
   const tree = minimax.find((pick) => pick.championId === selected) ?? null;
-  const safest = [...minimax].sort((a, b) => a.exposure - b.exposure).slice(0, 5);
+  // O minimax traz todo candidato (A21); os menos expostos são dos que a tela
+  // mostra, ou um campeão fora da lista viraria conselho só por arriscar pouco.
+  const naTela = new Set([...pool, ...overall].map((item) => item.championId));
+  const safest = minimax
+    .filter((pick) => naTela.has(pick.championId))
+    .sort((a, b) => a.exposure - b.exposure)
+    .slice(0, 5);
 
   return (
     <>

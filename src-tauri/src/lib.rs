@@ -226,7 +226,7 @@ fn minimax_draft(shared: tauri::State<'_, Arc<Shared>>) -> Vec<minimax::MinimaxP
     let champions = shared.champions.read().unwrap();
     let stats = shared.stats.read().unwrap();
     let ctx = draft_context(&shared, &draft, &champions, &**stats);
-    minimax::minimax_with(&ctx, &champions, &**stats, 12)
+    minimax::minimax_with(&ctx, &champions, &**stats)
 }
 
 #[tauri::command]

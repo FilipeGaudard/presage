@@ -247,17 +247,16 @@ confiança **alta**; não é escolha, e fica como está (`champion.rs:47-50`).
 
 ## 5. Resposta adversária e ban — `core::engine::minimax`
 
-### RN-10 — A largura da busca e o número de bans
+### RN-10 — O número de bans
 
-- **Regra:** a casca pede resposta adversária para os 12 melhores pelo guloso, e
-  dez sugestões de ban.
-- **Origem:** escolha à mão: orçamento de CPU dentro da leitura de 350 ms (RNF-4).
+- **Regra:** a casca pede dez sugestões de ban. A resposta adversária não tem
+  largura: todo candidato tem a sua (A21; até a 0.7.0 eram os 12 melhores pelo
+  guloso, e o primeiro do ranking podia ficar de fora).
+- **Origem:** escolha à mão.
 - **Confiança:** regra.
-- **Onde:** `src-tauri/src/lib.rs:226` (largura 12) e `lib.rs:237` (10 bans),
-  valores no código, não conferidos pelo doccheck; 12 §2.
-- **Quando a base existir:** fica: é orçamento de tempo. Mas a poda usa o valor
-  do time, que ignora a base, e com ela o primeiro do ranking pode ficar de fora
-  dos 12 (defeito no `build/audit.md`).
+- **Onde:** `src-tauri/src/lib.rs:237` (10 bans), valor no código, não conferido
+  pelo doccheck; 12 §2.
+- **Quando a base existir:** fica.
 
 ### RN-11 — O segundo modelo da composição
 

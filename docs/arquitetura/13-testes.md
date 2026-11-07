@@ -198,7 +198,7 @@ confere saem da mesma conta, feita à parte.
 | T-DRAFT-45 | `a_funcao_de_valor_e_simetrica` | propriedade | `team_value(A, B) + team_value(B, A) = 1`, com tolerância de 1e-9 | R-2 |
 | T-DRAFT-46 | `exposicao_nunca_e_negativa`, `ordena_pelo_valor_depois_da_resposta` | propriedade | Com o Lutador aliado e o Atirador deles, toda `exposure` é ≥ 0, e `after_response` não cresce ao longo da lista | R-2, C-5 |
 | T-DRAFT-47 | `indisponiveis_nao_entram_nem_como_pick_nem_como_resposta` | unidade | Com o Lutador aliado e o Atirador deles, nenhum dos dois volta como pick, e o Lutador nunca é `best_response` | R-2 |
-| T-DRAFT-48 | `breadth_limita_quantos_candidatos_voltam` | unidade | Draft vazio no meio, com dois candidatos no índice: largura 1 devolve 1, largura 5 devolve os 2. Antes o teste pedia largura 2 e passava sem poda nenhuma | R-2, RNF-4, A20 |
+| T-DRAFT-48 | `todo_candidato_tem_a_resposta_deles` | unidade | Vinte candidatos para o meio, com o Lutador aliado e o Atirador deles: os 20 voltam do `minimax_with`, cada um com a resposta deles. Até a 0.7.0 a casca pedia largura 12 e voltavam 12, sem o Mago e o Assassino (A21); o teste da largura saiu com ela | R-2, A21 |
 | T-DRAFT-49 | `pool_e_marcado_sem_mudar_a_ordem` | unidade | O Mago na pool liga `in_pool`, e a ordem dos ids fica igual à de sem pool | R-2 |
 | T-DRAFT-50 | `o_minimax_so_traz_quem_joga_a_sua_rota` | unidade | No meio, só Mago e Assassino voltam do `minimax`. É o teste de `minimax.rs`; `poolgap.rs` tem outro com o mesmo nome | R-2, ADR-0017, L-23 |
 | T-DRAFT-51 | `a_resposta_varre_todos_os_campeoes` | regressão | Com 40 lutadores de id 10 a 49, um mago-suporte de id 999 e o atirador deles travado, algum pick tem `best_response = 999` | R-2, L-24 |

@@ -8,11 +8,13 @@
 //! **depois** da melhor resposta. A diferença entre os dois números é a
 //! exposição do pick — o quanto ele entrega de contra-pick.
 //!
-//! Os candidatos são os do contexto do draft — disponíveis, e que jogam a sua
-//! rota ou estão na sua pool —, podados pelo guloso. As respostas deles são
-//! todas as que jogam uma rota que eles ainda não fecharam: varrer tudo é
-//! barato, porque `team_value` é aritmética pura. Varrer só os primeiros ids
-//! fazia o "melhor contra-pick" sair sempre dos campeões de id baixo (L-24).
+//! Os candidatos são **todos** os do contexto do draft — disponíveis, e que
+//! jogam a sua rota ou estão na sua pool. As respostas deles são todas as que
+//! jogam uma rota que eles ainda não fecharam. Varrer tudo é barato, porque
+//! `team_value` é aritmética pura: uns 4 ms com 171 candidatos, num build de
+//! release. Varrer só os primeiros ids fazia o "melhor contra-pick" sair sempre
+//! dos campeões de id baixo (L-24); podar os candidatos pela composição deixava
+//! o topo do ranking sem resposta (A21).
 
 use serde::Serialize;
 use std::collections::HashSet;
@@ -102,21 +104,15 @@ fn locked(slots: &[crate::draft::DraftSlot], skip_local: bool) -> Vec<i64> {
 
 /// O minimax com a rota que o cliente informa e sem base. O app usa
 /// `minimax_with`, com o contexto já resolvido.
-pub fn minimax(draft: &DraftState, index: &ChampionIndex, pool: &[i64], breadth: usize) -> Vec<MinimaxPick> {
+pub fn minimax(draft: &DraftState, index: &ChampionIndex, pool: &[i64]) -> Vec<MinimaxPick> {
     let role = Role::from_lcu(&draft.local_position);
     let ctx = DraftContext::new(draft, index, &NoStats, pool, role);
-    minimax_with(&ctx, index, &NoStats, breadth)
+    minimax_with(&ctx, index, &NoStats)
 }
 
-/// Ranking com uma camada de resposta adversária.
-///
-/// `breadth` limita quantos candidatos nossos entram na busca, pelo guloso.
-pub fn minimax_with(
-    ctx: &DraftContext,
-    index: &ChampionIndex,
-    store: &dyn StatsStore,
-    breadth: usize,
-) -> Vec<MinimaxPick> {
+/// Ranking com uma camada de resposta adversária, para cada candidato do
+/// contexto. Quem corta é a tela, que sabe o que mostra.
+pub fn minimax_with(ctx: &DraftContext, index: &ChampionIndex, store: &dyn StatsStore) -> Vec<MinimaxPick> {
     if index.is_empty() {
         return Vec::new();
     }
@@ -139,29 +135,13 @@ pub fn minimax_with(
         })
         .collect();
 
-    // Poda: ordena pelo guloso e fica com os melhores.
-    let mut greedy: Vec<(i64, f64)> = ctx
+    let mut picks: Vec<MinimaxPick> = ctx
         .candidates
         .iter()
-        .map(|id| {
-            let mut mine = ours.clone();
-            mine.push(*id);
-            (*id, team_value(&mine, &theirs, index))
-        })
-        .collect();
-
-    greedy.sort_by(|a, b| {
-        b.1.partial_cmp(&a.1)
-            .unwrap_or(std::cmp::Ordering::Equal)
-            .then(a.0.cmp(&b.0))
-    });
-    greedy.truncate(breadth.max(1));
-
-    let mut picks: Vec<MinimaxPick> = greedy
-        .into_iter()
-        .map(|(id, greedy_value)| {
+        .map(|&id| {
             let mut mine = ours.clone();
             mine.push(id);
+            let greedy_value = team_value(&mine, &theirs, index);
 
             // A melhor resposta deles é a que mais derruba o nosso valor.
             let mut worst = greedy_value;
@@ -383,7 +363,7 @@ mod tests {
 
     #[test]
     fn indice_vazio_devolve_vazio() {
-        let picks = minimax(&draft(vec![], vec![]), &ChampionIndex::default(), &[], 5);
+        let picks = minimax(&draft(vec![], vec![]), &ChampionIndex::default(), &[]);
         assert!(picks.is_empty());
     }
 
@@ -405,13 +385,13 @@ mod tests {
 
     #[test]
     fn exposicao_nunca_e_negativa() {
-        let picks = minimax(&draft(vec![FIGHTER], vec![MARKS]), &index(), &[], 5);
+        let picks = minimax(&draft(vec![FIGHTER], vec![MARKS]), &index(), &[]);
         assert!(picks.iter().all(|pick| pick.exposure >= 0.0), "{picks:?}");
     }
 
     #[test]
     fn ordena_pelo_valor_depois_da_resposta() {
-        let picks = minimax(&draft(vec![FIGHTER], vec![MARKS]), &index(), &[], 5);
+        let picks = minimax(&draft(vec![FIGHTER], vec![MARKS]), &index(), &[]);
         for pair in picks.windows(2) {
             assert!(pair[0].after_response >= pair[1].after_response);
         }
@@ -419,7 +399,7 @@ mod tests {
 
     #[test]
     fn indisponiveis_nao_entram_nem_como_pick_nem_como_resposta() {
-        let picks = minimax(&draft(vec![FIGHTER], vec![MARKS]), &index(), &[], 10);
+        let picks = minimax(&draft(vec![FIGHTER], vec![MARKS]), &index(), &[]);
         assert!(picks.iter().all(|pick| pick.champion_id != FIGHTER));
         assert!(picks.iter().all(|pick| pick.champion_id != MARKS));
         assert!(picks
@@ -428,19 +408,31 @@ mod tests {
     }
 
     #[test]
-    fn breadth_limita_quantos_candidatos_voltam() {
-        // O índice tem dois candidatos para o meio: com largura 1 a poda tem de
-        // cortar um, e com largura 5 os dois voltam (A20: com largura 2 o teste
-        // passava sem poda nenhuma).
-        assert_eq!(minimax(&draft(vec![], vec![]), &index(), &[], 1).len(), 1);
-        assert_eq!(minimax(&draft(vec![], vec![]), &index(), &[], 5).len(), 2);
+    fn todo_candidato_tem_a_resposta_deles() {
+        // Vinte candidatos para o meio. A tela mostra a pool e os quinze
+        // primeiros do ranking, e o ranking soma a base: a ordem dele não é a
+        // da composição. Todo candidato precisa da resposta deles, ou o painel
+        // abre um sem "Melhor resposta deles custa…" (A21, R-2).
+        let mut idx = index();
+        for id in 100..118 {
+            idx.by_id.insert(id, fake(id, &format!("Mago{id}"), "Mage", 2.0 + (id % 7) as f64, 9.0 - (id % 5) as f64, 4.0));
+        }
+        let d = draft(vec![FIGHTER], vec![MARKS]);
+        let ctx = DraftContext::new(&d, &idx, &NoStats, &[], Role::Mid);
+        assert_eq!(ctx.candidates.len(), 20, "{:?}", ctx.candidates);
+        let picks = minimax_with(&ctx, &idx, &NoStats);
+        let mut com_resposta: Vec<i64> = picks.iter().map(|p| p.champion_id).collect();
+        com_resposta.sort_unstable();
+        let mut candidatos = ctx.candidates.clone();
+        candidatos.sort_unstable();
+        assert_eq!(com_resposta, candidatos);
     }
 
     #[test]
     fn pool_e_marcado_sem_mudar_a_ordem() {
         // O mago já joga o meio: a pool só o marca.
-        let com = minimax(&draft(vec![], vec![]), &index(), &[MAGE], 5);
-        let sem = minimax(&draft(vec![], vec![]), &index(), &[], 5);
+        let com = minimax(&draft(vec![], vec![]), &index(), &[MAGE]);
+        let sem = minimax(&draft(vec![], vec![]), &index(), &[]);
 
         assert!(com.iter().find(|p| p.champion_id == MAGE).unwrap().in_pool);
         let a: Vec<i64> = com.iter().map(|p| p.champion_id).collect();
@@ -451,7 +443,7 @@ mod tests {
     #[test]
     fn o_minimax_so_traz_quem_joga_a_sua_rota() {
         // O lugar é o meio: lutador, tanque e atirador ficam de fora.
-        let picks = minimax(&draft(vec![], vec![]), &index(), &[], 10);
+        let picks = minimax(&draft(vec![], vec![]), &index(), &[]);
         for p in &picks {
             assert!(matches!(p.champion_id, MAGE | ASSASSIN), "{p:?}");
         }
@@ -470,7 +462,7 @@ mod tests {
         alto.tags.push("Support".into());
         idx.by_id.insert(999, alto);
 
-        let picks = minimax(&draft(vec![], vec![MARKS]), &idx, &[], 3);
+        let picks = minimax(&draft(vec![], vec![MARKS]), &idx, &[]);
         assert!(
             picks.iter().any(|p| p.best_response == Some(999)),
             "{picks:?}"
@@ -506,7 +498,7 @@ mod tests {
         let d = draft(vec![], vec![MARKS]);
         let idx = index();
         let ctx = DraftContext::new(&d, &idx, &SeuHistorico, &[], Role::Mid);
-        let picks = minimax_with(&ctx, &idx, &SeuHistorico, 5);
+        let picks = minimax_with(&ctx, &idx, &SeuHistorico);
         assert!(!picks.is_empty());
         assert!(
             picks.iter().all(|p| p.best_response != Some(MAGE)),
@@ -516,8 +508,8 @@ mod tests {
 
     #[test]
     fn resultado_e_deterministico() {
-        let a = minimax(&draft(vec![FIGHTER], vec![MARKS]), &index(), &[], 5);
-        let b = minimax(&draft(vec![FIGHTER], vec![MARKS]), &index(), &[], 5);
+        let a = minimax(&draft(vec![FIGHTER], vec![MARKS]), &index(), &[]);
+        let b = minimax(&draft(vec![FIGHTER], vec![MARKS]), &index(), &[]);
         assert_eq!(a, b);
     }
 

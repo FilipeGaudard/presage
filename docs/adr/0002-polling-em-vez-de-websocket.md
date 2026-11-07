@@ -22,8 +22,10 @@ partida, 1,5 s com o cliente parado, 3 s sem cliente (`watcher.rs`).
 - **Positivas:** 350 ms é tempo real para uma fase de 30 segundos, e é bem mais
   simples de acertar — reconectar é só a próxima requisição.
 - **Negativas:** requisições à toa quando nada muda; latência de até 350 ms.
-- **Obrigatório:** `rank()` e `minimax` cabem com folga no intervalo, e por isso o
-  minimax é podado.
+- **Obrigatório:** `rank()` e `minimax` cabem com folga no intervalo.
+- **Revisto em 2026-11-07 (A21):** o minimax não é mais podado. Medido, ele cabe
+  inteiro (uns 4 ms com 171 candidatos, em release), e a poda deixava o topo do
+  ranking sem resposta adversária.
 
 ## Alternativas rejeitadas
 
