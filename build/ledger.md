@@ -302,11 +302,11 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::prefs::OverlayPrefs::visible` | arquitetura/11-catalogo-de-funcoes §8.2 | done | core/src/prefs.rs:88 |
 | `core::prefs::Section::detail` | arquitetura/11-catalogo-de-funcoes §8.1 | done | core/src/prefs.rs:46 |
 | `core::prefs::Section::label` | arquitetura/11-catalogo-de-funcoes §8.1 | done | core/src/prefs.rs:35 |
-| `core::riot::Region::from_lcu` | arquitetura/11-catalogo-de-funcoes §6.1 | done | core/src/riot.rs:12 |
-| `core::riot::Region::from_platform` | arquitetura/11-catalogo-de-funcoes §6.1 | done | core/src/riot.rs:40 |
-| `core::riot::Region::platforms` | arquitetura/11-catalogo-de-funcoes §6.1 | done | core/src/riot.rs:51 |
-| `core::riot::split_riot_id` | arquitetura/11-catalogo-de-funcoes §6.2 | done | core/src/riot.rs:78 |
-| `core::riot::urlencode` | arquitetura/11-catalogo-de-funcoes §6.2 | done | core/src/riot.rs:89 |
+| `core::riot::Region::from_lcu` | arquitetura/11-catalogo-de-funcoes §6.1 | done | core/src/riot.rs:16 |
+| `core::riot::Region::from_platform` | arquitetura/11-catalogo-de-funcoes §6.1 | done | core/src/riot.rs:46 |
+| `core::riot::Region::platforms` | arquitetura/11-catalogo-de-funcoes §6.1 | done | core/src/riot.rs:57 |
+| `core::riot::split_riot_id` | arquitetura/11-catalogo-de-funcoes §6.2 | done | core/src/riot.rs:84 |
+| `core::riot::urlencode` | arquitetura/11-catalogo-de-funcoes §6.2 | done | core/src/riot.rs:95 |
 
 ## const
 
@@ -568,7 +568,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-CASCA-18` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:141 |
 | `T-CASCA-19` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:155 |
 | `T-CASCA-2` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:182 |
-| `T-CASCA-20` | arquitetura/13-testes §2 | done | src-tauri/src/watcher.rs:430 |
+| `T-CASCA-20` | arquitetura/13-testes §2 | done | src-tauri/src/watcher.rs:432 |
 | `T-CASCA-21` | arquitetura/13-testes §2 | done | src-tauri/src/storage.rs:48 |
 | `T-CASCA-3` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:192 |
 | `T-CASCA-4` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:205 |
@@ -699,11 +699,11 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-ENTRADA-26` | arquitetura/13-testes §2 | done | core/src/history.rs:372 |
 | `T-ENTRADA-27` | arquitetura/13-testes §2 | done | core/src/history.rs:388 |
 | `T-ENTRADA-28` | arquitetura/13-testes §2 | done | core/src/history.rs:396 |
-| `T-ENTRADA-29` | arquitetura/13-testes §2 | done | core/src/riot.rs:105 |
+| `T-ENTRADA-29` | arquitetura/13-testes §2 | done | core/src/riot.rs:111 |
 | `T-ENTRADA-3` | arquitetura/13-testes §2 | done | core/src/lockfile.rs:67 |
-| `T-ENTRADA-30` | arquitetura/13-testes §2 | done | core/src/riot.rs:126 |
-| `T-ENTRADA-31` | arquitetura/13-testes §2 | done | core/src/riot.rs:136 |
-| `T-ENTRADA-32` | arquitetura/13-testes §2 | done | core/src/riot.rs:149 |
+| `T-ENTRADA-30` | arquitetura/13-testes §2 | done | core/src/riot.rs:132 |
+| `T-ENTRADA-31` | arquitetura/13-testes §2 | done | core/src/riot.rs:142 |
+| `T-ENTRADA-32` | arquitetura/13-testes §2 | done | core/src/riot.rs:160 |
 | `T-ENTRADA-33` | arquitetura/13-testes §2 | done | core/src/pool.rs:128 |
 | `T-ENTRADA-34` | arquitetura/13-testes §2 | done | core/src/pool.rs:136 |
 | `T-ENTRADA-35` | arquitetura/13-testes §2 | done | core/src/pool.rs:148 |
@@ -1096,4 +1096,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 40 | 22 | 0 | 38 |
+| 39 | 23 | 0 | 38 |

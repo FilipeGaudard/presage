@@ -266,7 +266,7 @@ impl Metric {
 
 ```rust
 impl Region {
-    pub fn from_lcu(region: &str) -> Region;
+    pub fn from_lcu(region: &str) -> Option<Region>;
     pub fn from_platform(platform: &str) -> Option<Region>;
     pub fn platforms() -> impl Iterator<Item = &'static str>;
 }
@@ -274,7 +274,7 @@ impl Region {
 
 | Método | Faz | Atende |
 |---|---|---|
-| `from_lcu` | A região que o LCU dá (`BR`, `EUW`, `OCE`…, sem distinguir maiúscula) → plataforma e host regional. Região desconhecida cai em `br1`/`americas`. A tabela não tem o Oriente Médio, que `PLATFORMS` tem (`me1`) | R-17 |
+| `from_lcu` | A região que o LCU dá (`BR`, `EUW`, `OCE`, `ME`…, sem distinguir maiúscula) → plataforma e host regional. Região desconhecida, ou vazia, dá `None`: o componente pessoal desliga com o motivo, em vez de buscar no Brasil (A17) | R-17 |
 | `from_platform` | O host de plataforma (`br1`, `euw1`, `kr`, sem distinguir maiúscula) → `Region`. Desconhecido dá `None`, nunca um padrão: no coletor, região errada agrega partidas de outro servidor sob o rótulo errado | R-20 |
 | `platforms` | Os 17 hosts de plataforma, na ordem da tabela. O coletor os lista no erro de `--regiao` | R-20 |
 

@@ -287,8 +287,9 @@ timeout de 5 s.
 **O que acontece.**
 - Uma vez por conexão, `current_summoner` (`watcher.rs:178`) dá `gameName`,
   `tagLine` e `puuid`. O Riot ID vira `nome#tag` e vai para a barra.
-- Com `puuid`, `region` lê `/riot/v1/region-locale`; erro vira `"BR"`
-  (`watcher.rs:187`). As três coisas viram `Identity` no `Shared`
+- Com `puuid`, `region` lê `/riot/v1/region-locale`; erro deixa a região vazia,
+  e o componente pessoal desliga com o motivo em vez de supor o Brasil (A17). As
+  três coisas viram `Identity` no `Shared`
   (`watcher.rs:188`), que §3.5 está esperando.
 
 **Por quê.** O perfil de rota precisa do puuid (R-17), e o histórico da match-v5

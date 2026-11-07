@@ -41,7 +41,10 @@ pub async fn refresh(shared: Arc<Shared>) -> Result<PersonalStats> {
         .await
         .ok_or_else(|| anyhow!("não consegui identificar a conta"))?;
 
-    let region = Region::from_lcu(&identity.region);
+    // Região que o app não conhece desliga o componente pessoal, com o motivo,
+    // em vez de buscar o histórico no Brasil por padrão (A17).
+    let region = Region::from_lcu(&identity.region)
+        .ok_or_else(|| anyhow!("região da conta desconhecida: {:?}", identity.region))?;
     let client = RiotClient::from_env(region).ok_or_else(|| anyhow!("chave da Riot vazia"))?;
 
     let mut stats: PersonalStats = storage::read_json(CACHE).unwrap_or_default();
@@ -124,7 +127,7 @@ async fn identity_from_env() -> Option<Identity> {
     let (game_name, tag_line) = riot::split_riot_id(&riot_id)?;
 
     let region_name = std::env::var("PRESAGE_REGION").unwrap_or_else(|_| "BR".into());
-    let client = RiotClient::from_env(Region::from_lcu(&region_name))?;
+    let client = RiotClient::from_env(Region::from_lcu(&region_name)?)?;
 
     match client.account_by_riot_id(&game_name, &tag_line).await {
         Ok(account) => Some(Identity {

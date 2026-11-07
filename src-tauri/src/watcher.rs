@@ -224,7 +224,9 @@ pub async fn run(app: AppHandle, shared: Arc<Shared>) {
                         summoner = Some(riot_id.clone());
 
                         if !me.puuid.is_empty() {
-                            let region = c.region().await.unwrap_or_else(|_| "BR".into());
+                            // Sem a região do cliente, fica vazia: o componente
+                            // pessoal diz que não sabe, em vez de supor o Brasil (A17).
+                            let region = c.region().await.unwrap_or_default();
                             *shared.identity.lock().unwrap() = Some(Identity {
                                 puuid: me.puuid,
                                 riot_id,

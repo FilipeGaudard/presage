@@ -9,8 +9,12 @@ pub struct Region {
 }
 
 impl Region {
-    pub fn from_lcu(region: &str) -> Region {
-        match region.to_ascii_uppercase().as_str() {
+    /// A partir do nome que o cliente dá à região (`BR`, `EUW`, `OC1`).
+    ///
+    /// Devolve `None` para o que não conhece, como `from_platform`: cair num
+    /// padrão faria o histórico pessoal sair de outro servidor, calado (A17).
+    pub fn from_lcu(region: &str) -> Option<Region> {
+        let r = match region.to_ascii_uppercase().as_str() {
             "BR" => Region { platform: "br1", routing: "americas" },
             "NA" => Region { platform: "na1", routing: "americas" },
             "LAN" => Region { platform: "la1", routing: "americas" },
@@ -27,8 +31,10 @@ impl Region {
             "TH" | "TH2" => Region { platform: "th2", routing: "sea" },
             "TW" | "TW2" => Region { platform: "tw2", routing: "sea" },
             "VN" | "VN2" => Region { platform: "vn2", routing: "sea" },
-            _ => Region { platform: "br1", routing: "americas" },
-        }
+            "ME" | "ME1" => Region { platform: "me1", routing: "europe" },
+            _ => return None,
+        };
+        Some(r)
     }
 
     /// A partir do host de plataforma (`br1`, `euw1`, `kr`), que é como as
@@ -134,16 +140,21 @@ mod tests {
     }
 
     #[test]
-    fn regiao_desconhecida_cai_no_padrao() {
-        assert_eq!(Region::from_lcu("XX").routing, "americas");
+    fn regiao_desconhecida_nao_vira_brasil() {
+        // Uma região que o app não conhece não pode virar o Brasil calada: o
+        // histórico pessoal sairia de outro servidor (A17). E o Oriente Médio,
+        // que a tabela de plataformas tem, precisa existir aqui também.
+        assert_eq!(Region::from_lcu("XX"), None);
+        assert_eq!(Region::from_lcu(""), None);
+        assert_eq!(Region::from_lcu("ME").unwrap().platform, "me1");
     }
 
     #[test]
     fn regioes_conhecidas() {
-        assert_eq!(Region::from_lcu("br").platform, "br1");
-        assert_eq!(Region::from_lcu("KR").routing, "asia");
-        assert_eq!(Region::from_lcu("EUW").routing, "europe");
-        assert_eq!(Region::from_lcu("oce").platform, "oc1");
+        assert_eq!(Region::from_lcu("br").unwrap().platform, "br1");
+        assert_eq!(Region::from_lcu("KR").unwrap().routing, "asia");
+        assert_eq!(Region::from_lcu("EUW").unwrap().routing, "europe");
+        assert_eq!(Region::from_lcu("oce").unwrap().platform, "oc1");
     }
 
     #[test]

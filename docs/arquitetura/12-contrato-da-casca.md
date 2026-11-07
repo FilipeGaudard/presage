@@ -279,7 +279,7 @@ vira `Err("LCU respondeu … para …")`.
 | `gameflow_phase` | `/lol-gameflow/v1/gameflow-phase` | toda volta do watcher; o erro derruba a conexão e faz redescobrir |
 | `champ_select_session` | `/lol-champ-select/v1/session` | a cada 350 ms no champ select |
 | `current_summoner` | `/lol-summoner/v1/current-summoner` | uma vez por conexão |
-| `region` | `/riot/v1/region-locale` | uma vez por conexão, quando há puuid; erro vira `"BR"` (`watcher.rs:187`) |
+| `region` | `/riot/v1/region-locale` | uma vez por conexão, quando há puuid; erro deixa a região vazia, e o componente pessoal desliga com o motivo em vez de supor o Brasil (A17) |
 | `grid_champions` | `/lol-champ-select/v1/all-grid-champions` | no champ select, até devolver uma lista não vazia |
 | `queue_id` | `/lol-gameflow/v1/session` | junto com a grade |
 
