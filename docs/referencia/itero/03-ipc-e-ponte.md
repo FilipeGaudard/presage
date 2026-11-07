@@ -58,8 +58,8 @@ objeto de depuração.
 | `api:get-perk-pages` | LCU `GET /lol-perks/v1/pages` | `null` |
 | `api:get-current-perk-page` | LCU `GET /lol-perks/v1/currentpage` | `null` |
 | `api:edit-session-selection` | LCU `PATCH /lol-champ-select/v1/session/my-selection` (feitiços, skin) | `false` |
-| `api:get-aram-champion-builds` | backend: builds de ARAM do campeão | `null` |
-| `api:get-aram-champion-augments` | backend: tiers de aprimoramento do campeão | `null` |
+| `api:get-aram-champion-builds` | CloudFront do ARAM: builds do campeão (não é o backend) | `null` |
+| `api:get-aram-champion-augments` | CloudFront do ARAM: tiers de aprimoramento do campeão | `null` |
 | `api:fetch-draft-data` | `[DraftData]` para a fase atual | `null` |
 | `api:update-game-settings` | LCU `GET /lol-game-settings/v1/game-settings` → `config` | `null` |
 | `api:set-hashed-email` | Overwolf: gera e registra hashes do e-mail para anúncio personalizado | `false` |
@@ -70,7 +70,10 @@ objeto de depuração.
 
 Cada store do processo principal ([01 §3](01-processo-principal.md#3-estado-as-stores))
 registra `subscribe` (a janela passa a receber as mudanças das chaves pedidas),
-`get` e `set`; `settings` também tem `update` (por chave), `reset` e `enable`.
+`get` e `set`; `settings` também tem `update-overlay-toggle-hotkey`,
+`update-ingame-toggle-hotkey` e `update-ingame-tab-toggle-hotkey` (um por
+atalho, [01 §10](01-processo-principal.md#10-atalhos-e-janelas)), `reset` e
+`enable-all-overlays` (`main.js:15053-15092`).
 Nomes: `settings`, `config`, `launcher`, `champ-select`, `q7z2k`,
 `game-clock`, `damage`, `ult-cooldowns`, `live-players`, `gold`,
 `player-stats`, `objectives`, `overlay-status`, `aram-augments`, `scouting`.

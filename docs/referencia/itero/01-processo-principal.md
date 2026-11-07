@@ -72,8 +72,10 @@ o monitor e o tamanho reais do jogo (`[Display]`), que as janelas de overlay usa
 para se posicionar sobre o minimapa e os quadros do time.
 
 **Canais Overwolf** (`[OverwolfPackages]`, `main.js:36531`): listar, ler e trocar
-o canal de cada pacote (estável/beta); ao baixar a troca, avisa a janela
-principal com `overwolf-packages:channel-ready`.
+o canal de cada pacote (`public` ou os que o Overwolf oferecer, como beta); ao
+baixar a troca, avisa a janela principal com `overwolf-packages:channel-ready`.
+Quem chama e quem escuta o aviso é só a tela `/debug` (`DZUxX0Gb.js`), que
+existe em build de desenvolvimento; nenhuma tela do usuário troca o canal.
 
 ## 3. Estado: as stores
 
@@ -112,11 +114,33 @@ select em uma **fase do app** (`main.js:37722`) e reage à transição
 | `ChampSelect`, fila 450 | `ChampSelectAram` |
 | `ChampSelect`, filas 2400/3270 | `ChampSelectAramMayhem` |
 | `ChampSelect`, fila 3120 + assinante | `ChampSelectCustomRandom` |
-| `ChampSelect`, ranqueada/normal (400/420/440/700) | `EveryoneLocked` › `ChampLocked` › `Picking` › `ChampSelectNormal/RankedSolo/RankedFlex/Ranked5s` |
-| `ChampSelect`, personalizada (3100/3110/3140/torneio) + assinante | idem, com `ChampSelectCustomBlind/CustomDraft/PracticeTool/Tournament` |
-| `ChampSelect`, o resto | `ChampSelectUnsupported` |
-| `GameStart`, `InProgress`, `WaitingForStats`, `Reconnect` | `InGameAram`, `InGame` ou `InGameUnsupported` |
+| `ChampSelect`, ranqueada/normal (400/420/440/710) | `EveryoneLocked` › `ChampLocked` › `Picking` › `ChampSelectNormal/RankedSolo/RankedFlex/Ranked5s` |
+| `ChampSelect`, personalizada (3100/3110/3140) e torneio (3130) + assinante | idem, com `ChampSelectCustomBlind/CustomDraft/PracticeTool/Tournament` |
+| `ChampSelect`, o resto — inclusive Clash (700) e Swiftplay/Quickplay (470/480) | `ChampSelectUnsupported` |
+| `GameStart`, `InProgress`, `WaitingForStats`, `Reconnect` | `InGameAram` (450/2400/3270); `InGame` (400/420/440/710 e 470/480; com assinatura, também 700 e 3100–3140); o resto `InGameUnsupported` |
 | `PreEndOfGame`, `EndOfGame` | `None` |
+
+**As filas** (`main.js:14737-14781`). A Ranked 5s é a 710, não a 700; a 700 é
+o Clash, que o launcher força ao entrar em `CheckedIntoTournament`
+(`main.js:38297`). Três conjuntos decidem tudo:
+
+- **SR sem assinatura** (400, 420, 440, 710): champ select e partida.
+- **Personalizada** (3100, 3110, 3120, 3130, 3140): só para assinante.
+- **Caminho de torneio** (700, 710, 3130): todos os grupos de ban contam (o draft
+  de torneio tem duas fases de ban), a vez de banir sai da ação de ban do aliado
+  em andamento e não da fase `BAN_PICK` do timer (`main.js:38136`), e depois de
+  travar o `[DraftData]` continua pedindo lista de picks em vez da análise
+  (`main.js:26138`).
+
+Dois efeitos disso, lidos no código e não observados em execução:
+
+- **Clash (700)**: o champ select é lido (assinante), mas a máquina de fases não
+  tem a 700 em nenhum dos conjuntos de champ select e cai em
+  `ChampSelectUnsupported`, que só abre o `drafting` para personalizada; na
+  partida, com assinatura, vira `InGame`.
+- **Swiftplay e Quickplay (470/480)**: não têm champ select no cliente; entram
+  só na partida, com ou sem assinatura. A posição e o campeão escolhidos antes da
+  fila vêm do launcher (`selected_positions`, `quickplay_champions`).
 
 | Transição para | Efeito |
 |---|---|
@@ -247,9 +271,9 @@ falhado, ela é refeita):
 | versão do app, contagem de aberturas | local |
 | status dos eventos Overwolf do jogo e do launcher | API de status do Overwolf |
 | resumo de campeões, itens, runas, árvores, feitiços | CommunityDragon, com o CloudFront do iTero de reserva; **só refaz se a versão do Data Dragon mudou** |
-| winrate de ARAM | CloudFront do iTero (`champ_wrs.json`) |
+| winrate de ARAM | CloudFront do ARAM, em HTTP (`champ_wrs.json`) |
 | filtro de itens de partida, médias de stat por elo, rotas padrão por campeão, tabela de stats por campeão | CloudFront do iTero |
-| recomendações de ban e confrontos-chave | backend, pelo seu tier |
+| recomendações de ban e confrontos-chave | CloudFront do iTero, um arquivo por tier (`draft_stats/elo/<tier>/ban_dict.json` e `key_matchups.json`; `main.js:35988`, `36079`) |
 | pacotes e preço da assinatura | Tebex headless; preço regional em `lake-regional-pricing` (padrão USD 7,99) |
 | aprimoramentos do Arena/ARAM: nome em inglês por id; nome localizado → ids, para o idioma do cliente | CommunityDragon |
 | autostart com o Windows | ligado na primeira execução; depois respeita o estado real do Windows |
@@ -338,6 +362,15 @@ todos com *passthrough* (a tecla também chega ao jogo):
 | `ingameToggleHotkey` | alterna a tela in-game (ARAM ou SR; overlay ou janela solta conforme haja segundo monitor) |
 | `ingameTabToggleHotkey` | alterna entre as duas telas in-game |
 | `overlayToggleHotkey` (Tab) | segurar ou alternar: mostra os overlays e deixa interagir com eles |
+
+**Remapear.** Os três são remapeáveis nas configurações. O campo grava a
+combinação apertada (teclado, ou os botões 3 a 5 do mouse) e recusa mais de
+duas teclas ("Maximum 2 key combo"). O processo principal converte o texto
+(`main.js:13120`): um modificador e uma tecla, duas teclas, ou uma tecla só;
+tecla desconhecida vira código 0 e é recusada. Ele atualiza o atalho no pacote
+overlay e só grava em `settings` se o Overwolf aceitou
+(`store:settings:update-*-hotkey`, `main.js:15067-15086`); a tela avisa
+"Hotkey updated!" ou "Unable to update hotkey".
 
 Gerência de janelas (`main.js:14454-14737`): duas classes, uma para janela
 comum do Electron e outra para janela de **overlay injetada** pelo Overwolf

@@ -9,7 +9,7 @@ entendimento e não são nossos.
 | Fonte | Para quê |
 |---|---|
 | **Backend do iTero** (AWS API Gateway em 5 regiões: eu-central-1, us-east-2, sa-east-1, ap-southeast-1, ap-northeast-2) | todo o modelo: draft, scouting, conta, coach, pós-partida |
-| **CloudFront do iTero** (duas distribuições) | arquivos estáticos: winrate de ARAM, tier list, médias de stat por elo, rotas padrão, tabela de stats por campeão, filtro de itens; reserva de dados do jogo |
+| **CloudFront do iTero** (três distribuições) | a principal: tier list, médias de stat por elo, rotas padrão, tabela de stats por campeão, filtro de itens, recomendações de ban e confrontos-chave por tier, e a reserva dos dados do jogo (`cdragon/*.json`); a do ARAM, em HTTP sem TLS: winrate (`champ_wrs.json`), builds e aprimoramentos por campeão; e uma só para o aviso remoto da barra de título (`public_address_msg.json`, [02 §1](02-janelas.md#1-desktop--a-janela-principal)) |
 | `api.itero.gg` | quiz de personalidade |
 | **Firebase** (Auth, Firestore, Functions) | conta, configurações, assinatura, relatório de erro |
 | **Tebex** headless | pacotes e checkout da assinatura |
@@ -51,7 +51,7 @@ de telemetria (`api.schema_mismatch.*`) e o valor de reserva.
 | `POST {r}/lake-coach-{rota}` | `request_type`, puuid, fila | forças e pontos de melhoria | `_89qKOxY.js` |
 | `POST {r}/lake-flame-me` | nome, puuid, tipo (elogio/crítica), rota, fila, idioma | texto gerado | `DF5z8Cgx.js` |
 | `GET {r}/lake-regional-pricing` | — | moeda e preço | `main.js:36207` |
-| backend: builds e aprimoramentos de ARAM por campeão | apelido do campeão | builds com raridade; tiers S–D | `api:get-aram-champion-*` |
+| não é o backend: `GET` na CloudFront do ARAM, `builds/<campeão>.json` e `augments/<campeão>.json` | — | builds com etiquetas, tier de desempenho, raridade e estatísticas; tiers S+–D dos aprimoramentos | `api:get-aram-champion-*`, `main.js:24723`, `24772` |
 
 ## 3. Esquemas de destaque
 
@@ -86,7 +86,9 @@ quick play); `lobby_info.queueId`; `lcu_info.token`, `.port`;
 ## 4. Chamadas ao LCU
 
 Autenticação Basic com o token que o GEP entrega (`lcu_info`), na porta
-informada (`main.js:15165`).
+informada (`main.js:15165`). A sessão `lcu` aceita qualquer certificado quando o
+host é `127.0.0.1` e recusa os outros (`main.js:15153`): não há pinning do
+certificado raiz da Riot.
 
 | Método e caminho | Para quê |
 |---|---|
@@ -109,9 +111,28 @@ Função na nuvem: `reporterror`.
 
 ## 6. Telemetria e anúncios
 
-- Eventos nomeados (`api.request_failed.*`, `api.schema_mismatch.*`,
-  `auto_launch.state_mismatch`) com URL, método, corpo, status e erro; chaves
-  `Authorization` e `Password` são removidas antes do envio (`main.js:29003`).
+- **Relatório de erro.** Cada evento tem um rótulo e um objeto de dados, e vai
+  do processo principal para a janela `background`, que chama a função na nuvem
+  `reporterror` com a versão do app e a plataforma (`main.js:15132`). O rótulo
+  precisa casar com `^[a-z0-9_]+([.:][a-z0-9_]+)*$`; dado com mais de 8 KB em
+  JSON vai vazio. Os rótulos:
+  - `api.request_failed.<nome>`: falha numa chamada ao backend ou à CloudFront,
+    com URL, método, **corpo** (que leva puuid e Riot ID), status e até 2.000
+    caracteres da resposta (`main.js:303`);
+  - `lcu.request_failed.<nome>`: o mesmo para o LCU, com o caminho, o método, o
+    corpo (a página de runas, o conjunto de itens) e a resposta
+    (`main.js:15172`);
+  - `api.schema_mismatch.<nome>`: resposta fora do esquema zod, com até 10
+    problemas e 1.000 caracteres do recebido (`main.js:15214`);
+  - `auto_launch.state_mismatch` (`main.js:36394`);
+  - da interface: `api.pagination_limit_reached.match_history_window`,
+    `.match_history_search` e `.match_timeline_window` (com puuid, região, fila
+    e rota), `react.render_error`, `react.overlay_render_error` e
+    `window.uncaught_error`.
+- O cabeçalho `Authorization` do LCU não entra porque o relatório não leva
+  cabeçalho nenhum, e não por limpeza: o relatório não tem filtro. A remoção de
+  `Authorization`, `Password` e `Token` em `main.js:29003` é da biblioteca do
+  atualizador (`electron-builder`), nos logs dela.
 - Anúncios do Overwolf na janela principal para quem não assina; e-mail em hash
   para personalização (padrão ligado, desligável); CMP do Overwolf para
   consentimento.
@@ -130,5 +151,7 @@ Função na nuvem: `reporterror`.
 | monitores | `primaryDisplay`, `secondaryDisplay`, `gameDisplay` |
 | usuário | `basicInfo`, `friends`, `latestMatchId`, `ownedChampions`, `ownedChampionsInclF2P` |
 | configurações de jogo | `windowMode`, `globalScale`, `minimapScale`, `flipMiniMap`, `showTeamFramesOnLeft` |
-| autostart e uso | `hasSetAutoLaunch`, `autoLaunchApp`, `resetAutoLaunch`, `launchCount` | Logs em pasta própria (abríveis pela UI). Arquivos-marca em
-`%TEMP%` (admin) e em `userData` (relançamento pós-atualização).
+| autostart e uso | `hasSetAutoLaunch`, `autoLaunchApp`, `resetAutoLaunch`, `launchCount` |
+
+Logs em pasta própria (abríveis pela UI). Arquivos-marca em `%TEMP%` (admin) e
+em `userData` (relançamento pós-atualização).

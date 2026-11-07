@@ -30,8 +30,14 @@ O que o motor reage, com teste para cada caso:
 - time inimigo AD puxa armadura acima de resistência mágica;
 - o mago deles comprar poder de habilidade inverte a prioridade;
 - penetração de armadura no inventário deles derruba o valor da sua armadura;
-- contra letalidade, vida passa a render mais que armadura;
+- contra penetração de armadura, vida passa a render mais que armadura. O teste
+  deste caso não isola a causa: a mesma ordem sai sem penetração nenhuma
+  (T-BUILD-3);
 - o inimigo comprar armadura faz penetração subir na sua lista.
+
+Um limite que a ordem herda: o dano efetivo soma AD e AP um para um, sem saber
+com o que o campeão bate. Entre itens ofensivos de tipos diferentes a lista pode
+pôr um item de AP no topo para um campeão de AD (defeito A4 em `build/audit.md`).
 
 ### De onde vêm os números
 
@@ -55,14 +61,15 @@ O lado ofensivo é um **proxy, não DPS**: soma dano de ataque e poder de
 habilidade passados pelas resistências reais do alvo, sem razões de habilidade,
 recarga ou crítico. Serve para ordenar itens, não para prever o dano de um combo.
 
-Também não trata hoje: caminhos de construção (sugere o item final, não o
-componente), itens únicos por categoria, botas, e passivas de item, que não estão
-em nenhum dado estruturado.
+Também não trata hoje: caminhos de construção (o único corte é custo de 1000 ou
+mais, `MIN_ITEM_COST`, então componente caro entra na lista), itens únicos por
+categoria, botas, e passivas de item, que não estão em nenhum dado estruturado.
 
 ## 3. Dano
 
-Duas regras do jogo que o motor respeita (`damage.rs`) e que calculadora amadora
-erra:
+Duas regras do jogo que o motor respeita e que calculadora amadora erra. A
+ordem fica em `damage.rs`; a combinação multiplicativa, em `items.rs`
+(`combine_percent`, usada ao somar itens e ao ler a descrição):
 
 - **Ordem de penetração** (`effective_resist`): redução plana, redução
   percentual, penetração percentual, penetração plana. Com 100 de armadura, 35%
@@ -81,17 +88,19 @@ matemática do duelo com resistências, dano e penetração reais dos dois lados
 (`skirmish_odds`).
 
 ```text
-chance da rota = 0,5 + W_DUEL × (duelo − 0,5) + Δmatchup     cortada em [0,28; 0,72]
+chance da rota = 0,5 + W_DUEL × (duelo − 0,5) + (estimativa − 0,5)     cortada em [0,28; 0,72]
+estimativa     = referência(base dele, base do oponente) + Δmatchup
 ```
 
 - `W_DUEL = 0,60`: poder de combate não é vitória de rota — quem ganha o 1v1 em
   tela aberta ainda perde a rota por onda, por gank e por nível. Com 0,60 um
   duelo de 60/40 vira 56% de rota. Escolhido, não ajustado ([P-7](../produto/perguntas-em-aberto.md)).
-- `Δmatchup` vem da base, encolhido para o que as duas forças já explicam
-  (`expected_against`, a mesma referência do draft) com a mesma força de matchup.
-  Sem base é exatamente zero, e `from_data = false` faz a interface escrever "só a
-  conta do duelo"; com base, a força de cada um já entra no número e `from_data`
-  fica verdadeiro.
+- A `estimativa` vem da base: a referência é o que as duas forças já explicam
+  (`expected_against`, a mesma do draft), e `Δmatchup` é o confronto encolhido
+  para ela com a mesma força de matchup. Sem base, as duas forças são 50% e o
+  termo inteiro é exatamente zero, e `from_data = false` faz a interface escrever
+  "só a conta do duelo". Com base e sem amostra do confronto, o termo não é zero:
+  é a diferença de força dos dois na rota, e `from_data` fica verdadeiro.
 - Nenhuma rota está decidida antes de começar: daí o piso e o teto.
 - Rotas sem oponente identificado ficam de fora em vez de virarem 50%: um palpite
   com cara de medida é pior que silêncio.
@@ -126,11 +135,11 @@ sugerir. A interface diz isso.
 `engine/wincon.rs` lê os dois times e os duelos já calculados
 ([ADR-0018](../adr/0018-o-que-a-condicao-de-vitoria-pode-afirmar.md)):
 
-- **fatos de composição, por regra:** dano de um tipo só (≥70%), ninguém na linha
-  de frente, time de alcance ou corpo a corpo. Time com menos de três definidos
-  fica sem fatos;
-- **onde a conta de atributos pende:** rotas e escaramuças a mais de 5 pontos de
-  50%, cada uma marcada como `atributos`.
+- **fatos de composição, por regra:** dano de um tipo só (≥70%), ninguém ou três
+  ou mais na linha de frente, time de alcance ou corpo a corpo (quatro ou mais de
+  um tipo). Time com menos de três definidos fica sem fatos;
+- **onde a conta de atributos pende:** rotas e escaramuças a 5 pontos ou mais de
+  50% (`EDGE`), cada uma marcada como `atributos`.
 
 **A fase do jogo só pelos dados.** A conta de atributos não vê habilidade e por
 isso não vê quem escala: "seu time é de fim de jogo" a partir dela poderia sair ao
@@ -150,7 +159,9 @@ travado (`a_previa_e_a_mesma_conta_de_quando_ele_estiver_travado`).
 
 `gold.rs` soma o preço de cada item no inventário dos dez: **investido** é exato.
 O **ganho** é estimado (`earned_at`) a partir de tempo, CS, abates, assistências
-e o investido. Ouro em mão de outro jogador nunca aparece (C-4).
+e o investido. A regra é que ouro em mão de outro jogador nunca aparece (C-4,
+R-12). Hoje aparece: `GoldPlayer::unspent` sai para os dez e a tela mostra o
+`+N` de qualquer um a partir de 800 (defeito A3 em `build/audit.md`).
 
 ## 6. Timers
 
@@ -163,19 +174,9 @@ Dois tipos de número, e a diferença aparece na tela (`timeline.rs`):
 As constantes vivem num único `Timings` e **mudam a cada temporada** — na 16 o
 Barão voltou de 25:00 para 20:00, o Arauto virou único às 15:00 e o Atakhan foi
 removido. A lógica é testada contra valores arbitrários, então trocar uma
-constante não quebra nada além dela mesma.
-
-| Constante | Valor |
-|---|---|
-| primeiro dragão / respawn | 5:00 / 5:00 |
-| respawn do Ancião | 6:00 |
-| primeiro Barão / respawn | 20:00 / 6:00 |
-| Arauto (único) | 15:00 |
-| Grubs (únicos) | 8:00 |
-| dragões para a alma | 4 |
-| respawn do inibidor | 5:00 |
-| respawn da torre do nexo | 3:00 |
-| buff do Barão / do Ancião | 3:00 / 2:30 |
+constante não quebra nada além dela mesma. Os valores estão num lugar só, o
+[10 §29.1](10-modelo-de-dados.md#291-timings); a regra e o que a substitui, em
+[regras e pesos](../produto/regras-e-pesos.md).
 
 **Estruturas** (`Respawn`): `InhibKilled` e `TurretKilled` de torre do nexo viram
 contagem até a volta, com o lado dono da estrutura. Há dois formatos de nome no
@@ -216,15 +217,21 @@ razões geradas procurando linguagem de posição (C-4).
 O que alimenta: quem está morto e por quanto tempo, CS e nível de cada um, os
 itens dos dez, e os eventos de objetivo. Por cima roda a simulação de escaramuça
 do motor de dano, com as resistências e a penetração reais — o mesmo motor da
-build adaptativa. `focus` escolhe a escaramuça que importa para a sua rota diante
-dos próximos objetivos.
+build adaptativa. `PriorityReport::focus` é só o texto do objetivo mais próximo
+a até 90 s ("Dragão em 40s (estimado)"). Quem escolhe a escaramuça que importa
+para a sua rota diante dos próximos objetivos é outro módulo, `lanes::focus`
+(`Focus`, `SkirmishFocus` no front), e é ela que o overlay mostra.
 
 ## 8. Leitura pós-partida
 
-Não depende da chave da Riot. Enquanto o jogo roda, `recorder.rs` grava um quadro
-por segundo da Live Client Data API em `gravacao.json`; no fim, `coach::review`
-lê a gravação e devolve o que foi bem e o que foi mal (`Report`, salvo em
-`ultima-partida.json`).
+Não depende da chave da Riot. Enquanto o jogo roda, `recorder.rs` guarda um
+quadro por segundo da Live Client Data API **em memória** (`Shared::recording`);
+no fim, `coach::review` lê essa gravação e devolve o que foi bem e o que foi mal
+(`Report`, salvo em `ultima-partida.json`). Só então a gravação vai para
+`gravacao.json`, que nada no app relê ([P-26](../produto/perguntas-em-aberto.md)).
+Se o app cair no meio da partida, não sobra nada em disco. "Por minuto" divide
+pelo tempo gravado, não pelo relógio da partida: gravação que começou tarde
+distorce as taxas (defeito A9 em `build/audit.md`).
 
 Cada observação precisa ser verificável pela própria pessoa: um número que ela
 poderia ter conferido na aba de pontuação. Nada de "jogue mais seguro". E nada
@@ -235,7 +242,7 @@ vira nota (C-7). A gravação fica na máquina do jogador; nada é enviado (RNF-
 | Rota | Farm contra o oponente | Visão contra o oponente | Participação fraca / forte |
 |---|---|---|---|
 | Topo | sim | — | ≤30% / ≥60% |
-| Selva | sim (campos contra campos) | — | ≤45% / ≥70% |
+| Selva | sim (`creepScore` contra `creepScore`; se conta os campos é a [P-19](../produto/perguntas-em-aberto.md)) | — | ≤45% / ≥70% |
 | Meio, Atirador | sim | — | ≤40% / ≥65% |
 | Suporte | **não** | **sim** | ≤50% / ≥75% |
 | Sem rota | — | — | ≤40% / ≥65% |

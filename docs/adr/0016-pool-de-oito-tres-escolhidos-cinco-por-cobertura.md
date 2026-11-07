@@ -24,9 +24,12 @@
 situacionais recomendados, um lugar por vez.**
 
 - **Retrato dos três** (`analyze`): características do Data Dragon — dano físico
-  e mágico, linha de frente, alcance, corpo a corpo, resistências equilibradas,
-  seis estilos. Forte é o que a rota valoriza e algum tem; fraco é o que a rota
-  valoriza e nenhum tem, ou os três com o mesmo estilo.
+  e mágico, linha de frente, alcance, corpo a corpo, resistências equilibradas.
+  Forte é o que a rota valoriza e algum tem; fraco é o que a rota valoriza e
+  nenhum tem. Os seis estilos (as classes) só entram numa regra: dois core ou
+  mais, todos com a mesma classe principal, é ponto fraco (nota de 2026-11-07:
+  o texto original dizia "os três com o mesmo estilo"; o código cobra a partir
+  de dois, [02 §7](../arquitetura/02-motor-de-draft.md#os-três-e-o-retrato-deles)).
 - **Cobertura com retorno decrescente** (`suggest`): cada característica cobre
   `1 − ½ⁿ`; o candidato vale `Σ peso × ½ⁿ⁺¹`. Recalculada a cada campeão aceito.
 - **Quem joga a rota** (`plays`): com a base, quem tem nela 5% das próprias

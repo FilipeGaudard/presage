@@ -24,11 +24,31 @@ $env:PRESAGE_RIOT_API_KEY = "RGAPI-..."
 .\ferramentas\presage-ingest.exe --verificar "$env:LOCALAPPDATA\Presage\base-de-partidas.json"
 ```
 
-Outras opções: `--jogadores`, `--por-jogador`, `--fila`, `--patch`,
-`--min-jogos`, `--paralelo`, `--limite`, `--saida`, `--estado` (`--ajuda` lista
-todas). A saída padrão é onde o app procura — o teste
+As opções, como `ler_opcoes` as lê (`tools/ingest/src/main.rs`). Uma opção que
+ele não conhece é erro, e a mensagem traz a ajuda.
+
+| Opção | Padrão | Faz |
+|---|---|---|
+| `--regiao` | `br1` | Host de plataforma. Fora da lista de `Region::platforms`, o coletor para e mostra as válidas |
+| `--tier` | `EMERALD` | Elo mínimo; tudo acima entra junto (`tiers_from`). Lido em maiúsculas. Tier desconhecido é erro |
+| `--jogadores` | `20000` | Quantos jogadores semear. A semeadura para ao bater a cota, e pode parar ainda no primeiro tier |
+| `--por-jogador` | `20` | Quantas partidas pedir a cada jogador semeado (`count` do `match-v5`) |
+| `--fila` | `420` | A fila das partidas: vai na busca (`queue=`) e no descarte (`Skip::Fila`). A semeadura usa sempre a lista solo/duo (`RANKED_SOLO_5x5`), e a busca sempre `type=ranked` |
+| `--patch` | o da 1ª partida aceita | Trava o patch (`15.21`). Partida de outro patch é descartada (`Skip::Patch`) |
+| `--min-jogos` | `20` | Na hora de gravar, corta as entradas com menos partidas que isto (§7). O total de partidas do cabeçalho não é podado |
+| `--paralelo` | `8` | Quantas partidas baixar ao mesmo tempo, por lote. Abaixo de 1 vira 1 |
+| `--limite` | `20:1,100:120` | Limite inicial, no formato do `X-App-Rate-Limit`; a primeira resposta da Riot o troca pelo real (§4). Limite ilegível é erro antes da primeira chamada |
+| `--saida` | `%LOCALAPPDATA%\Presage\base-de-partidas.json` | Onde gravar a base. Sem `LOCALAPPDATA`, `.\base-de-partidas.json` |
+| `--estado` | `%LOCALAPPDATA%\Presage\coleta-em-andamento.json` | Onde gravar o progresso (o arquivo de estado, §2) |
+| `--retomar` | desligado | Continua do arquivo de estado, se ele for do mesmo recorte |
+| `--plano` | desligado | Mostra semeadura, chamadas estimadas e horas pela taxa sustentável do `--limite`, sem rede e sem chave (§6) |
+| `--verificar` | — | Lê uma base pronta e imprime a cobertura (§7). Vence as outras opções: com ela o coletor não coleta |
+| `--ajuda` | — | Imprime a lista de opções e sai |
+| `--help` | — | O mesmo que `--ajuda`, como `-h` |
+
+A saída padrão é onde o app procura — o teste
 `a_saida_padrao_e_onde_o_app_procura` trava isso, e falha fora do Windows porque
-monta o caminho a partir de `LOCALAPPDATA`.
+monta o caminho a partir de `LOCALAPPDATA` ([L-18](09-licoes-do-prototipo.md)).
 
 A chave sai de `PRESAGE_RIOT_API_KEY` e de lugar nenhum mais — nunca de
 argumento, porque argumento aparece na lista de processos, e nunca da URL, porque
@@ -41,8 +61,12 @@ URL aparece em log de proxy. Ela viaja no cabeçalho `X-Riot-Token` (RNF-6).
 2. **Lista** as últimas partidas ranqueadas de cada jogador semeado pelo
    `match-v5`.
 3. **Baixa** cada partida ainda não vista, em lotes concorrentes.
-4. **Agrega** em memória (`aggregate.rs`) e grava estado e base a cada 500
-   partidas.
+4. **Agrega** em memória (`aggregate.rs`) e grava estado e base a cada 2000
+   partidas baixadas, aceitas ou descartadas (`SALVAR_A_CADA`). A conta é
+   conferida ao fim de cada jogador, então a gravação pode passar um pouco das
+   2000. O estado carrega todo id já visto e chega a dezenas de megabytes: de 500
+   em 500, no ritmo da chave de produção, seria uma gravação a cada dez
+   segundos. Perder 2000 partidas numa queda custa minutos.
 
 O que entra na conta de cada partida aceita:
 
@@ -61,6 +85,35 @@ O que entra na conta de cada partida aceita:
   a fase do jogo em que um campeão rende
   ([ADR-0018](../adr/0018-o-que-a-condicao-de-vitoria-pode-afirmar.md)).
 
+### O arquivo de estado
+
+`coleta-em-andamento.json` (`Estado`, `tools/ingest/src/main.rs`) é o que
+sobrevive a uma interrupção:
+
+| Campo | O que guarda |
+|---|---|
+| `regiao`, `tier`, `fila` | O recorte. `--retomar` só aceita o mesmo (`Estado::combina`) |
+| `jogadores` | O puuid de cada jogador semeado, na ordem |
+| `tiers_semeados` | Os tiers que de fato deram jogadores. O rótulo de elo do cabeçalho sai daqui: `EMERALD+` só quando a semeadura chegou ao topo |
+| `proximo` | Até onde a lista de jogadores já foi consumida |
+| `vistas` | Todo id de partida já pedido, inclusive os que falharam: insistir numa partida que a Riot não entrega trava o crawl |
+| `contagens` | As tabelas em memória (`Counts`): base, matchup, sinergia, contra, duração, o total de partidas, `versus_matches`, o patch travado e os descartes por motivo |
+
+**Quando é gravado:** logo depois da semeadura, para uma queda no começo não
+refazer a semeadura; a cada `SALVAR_A_CADA`, junto com a base; e no fim da
+coleta. Sempre num `.parcial` ao lado e depois renomeado: um Ctrl-C no meio da
+escrita não deixa arquivo meio escrito no lugar de um bom.
+
+**Quando sai:** nunca. O coletor não o apaga. No fim da coleta ele fica com
+`proximo` no fim da lista, e um `--retomar` sobre ele não baixa nada e só regrava
+a base. Sem `--retomar`, a coleta começa do zero e o sobrescreve depois da
+semeadura. Para recomeçar o mesmo recorte, apague o arquivo ou aponte `--estado`
+para outro.
+
+**Quando é recusado:** `--retomar` com estado de outro recorte para o coletor, e
+estado de uma versão sem as tabelas de contra e duração também (§3). Estado que
+não existe ou não desserializa vira começo do zero, com um aviso no log.
+
 ## 3. Três decisões que mudam o resultado
 
 Detalhe e alternativas em [ADR-0006](../adr/0006-coletor-sem-bola-de-neve-um-patch-partida-inteira.md).
@@ -74,10 +127,11 @@ são aquelas partidas. Só os jogadores semeados são expandidos.
 recusadas e contadas no relatório. Misturar patch é o jeito mais fácil de uma
 base parecer grande e recomendar item que mudou de preço.
 
-**Partida ou entra inteira ou não entra.** Remake, partida terminada por erro,
-modo que não é a Fenda, rota em branco, rotas que não fecham cinco por time, menos
-de cinco minutos: tudo descartado com motivo (`Skip`), antes de qualquer
-contagem. Meia partida contada é pior que partida nenhuma, e uma base que engole
+**Partida ou entra inteira ou não entra.** Fila diferente, modo que não é a
+Fenda, partida terminada por erro, menos de dez participantes ou times que não
+fecham cinco, remake, menos de cinco minutos, outro patch ou versão ilegível,
+rota em branco, rotas que não fecham cinco por time: tudo descartado com motivo
+(`Skip`, nove motivos), antes de qualquer contagem. Meia partida contada é pior que partida nenhuma, e uma base que engole
 remake mede taxa de remake.
 
 Um estado salvo por uma versão do coletor anterior às tabelas de contra e
@@ -106,10 +160,28 @@ coletar em várias multiplica a vazão. Ainda não testado
 
 ## 5. A duplicação com `history.rs`
 
-O coletor tem os próprios tipos crus da match-v5 e as próprias regras de
-descarte; o histórico pessoal (`core/src/history.rs`) tem os seus. As regras são
-as mesmas por desenho — mas são duas cópias. Até unificar, uma mudança numa
-precisa da outra no mesmo commit ([L-4](09-licoes-do-prototipo.md)).
+O coletor tem os próprios tipos crus da match-v5 (`Match`, `Info`,
+`Participant`) e as próprias regras de descarte (`Skip`, em `aggregate.rs`); o
+histórico pessoal (`core/src/history.rs`) tem os seus. São duas cópias, e só em
+parte as mesmas regras:
+
+| Regra | Coletor | Histórico pessoal |
+|---|---|---|
+| Modo `CLASSIC` | `Skip::Modo` | `Skip::Modo` |
+| `endOfGameResult` vazio ou `GameComplete` | `Skip::Terminada` | `Skip::Terminada` |
+| Ninguém com `gameEndedInEarlySurrender` | `Skip::Remake` | `Skip::Remake` |
+| Pelo menos 300 s | `Skip::Curta` (`MIN_DURATION`) | `Skip::Curta` (outro `MIN_DURATION`) |
+| A fila pedida | `Skip::Fila` | não confere: a casca já pede só a solo/duo |
+| Um patch só | `Skip::Patch` | não há |
+| Dez participantes, cinco por time | `Skip::Incompleta` | não confere |
+| Rota em branco | descarta a partida (`Skip::SemRota`) | conta para vitória e derrota, sem comparação de rota |
+| Rotas que fecham cinco por time | `Skip::RotaRepetida` | dois na sua rota do outro lado só tiram a comparação |
+
+As quatro primeiras são a mesma regra escrita duas vezes, com os mesmos textos
+(`CLASSIC`, `GameComplete`) e o mesmo `300` em cada arquivo, e nada obriga as
+duas a andarem juntas. As outras diferem de propósito: a base mede a partida
+inteira, o histórico mede você. Até unificar, uma mudança nas quatro precisa da
+outra cópia no mesmo commit ([L-4](09-licoes-do-prototipo.md)).
 
 ## 6. Quanto tempo leva, de verdade
 

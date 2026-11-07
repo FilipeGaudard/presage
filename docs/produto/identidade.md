@@ -33,6 +33,14 @@ Não há dourado aqui, e isso é deliberado: o dourado é a cor do próprio Leag
 um app que copia a paleta do jogo não tem cara de nada. O violeta também sai da
 rota de Blitz e Porofessor, que são azuis.
 
-As classes `good`, `bad` e `even` em `src/styles.css` são o único caminho de cor
-para número. O perfil de rota usa a mesma regra com uma condição a mais: só
-ganha cor o que sai do intervalo de 95%; o resto fica em `even`.
+As classes `good`, `bad` e `even` em `src/styles.css` são o caminho de cor para
+número. O perfil de rota usa a mesma regra com uma condição a mais: só ganha cor
+o que sai do intervalo de 95%; o resto fica em `even`.
+
+Hoje não são o único. O delta do draft tem as próprias (`delta-strong`,
+`delta-ok`, `delta-weak`), o overlay também (`up`, `down`, `hot`, `accent`, em
+`src/overlay.css`), e três lugares pintam dado com a cor da marca: o relógio
+urgente do draft (`.clock-urgent`), a barra de prioridade (`.lane-fill`, um
+gradiente até `--halo`) e o nome da rota de prioridade no overlay (`accent`).
+Urgência é `--ember`. O conserto e o teste que falta estão no `build/audit.md`
+(B6).

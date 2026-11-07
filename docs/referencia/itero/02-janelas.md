@@ -15,7 +15,7 @@ chunk de entrada em `dist/assets/<nome>-<hash>.js`. Há dois tipos
 | # | Janela | Tipo | Tamanho | Abre quando | Chunk de entrada |
 |---|---|---|---|---|---|
 | 1 | `desktop` | comum, redimensionável | 1320×760 (mín. igual) | launcher detectado (`autoLaunchDesktop`), bandeja, segunda instância, fim da partida | `desktop-BYOe2afW.js` |
-| 2 | `drafting` | comum | 460×832 (tamanho `lg`/`sm` alternável) | champ select de SR (`autoLaunchDraft`) | `drafting-sEhWYRpU.js` |
+| 2 | `drafting` | comum | 1280×720 no tamanho `lg` (padrão), 460×832 no `sm` | champ select de SR (`autoLaunchDraft`) | `drafting-sEhWYRpU.js` |
 | 3 | `drafting-aram` | comum | 1280×720 | champ select de ARAM/ARAM Mayhem | `drafting-aram-DzmzYadY.js` |
 | 4 | `ingame` | overlay | 1200×720 | partida de SR, um monitor (`autoLaunchInGame`) ou atalho | `ingame-DixYuRIr.js` |
 | 5 | `ingame-second` | comum | 1200×720 | partida de SR havendo segundo monitor | `ingame-second-CyjCQBW0.js` |
@@ -38,9 +38,39 @@ alternar): com ele ativo aparecem ou ficam interativos, conforme a janela.
 
 Roteador TanStack com 39 rotas, descritas em [04](04-telas-da-janela-principal.md).
 Barra lateral com Perfil, Ferramentas, Tier list, AI Coach, Premium, Guia,
-Configurações; aviso de nova versão (consulta `app-status` a cada hora); para
-quem não assina, coluna de anúncios de 440 px (banner 400×60, "high-impact"
-400×600 via `owadview` do Overwolf, e 400×300 embaixo).
+Configurações. Para quem não assina, coluna de anúncios de 440 px (banner
+400×60, "high-impact" 400×600 via `owadview` do Overwolf, e 400×300 embaixo).
+
+**Barra de título** (`desktop-BYOe2afW.js`):
+
+- **Aviso remoto.** A cada hora a janela baixa `public_address_msg.json` de uma
+  distribuição CloudFront só para isso ([06 §1](06-dados-e-backend.md#1-fontes))
+  e valida com zod: `live` (liga o aviso), `type` (`WARNING` em vermelho,
+  `INFORMATION` em amarelo), `version` (lista de versões do app, padrão vazia) e
+  `message` (texto por idioma, com o inglês de reserva). Aparece como um ícone
+  com dica, não como aviso de atualização. A condição tem um efeito que o nome
+  não diz: lista `version` vazia esconde o aviso, e lista não vazia o mostra em
+  **qualquer** versão, porque o teste `!version.includes(app) && version.length
+  === 0` só depende do tamanho.
+- **"Open Draft"**: durante o champ select (a fase do app é de champ select),
+  um botão reabre `drafting` ou, no ARAM, `drafting-aram`.
+- Texto "Patch X - vY"; com o jogo elevado, o botão **"Restart as Admin"** no
+  lugar dele.
+
+**Quatro ícones na barra lateral**: "iTero Discord" e "Bug Report" (os dois
+abrem convites do Discord pelo `open-external`; não há formulário de bug),
+"Info" (a página do guia sobre a aprovação da Riot) e "Settings".
+
+**Pop-up de novidades** (`showPopup` na store `config`): dois cartões do ARAM —
+o draft de ARAM e o overlay de aprimoramentos. A migração da store `config` põe
+`showPopup` de volta em `true` sempre que a versão do esquema sobe
+(`main.js:13976`), então o pop-up volta a cada versão do esquema, não a cada
+versão do app.
+
+**Anúncios fora da principal**: para quem não assina, também na janela do draft
+(400×600 no `lg`, 400×300 no `sm`), no `drafting-aram` (400×600) e nas janelas
+de segunda tela da partida (`ingame-second` 400×300, `ingame-aram-second`
+400×600). Nunca nos overlays injetados.
 
 ## 2. `drafting` — o companheiro do champ select
 
@@ -69,11 +99,24 @@ Abas **Recommendations**, **Laning Phase** e **Overview**, mais a de ban.
   confrontos na rota.
 - **Builds**: depois que todos travam, runas, feitiços, fragmentos, itens e
   ordem de habilidade para aquela composição; **Push Build** grava no cliente
-  (página de runas e conjunto de itens "iTero"), e o auto-push faz isso sozinho.
+  a página de runas e o conjunto de itens "iTero" e os **feitiços de
+  invocador** (`PATCH my-selection`, na ordem que o jogador guardou para aquele
+  par em `summonerSpellsConfig`, com o Flash em D ou F; `DcEGeJkH.js`), e o
+  auto-push faz isso sozinho.
 - **Ban**: "Ban Recommendations for <campeão em hover>" (contra o seu hover),
   "Ban Recommendations Overall", e a sua **Champion Ban Pool**, com Pick % e Win
   Rate; alerta "You are banning a champion a teammate wants to pick".
 - **Draft Override**: atribuir a posição de cada inimigo à mão.
+- **Hover, travar e banir à mão** (`patchSessionAction`): clicar num campeão da
+  lista faz hover dele na sua ação de pick; um botão ao lado trava
+  (`completed: true`, erro "Failed to lock champion."); clicar num campeão da
+  recomendação de ban abre a confirmação "Ban <campeão>?", ou "You are banning a
+  champion a teammate wants to pick" quando um aliado o quer. Depois de um hover
+  feito no cliente (`disableAppHover`), o clique só avisa e o botão de travar
+  fica desligado.
+- **Tamanho**: `lg` (1280×720, padrão, com as colunas lado a lado) ou `sm`
+  (460×832, uma coluna), trocado por um botão na barra da própria janela
+  (`draftScreenSize`).
 - **Configuração rápida**: General, Model Customization (pesos), Display,
   Recommendation Filters, Build Suggestions, Matchups, Team Stats.
 - Tutorial de primeiro uso (`ftue*`): seção de visão geral, as duas notas, a
@@ -86,7 +129,15 @@ para o campeão escolhido, **Builds** (Core Items, Runes, Summoners, Skill
 Order, Win Rate, Patch, **Push Build**, **Random Build** dentro da faixa de
 raridade configurada) e **Augments** (recomendações de aprimoramento para ARAM
 Mayhem). Busca via `api:get-aram-champion-builds` e
-`api:get-aram-champion-augments`.
+`api:get-aram-champion-augments`, que leem arquivos por campeão
+(`builds/<campeão>.json`, `augments/<campeão>.json`) da distribuição CloudFront
+do ARAM, não do backend (`main.js:24723`, `24772`).
+
+Cada build traz título, **etiquetas** (`tags`), tier de desempenho, tier de
+raridade e, das estatísticas, o **perfil de dano** — físico, mágico e verdadeiro
+em porcentagem do dano a campeões — e notas de desempenho (abates, dano, tanque,
+cura e escudo, mortes, assistências, dano mitigado, cura total, tropas, ouro,
+first blood) (`CU0ofup1.js`).
 
 ## 4–5. `ingame` e `ingame-second`
 
@@ -95,8 +146,9 @@ Duas telas alternáveis (Alt+O) e abas:
 
 - **Player Scouting** (padrão): os dez cartões de jogador
   ([05](05-funcionalidades.md#2-scouting-de-jogadores)); modo avançado com
-  comparações de fase de rota e meio de jogo. Respeita o modo streamer do
-  cliente ("Streamer mode enabled" esconde nomes).
+  comparações de fase de rota e meio de jogo. Com o modo streamer do cliente,
+  a Live Client entrega o jogador sem Riot ID; o cartão dele vira o aviso
+  "Streamer mode enabled", sem estatística (`DGXGLUPr.js`).
 - **Game Data / Builds**: Starter Items, Build Order, Alternatives — e troca
   pela dica e build do **estado da rota** (atrás/igual/à frente,
   `ingame.laneStateTooltip`).

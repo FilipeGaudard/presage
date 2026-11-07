@@ -13,13 +13,18 @@ sozinho quando um champ select começa.
 ```powershell
 cargo test -p presage-core      # o motor inteiro, em segundos
 cargo test -p presage-ingest    # o coletor
+cargo test -p presage           # a casca; compila a árvore do Tauri
+cargo test --workspace          # os três, como no CI
 npm run build                   # tsc --noEmit + vite build
+npm run doccheck -- -strict     # docs e código concordam; só Node
 ```
 
 ## 2. Olhar a interface sem o cliente
 
-Os componentes são puramente visuais — nenhum fala com o Tauri — então há uma
-página que os renderiza com dados de exemplo:
+Os componentes são visuais: só `App.tsx` e `overlay.tsx` falam com a casca, e a
+exceção é `Atualizacao.tsx`, que fala com os plugins do atualizador e do processo
+(`@tauri-apps/plugin-updater`, `@tauri-apps/plugin-process`). Por isso há uma
+página que renderiza os componentes com dados de exemplo:
 
 ```powershell
 npm run dev
@@ -90,13 +95,27 @@ linha que a contém.
 |---|---|
 | `presage-core` | tudo passa, em qualquer máquina |
 | `presage-ingest` | tudo passa no Windows; fora dele, `a_saida_padrao_e_onde_o_app_procura` falha ([L-18](09-licoes-do-prototipo.md)) |
-| `src-tauri` | sem testes próprios; a lógica fica no core de propósito |
+| `presage` (`src-tauri`) | tudo passa onde o Tauri compila e o binário de teste abre: Windows com MSVC, ou Linux com WebKitGTK. A lógica fica no core de propósito; a casca testa só o que é dela: a escolha da fonte da análise (`analysis.rs`), a busca do lockfile (`lcu/credentials.rs`), o reconhecimento da falha do atualizador (`lib.rs`) e a gravação da partida (`recorder.rs`) |
 | front | `tsc --noEmit` no `npm run build` |
 
 A contagem de testes não fica escrita aqui de propósito: ela muda a cada commit, e
 um número que envelhece é o defeito de [L-7](09-licoes-do-prototipo.md).
 
-O CI (`instalador.yml`) roda os testes antes de empacotar.
+O catálogo dos testes é o 13 (`13-testes.md`): cada `#[test]` do workspace numa
+linha, com o que prova e o requisito que atende. A casca é a área `T-CASCA`.
+
+Dois workflows rodam os testes:
+
+- **`instalador.yml`** roda `cargo test --workspace` em `windows-latest` antes de
+  empacotar: core, coletor e casca.
+- **`docs.yml`** roda `node tools/doccheck/doccheck.mjs -strict -v` em Linux, só
+  com Node, a cada push e pull request. Em local é `npm run doccheck -- -strict`.
+  Ele prova que docs e código concordam nos dois sentidos:
+  - todo item público do core, todo tipo que a casca serializa, todo comando,
+    evento, arquivo em disco, opção do coletor e teste está nos docs;
+  - todo item dos docs existe no código com a mesma assinatura e os mesmos campos.
+
+  Qualquer pendente ou aviso faz o comando falhar.
 
 ### Como os testes são escritos
 

@@ -20,7 +20,11 @@ Ranking, minimax e análise de rota leem o champ select de um jeito só
   Suporte); e sempre quem o próprio jogador já jogou ali (`played_in`).
 - **Rota do inimigo:** o cliente não informa na ranqueada. Ela é inferida pela
   atribuição mais plausível das rotas livres (`role_fit`, no máximo 120
-  combinações); empate fica com a ordem de escolha. Posição informada nunca é
+  combinações). O empate fica com a primeira atribuição da busca, que percorre os
+  inimigos na ordem de escolha e as rotas na ordem de `ROLES` (topo, selva, meio,
+  bot, suporte): com dois magos sem posição e só eles a inferir, o primeiro a
+  escolher vai para o topo e o segundo para o meio
+  ([P-20](../produto/perguntas-em-aberto.md)). Posição informada nunca é
   contestada, e `roles_assumed` avisa a interface ([P-13](../produto/perguntas-em-aberto.md)).
 - **Rota marcada:** quando a inferência erra, você corrige no próprio quadro do
   draft (`set_enemy_role`). A marca vence a inferência e nunca a posição do
@@ -40,7 +44,7 @@ Ranking, minimax e análise de rota leem o champ select de um jeito só
 ## 1. `rank()`
 
 `rank()` devolve, para cada candidato do contexto, uma probabilidade de vitória
-com intervalo de confiança. Ela sai da soma de cinco componentes:
+com intervalo de confiança. Ela sai da soma de seis componentes:
 
 | Componente | Estado | Fonte |
 |---|---|---|
@@ -101,11 +105,12 @@ O que `Scored` leva para a tela:
 | `in_pool` | o campeão está na pool do jogador |
 | `reasons` | até três motivos em texto |
 
-Ligar a conta acende **um** componente, o pessoal. Os outros três não saem de uma
-conta sozinha: winrate base, matchup e sinergia são médias sobre milhões de
-partidas de milhares de jogadores. Com 100 partidas suas você teria menos de uma
-observação por matchup — por isso `PersonalStats` devolve `None` nos três, em vez
-de fingir cobertura.
+Ligar a conta acende **um** componente, o pessoal. Os outros quatro estatísticos
+não saem de uma conta sozinha: winrate base, matchup, contra e sinergia são
+médias sobre milhões de partidas de milhares de jogadores. Com 100 partidas suas
+você teria menos de uma observação por matchup — por isso `PersonalStats` devolve
+`None` nos quatro, em vez de fingir cobertura. O sexto, a composição, não depende
+de partida nenhuma.
 
 ## 2. Shrinkage
 
@@ -219,10 +224,13 @@ As razões, na ordem em que entram (`build_reasons`, no máximo três):
 
 ## 6. Draft com resposta
 
-O ranking guloso responde "qual o melhor pick agora", que não é a pergunta do
-draft: depois de você travar, eles escolhem contra você. `minimax` olha uma
-camada à frente e ordena pelo valor **depois** da melhor resposta deles. A
-diferença entre os dois números é a **exposição** do pick.
+O guloso responde "qual o melhor pick agora", que não é a pergunta do draft:
+depois de você travar, eles escolhem contra você. `minimax` olha uma camada à
+frente e ordena pelo valor **depois** da melhor resposta deles. A diferença entre
+os dois números é a **exposição** do pick. O guloso aqui é o valor do time com o
+candidato (`MinimaxPick::greedy`, `team_value`), só composição, com pesos
+próprios ([P-11](../produto/perguntas-em-aberto.md)); não é o `winrate` do
+`rank()`, que soma a base. Por isso a poda também ignora a base.
 
 Os candidatos são os do contexto, podados pelo guloso (`breadth`). As respostas
 deles são **todas** as que jogam uma rota que eles ainda não fecharam — varrer
@@ -244,7 +252,9 @@ matchup entrar, ele deve falhar — e aí o ban vira pessoal.
 
 O ban também **devolve vazio enquanto o outro lado não travou nada**. Sem pick e
 sem base estatística todo campeão pontua igual, e ordenar isso seria apresentar
-ruído como conselho.
+ruído como conselho. O hover conta como pick (`locked` lê `intent_id` quando não
+há campeão travado); no champ select real isso não muda nada, porque o LCU não
+mostra o hover deles, mas no simulador depende do que a tela manda.
 
 ### A sua lista de bans
 
@@ -273,17 +283,20 @@ trava: na revisão o jogador põe e tira quem quiser, e um campeão sem rota val
 todas. A pool fica em `%LOCALAPPDATA%\Presage\pool.json`.
 
 No draft, as recomendações saem em duas seções: primeiro a pool ranqueada entre
-si, depois os melhores no geral. A pool marca o campeão (`in_pool`) mas **não
-mexe na ordem** (`pool_e_marcado_sem_alterar_a_ordem`).
+si, depois os melhores no geral. A pool marca o campeão (`in_pool`) e **só
+desempata**: num empate exato de `winrate`, o da pool vem antes (§1); fora dele, a
+ordem é a mesma com ou sem pool (`pool_e_marcado_sem_alterar_a_ordem`).
 
 ### Os três e o retrato deles
 
-`poolgap::analyze` lê os três core em características que saem do Data Dragon
-(`Trait`): dano físico, dano mágico, linha de frente, alcance, corpo a corpo,
-resistências equilibradas, e os seis estilos (as classes). **Ponto forte** é o
-que a rota valoriza e ao menos um deles tem; **ponto fraco** é o que a rota
-valoriza e nenhum tem — ou os três terem o mesmo estilo, porque aí a mesma
-resposta serve contra todos.
+`poolgap::analyze` lê os core em características que saem do Data Dragon
+(`Trait`): dano físico, dano mágico, linha de frente, alcance, corpo a corpo e
+resistências equilibradas. **Ponto forte** é a característica que a rota valoriza
+(peso ≥ `RELEVANT`) e ao menos um deles tem; **ponto fraco** é a que a rota
+valoriza e nenhum tem. Os seis estilos (as classes) não viram ponto forte nem
+fraco por peso, porque pesam 0,35, abaixo de `RELEVANT`; entram só numa regra:
+com dois core ou mais, todos com a mesma classe principal é ponto fraco, porque
+aí a mesma resposta serve contra todos ([P-35](../produto/perguntas-em-aberto.md)).
 
 O que a rota valoriza vem de pesos escritos à mão (`weight`): todo atirador tem
 alcance e nenhum segura a frente, então nada disso conta para a pool de bot.
@@ -301,9 +314,10 @@ ganho = Σ peso(rota, característica) × ½ⁿ⁺¹     sobre o que o candidato
 A primeira ocorrência de algo vale metade do peso, a segunda um quarto. Então o
 quarto lugar tapa o buraco maior, o quinto o que sobrou, e assim por diante —
 recalcular a cada escolha é o que impede cinco respostas ao mesmo buraco
-(`cada_escolha_muda_a_proxima`). O `score` é o ganho dividido pelo maior ganho
-possível: índice de encaixe de 0 a 1, não winrate. Com oito, a pool está completa
-e não há mais sugestão.
+(`cada_escolha_muda_a_proxima`). O `score` é o ganho dividido pela soma dos
+ganhos de todas as doze características: índice de encaixe de 0 a 1, não
+winrate. Como físico e mágico, alcance e corpo a corpo se excluem, nenhum
+campeão chega a 1. Com oito, a pool está completa e não há mais sugestão.
 
 O jogador escolhe entre as alternativas de cada lugar; nada se preenche sozinho
 (C-5).
@@ -351,8 +365,9 @@ O formato é um JSON com cabeçalho e cinco mapas:
 ```
 
 `versus` é direcional — `A:B` é o resultado de A com B no time inimigo, em
-qualquer rota. `length` é o resultado por duração da partida (`Curta` até 25:00,
-`Media` até 32:30, `Longa` depois). As duas são opcionais: base de antes delas
+qualquer rota. `length` é o resultado por duração da partida (`Curta` abaixo de
+25:00, `Media` de 25:00 até antes de 32:30, `Longa` a partir de 32:30, `Length::of`).
+As duas são opcionais: base de antes delas
 continua carregando.
 
 A chave de sinergia guarda sempre o menor id primeiro, para Lee+Ahri e Ahri+Lee

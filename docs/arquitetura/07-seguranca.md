@@ -11,7 +11,8 @@ locais e falando com três serviços na internet. O que pode dar errado é mais
 | **Chave privada do atualizador** | quem a tiver publica um executável que **toda instalação** baixa, confere e executa | `%USERPROFILE%\.presage\updater.key`, secret `UPDATER_PRIVATE_KEY` no CI ([06 §2](06-distribuicao-e-atualizador.md#a-chave-privada)) |
 | **Chave da Riot** | a Riot revoga e todo mundo perde a camada estatística de uma vez | variável de ambiente; em produção, só no backend ([ADR-0004](../adr/0004-chave-da-riot-so-no-backend.md)) |
 | Histórico do jogador | puuid e partidas: dado da própria pessoa, público na Riot | `%LOCALAPPDATA%\Presage\personal-v2.json` |
-| Gravação da partida | idem | `gravacao.json`, `ultima-partida.json` — nunca sai da máquina (RNF-8) |
+| Gravação da partida | o seu jogo, e o nome de exibição dos outros nove quadro a quadro: dado de outras pessoas, que nada no app relê ([P-26](../produto/perguntas-em-aberto.md)) | `gravacao.json`, `ultima-partida.json` — nunca sai da máquina (RNF-8) |
+| Estado do coletor | o puuid de cada jogador semeado, de outras pessoas; o coletor nunca o apaga ([05 §2](05-coletor.md#o-arquivo-de-estado)) | `coleta-em-andamento.json`, na máquina de quem roda o coletor, fora do instalador |
 
 A ordem da tabela é a ordem de cuidado. A chave do atualizador vale mais que a
 chave da Riot: uma derruba uma função, a outra entrega a máquina de cada usuário.

@@ -19,10 +19,10 @@
 **A condição de vitória descreve; não prevê fase sem dado, e não ordena.**
 
 - **Fatos de composição, por regra** (`Source::Regra`): dano de um tipo só (≥70%),
-  ninguém na linha de frente, time de alcance ou corpo a corpo. Time com menos de
-  três definidos fica sem fatos.
+  ninguém ou três ou mais na linha de frente, time de alcance ou corpo a corpo.
+  Time com menos de três definidos fica sem fatos.
 - **Onde a conta de atributos pende** (`Source::Atributos`): rotas e escaramuças a
-  mais de 5 pontos de 50%.
+  5 pontos ou mais de 50% (`EDGE`).
 - **Fase do jogo** (`phase`): `None` sem a base. Com ela, sai da winrate em
   partidas curtas e longas — medida, não deduzida dos atributos.
 - **Cada frase leva a fonte ao lado**, e um aviso fixo diz o que a conta não vê.

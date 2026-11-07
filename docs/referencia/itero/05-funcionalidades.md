@@ -3,6 +3,8 @@
 Uma linha por funcionalidade, com um id (`I-n`) que o
 [cruzamento](07-cruzamento.md) usa. O detalhe fica onde já está descrito; aqui
 entra só o que não cabe em outro lugar (o scouting, §2).
+As linhas I-66 a I-83 saíram de uma segunda leitura do bundle (2026-11-07) e
+ficam no fim de cada grupo, para os ids antigos não mudarem.
 
 ## 1. O catálogo
 
@@ -28,18 +30,22 @@ entra só o que não cabe em outro lugar (o scouting, §2).
 | I-16 | Maestria agregada de várias contas | idem |
 | I-17 | Override da posição dos inimigos | [02 §2](02-janelas.md#2-drafting--o-companheiro-do-champ-select) |
 | I-18 | Build por composição: runas, feitiços, fragmentos, itens, ordem de habilidade | idem |
-| I-19 | **Enviar build ao cliente** (página de runas e conjunto de itens), manual e automático | [03 §2](03-ipc-e-ponte.md#registrados-pelo-helper-api-mainjs26233-26354) |
+| I-19 | **Enviar build ao cliente** (página de runas, conjunto de itens e feitiços de invocador na ordem que o jogador guardou para cada par), manual e automático | [03 §2](03-ipc-e-ponte.md#registrados-pelo-helper-api-mainjs26233-26354), [02 §2](02-janelas.md#2-drafting--o-companheiro-do-champ-select) |
 | I-20 | **Auto-hover** do melhor pick | [01 §5](01-processo-principal.md#automação-do-champ-select) |
 | I-21 | **Auto-lock** no fim do cronômetro | idem |
 | I-22 | **Auto-hover de ban** | idem |
 | I-23 | Desliga a automação quando você mexe no cliente | [01 §5](01-processo-principal.md#leitura-do-champ-select) |
 | I-24 | Recomendação contínua a cada fase (assinante) ou só na sua vez | [04 §7](04-telas-da-janela-principal.md#7-premium-premium) |
-| I-25 | Suporte a personalizada, Practice Tool e torneio (assinante) | [01 §4](01-processo-principal.md#4-a-máquina-de-fases) |
+| I-25 | Suporte a personalizada, Practice Tool e torneio (assinante); Swiftplay e Quickplay só na partida; Clash lido mas sem janela de draft | [01 §4](01-processo-principal.md#4-a-máquina-de-fases) |
 | I-26 | ARAM: grade, campeão aleatório, builds, build aleatória por raridade, aprimoramentos do Mayhem | [02 §3](02-janelas.md#3-drafting-aram) |
 | I-27 | Simulador de draft com importação de partida e sorteio | [04 §6](04-telas-da-janela-principal.md#simulador-de-draft-toolsdrafting-tool) |
 | I-28 | Construtor de pool conversacional (2 blinds, 3 situacionais, par do bot, pocket, AP/AD) | [04 §6](04-telas-da-janela-principal.md#construtor-de-pool-toolschampion-pool-builder) |
 | I-29 | Tier list geral e pessoal | [04 §5](04-telas-da-janela-principal.md#5-tier-list-tier-list) |
 | I-30 | Quiz de personalidade | [04 §6](04-telas-da-janela-principal.md#quiz-de-personalidade-toolsquiz) |
+| I-66 | **Hover, travar e banir à mão** pela janela do draft: clicar faz hover, um botão trava, o ban pede confirmação e avisa quando um aliado quer o campeão | [02 §2](02-janelas.md#2-drafting--o-companheiro-do-champ-select) |
+| I-67 | Botão "Open Draft" na barra de título da principal durante o champ select | [02 §1](02-janelas.md#1-desktop--a-janela-principal) |
+| I-68 | Janela do draft em dois tamanhos: `lg` 1280×720 (padrão) e `sm` 460×832 | [02 §2](02-janelas.md#2-drafting--o-companheiro-do-champ-select) |
+| I-83 | Build de ARAM com etiquetas, perfil de dano (físico/mágico/verdadeiro), notas de desempenho, tier e raridade | [02 §3](02-janelas.md#3-drafting-aram) |
 
 ### Partida
 
@@ -62,6 +68,8 @@ entra só o que não cabe em outro lugar (o scouting, §2).
 | I-45 | CS por minuto contra a média do elo **no seu confronto** | [02 §15](02-janelas.md#15-stat-tracker--cs-por-minuto) |
 | I-46 | Nota de tier dos aprimoramentos oferecidos (ARAM Mayhem) | [02 §16](02-janelas.md#16-aram-mayhem-augments) |
 | I-47 | Atalhos globais (tela in-game, troca de tela, overlay) | [01 §10](01-processo-principal.md#10-atalhos-e-janelas) |
+| I-69 | Modo streamer do cliente: jogador sem Riot ID vira aviso no lugar do cartão de scouting | [02 §4–5](02-janelas.md#45-ingame-e-ingame-second) |
+| I-70 | Atalhos remapeáveis, até duas teclas, validados antes de gravar | [01 §10](01-processo-principal.md#10-atalhos-e-janelas) |
 
 ### Pós-jogo e conta
 
@@ -78,6 +86,11 @@ entra só o que não cabe em outro lugar (o scouting, §2).
 | I-56 | AI Macro Coach: forças e pontos de melhoria por faixa de 7 min | [04 §4](04-telas-da-janela-principal.md#4-ai-macro-coach-ai-coach) |
 | I-57 | Gráfico de PDL da ranqueada solo | [04 §3](04-telas-da-janela-principal.md#3-perfil) |
 | I-58 | Várias contas Riot | [04 §8](04-telas-da-janela-principal.md#8-configurações) |
+| I-71 | Busca de jogador nas páginas do perfil: Riot ID e região de qualquer conta | [04 §3](04-telas-da-janela-principal.md#busca-de-jogador) |
+| I-72 | Histórico de partidas: lista paginada, filtro por fila, rota e campeão, "Last 10 Games" | [04 §3](04-telas-da-janela-principal.md#histórico-profilematch-history) |
+| I-73 | Detalhe da partida: quatro modos de comparação, estatística do gráfico (ouro, XP, dano feito, dano recebido), jogadores marcáveis | [04 §3](04-telas-da-janela-principal.md#detalhe-da-partida-profilematch-historymatchid) |
+| I-74 | Filtros das estatísticas da conta: faixa de tempo, à frente/igual/atrás, tipo de estatística, busca | [04 §3](04-telas-da-janela-principal.md#estatísticas-da-conta-profileaccount-statistics) |
+| I-75 | Winrate por faixa de AI Draft Score contra um winrate "da comunidade" fixo no cliente, com período | [04 §3](04-telas-da-janela-principal.md#estatísticas-por-campeão-profilechampion-statistics) |
 
 ### Plataforma
 
@@ -85,11 +98,18 @@ entra só o que não cabe em outro lugar (o scouting, §2).
 |---|---|---|
 | I-59 | Conta própria (Firebase Auth) e configurações na nuvem | [02 §13](02-janelas.md#13-background) |
 | I-60 | Assinatura, teste grátis, cupom | [04 §7](04-telas-da-janela-principal.md#7-premium-premium) |
-| I-61 | Anúncios na janela principal | [02 §1](02-janelas.md#1-desktop--a-janela-principal) |
+| I-61 | Anúncios para quem não assina: principal, draft e segunda tela da partida; nunca no overlay | [02 §1](02-janelas.md#1-desktop--a-janela-principal) |
 | I-62 | 12 idiomas | [04 §8](04-telas-da-janela-principal.md#8-configurações) |
 | I-63 | Atualização automática silenciosa, reabrindo como estava | [01 §1](01-processo-principal.md#1-inicialização) |
 | I-64 | Bandeja, autostart, instância única, reinício como admin | idem |
 | I-65 | Tutorial de primeiro uso no draft e na janela principal | [02 §2](02-janelas.md#2-drafting--o-companheiro-do-champ-select) |
+| I-76 | Aviso remoto na barra de título: ligado ou não, aviso ou informação, versões e texto por idioma | [02 §1](02-janelas.md#1-desktop--a-janela-principal) |
+| I-77 | Pop-up de novidades do ARAM, reaberto a cada versão do esquema da store `config` | [02 §1](02-janelas.md#1-desktop--a-janela-principal) |
+| I-78 | Discord, guia e "Bug Report" (outro convite do Discord) na barra lateral | [02 §1](02-janelas.md#1-desktop--a-janela-principal) |
+| I-79 | Manutenção: limpar cache e reiniciar, restaurar padrões, desinstalar, abrir logs, reiniciar, verificar atualização, aceleração por hardware | [04 §8](04-telas-da-janela-principal.md#8-configurações) |
+| I-80 | Relatório de erro e telemetria para a nuvem, com o corpo das requisições | [06 §6](06-dados-e-backend.md#6-telemetria-e-anúncios) |
+| I-81 | Canal dos pacotes Overwolf (público ou beta), só na tela de depuração | [01 §2](01-processo-principal.md#2-pacotes-overwolf) |
+| I-82 | Extras do assinante: análise na frente da fila (FastTrack), cargo no Discord, dados de qualquer conta | [04 §7](04-telas-da-janela-principal.md#7-premium-premium) |
 
 ## 2. Scouting de jogadores
 

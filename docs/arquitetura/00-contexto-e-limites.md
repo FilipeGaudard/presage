@@ -16,7 +16,7 @@ internet
 
 | Fonte | Onde | Autenticação | O que dá | O que **não** dá |
 |---|---|---|---|---|
-| LCU | `127.0.0.1:<porta>` | Basic Auth, senha do lockfile | champ select (picks, bans, hovers do seu time), conta (puuid, região); aplica runas e item set | hover do inimigo |
+| LCU | `127.0.0.1:<porta>` | Basic Auth, senha do lockfile | champ select (picks, bans, hovers do seu time), conta (puuid, região), a grade de quem a conta pode escolher. O Presage só lê ([ADR-0026](../adr/0026-lcu-so-leitura-e-autostart-desligado.md)); escrever runas e item set é a [P-15](../produto/perguntas-em-aberto.md) | hover do inimigo |
 | Live Client Data API | `127.0.0.1:2999` | nenhuma | itens, nível, KDA, CS e eventos dos dez durante a partida | posição no mapa, cooldowns, ouro em mão de ninguém além de você |
 | Riot Web API | `*.api.riotgames.com` | `X-Riot-Token` | contas, ligas, partidas completas | nada em tempo real |
 | Data Dragon | CDN público | nenhuma | campeões, itens, runas, ícones, stats base | penetração, letalidade e haste no bloco `stats` de item ([ADR-0015](../adr/0015-atributos-de-item-pela-descricao.md)) |
@@ -26,13 +26,20 @@ internet
 ### Como achamos o cliente
 
 O cliente sobe um servidor HTTPS local numa porta aleatória a cada execução, com
-senha gerada na hora. Duas fontes, nesta ordem (`lcu/credentials.rs`):
+senha gerada na hora. A casca lê só o `lockfile` da raiz da instalação, no
+formato `LeagueClient:<pid>:<porta>:<senha>:https` (`parse_lockfile`), e procura a
+pasta em três lugares, do mais silencioso para o mais invasivo
+(`lcu/credentials.rs`):
 
-1. a linha de comando do `LeagueClientUx.exe` (`--app-port` e
-   `--remoting-auth-token`, `parse_cmdline`), que funciona mesmo com instalação
-   fora do caminho padrão;
-2. o `lockfile` na raiz da instalação, no formato
-   `LeagueClient:<pid>:<porta>:<senha>:https` (`parse_lockfile`).
+1. as pastas de instalação conhecidas;
+2. a configuração da própria Riot;
+3. a pasta do `LeagueClientUx.exe` em execução, pelo caminho da imagem do
+   processo (`sysinfo`), nunca pela linha de comando nem pela memória dele.
+
+A linha de comando ficou de fora de propósito: perguntar ao WMI por ela, com um
+PowerShell escondido, fez um antivírus marcar o binário como ladrão de
+credenciais (o porquê está no cabeçalho de `credentials.rs`). `parse_cmdline`
+continua no core, com testes, e sem chamador.
 
 As credenciais mudam a cada reinício do cliente, então perder a conexão e
 redescobrir é o caminho normal, não o excepcional. Sem cliente, o watcher procura
@@ -118,7 +125,6 @@ entrar de qualquer jeito.
 | | Fonte | Precisa de chave |
 |---|---|---|
 | Champ select, picks, bans, hovers | LCU, `127.0.0.1:<porta>` | não |
-| Aplicar runas e item set no cliente | LCU | não |
 | Campeões, itens, runas, ícones | Data Dragon | não |
 | Motor de composição | Data Dragon | não |
 | Construtor de pool | local | não |
@@ -127,15 +133,18 @@ entrar de qualquer jeito.
 | Histórico pessoal e perfil de rota | Riot Web API | sim |
 | Winrate base, matchup, sinergia | base de partidas (coletor) | sim, no coletor |
 
-Enquanto não houver chave, `NoStats` cobre a camada estatística e o motor roda só
-com composição. Nada quebra.
+Enquanto não houver chave, o motor roda com `Layered` sem camada global e com o
+histórico pessoal vazio, o que dá o mesmo que `NoStats`: só composição. Nada
+quebra. O LCU continua só lido com ou sem chave: nada é escrito no cliente
+([ADR-0026](../adr/0026-lcu-so-leitura-e-autostart-desligado.md)).
 
 ## 6. Limites conhecidos
 
 - **Hover inimigo não existe.** O LCU não revela `championPickIntent` do time
   adversário; o campeão só aparece travado. É a API, não bug.
-- **Só Windows.** A descoberta de credenciais usa CIM do Windows, e os caches
-  moram em `%LOCALAPPDATA%\Presage`.
+- **Só Windows.** A descoberta de credenciais procura o `lockfile` em pastas do
+  Windows e na configuração da Riot (§2), e os caches moram em
+  `%LOCALAPPDATA%\Presage`.
 - **Verificação de TLS desligada** para falar com o loopback da Riot
   ([07 §2](07-seguranca.md#2-superfície), [P-8](../produto/perguntas-em-aberto.md)).
 - **Cache do Data Dragon não expira.** Sem rede ele carrega o último patch

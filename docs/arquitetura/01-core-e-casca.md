@@ -9,7 +9,7 @@ core/src/                    presage-core — sem Tauri, sem rede, sem disco
   draft.rs                   LCU cru            ->  DraftState
   live.rs                    Live Client cru    ->  LiveGame
   history.rs                 match-v5 crua      ->  PlayedGame, LaneGame
-  lockfile.rs                credenciais do cliente (lockfile e linha de comando)
+  lockfile.rs                credenciais do cliente: lockfile (a linha de comando, sem uso)
   pool.rs                    pool do jogador, por rota e tier
   prefs.rs                   o que o jogador quer ver no overlay
   riot.rs                    endereçamento da Riot API (região, Riot ID)
@@ -27,7 +27,9 @@ core/src/                    presage-core — sem Tauri, sem rede, sem disco
   engine/context.rs          a leitura do champ select: rota, candidatos, inimigo inferido
   engine/roles.rs            quem joga cada rota
   engine/report.rs           a análise de rota inteira, do draft e da partida
+  engine/team.rs             a chance do time, com os dez campeões, em log-odds
   engine/wincon.rs           condição de vitória: composição por regra, duelos por atributos
+  engine/rival.rs            você contra o oponente direto, durante a partida
   engine/minimax.rs          draft com resposta e sugestão de ban
   engine/poolgap.rs          retrato dos core e os cinco que completam a pool
   engine/stats.rs            shrinkage, referência, StatsStore, PersonalStats
@@ -36,26 +38,26 @@ core/src/                    presage-core — sem Tauri, sem rede, sem disco
   engine/mod.rs              rank(): junta tudo e propaga incerteza
 
 src-tauri/src/               a casca
-  lcu/credentials.rs         acha o cliente (linha de comando, depois lockfile)
-  lcu/client.rs              HTTP com Basic Auth sobre o TLS autoassinado
+  lcu/credentials.rs         acha o lockfile: pastas conhecidas, configuração da Riot, executável
+  lcu/client.rs              HTTP com Basic Auth sobre o TLS autoassinado, só GET
   live.rs                    Live Client Data API, 127.0.0.1:2999
   riot.rs                    Riot Web API, chave vinda do ambiente
   profile.rs                 histórico pessoal, incremental e cacheado
   ddragon.rs                 campeões, itens e runas, com cache em disco
-  analysis.rs                lê a partida e chama engine::report
+  analysis.rs                escolhe a fonte (partida ou draft) e chama engine::report
   recorder.rs                grava a partida e dispara a leitura no fim
   overlay.rs                 a janela do overlay e os atalhos
-  watcher.rs                 polling adaptativo, emite eventos
+  watcher.rs                 polling adaptativo, o estado compartilhado, emite eventos
   storage.rs                 JSON em %LOCALAPPDATA%\Presage
-  lib.rs                     comandos expostos ao front
+  lib.rs                     os comandos, a bandeja, o autostart e a subida do app
+  main.rs                    só chama lib::run
 
 src/                         React
-  lib/ddragon.ts             ícones e nomes
-  lib/types.ts               os tipos que a casca devolve, espelhados
-  components/                DraftBoard, RecommendationPanel, LiveBuild,
-                             LaneAnalysis, CurvaDeNivel, CondicaoDeVitoria,
-                             GoldTracker, PostGame, PerfilDeRota,
-                             Runas, PoolBuilder, OverlayPrefsPanel, ConnectionStatus
+  App.tsx                    a janela principal: todos os invoke e listen dela
+  overlay.tsx                a janela do overlay: os invoke e listen dela
+  lib/ddragon.ts             ícones e nomes, baixados direto do Data Dragon
+  lib/types.ts               os tipos que a casca devolve, espelhados à mão
+  components/                as telas, puramente visuais
   demo.tsx                   a interface com dados de exemplo, sem Tauri
 
 tools/ingest/src/            o coletor — binário à parte, fora do instalador
@@ -64,6 +66,9 @@ tools/ingest/src/            o coletor — binário à parte, fora do instalador
   api.rs                     cliente com dois limites, 429 e retentativa
   main.rs                    CLI, semeadura, retomada e cobertura
 ```
+
+Os componentes de `src/components/` e o que cada tela mostra estão em
+[frontend 02](../frontend/02-telas-e-fluxos.md).
 
 A separação não é cosmética: `cargo test -p presage-core` roda em segundos e
 funciona numa máquina sem MSVC — e numa Linux sem WebKitGTK — porque o core não
@@ -83,12 +88,24 @@ função só** entre eles.
 
 Todos os tipos crus são `#[serde(default)]`: campo que falta derruba a métrica
 ou a regra de negócio, não a desserialização. O preço é que um nome errado não
-dá erro ([P-5](../produto/perguntas-em-aberto.md)), e por isso cada fronteira
-tem um teste com o JSON de verdade.
+dá erro ([P-5](../produto/perguntas-em-aberto.md)), e por isso a fronteira precisa
+de um teste que leia JSON com os nomes de fora. Hoje só parte delas tem:
 
-O coletor tem os próprios tipos crus da match-v5 em `aggregate.rs`, com as mesmas
-regras de descarte que `history::played`. São duas cópias da mesma leitura —
-unificar é trabalho a fazer, e até lá as duas precisam mudar juntas.
+| Fronteira | Teste com JSON |
+|---|---|
+| match-v5 (`history::played`) | sim, com JSON escrito à mão a partir da documentação (`le_os_nomes_de_campo_da_riot`); `jungleCsBefore10Minutes` fica de fora dele |
+| grade do champ select, sessão do fluxo de jogo | sim (`na_ranqueada_a_rotacao_gratis_nao_vale`, `a_fila_sai_da_sessao_do_fluxo_de_jogo`) |
+| sessão do champ select (`LcuSession`, `LcuAction`, `LcuPlayer`) | **não**: os testes montam as structs em Rust |
+| Live Client (`RawPlayer`, `RawItem`, `RawScores`, `RawEvent`) | **não**: idem, e `itemID` é o caso em que `camelCase` não basta |
+
+A falta está no `build/audit.md` (A19).
+
+O coletor tem os próprios tipos crus da match-v5 em `aggregate.rs`. Quatro regras
+de descarte são as de `history::played` escritas de novo (modo, terminada,
+remake, curta); o coletor tem mais cinco, e a rota em branco tem tratamento
+oposto nos dois ([05 §5](05-coletor.md#5-a-duplicação-com-historyrs)). São duas
+cópias da mesma leitura — unificar é trabalho a fazer, e até lá as duas precisam
+mudar juntas.
 
 ## 3. A casca
 
@@ -105,57 +122,31 @@ unificar é trabalho a fazer, e até lá as duas precisam mudar juntas.
 
 ### Comandos
 
-Os que o front chama por `invoke` (`lib.rs`, `generate_handler!`):
-
-| Comando | Devolve |
-|---|---|
-| `get_snapshot` | estado da conexão e o draft atual |
-| `engine_status` | se o motor está pronto, patch, se há base global e histórico pessoal |
-| `lane_profile` | o perfil de rota, ou `None` |
-| `rank_draft`, `minimax_draft`, `ban_suggestions` | o draft ([02](02-motor-de-draft.md)) |
-| `set_draft_role` | a rota escolhida na tela, para blind e normal |
-| `set_enemy_role`, `get_enemy_roles` | a rota marcada à mão em cada inimigo |
-| `set_simulated_draft` | o draft do simulador; `None` volta para o cliente |
-| `get_draft_prefs`, `set_draft_prefs` | incluir quem a conta não pode escolher |
-| `get_autostart`, `set_autostart` | iniciar com o Windows (desligado até o jogador ligar) |
-| `get_pool`, `set_pool`, `pool_suggestions` | a pool |
-| `lane_analysis(candidate)` | rotas, escaramuças e condição de vitória; com `candidate`, a prévia do draft com ele no seu lugar |
-| `get_live`, `build_suggestions`, `skirmish_focus`, `gold_report` | a partida ([03](03-motor-da-partida.md)) |
-| `rune_plan` | runas do confronto |
-| `last_review` | a última leitura pós-partida |
-| `get_overlay_prefs`, `set_overlay_prefs` | o que aparece no overlay |
+A interface chama 26 comandos por `invoke`, todos registrados em
+`generate_handler!` (`lib.rs`). Argumentos, retorno, erros e quem chama cada um
+estão no [contrato da casca](12-contrato-da-casca.md#2-comandos).
 
 ### Eventos
 
-| Evento | Quando |
-|---|---|
-| `presage://status` | a conexão com o cliente mudou |
-| `presage://draft` | o champ select mudou |
-| `presage://engine` | campeões carregados, ou o histórico pessoal terminou de atualizar — o front relê `lane_profile` aqui |
-| `presage://live` | a partida mudou |
-| `presage://review` | a leitura pós-partida ficou pronta; o front traz a aba para a frente |
-| `presage://prefs` | as preferências do overlay mudaram |
+A casca empurra seis eventos `presage://…`, quase todos do `watcher.rs`. A carga,
+o momento e quem ouve cada um estão no
+[contrato da casca](12-contrato-da-casca.md#3-eventos).
 
 ### O que fica em disco
 
-Tudo em `%LOCALAPPDATA%\Presage` (`storage.rs`):
-
-| Arquivo | O quê |
-|---|---|
-| `pool.json` | a pool |
-| `overlay.json` | preferências do overlay |
-| `draft.json` | preferências do draft |
-| `personal-v2.json` | histórico pessoal: vitórias por campeão e comparação de rota por partida ([04 §7](04-perfil-de-rota.md#7-o-cache)) |
-| `base-de-partidas.json` | a base agregada, quando alguém a coloca ali ([05](05-coletor.md)) |
-| `gravacao.json`, `ultima-partida.json` | a gravação da partida e a leitura dela |
-| `champions.json`, `items.json`, `runas.json` | cache do Data Dragon, que não expira ([00 §6](00-contexto-e-limites.md#6-limites-conhecidos)) |
+Tudo em `%LOCALAPPDATA%\Presage` (`storage.rs`). Os arquivos, quem escreve e quem
+lê cada um estão no [contrato da casca](12-contrato-da-casca.md#6-disco).
 
 ## 4. O front
 
-Os componentes são puramente visuais — nenhum fala com o Tauri; `App.tsx` faz os
-`invoke` e passa os dados. Por isso `demo.tsx` renderiza todos com dados de
-exemplo, sem cliente nem casca ([08 §2](08-desenvolvimento-e-testes.md#2-olhar-a-interface-sem-o-cliente)).
+Só `App.tsx` e `overlay.tsx` falam com a casca: fazem os `invoke`, ouvem os eventos
+e passam os dados aos componentes. Os componentes são visuais. A exceção é
+`Atualizacao.tsx`, que fala com o plugin do atualizador, não com um comando nosso.
+Por isso `demo.tsx` renderiza os componentes com dados de exemplo, sem cliente nem
+casca ([08 §2](08-desenvolvimento-e-testes.md#2-olhar-a-interface-sem-o-cliente)).
 
 `lib/types.ts` espelha à mão os tipos que a casca serializa (`camelCase`). Mudar
 um tipo no Rust sem mudar aqui não quebra a compilação de nenhum dos dois lados:
-quebra em tempo de execução.
+quebra em tempo de execução. Quem pega a divergência é o `doccheck`, nos tipos
+que o modelo de dados marca com `↔`. Os nomes que mudam de um lado para o outro
+estão no [contrato da casca](12-contrato-da-casca.md#4-nomes-de-um-lado-e-do-outro).

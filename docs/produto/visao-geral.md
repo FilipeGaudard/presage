@@ -55,7 +55,7 @@ resposta honesta é que eles **não têm todos a mesma qualidade**.
 | O que aparece | De onde sai | Confiança |
 |---|---|---|
 | Ouro em itens, CS, nível, mortes, timers | medição direta da partida | **exata** |
-| Valor de item por 1000 de ouro | fórmulas de resistência e penetração do jogo | **alta na ordem**, índice no valor |
+| Valor de item por 1000 de ouro | fórmulas de resistência e penetração do jogo | **alta na ordem** entre itens do mesmo tipo de dano, índice no valor; entre AD e AP, **fraca** (pesam um para um) |
 | Divisão do dano que vem (`81% físico`) | itens que eles compraram | alta depois dos primeiros itens |
 | A mesma, antes de eles comprarem | prior de classe escrito à mão | **fraca** |
 | Chance por rota e escaramuça | razão de poder de combate × peso escolhido à mão | **fraca como probabilidade** |
@@ -70,7 +70,9 @@ resposta honesta é que eles **não têm todos a mesma qualidade**.
 ### O que é medição
 
 `gold.rs` soma o preço de cada item no inventário dos dez. Isso é exato, não
-estimativa — o preço vem do Data Dragon e o inventário vem da API oficial. CS,
+estimativa — a Live Client manda o preço de cada item junto com o inventário
+(`RawItem::price`); o preço do Data Dragon (`Item::cost`) só serve à build e ao
+pós-jogo. CS,
 nível, abates e mortes idem. A leitura pós-partida é construída inteira sobre
 esses números, e por isso é a parte mais confiável do produto.
 
@@ -89,8 +91,11 @@ muda 47 para 53.
 
 A ressalva: `offense_against` é um **proxy** de saída de dano — `AD × mult +
 AP × mult`. Não simula rotações de habilidade, velocidade de ataque, crítico nem
-cooldown. Por isso a *ordem* dos itens é confiável e o `6.8` é um índice
-relativo, não um ganho medido de DPS.
+cooldown. Por isso a *ordem* dos itens é confiável entre itens do mesmo tipo de
+dano, e o `6.8` é um índice relativo, não um ganho medido de DPS. Entre um item
+de AD e um de AP a ordem não é confiável: o proxy soma os dois um para um, sem
+saber com o que o campeão bate, e um item de AP pode ir ao topo para um campeão
+de AD (defeito A4 em `build/audit.md`).
 
 ### O que é regra escrita à mão
 
@@ -108,10 +113,12 @@ Nenhum número inventado entra no lugar.
 
 ### O ponto fraco a corrigir primeiro
 
-A chance por rota é `0,5 + 0,60 × (duelo − 0,5) + matchup`. Hoje o termo de
-matchup é zero, e o `0,60` é um peso que foi escolhido, não ajustado contra dado
-nenhum. Então aquele `47%` é uma comparação de poder de combate vestida de
-probabilidade. Ela ordena bem — quem está à frente aparece à frente — mas o
+A chance por rota é `0,5 + 0,60 × (duelo − 0,5) + (estimativa − 0,5)`, onde a
+estimativa é a força dos dois na rota mais o matchup, pela base
+([03 §4](../arquitetura/03-motor-da-partida.md#4-chance-por-rota-e-escaramuça)).
+Hoje, sem base, esse termo é zero, e o `0,60` é um peso que foi escolhido, não
+ajustado contra dado nenhum. Então aquele `47%` é uma comparação de poder de
+combate vestida de probabilidade. Ela ordena bem — quem está à frente aparece à frente — mas o
 número em si não é uma frequência de vitória, e só vira uma quando a base de
 partidas entrar na conta ([P-7](perguntas-em-aberto.md)).
 
@@ -140,6 +147,12 @@ Com a base de partidas, winrate base, matchup e sinergia.
 | 2 | Overlay e o resto da casca | feita (0.7.0) |
 | 3 | Referência e força do shrinkage ([ADR-0008](../adr/0008-matchup-e-sinergia-contra-a-soma-das-forcas.md), [ADR-0009](../adr/0009-forca-do-shrinkage-derivada-do-desvio.md)) | feita |
 | 4 | Perfil de rota ([04](../arquitetura/04-perfil-de-rota.md)) | feita; compila no Windows, nomes de campo não conferidos ([P-5](perguntas-em-aberto.md)) |
+| 4a | Draft pela sua rota, com uma leitura só do champ select ([ADR-0017](../adr/0017-uma-leitura-do-champ-select.md)); pool de três mais cinco por cobertura ([ADR-0016](../adr/0016-pool-de-oito-tres-escolhidos-cinco-por-cobertura.md)) | feita, sem versão publicada (branch `feat/draft-analise`) |
+| 4b | Prévia do candidato: curva do nível 1 ao 18, 2v2 e 3v3, condição de vitória ([ADR-0018](../adr/0018-o-que-a-condicao-de-vitoria-pode-afirmar.md)) | feita, sem versão publicada |
+| 4c | Ranking em log-odds, contra o time inimigo inteiro, chance do time e fase do jogo pela base ([ADR-0019](../adr/0019-contra-em-qualquer-rota-e-chance-do-time.md)) | código feito; os números esperam a base |
+| 4d | Pós-jogo cobrado pela rota ([L-27](../arquitetura/09-licoes-do-prototipo.md)) | feita, sem versão publicada |
+| 4e | Lacunas G-1 a G-8 frente ao iTero ([cruzamento](../referencia/itero/07-cruzamento.md)): rota do inimigo à mão, só campeões da conta, lista de bans, simulador, inibidor e torre do nexo, buffs, você contra o oponente direto, iniciar com o Windows ([ADR-0023](../adr/0023-o-simulador-passa-por-cima-do-cliente.md) a [ADR-0026](../adr/0026-lcu-so-leitura-e-autostart-desligado.md)) | feita, sem versão publicada |
+| 4f | Docs como contrato, provados pelo `doccheck` ([ADR-0020](../adr/0020-o-doc-e-o-contrato-e-o-doccheck-prova.md)) | feita |
 | 5 | Coletor com chave Personal e o teste do limite por região | espera chave ([P-1](perguntas-em-aberto.md), [P-6](perguntas-em-aberto.md)) |
 | 6 | Chave de produção, perguntando à Riot sobre o overlay no mesmo pedido | espera produto rodando ([P-2](perguntas-em-aberto.md)) |
 | 7 | Com a base: variância de matchup (destrava exposição a counter-pick de verdade), ban personalizado por pool, detector de fraqueza pessoal | — |
@@ -147,3 +160,51 @@ Com a base de partidas, winrate base, matchup e sinergia.
 A ordem não é arbitrária. As etapas 1 e 2 são o diferencial e não precisam de
 chave; a chave de produção leva de duas semanas a mais de um mês para sair e
 exige produto funcionando; e a base só existe depois dela.
+
+## 5. Quem usa
+
+| Persona | Momento | O que quer do Presage |
+|---|---|---|
+| **Jogador de ranqueada solo** — o alvo | draft, partida, pós-jogo | escolher bem para a própria rota, adaptar a build ao que o inimigo comprou, e saber depois o que custou a partida, sem ninguém decidindo por ele |
+| **Jogador de uma rota montando pool** | fora da partida | três campeões que ele já joga, e quem cobre o que os três não cobrem |
+| **Quem roda o coletor** — o dono do produto | antes de distribuir | uma base de partidas por patch para acender winrate, matchup, contra e sinergia ([05](../arquitetura/05-coletor.md)) |
+
+O Presage não tem conta, servidor nem perfil público. A persona não se cadastra:
+instala, abre o League, e o app acorda sozinho no champ select.
+
+## 6. O fluxo principal
+
+```text
+abre o cliente ──▶ o Presage acha o lockfile e lê o LCU (só leitura)
+   │
+champ select ──▶ sua rota resolvida ──▶ ranking da rota, resposta adversária, bans
+   │               └─ clica num candidato ──▶ prévia: rota nível a nível, 2v2/3v3, condição de vitória
+   │
+partida ──▶ Live Client a cada segundo ──▶ build adaptativa, você contra o oponente direto,
+   │                                       ouro dos dez, timers, prioridade, overlay
+   │
+fim ──▶ gravação local lida ──▶ pós-jogo: o que foi bem e o que foi mal, pela sua rota
+                └─ com a chave da Riot ──▶ perfil de rota atualizado
+```
+
+O passo a passo, com o código de cada etapa, está em
+[14](../arquitetura/14-uma-partida-passo-a-passo.md).
+
+## 7. Como medimos
+
+O Presage não manda nada para fora da máquina (RNF-8). Isso inclui telemetria, e
+por isso nenhuma métrica de uso (retenção, aba mais aberta, quanto o conselho é
+seguido) pode ser medida pelo próprio app. O que se mede são os alvos que o
+código consegue provar:
+
+| Métrica | Alvo | Como se prova |
+|---|---|---|
+| Atraso entre a mudança no champ select e a lista nova | uma leitura: 350 ms (RNF-4) | ritmo do `watcher.rs` ([12](../arquitetura/12-contrato-da-casca.md)) |
+| Componente estatístico sem amostra | exatamente zero (RNF-1) | testes do catálogo ([13](../arquitetura/13-testes.md)) |
+| Número na tela sem etiqueta de origem | nenhum | [frontend 00](../frontend/00-visao-e-escopo.md) |
+| Ação no cliente que o jogador não fez | nenhuma ([ADR-0026](../adr/0026-lcu-so-leitura-e-autostart-desligado.md)) | `lcu/client.rs` só faz `GET` |
+| Item público do código sem doc | nenhum | `npm run doccheck -- -strict` |
+| Tempo dos testes do core | segundos, sem MSVC (RNF-9) | `cargo test -p presage-core` |
+
+Métrica de uso, se um dia existir, entra pela pergunta de quem pode recebê-la, e
+não por um `fetch` escondido.

@@ -4,7 +4,8 @@
 Lê o bundle extraído (o diretório com `dist/` e `dist-electron/`), tira dele as
 listas que a documentação promete cobrir, e falha se algum item não aparece nos
 `.md` desta pasta. Também confere o cruzamento: todo `I-n` do catálogo aparece
-uma vez no cruzamento, e a contagem por situação bate com a tabela.
+uma vez no cruzamento, com uma decisão entre copiar, mudar, rejeitar, adiar e
+fora e uma nota, e as contagens por situação e por decisão batem com as tabelas.
 
 Uso, sem executar nada do bundle:
 
@@ -100,27 +101,78 @@ def eventos_ao_vivo(raiz):
     return sorted(casos)
 
 
+DECISOES = ("copiar", "mudar", "rejeitar", "adiar", "fora")
+
+
+def tabelas(texto):
+    """Cada tabela do markdown como (cabeçalho, linhas), com as células aparadas."""
+    def celulas(linha):
+        return [c.strip() for c in linha.strip().strip("|").split("|")]
+
+    linhas = texto.splitlines()
+    saida = []
+    i = 0
+    while i < len(linhas):
+        if linhas[i].startswith("|") and i + 1 < len(linhas) and re.match(r"^\|[-| ]+\|$", linhas[i + 1]):
+            cabecalho, corpo = celulas(linhas[i]), []
+            i += 2
+            while i < len(linhas) and linhas[i].startswith("|"):
+                corpo.append(celulas(linhas[i]))
+                i += 1
+            saida.append((cabecalho, corpo))
+        else:
+            i += 1
+    return saida
+
+
+def principal(celula):
+    """A primeira palavra da célula, antes do `·`: a situação ou a decisão."""
+    return celula.replace("*", "").split(" · ")[0].strip()
+
+
 def conferir_cruzamento(docs):
     catalogo = set(re.findall(r"^\| (I-\d+) \|", docs["05-funcionalidades.md"], re.M))
     cruz = docs["07-cruzamento.md"]
-    linhas = re.findall(r"^\| (I-\d+) \| [^|]+\| ([^|]+)\|", cruz, re.M)
-    vistos = [i for i, _ in linhas]
     erros = []
+    linhas = []
+    contagens = {}
+    for cabecalho, corpo in tabelas(cruz):
+        if cabecalho[:1] == ["Id"]:
+            if "Decisão" not in cabecalho:
+                erros.append(f"tabela sem a coluna Decisão: {' | '.join(cabecalho)}")
+            linhas += [dict(zip(cabecalho, c)) for c in corpo]
+        elif cabecalho[1:2] == ["Quantas"]:
+            contagens[cabecalho[0]] = {c[0]: [int(n) for n in c[1:]] for c in corpo}
+
+    vistos = [l.get("Id", "") for l in linhas]
     faltam = sorted(catalogo - set(vistos), key=lambda x: int(x[2:]))
     repetidos = sorted({i for i in vistos if vistos.count(i) > 1})
     if faltam:
         erros.append(f"no catálogo e fora do cruzamento: {', '.join(faltam)}")
     if repetidos:
         erros.append(f"repetidos no cruzamento: {', '.join(repetidos)}")
-    contagem = {}
-    for _, situacao in linhas:
-        principal = situacao.replace("*", "").strip().split(" · ")[0].strip()
-        contagem[principal] = contagem.get(principal, 0) + 1
-    tabela = dict(re.findall(r"^\| (tem|parcial|sem dado|falta|regra|decisão|sem fonte|fora|—) \| (\d+) \|", cruz, re.M))
-    for situacao, n in contagem.items():
-        if int(tabela.get(situacao, -1)) != n:
-            erros.append(f"contagem de '{situacao}': tabela diz {tabela.get(situacao)}, linhas dão {n}")
-    return len(catalogo), contagem, erros
+
+    situacoes, decisoes = {}, {}
+    for l in linhas:
+        s, d = principal(l.get("Presage", "")), principal(l.get("Decisão", ""))
+        situacoes[s] = situacoes.get(s, 0) + 1
+        if d not in DECISOES:
+            erros.append(f"{l['Id']}: decisão '{d}' fora de {'/'.join(DECISOES)}")
+        n = decisoes.setdefault(d, [0, 0])
+        n[0] += 1
+        n[1] += "a revisar" in l.get("Decisão", "")
+        if not l.get("Nota", "").strip():
+            erros.append(f"{l['Id']}: sem nota")
+
+    for nome, achado in (("Situação", {s: [n] for s, n in situacoes.items()}), ("Decisão", decisoes)):
+        tabela = contagens.get(nome)
+        if tabela is None:
+            erros.append(f"falta a tabela de contagem por {nome.lower()}")
+            continue
+        for chave in sorted(set(tabela) | set(achado)):
+            if tabela.get(chave) != achado.get(chave):
+                erros.append(f"contagem de '{chave}': tabela diz {tabela.get(chave)}, linhas dão {achado.get(chave)}")
+    return len(catalogo), situacoes, decisoes, erros
 
 
 def main():
@@ -155,8 +207,11 @@ def main():
             print(f"        - {i}")
         falhou |= bool(faltando) or not itens
 
-    total, contagem, erros = conferir_cruzamento(docs)
-    print(f"{'ok' if not erros else 'FALTA':5} cruzamento: {total} funcionalidades, {sum(contagem.values())} linhas, {contagem}")
+    total, situacoes, decisoes, erros = conferir_cruzamento(docs)
+    por_decisao = {d: n for d, (n, _) in decisoes.items()}
+    revisar = sum(r for _, r in decisoes.values())
+    print(f"{'ok' if not erros else 'FALTA':5} cruzamento: {total} funcionalidades, {sum(situacoes.values())} linhas, {situacoes}")
+    print(f"{'ok' if not erros else 'FALTA':5} decisões: {por_decisao}, {revisar} a revisar")
     for e in erros:
         print(f"        - {e}")
     falhou |= bool(erros)

@@ -17,7 +17,9 @@ src-tauri/       a casca: LCU, Live Client, Riot Web API, Data Dragon, disco
 src/             a interface em React; demo.tsx a mostra com dados de exemplo
 tools/ingest/    o coletor que produz a base de partidas, fora do instalador
 scripts/         entrega, manifesto do atualizador, toolchain sem admin
-docs/            produto, arquitetura, decisões (adr/), perguntas em aberto
+tools/doccheck/  prova que os docs e o código concordam (ADR-0020)
+docs/            produto, arquitetura, frontend, decisões (adr/), perguntas em aberto
+build/           recibos: o ledger do doccheck, a auditoria, as lacunas
 ```
 
 ## Rodando
@@ -33,6 +35,7 @@ sozinho quando um champ select começa.
 ```powershell
 cargo test -p presage-core      # o motor, em segundos, em qualquer máquina
 npm run dev                     # http://localhost:1420/demo.html, sem cliente nem Tauri
+npm run doccheck -- -strict     # docs e código concordam (só Node; roda no WSL também)
 ```
 
 Sem MSVC, ou sem administrador para instalá-lo: [toolchain sem admin](docs/arquitetura/08-desenvolvimento-e-testes.md#toolchain-sem-admin).
@@ -71,5 +74,9 @@ permanente: [06 — Distribuição e atualizador](docs/arquitetura/06-distribuic
 | Mexer no perfil de rota | [04](docs/arquitetura/04-perfil-de-rota.md) e as ADRs 0010–0012 |
 | Saber por que algo é do jeito que é | [adr/](docs/adr/) |
 | Saber o que ainda está em aberto | [perguntas em aberto](docs/produto/perguntas-em-aberto.md) |
+| Achar um tipo, uma função, um comando ou um teste | [10](docs/arquitetura/10-modelo-de-dados.md), [11](docs/arquitetura/11-catalogo-de-funcoes.md), [12](docs/arquitetura/12-contrato-da-casca.md), [13](docs/arquitetura/13-testes.md) |
+| Seguir uma partida inteira pelo código | [14](docs/arquitetura/14-uma-partida-passo-a-passo.md) |
+| Mexer na interface | [frontend/](docs/frontend/00-visao-e-escopo.md) |
+| Saber o que o iTero faz e o que decidimos | [cruzamento](docs/referencia/itero/07-cruzamento.md) |
 
 Doc e código andam no mesmo commit, e um fato vive num lugar só.

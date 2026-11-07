@@ -7,7 +7,8 @@
 ## Contexto
 
 - Três dos cinco componentes do ranking dependem de uma base que ainda não
-  existe.
+  existe. (Nota de 2026-11-07: desde a [ADR-0019](0019-contra-em-qualquer-rota-e-chance-do-time.md)
+  são quatro de seis, com o contra; a decisão vale igual para os quatro.)
 - Ferramentas do gênero mostram número sem dizer de onde. Um número inventado com
   cara de medida é pior que silêncio.
 

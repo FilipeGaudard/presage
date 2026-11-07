@@ -49,8 +49,12 @@ Uma métrica só entra numa partida se os **dois lados** a têm. Sem `challenges
 
 ### Os cortes
 
-Os mesmos do coletor, e valem também para vitória e derrota (`Skip`): fora da
-Fenda, terminada por erro, remake, menos de cinco minutos, jogador ausente. Uma
+Quatro dos cortes do coletor, e valem também para vitória e derrota (`Skip`):
+fora da Fenda, terminada por erro, remake, menos de cinco minutos; mais jogador
+ausente, que só existe aqui. Os outros cinco do coletor (fila, partida
+incompleta, rota em branco, rota repetida, patch) não se aplicam a uma partida
+sua, e a rota em branco tem tratamento oposto: aqui a vitória conta sem
+comparação de rota ([05 §5](05-coletor.md#5-a-duplicação-com-historyrs)). Uma
 conta que soma remake mede a taxa de remake.
 
 ## 4. Três níveis

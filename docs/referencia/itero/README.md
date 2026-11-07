@@ -17,9 +17,9 @@ que construir; não é especificação a seguir.
 | [02 — Janelas](02-janelas.md) | as 16 janelas: tipo, tamanho, quando abrem, o que mostram |
 | [03 — IPC e ponte](03-ipc-e-ponte.md) | o que o preload expõe, todos os canais, as stores por IPC |
 | [04 — Telas da janela principal](04-telas-da-janela-principal.md) | as 39 rotas e cada tela |
-| [05 — Funcionalidades](05-funcionalidades.md) | catálogo `I-1`…`I-65` e o scouting de jogadores |
+| [05 — Funcionalidades](05-funcionalidades.md) | catálogo `I-1`…`I-83` e o scouting de jogadores |
 | [06 — Dados e backend](06-dados-e-backend.md) | fontes, endpoints e corpos, esquemas, LCU, Firestore, o que fica na máquina |
-| [07 — Cruzamento](07-cruzamento.md) | cada funcionalidade contra o Presage, e as lacunas que cabem, por valor |
+| [07 — Cruzamento](07-cruzamento.md) | cada funcionalidade contra o Presage, com a decisão (copiar, mudar, rejeitar, adiar, fora); as lacunas que cabem, por valor; e o que o Presage tem e o iTero não |
 
 ## Método
 
@@ -46,13 +46,14 @@ distribuição, o token público da loja, e qualquer chave. Os números citados
 
 `conferir.py` tira do bundle as listas que estes docs prometem cobrir e falha se
 algum item não aparece nos `.md`; também confere que todo `I-n` do catálogo
-aparece uma vez no cruzamento e que a contagem por situação bate.
+aparece uma vez no cruzamento, com decisão e nota, e que as contagens por
+situação e por decisão batem.
 
 ```
 python3 -I docs/referencia/itero/conferir.py <diretório-extraído>
 ```
 
-Resultado em 2026-10-28:
+Resultado em 2026-11-07 (as listas do bundle são as mesmas de 2026-10-28):
 
 | Lista | Itens |
 |---|---|
@@ -68,10 +69,12 @@ Resultado em 2026-10-28:
 | configurações do usuário | 53/53 |
 | chaves da store `config` | 44/44 |
 | eventos ao vivo tratados | 33/33 |
-| cruzamento | 65 funcionalidades, 65 linhas |
+| cruzamento | 83 funcionalidades, 83 linhas, 83 decisões (38 a revisar) |
 
 Um teste de mutação (apagar uma janela, um endpoint e uma linha do cruzamento
-numa cópia) fez as três listas falharem.
+numa cópia) fez as três listas falharem. Em 2026-11-07, outro, também numa cópia:
+trocar uma decisão por uma palavra fora da lista, apagar uma nota, errar uma
+contagem e tirar a coluna Decisão de uma tabela; os quatro falharam.
 
 O que o script **não** prova: que a descrição de cada item está certa. Isso
 depende da leitura, e as citações `main.js:<linha>` e `<chunk>.js` existem para

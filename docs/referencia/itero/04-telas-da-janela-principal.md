@@ -80,10 +80,24 @@ pela pool** (compara você com outros jogadores do mesmo campeão), comparadas a
 
 ## 3. Perfil
 
+### Busca de jogador
+
+As três páginas do perfil (histórico, estatísticas da conta, estatísticas por
+campeão) abrem com o mesmo campo: nome, tag e região (`CY4gTeAD.js`). "Search"
+troca a conta da página inteira por qualquer outra, pela `lake-basic-info`
+(`update_type: "ALL"`, `itero_plus: false`); "Reset" volta para a sua. A conta
+buscada fica no estado da janela (`playerSearchGameName`, `…TagLine`,
+`…Region`) e vale para as três páginas. O cliente não confere assinatura para
+buscar; se o servidor tem dados da conta buscada não aparece no cliente.
+"Criar dados de qualquer conta", adicionando-a ao leaderboard, é do assinante
+(§7).
+
 ### Histórico (`/profile/match-history/`)
 
-Últimas partidas com filtro por fila, rota e campeão, "Last 10 Games" (winrate),
-**Refresh**. Paginação limitada no servidor (`match_history_window`).
+Últimas partidas com filtro por fila (padrão 420), rota e campeão, "Last 10
+Games" (winrate), **Refresh**. Rolagem infinita até o teto de páginas do
+servidor (`match_history_window`); bater no teto vira um evento de telemetria
+`api.pagination_limit_reached.*` ([06 §6](06-dados-e-backend.md#6-telemetria-e-anúncios)).
 
 ### Detalhe da partida (`/profile/match-history/$matchId/`)
 
@@ -100,12 +114,27 @@ Abas **Summary**, **Macro Coach**, **Draft**, **Statistics**:
   seis estatísticas configuráveis por rota — padrão do suporte com visão e
   sentinelas, [01 §8](01-processo-principal.md#8-configurações-do-usuário-settings));
   linha do tempo de objetivos (Void Grubs, Herald, Dragon, Baron) dos dois
-  times; comparação com o oponente.
+  times.
+- **Comparação** no gráfico minuto a minuto (`BUEq32Eu.js`): quatro modos —
+  **vs Lane Opponent**, **vs Enemy Avg**, **Team vs Team** e **All Players**
+  (padrão) — e a estatística do gráfico: **Gold** (padrão), **XP**, **Damage
+  done**, **Damage taken**. Em All Players cada jogador é marcável e o minuto sob
+  o mouse fica guardado; nos outros modos o gráfico é a diferença, com sinal.
+  Filtros da tabela: faixa de tempo, tipo de estatística e busca.
 
 ### Estatísticas da conta (`/profile/account-statistics/`)
 
 Visões **Simplified** (gráficos) e **Detailed** (tabela com busca), por fila e
-rota, com aviso de amostra baixa (mínimo 5 partidas):
+rota, com aviso de amostra baixa (mínimo 5 partidas). Na Detailed, quatro
+filtros (`DF5z8Cgx.js`, opções em `D7PBoM77.js`):
+
+- **faixa de tempo**: tudo, 0–7, 7–14, 14–21, 21–28 e 28+ min;
+- **estado da partida**: Overall, **Ahead**, **Even**, **Behind** — desligado
+  com a faixa "tudo", que volta o estado para Overall;
+- **tipo de estatística**: todos, Resource, Combat, Objective, Vision;
+- **busca** pelo nome da estatística.
+
+O conteúdo:
 
 - grupos: Resource (Lane CS, XP, Jungle CS, Gold), Combat (participação total,
   KDA, dano feito e recebido, first bloods, invasões nível 1, participação antes
@@ -132,6 +161,17 @@ Oracle"/"Blind", "Bullied by Top", "The Duelist" etc. (37 estatísticas).
 Por campeão: partidas, **meu winrate** contra o **winrate da comunidade**,
 maestria, **Draft Score** médio (com "Consider Mastery"), "Top 3 Most Played",
 marca "4 or Less Games".
+
+**Winrate por AI Draft Score** (`D7TV8dtA.js`): tabela e gráfico de barras com
+cinco faixas da nota de draft de cada partida (0–1 … 4–5), com partidas, o seu
+winrate e um "Community Win Rate". Filtros: campeões, período (**All Time**,
+**Last 7 days**, **Last 14 days**, **Last 30 days**) e "Consider Mastery" (usa
+`draft_rating` ou `draft_rating_excl_mastery`). Duas coisas que a tela não diz:
+
+- o winrate da comunidade é **constante no cliente** — 40,6%, 47,9%, 51,1%,
+  53,9% e 58,8% por faixa —, igual para todo jogador, campeão, rota e elo;
+- nota inteira sobe de faixa (2,0 conta em 2–3) e nota zero ou ausente fica de
+  fora.
 
 ## 4. AI Macro Coach (`/ai-coach/`)
 
@@ -194,7 +234,8 @@ combinam (`api.itero.gg/champ_quiz`).
 ## 7. Premium (`/premium/`)
 
 iTero Plus (padrão USD 7,99, preço regional do backend; pagamento Tebex):
-remove anúncios, **AI Macro Coach em toda partida**, análise na frente da fila,
+remove anúncios, **AI Macro Coach em toda partida**, análise na frente da fila
+("FastTrack Game Analysis"),
 **análise contínua do draft** (recomendação refeita a cada fase, não só na sua
 vez), cargo no Discord, criar dados de **qualquer** conta (pelo leaderboard),
 customização do modelo, maestria agregada, suporte a personalizada. **Teste de 7
@@ -204,8 +245,8 @@ dias** sem cartão; ao terminar, cupom de 50%.
 
 | Página | Itens |
 |---|---|
-| General | abrir com o Windows, aceleração por hardware, verificar atualização, abrir logs, reiniciar, **Danger Zone**: limpar cache e reiniciar, desinstalar, restaurar padrões |
-| Screens | janela principal (abrir com o League, esconder durante a partida), draft (abrir no champ select, tamanho), in-game (abrir na partida, aba padrão, atalhos Alt+I/Alt+O) |
+| General | abrir com o Windows, aceleração por hardware (lida no boot: desligada, o app chama `disableHardwareAcceleration` e vale depois de reiniciar, `main.js:38584`), verificar atualização, abrir logs, reiniciar, **Danger Zone**: limpar cache e reiniciar (`reset-cache` zera `config`, `settings` e `window-state`), restaurar padrões (`store:settings:reset`), desinstalar (`CJrYdSKV.js`) |
+| Screens | janela principal (abrir com o League, esconder durante a partida), draft (abrir no champ select, tamanho), in-game (abrir na partida, aba padrão, atalhos Alt+I/Alt+O remapeáveis, [01 §10](01-processo-principal.md#10-atalhos-e-janelas)) |
 | Drafting | usar o meu elo ou um fixo; considerar maestria (peso); considerar hover do time; pick rate mínimo (5 níveis); mostrar todos os campeões; mostrar/ordenar/nota mínima de fase de rota; modo avançado; **Model Customization** (peso por termo, por rota); envio de build (itens, runas, feitiços; manual e automático); tecla do Flash (D/F) e ordem dos feitiços |
 | Champion Pool | pool por rota; auto-hover; auto-lock (aviso: "usa a API do cliente, separada do Overwolf… use por sua conta e risco") |
 | Champion Ban Pool | até 5 bans em ordem; auto-hover de ban por rota ou geral |
