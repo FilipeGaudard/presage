@@ -26,7 +26,10 @@ check "jwts" 'eyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.'
 check "slack/openai/anthropic" 'xox[abpr]-|sk-[A-Za-z0-9]{20,}|sk[-]ant-'
 check "senhas" '(password|passwd|senha)[A-Za-z_]*["'"'"']?\s*[:=]\s*["'"'"']?[^ "$'"'"'{(<]{6,}' 30
 # puuid: 78 caracteres base64url; Riot ID: nome#TAG com a tag em maiúsculas
-check "puuid" '[A-Za-z0-9_-]{78}'
+# As linhas de integridade do package-lock são hashes sha512, não puuid.
+PUUID=$(grep -E -- '[A-Za-z0-9_-]{78}' "$ADDED" | grep -v '"integrity": "sha')
+echo "== puuid: $(printf '%s' "$PUUID" | grep -c .)"
+[ -n "$PUUID" ] && printf '%s\n' "$PUUID" | cut -c1-200 | head -15
 check "riot id (nome#TAG)" '\b[A-Za-z][A-Za-z0-9]{2,15}#[A-Z0-9]{2,5}\b' 30
 # entre aspas, com espaço e tag minúscula: "nome com espaço#tag" (fixture fictícia como alguem#BR1 também aparece)
 check "riot id entre aspas" '"[^"#]{3,16}#[A-Za-z0-9]{2,5}"' 30
