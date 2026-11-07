@@ -500,13 +500,28 @@ mod tests {
     }
 
     #[test]
-    fn contra_letalidade_vida_sobe_em_relacao_a_armadura() {
+    fn contra_penetracao_percentual_vida_ganha_da_armadura() {
+        // A mesma dupla de atiradores, sem e com 35% de penetração de armadura.
+        // A penetração percentual corta cada ponto de armadura, e não a vida:
+        // contra ela, a vida ganha terreno sobre a armadura.
+        //
+        // A20: este teste se chamava "contra letalidade", e o fixture não tinha
+        // letalidade nenhuma; a vida já ficava acima sem penetração. Letalidade é
+        // plana e, nesta conta, faz o contrário: tira o mesmo de toda armadura, e
+        // a vida passa a valer menos por ponto. Só deixa de ser assim quando ela
+        // passa da sua armadura e o piso em zero desperdiça pontos.
         let items = items();
-        let inimigos = vec![enemy(20, vec![PEN_ARMADURA]), enemy(20, vec![PEN_ARMADURA])];
-        let (contexto, sugestoes) = suggest(&me(), &inimigos, &champions(), &items, 10);
+        let razao = |inimigos: &[Combatant]| {
+            let (contexto, s) = suggest(&me(), inimigos, &champions(), &items, 10);
+            let v = |id| s.iter().find(|x| x.item_id == id).unwrap().value_per_1000g;
+            (contexto.enemy_armor_pen_percent, v(VIDA) / v(ARMADURA))
+        };
+        let (pen_sem, sem) = razao(&[enemy(20, vec![DANO]), enemy(20, vec![DANO])]);
+        let (pen_com, com) = razao(&[enemy(20, vec![PEN_ARMADURA]), enemy(20, vec![PEN_ARMADURA])]);
 
-        assert!(contexto.enemy_armor_pen_percent > 0.0);
-        assert!(rank_of(&sugestoes, VIDA) < rank_of(&sugestoes, ARMADURA));
+        assert_eq!(pen_sem, 0.0);
+        assert!(pen_com > 0.0);
+        assert!(com > sem, "vida/armadura sem penetração {sem}, com {com}");
     }
 
     #[test]

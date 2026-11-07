@@ -12,15 +12,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 346 | 346 | 0 | 0 |
+| test | 352 | 352 | 0 | 0 |
 | ui-test | 41 | 5 | 36 | 0 |
-| trace | 43 | 33 | 10 | 0 |
+| trace | 43 | 35 | 8 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 474; nomes no catálogo (13): 472; fora dele: 0
+- testes no código: 480; nomes no catálogo (13): 480; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 2879
+- IDs citados conferidos: 2922
 
 ## type
 
@@ -550,12 +550,12 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-BUILD-10` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:451 |
 | `T-BUILD-2` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:487 |
 | `T-BUILD-3` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:502 |
-| `T-BUILD-4` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:512 |
-| `T-BUILD-5` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:536 |
-| `T-BUILD-6` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:526 |
-| `T-BUILD-7` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:556 |
-| `T-BUILD-8` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:573 |
-| `T-BUILD-9` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:582 |
+| `T-BUILD-4` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:527 |
+| `T-BUILD-5` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:551 |
+| `T-BUILD-6` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:541 |
+| `T-BUILD-7` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:571 |
+| `T-BUILD-8` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:588 |
+| `T-BUILD-9` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:597 |
 | `T-CASCA-1` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:165 |
 | `T-CASCA-10` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:211 |
 | `T-CASCA-11` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:225 |
@@ -614,20 +614,20 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-COLETOR-7` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:824 |
 | `T-COLETOR-8` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:286 |
 | `T-COLETOR-9` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:295 |
-| `T-DRAFT-1` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:769 |
+| `T-DRAFT-1` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:781 |
 | `T-DRAFT-10` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:565 |
 | `T-DRAFT-11` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:576 |
-| `T-DRAFT-12` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:610 |
+| `T-DRAFT-12` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:622 |
 | `T-DRAFT-13` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:529 |
 | `T-DRAFT-14` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:516 |
 | `T-DRAFT-15` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:523 |
 | `T-DRAFT-16` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:544 |
-| `T-DRAFT-17` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:583 |
-| `T-DRAFT-18` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:908 |
-| `T-DRAFT-19` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:915 |
-| `T-DRAFT-2` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:800 |
+| `T-DRAFT-17` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:595 |
+| `T-DRAFT-18` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:920 |
+| `T-DRAFT-19` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:927 |
+| `T-DRAFT-2` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:812 |
 | `T-DRAFT-20` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:560 |
-| `T-DRAFT-21` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:867 |
+| `T-DRAFT-21` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:879 |
 | `T-DRAFT-22` | arquitetura/13-testes §2 | done | core/src/engine/context.rs:407 |
 | `T-DRAFT-23` | arquitetura/13-testes §2 | done | core/src/engine/context.rs:427 |
 | `T-DRAFT-24` | arquitetura/13-testes §2 | done | core/src/engine/context.rs:440 |
@@ -636,7 +636,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-DRAFT-27` | arquitetura/13-testes §2 | done | core/src/engine/context.rs:479 |
 | `T-DRAFT-28` | arquitetura/13-testes §2 | done | core/src/engine/context.rs:490 |
 | `T-DRAFT-29` | arquitetura/13-testes §2 | done | core/src/engine/context.rs:496 |
-| `T-DRAFT-3` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:707 |
+| `T-DRAFT-3` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:719 |
 | `T-DRAFT-30` | arquitetura/13-testes §2 | done | core/src/engine/context.rs:519 |
 | `T-DRAFT-31` | arquitetura/13-testes §2 | done | core/src/engine/context.rs:535 |
 | `T-DRAFT-32` | arquitetura/13-testes §2 | done | core/src/engine/context.rs:550 |
@@ -647,7 +647,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-DRAFT-37` | arquitetura/13-testes §2 | done | core/src/engine/roles.rs:131 |
 | `T-DRAFT-38` | arquitetura/13-testes §2 | done | core/src/engine/roles.rs:138 |
 | `T-DRAFT-39` | arquitetura/13-testes §2 | done | core/src/engine/roles.rs:147 |
-| `T-DRAFT-4` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:725 |
+| `T-DRAFT-4` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:737 |
 | `T-DRAFT-40` | arquitetura/13-testes §2 | done | core/src/engine/roles.rs:156 |
 | `T-DRAFT-41` | arquitetura/13-testes §2 | done | core/src/engine/roles.rs:166 |
 | `T-DRAFT-42` | arquitetura/13-testes §2 | done | core/src/engine/roles.rs:173 |
@@ -657,40 +657,40 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-DRAFT-46` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:406 |
 | `T-DRAFT-47` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:420 |
 | `T-DRAFT-48` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:430 |
-| `T-DRAFT-49` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:436 |
-| `T-DRAFT-5` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:739 |
-| `T-DRAFT-50` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:448 |
-| `T-DRAFT-51` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:457 |
-| `T-DRAFT-52` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:514 |
-| `T-DRAFT-53` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:521 |
-| `T-DRAFT-54` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:527 |
-| `T-DRAFT-55` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:536 |
-| `T-DRAFT-56` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:545 |
-| `T-DRAFT-57` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:552 |
-| `T-DRAFT-58` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:576 |
-| `T-DRAFT-59` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:592 |
-| `T-DRAFT-6` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:755 |
+| `T-DRAFT-49` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:439 |
+| `T-DRAFT-5` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:751 |
+| `T-DRAFT-50` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:451 |
+| `T-DRAFT-51` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:460 |
+| `T-DRAFT-52` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:517 |
+| `T-DRAFT-53` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:524 |
+| `T-DRAFT-54` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:530 |
+| `T-DRAFT-55` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:539 |
+| `T-DRAFT-56` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:548 |
+| `T-DRAFT-57` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:555 |
+| `T-DRAFT-58` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:579 |
+| `T-DRAFT-59` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:595 |
+| `T-DRAFT-6` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:767 |
 | `T-DRAFT-60` | arquitetura/13-testes §2 | done | core/src/engine/comp.rs:91 |
 | `T-DRAFT-61` | arquitetura/13-testes §2 | done | core/src/engine/comp.rs:104 |
 | `T-DRAFT-62` | arquitetura/13-testes §2 | done | core/src/engine/comp.rs:120 |
 | `T-DRAFT-63` | arquitetura/13-testes §2 | done | core/src/engine/comp.rs:132 |
-| `T-DRAFT-64` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:497 |
-| `T-DRAFT-7` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:830 |
-| `T-DRAFT-8` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:642 |
-| `T-DRAFT-9` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:593 |
+| `T-DRAFT-64` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:500 |
+| `T-DRAFT-7` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:842 |
+| `T-DRAFT-8` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:654 |
+| `T-DRAFT-9` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:605 |
 | `T-ENTRADA-1` | arquitetura/13-testes §2 | done | core/src/lockfile.rs:50 |
-| `T-ENTRADA-10` | arquitetura/13-testes §2 | done | core/src/draft.rs:364 |
-| `T-ENTRADA-11` | arquitetura/13-testes §2 | done | core/src/draft.rs:384 |
-| `T-ENTRADA-12` | arquitetura/13-testes §2 | done | core/src/draft.rs:401 |
-| `T-ENTRADA-13` | arquitetura/13-testes §2 | done | core/src/draft.rs:409 |
-| `T-ENTRADA-14` | arquitetura/13-testes §2 | done | core/src/live.rs:221 |
-| `T-ENTRADA-15` | arquitetura/13-testes §2 | done | core/src/live.rs:227 |
-| `T-ENTRADA-16` | arquitetura/13-testes §2 | done | core/src/live.rs:246 |
-| `T-ENTRADA-17` | arquitetura/13-testes §2 | done | core/src/live.rs:260 |
-| `T-ENTRADA-18` | arquitetura/13-testes §2 | done | core/src/live.rs:273 |
-| `T-ENTRADA-19` | arquitetura/13-testes §2 | done | core/src/live.rs:285 |
+| `T-ENTRADA-10` | arquitetura/13-testes §2 | done | core/src/draft.rs:407 |
+| `T-ENTRADA-11` | arquitetura/13-testes §2 | done | core/src/draft.rs:427 |
+| `T-ENTRADA-12` | arquitetura/13-testes §2 | done | core/src/draft.rs:444 |
+| `T-ENTRADA-13` | arquitetura/13-testes §2 | done | core/src/draft.rs:452 |
+| `T-ENTRADA-14` | arquitetura/13-testes §2 | done | core/src/live.rs:253 |
+| `T-ENTRADA-15` | arquitetura/13-testes §2 | done | core/src/live.rs:259 |
+| `T-ENTRADA-16` | arquitetura/13-testes §2 | done | core/src/live.rs:278 |
+| `T-ENTRADA-17` | arquitetura/13-testes §2 | done | core/src/live.rs:292 |
+| `T-ENTRADA-18` | arquitetura/13-testes §2 | done | core/src/live.rs:305 |
+| `T-ENTRADA-19` | arquitetura/13-testes §2 | done | core/src/live.rs:317 |
 | `T-ENTRADA-2` | arquitetura/13-testes §2 | done | core/src/lockfile.rs:57 |
-| `T-ENTRADA-20` | arquitetura/13-testes §2 | done | core/src/live.rs:295 |
+| `T-ENTRADA-20` | arquitetura/13-testes §2 | done | core/src/live.rs:327 |
 | `T-ENTRADA-21` | arquitetura/13-testes §2 | done | core/src/history.rs:297 |
 | `T-ENTRADA-22` | arquitetura/13-testes §2 | done | core/src/history.rs:307 |
 | `T-ENTRADA-23` | arquitetura/13-testes §2 | done | core/src/history.rs:322 |
@@ -718,11 +718,13 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-ENTRADA-43` | arquitetura/13-testes §2 | done | core/src/prefs.rs:145 |
 | `T-ENTRADA-44` | arquitetura/13-testes §2 | done | core/src/prefs.rs:161 |
 | `T-ENTRADA-45` | arquitetura/13-testes §2 | done | core/src/prefs.rs:193 |
+| `T-ENTRADA-46` | arquitetura/13-testes §2 | done | core/src/draft.rs:334 |
+| `T-ENTRADA-47` | arquitetura/13-testes §2 | done | core/src/live.rs:221 |
 | `T-ENTRADA-5` | arquitetura/13-testes §2 | done | core/src/lockfile.rs:88 |
-| `T-ENTRADA-6` | arquitetura/13-testes §2 | done | core/src/draft.rs:334 |
-| `T-ENTRADA-7` | arquitetura/13-testes §2 | done | core/src/draft.rs:341 |
-| `T-ENTRADA-8` | arquitetura/13-testes §2 | done | core/src/draft.rs:351 |
-| `T-ENTRADA-9` | arquitetura/13-testes §2 | done | core/src/draft.rs:358 |
+| `T-ENTRADA-6` | arquitetura/13-testes §2 | done | core/src/draft.rs:377 |
+| `T-ENTRADA-7` | arquitetura/13-testes §2 | done | core/src/draft.rs:384 |
+| `T-ENTRADA-8` | arquitetura/13-testes §2 | done | core/src/draft.rs:394 |
+| `T-ENTRADA-9` | arquitetura/13-testes §2 | done | core/src/draft.rs:401 |
 | `T-JOGO-1` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:188 |
 | `T-JOGO-10` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:278 |
 | `T-JOGO-11` | arquitetura/13-testes §2 | done | core/src/engine/damage.rs:71 |
@@ -738,39 +740,42 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-JOGO-8` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:250 |
 | `T-JOGO-9` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:270 |
 | `T-OBJETIVO-1` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:492 |
-| `T-OBJETIVO-10` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:669 |
-| `T-OBJETIVO-11` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:707 |
-| `T-OBJETIVO-12` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:720 |
-| `T-OBJETIVO-13` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:732 |
-| `T-OBJETIVO-14` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:754 |
-| `T-OBJETIVO-15` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:763 |
-| `T-OBJETIVO-16` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:770 |
+| `T-OBJETIVO-10` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:754 |
+| `T-OBJETIVO-11` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:792 |
+| `T-OBJETIVO-12` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:805 |
+| `T-OBJETIVO-13` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:817 |
+| `T-OBJETIVO-14` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:839 |
+| `T-OBJETIVO-15` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:848 |
+| `T-OBJETIVO-16` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:855 |
+| `T-OBJETIVO-17` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:669 |
+| `T-OBJETIVO-18` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:647 |
 | `T-OBJETIVO-2` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:502 |
 | `T-OBJETIVO-3` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:525 |
 | `T-OBJETIVO-4` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:513 |
 | `T-OBJETIVO-5` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:576 |
 | `T-OBJETIVO-6` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:557 |
 | `T-OBJETIVO-7` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:602 |
-| `T-OBJETIVO-8` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:628 |
-| `T-OBJETIVO-9` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:655 |
+| `T-OBJETIVO-8` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:713 |
+| `T-OBJETIVO-9` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:740 |
 | `T-OURO-1` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:224 |
-| `T-OURO-10` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:330 |
-| `T-OURO-2` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:320 |
+| `T-OURO-10` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:332 |
+| `T-OURO-2` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:322 |
 | `T-OURO-3` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:237 |
 | `T-OURO-4` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:248 |
 | `T-OURO-5` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:264 |
 | `T-OURO-6` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:275 |
 | `T-OURO-7` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:296 |
 | `T-OURO-8` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:312 |
-| `T-OURO-9` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:349 |
-| `T-PERFIL-1` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:341 |
-| `T-PERFIL-2` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:348 |
-| `T-PERFIL-3` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:371 |
-| `T-PERFIL-4` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:387 |
-| `T-PERFIL-5` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:416 |
-| `T-PERFIL-6` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:429 |
-| `T-PERFIL-7` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:449 |
-| `T-PERFIL-8` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:462 |
+| `T-OURO-9` | arquitetura/13-testes §2 | done | core/src/engine/gold.rs:351 |
+| `T-PERFIL-1` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:375 |
+| `T-PERFIL-2` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:382 |
+| `T-PERFIL-3` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:405 |
+| `T-PERFIL-4` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:421 |
+| `T-PERFIL-5` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:450 |
+| `T-PERFIL-6` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:463 |
+| `T-PERFIL-7` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:483 |
+| `T-PERFIL-8` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:496 |
+| `T-PERFIL-9` | arquitetura/13-testes §2 | done | core/src/engine/profile.rs:361 |
 | `T-POOL-1` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:494 |
 | `T-POOL-10` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:583 |
 | `T-POOL-11` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:592 |
@@ -778,36 +783,37 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-POOL-13` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:615 |
 | `T-POOL-2` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:501 |
 | `T-POOL-3` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:517 |
-| `T-POOL-4` | arquitetura/13-testes §2 | done | core/src/engine/minimax.rs:448 |
+| `T-POOL-4` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:525 |
 | `T-POOL-5` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:538 |
 | `T-POOL-6` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:548 |
 | `T-POOL-7` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:561 |
 | `T-POOL-8` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:569 |
 | `T-POOL-9` | arquitetura/13-testes §2 | done | core/src/engine/poolgap.rs:575 |
 | `T-POS-1` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:909 |
-| `T-POS-10` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1065 |
-| `T-POS-11` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1092 |
-| `T-POS-12` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1122 |
-| `T-POS-13` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1128 |
-| `T-POS-14` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1168 |
-| `T-POS-15` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1201 |
-| `T-POS-16` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1220 |
-| `T-POS-17` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1235 |
-| `T-POS-18` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1270 |
-| `T-POS-19` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1281 |
+| `T-POS-10` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1100 |
+| `T-POS-11` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1127 |
+| `T-POS-12` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1157 |
+| `T-POS-13` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1163 |
+| `T-POS-14` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1203 |
+| `T-POS-15` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1236 |
+| `T-POS-16` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1255 |
+| `T-POS-17` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1270 |
+| `T-POS-18` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1305 |
+| `T-POS-19` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1316 |
 | `T-POS-2` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:920 |
-| `T-POS-20` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1298 |
-| `T-POS-21` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1316 |
-| `T-POS-22` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1338 |
-| `T-POS-23` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:950 |
-| `T-POS-24` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:927 |
-| `T-POS-3` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:943 |
-| `T-POS-4` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:984 |
-| `T-POS-5` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1019 |
-| `T-POS-6` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1028 |
-| `T-POS-7` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1038 |
-| `T-POS-8` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1046 |
-| `T-POS-9` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1351 |
+| `T-POS-20` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1333 |
+| `T-POS-21` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1351 |
+| `T-POS-22` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1373 |
+| `T-POS-23` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:985 |
+| `T-POS-24` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:962 |
+| `T-POS-25` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:927 |
+| `T-POS-3` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:978 |
+| `T-POS-4` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1019 |
+| `T-POS-5` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1054 |
+| `T-POS-6` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1063 |
+| `T-POS-7` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1073 |
+| `T-POS-8` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1081 |
+| `T-POS-9` | arquitetura/13-testes §2 | done | core/src/engine/coach.rs:1386 |
 | `T-PREVIA-1` | arquitetura/13-testes §2 | done | core/src/engine/team.rs:285 |
 | `T-PREVIA-10` | arquitetura/13-testes §2 | done | core/src/engine/wincon.rs:373 |
 | `T-PREVIA-11` | arquitetura/13-testes §2 | done | core/src/engine/wincon.rs:388 |
@@ -836,7 +842,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-RIVAL-2` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:172 |
 | `T-RIVAL-3` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:189 |
 | `T-RIVAL-4` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:210 |
-| `T-RIVAL-5` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:222 |
+| `T-RIVAL-5` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:227 |
 | `T-ROTA-1` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:683 |
 | `T-ROTA-10` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:883 |
 | `T-ROTA-11` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:894 |
@@ -943,19 +949,19 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Item | Fonte | Estado | Onde / motivo |
 |---|---|---|---|
-| `C-1` | produto/requisitos matriz | deferred | B1: estrutural, nenhum tipo do 10 guarda recarga de habilidade (10 §29); falta o teste que trava isso |
 | `C-10` | produto/requisitos matriz | deferred | regra de distribuição: chave de produção antes de distribuir (06, ADR-0004) |
 | `C-2` | produto/requisitos matriz | deferred | B2: estrutural, a casca só fala HTTP com LCU, Live Client, Riot e Data Dragon (12 §5) |
 | `C-3` | produto/requisitos matriz | deferred | B3: estrutural, overlay é janela externa (ADR-0003); nenhum hook nem input sintético |
-| `C-7` | produto/requisitos matriz | deferred | B4: sem teste; o perfil e o pós-jogo não têm nota única (ADR-0011), falta o teste que trave |
 | `C-8` | produto/requisitos matriz | deferred | regra de cobrança, não de código: conferida antes de cobrar (P-2, 00 §4) |
 | `C-9` | produto/requisitos matriz | deferred | B5: nenhum código de anúncio existe; falta o teste que varra o overlay |
 | `RNF-10` | produto/requisitos matriz | deferred | provado pelo build do instalador: CRT estática (ADR-0014, .cargo/config.toml) |
 | `RNF-12` | produto/requisitos matriz | deferred | B6: regra de design (identidade); TF a escrever quando houver harness (P-16) |
 | `RNF-9` | produto/requisitos matriz | deferred | provado pelo próprio gate: cargo test -p presage-core roda sem MSVC e sem Tauri (ADR-0001) |
+| `C-1` | produto/requisitos matriz | done | docs/produto/requisitos.md:291 |
 | `C-4` | produto/requisitos matriz | done | docs/produto/requisitos.md:294 |
 | `C-5` | produto/requisitos matriz | done | docs/produto/requisitos.md:295 |
 | `C-6` | produto/requisitos matriz | done | docs/produto/requisitos.md:296 |
+| `C-7` | produto/requisitos matriz | done | docs/produto/requisitos.md:297 |
 | `R-1` | produto/requisitos matriz | done | docs/produto/requisitos.md:270 |
 | `R-10` | produto/requisitos matriz | done | docs/produto/requisitos.md:279 |
 | `R-11` | produto/requisitos matriz | done | docs/produto/requisitos.md:280 |
@@ -1086,4 +1092,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 50 | 12 | 0 | 38 |
+| 46 | 16 | 0 | 38 |

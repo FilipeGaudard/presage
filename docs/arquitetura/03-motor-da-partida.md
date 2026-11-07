@@ -30,9 +30,11 @@ O que o motor reage, com teste para cada caso:
 - time inimigo AD puxa armadura acima de resistência mágica;
 - o mago deles comprar poder de habilidade inverte a prioridade;
 - penetração de armadura no inventário deles derruba o valor da sua armadura;
-- contra penetração de armadura, vida passa a render mais que armadura. O teste
-  deste caso não isola a causa: a mesma ordem sai sem penetração nenhuma
-  (T-BUILD-3);
+- contra penetração **percentual** de armadura, vida ganha terreno sobre armadura
+  (T-BUILD-3, que compara a mesma dupla sem e com 35%). Letalidade, que é plana,
+  faz o contrário nesta conta: tira o mesmo de toda armadura, e a vida passa a
+  valer menos por ponto, até a letalidade passar da sua armadura e o piso em zero
+  desperdiçar pontos;
 - o inimigo comprar armadura faz penetração subir na sua lista.
 
 O dano efetivo da build pesa AD e AP pelo jeito que o seu campeão bate: as

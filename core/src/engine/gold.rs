@@ -314,7 +314,9 @@ mod tests {
         let g = game(vec![player("Ahri", "ORDER", true, 0.0, 0, 0, 0)], 0.0);
         let r = report(&g);
 
-        assert!(r.players[0].gold_per_minute.is_finite());
+        // 500 de ouro inicial sobre o piso de 1 s no divisor: 30 000 por minuto,
+        // finito e exato (A20: só `is_finite` passava com qualquer piso).
+        assert_eq!(r.players[0].gold_per_minute, 30_000.0);
     }
 
     #[test]

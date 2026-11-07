@@ -332,6 +332,49 @@ mod tests {
     }
 
     #[test]
+    fn le_os_nomes_de_campo_do_lcu() {
+        // Trava os nomes do JSON do champ select e do invocador. Todo campo tem
+        // `default`: renomear um aqui sem o cliente ter mudado não dá erro, zera
+        // o campo em silêncio (A19, P-5).
+        let json = r#"{
+            "actions": [[{ "actorCellId": 3, "championId": 103, "completed": true,
+                           "isAllyAction": true, "isInProgress": false, "pickTurn": 2,
+                           "type": "pick" }]],
+            "localPlayerCellId": 3,
+            "myTeam": [{ "cellId": 3, "championId": 103, "championPickIntent": 238,
+                         "assignedPosition": "middle", "spell1Id": 4, "spell2Id": 14 }],
+            "theirTeam": [{ "cellId": 7, "championId": 0, "championPickIntent": 0,
+                            "assignedPosition": "", "spell1Id": 0, "spell2Id": 0 }],
+            "timer": { "adjustedTimeLeftInPhase": 25000, "totalTimeInPhase": 30000,
+                       "phase": "BAN_PICK" },
+            "isSpectating": true
+        }"#;
+        let s: LcuSession = serde_json::from_str(json).unwrap();
+        let a = &s.actions[0][0];
+        assert_eq!((a.actor_cell_id, a.champion_id, a.pick_turn), (3, 103, 2));
+        assert!(a.completed && a.is_ally_action && !a.is_in_progress);
+        assert_eq!(a.action_type, "pick");
+        assert_eq!(s.local_player_cell_id, 3);
+        let eu = &s.my_team[0];
+        assert_eq!((eu.cell_id, eu.champion_id, eu.champion_pick_intent), (3, 103, 238));
+        assert_eq!(eu.assigned_position, "middle");
+        assert_eq!((eu.spell1_id, eu.spell2_id), (4, 14));
+        assert_eq!(s.their_team[0].cell_id, 7);
+        assert_eq!(s.timer.adjusted_time_left_in_phase, 25000);
+        assert_eq!(s.timer.total_time_in_phase, 30000);
+        assert_eq!(s.timer.phase, "BAN_PICK");
+        assert!(s.is_spectating);
+
+        let eu: LcuSummoner = serde_json::from_str(
+            r#"{ "gameName": "alguem", "tagLine": "BR1", "summonerLevel": 312, "puuid": "puuid-de-teste" }"#,
+        )
+        .unwrap();
+        assert_eq!((eu.game_name.as_str(), eu.tag_line.as_str()), ("alguem", "BR1"));
+        assert_eq!(eu.summoner_level, 312);
+        assert_eq!(eu.puuid, "puuid-de-teste");
+    }
+
+    #[test]
     fn separa_bans_por_time() {
         let state = to_draft_state(&session());
         assert_eq!(state.my_bans, vec![266]);

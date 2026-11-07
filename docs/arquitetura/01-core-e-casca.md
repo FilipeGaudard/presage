@@ -88,15 +88,21 @@ função só** entre eles.
 
 Todos os tipos crus são `#[serde(default)]`: campo que falta derruba a métrica
 ou a regra de negócio, não a desserialização. O preço é que um nome errado não
-dá erro ([P-5](../produto/perguntas-em-aberto.md)), e por isso a fronteira precisa
-de um teste que leia JSON com os nomes de fora. Hoje só parte delas tem:
+dá erro ([P-5](../produto/perguntas-em-aberto.md)), e por isso cada fronteira tem
+um teste que lê JSON com os nomes de fora e confere cada campo fora do padrão
+(A19):
 
 | Fronteira | Teste com JSON |
 |---|---|
-| match-v5 (`history::played`) | sim, com JSON escrito à mão a partir da documentação (`le_os_nomes_de_campo_da_riot`); `jungleCsBefore10Minutes` fica de fora dele |
-| grade do champ select, sessão do fluxo de jogo | sim (`na_ranqueada_a_rotacao_gratis_nao_vale`, `a_fila_sai_da_sessao_do_fluxo_de_jogo`) |
-| sessão do champ select (`LcuSession`, `LcuAction`, `LcuPlayer`) | **não**: os testes montam as structs em Rust |
-| Live Client (`RawPlayer`, `RawItem`, `RawScores`, `RawEvent`) | **não**: idem, e `itemID` é o caso em que `camelCase` não basta |
+| match-v5 (`history::played`) | `le_os_nomes_de_campo_da_riot`, com JSON escrito à mão a partir da documentação, `jungleCsBefore10Minutes` inclusive |
+| grade do champ select, sessão do fluxo de jogo | `na_ranqueada_a_rotacao_gratis_nao_vale`, `a_fila_sai_da_sessao_do_fluxo_de_jogo` |
+| sessão do champ select e invocador (`LcuSession`, `LcuAction`, `LcuPlayer`, `LcuTimer`, `LcuSummoner`) | `le_os_nomes_de_campo_do_lcu` |
+| Live Client (`RawPlayer`, `RawItem`, `RawScores`) | `le_os_nomes_de_campo_da_live_client`, com o `itemID`, o caso em que `camelCase` não basta |
+| eventos da Live Client (`RawEvent`, `EventFeed`) | `le_os_nomes_de_campo_dos_eventos`, em PascalCase |
+
+O JSON desses testes é escrito à mão a partir do que a Riot documenta e do que
+apps em produção leem. Ele trava o que assumimos, não o que a Riot manda: a
+conferência numa partida real continua em P-5 e P-14.
 
 A falta está no `build/audit.md` (A19).
 

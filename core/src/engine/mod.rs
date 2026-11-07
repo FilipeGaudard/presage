@@ -575,9 +575,21 @@ mod tests {
 
     #[test]
     fn sem_estatistica_a_razao_diz_isso() {
-        let scored = rank(&draft(), &index(), &stats::NoStats, &[]);
-        let tanque = scored.iter().find(|s| s.champion_id == 5).unwrap();
-        assert!(tanque.reasons.iter().any(|r| r.contains("frontline")));
+        // Sem aliado nem inimigo travado, a composição não tem o que dizer; sem
+        // base, a razão de cada candidato é exatamente esta (A20: o teste antigo
+        // conferia a razão de frontline, e esta frase podia sumir sem ninguém ver).
+        let mut vazio = draft();
+        vazio.my_team.truncate(1);
+        vazio.their_team.clear();
+        vazio.unavailable.clear();
+        let scored = rank(&vazio, &index(), &stats::NoStats, &[]);
+        assert!(!scored.is_empty());
+        for s in &scored {
+            assert!(
+                s.reasons.iter().any(|r| r.starts_with("Sem base estatística ainda")),
+                "{s:?}"
+            );
+        }
     }
 
     #[test]

@@ -219,6 +219,38 @@ mod tests {
     }
 
     #[test]
+    fn le_os_nomes_de_campo_da_live_client() {
+        // Trava os nomes do JSON de `/liveclientdata/playerlist`. Todo campo tem
+        // `default`: um nome errado zera o campo calado (A19, P-5).
+        let json = r#"{
+            "championName": "Ahri",
+            "rawChampionName": "game_character_displayname_Ahri",
+            "summonerName": "alguem",
+            "riotId": "alguem#BR1",
+            "team": "ORDER",
+            "position": "MIDDLE",
+            "level": 11,
+            "isDead": true,
+            "isBot": true,
+            "respawnTimer": 12.5,
+            "items": [{ "itemID": 3089, "price": 3600, "slot": 2 }],
+            "scores": { "kills": 3, "deaths": 1, "assists": 4, "creepScore": 150, "wardScore": 12.5 }
+        }"#;
+        let p: RawPlayer = serde_json::from_str(json).unwrap();
+        assert_eq!(p.champion_name, "Ahri");
+        assert_eq!(p.raw_champion_name, "game_character_displayname_Ahri");
+        assert_eq!((p.summoner_name.as_str(), p.riot_id.as_str()), ("alguem", "alguem#BR1"));
+        assert_eq!((p.team.as_str(), p.position.as_str()), ("ORDER", "MIDDLE"));
+        assert_eq!(p.level, 11);
+        assert!(p.is_dead && p.is_bot);
+        assert_eq!(p.respawn_timer, 12.5);
+        assert_eq!((p.items[0].item_id, p.items[0].price, p.items[0].slot), (3089, 3600.0, 2));
+        let s = &p.scores;
+        assert_eq!((s.kills, s.deaths, s.assists, s.creep_score), (3, 1, 4, 150));
+        assert_eq!(s.ward_score, 12.5);
+    }
+
+    #[test]
     fn chave_do_campeao_ignora_o_prefixo() {
         assert_eq!(champion_key("game_character_displayname_Annie"), "Annie");
         assert_eq!(champion_key("Annie"), "Annie");

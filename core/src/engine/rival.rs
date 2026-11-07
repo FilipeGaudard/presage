@@ -209,14 +209,19 @@ mod tests {
 
     #[test]
     fn antes_de_um_minuto_e_meio_a_taxa_e_ruido() {
-        let g = partida(
-            1.0,
-            vec![
-                jogador("MIDDLE", "ORDER", true, 3, 0.0, 500.0),
-                jogador("MIDDLE", "CHAOS", false, 1, 0.0, 500.0),
-            ],
-        );
-        assert!(report(&g).is_none());
+        // Na borda: 89 s ainda é ruído, 90 s já vale (A20: o teste antigo usava
+        // 1 s, e o limite podia andar até 1:00 sem ninguém ver).
+        let em = |segundos: f64| {
+            partida(
+                segundos / 60.0,
+                vec![
+                    jogador("MIDDLE", "ORDER", true, 3, 0.0, 500.0),
+                    jogador("MIDDLE", "CHAOS", false, 1, 0.0, 500.0),
+                ],
+            )
+        };
+        assert!(report(&em(MIN_SECONDS - 1.0)).is_none());
+        assert!(report(&em(MIN_SECONDS)).is_some());
     }
 
     #[test]

@@ -228,6 +228,17 @@ test('a checagem inteira sobre um repositório mínimo', () => {
   }
 });
 
+test('dois testes com o mesmo nome viram aviso', () => {
+  const dir = fixture();
+  try {
+    writeFileSync(join(dir, 'core/src/lib.rs'), 'pub mod engine;\n#[cfg(test)] mod tests { #[test] fn popularidade_nao_vira_matchup() {} }\n');
+    const { warnings } = run(dir, { write: false });
+    assert.ok(warnings.some((w) => w.includes('teste com o mesmo nome') && w.includes('popularidade_nao_vira_matchup')), warnings.join('\n'));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test('um campo a mais no TS quebra o wire', () => {
   const dir = fixture();
   try {

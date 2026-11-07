@@ -429,8 +429,11 @@ mod tests {
 
     #[test]
     fn breadth_limita_quantos_candidatos_voltam() {
-        let picks = minimax(&draft(vec![], vec![]), &index(), &[], 2);
-        assert_eq!(picks.len(), 2);
+        // O índice tem dois candidatos para o meio: com largura 1 a poda tem de
+        // cortar um, e com largura 5 os dois voltam (A20: com largura 2 o teste
+        // passava sem poda nenhuma).
+        assert_eq!(minimax(&draft(vec![], vec![]), &index(), &[], 1).len(), 1);
+        assert_eq!(minimax(&draft(vec![], vec![]), &index(), &[], 5).len(), 2);
     }
 
     #[test]
@@ -446,7 +449,7 @@ mod tests {
     }
 
     #[test]
-    fn so_entra_quem_joga_a_rota() {
+    fn o_minimax_so_traz_quem_joga_a_sua_rota() {
         // O lugar é o meio: lutador, tanque e atirador ficam de fora.
         let picks = minimax(&draft(vec![], vec![]), &index(), &[], 10);
         for p in &picks {

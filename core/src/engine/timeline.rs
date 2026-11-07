@@ -625,6 +625,91 @@ mod tests {
         }
     }
 
+    /// Toda chave de um JSON, em qualquer nível, e todo valor de `name`.
+    fn chaves_e_nomes(v: &serde_json::Value, chaves: &mut Vec<String>, nomes: &mut Vec<String>) {
+        match v {
+            serde_json::Value::Object(m) => {
+                for (k, x) in m {
+                    chaves.push(k.clone());
+                    if k == "name" {
+                        if let Some(n) = x.as_str() {
+                            nomes.push(n.to_string());
+                        }
+                    }
+                    chaves_e_nomes(x, chaves, nomes);
+                }
+            }
+            serde_json::Value::Array(xs) => xs.iter().for_each(|x| chaves_e_nomes(x, chaves, nomes)),
+            _ => {}
+        }
+    }
+
+    #[test]
+    fn le_os_nomes_de_campo_dos_eventos() {
+        // Trava os nomes do JSON de `/liveclientdata/eventdata`, em PascalCase.
+        // Todo campo tem `default`: um nome errado faz o timer sumir calado
+        // (A19, P-14).
+        let json = r#"{
+            "EventName": "DragonKill", "EventTime": 400.5, "DragonType": "Elder",
+            "KillerName": "alguem", "VictimName": "outro",
+            "TurretKilled": "Turret_T2_C_05_A", "InhibKilled": "Barracks_T2_C1",
+            "Result": "Win"
+        }"#;
+        let e: RawEvent = serde_json::from_str(json).unwrap();
+        assert_eq!((e.name.as_str(), e.time), ("DragonKill", 400.5));
+        assert_eq!(e.dragon_type, "Elder");
+        assert_eq!((e.killer.as_str(), e.victim.as_str()), ("alguem", "outro"));
+        assert_eq!(e.turret, "Turret_T2_C_05_A");
+        assert_eq!(e.inhibitor, "Barracks_T2_C1");
+        assert_eq!(e.result, "Win");
+        let feed: EventFeed = serde_json::from_str(r#"{ "Events": [{ "EventName": "GameStart" }] }"#).unwrap();
+        assert_eq!(feed.events[0].name, "GameStart");
+    }
+
+    #[test]
+    fn nenhum_timer_e_de_habilidade() {
+        // C-1: nada de timer de habilidade inimiga, nem manual. Todo evento que
+        // a Live Client manda, e um evento de habilidade inventado, passam pela
+        // timeline e pelos buffs: o que sai só fala de objetivo e estrutura.
+        let eventos = [
+            event("GameStart", 0.0, ""),
+            event("FirstBlood", 200.0, "inimigo#BR1"),
+            event("ChampionKill", 200.0, "inimigo#BR1"),
+            event("Multikill", 210.0, "inimigo#BR1"),
+            event("Ace", 220.0, "inimigo#BR1"),
+            event("SpellCast", 230.0, "inimigo#BR1"),
+            dragon(400.0, "inimigo#BR1", "Fire"),
+            event("HordeKill", 500.0, "inimigo#BR1"),
+            event("HeraldKill", 900.0, "inimigo#BR1"),
+            event("BaronKill", 1300.0, "inimigo#BR1"),
+            estrutura_caiu("TurretKilled", 1400.0, "Turret_T2_C_05_A"),
+            estrutura_caiu("InhibKilled", 1450.0, "Barracks_T2_C1"),
+            dragon(1500.0, "inimigo#BR1", "Elder"),
+        ];
+        let jogo = game(1501.0);
+        let timeline = build(&eventos, &jogo, &Timings::default());
+        let buffs = BuffTracker::default().update(&eventos, &jogo, &Timings::default());
+
+        let mut chaves = Vec::new();
+        let mut nomes = Vec::new();
+        chaves_e_nomes(&serde_json::to_value(&timeline).unwrap(), &mut chaves, &mut nomes);
+        chaves_e_nomes(&serde_json::to_value(&buffs).unwrap(), &mut chaves, &mut nomes);
+
+        let proibido = ["cooldown", "recarga", "ultimate", "suprema", "spell", "habilidade", "ability"];
+        for chave in &chaves {
+            let c = chave.to_lowercase();
+            assert!(!proibido.iter().any(|p| c.contains(p)), "chave proibida: {chave}");
+        }
+        let objetivos = ["Dragão", "Ancião", "Barão", "Arauto", "Grubs", "Torre do nexo"];
+        for nome in &nomes {
+            assert!(
+                objetivos.contains(&nome.as_str()) || nome.starts_with("Inibidor do "),
+                "timer que não é de objetivo nem de estrutura: {nome}"
+            );
+        }
+        assert!(!nomes.is_empty());
+    }
+
     #[test]
     fn inibidor_volta_em_cinco_minutos_nos_dois_formatos_de_nome() {
         // Você é ORDER: o inibidor TChaos/T2 é do inimigo.

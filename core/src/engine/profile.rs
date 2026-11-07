@@ -338,6 +338,40 @@ mod tests {
         *leituras.iter().find(|r| r.metric == Metric::Cs10).unwrap()
     }
 
+    /// As chaves de um JSON que guardam um número sozinho, em qualquer nível.
+    fn chaves_de_numero(v: &serde_json::Value, out: &mut Vec<String>) {
+        match v {
+            serde_json::Value::Object(m) => {
+                for (k, x) in m {
+                    if x.is_number() {
+                        out.push(k.to_lowercase());
+                    }
+                    chaves_de_numero(x, out);
+                }
+            }
+            serde_json::Value::Array(xs) => xs.iter().for_each(|x| chaves_de_numero(x, out)),
+            _ => {}
+        }
+    }
+
+    /// O que viraria nota: um número sozinho que resume o jogador (C-7). Uma
+    /// lista de leituras por métrica, como `overall`, não é nota.
+    const NOTA: [&str; 9] = ["grade", "rating", "nota", "mmr", "elo", "score", "overall", "tier", "rank"];
+
+    #[test]
+    fn o_perfil_nao_resume_o_jogador_num_numero() {
+        // C-7 e RNF-11: o perfil aponta métrica por métrica, contra o oponente
+        // direto, e não vira nota, rating nem escada.
+        let mut jogos = serie(1, 10.0, 12);
+        jogos.extend(serie(2, -4.0, 12));
+        let mut ks = Vec::new();
+        chaves_de_numero(&serde_json::to_value(build(&jogos)).unwrap(), &mut ks);
+        assert!(ks.contains(&"value".to_string()), "{ks:?}");
+        for k in &ks {
+            assert!(!NOTA.contains(&k.as_str()), "o perfil carrega uma nota: {k}");
+        }
+    }
+
     #[test]
     fn menos_de_cinco_partidas_nao_vira_perfil() {
         let perfil = build(&serie(1, 10.0, 4));

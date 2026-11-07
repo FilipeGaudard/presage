@@ -570,7 +570,7 @@ mod tests {
     }
 
     #[test]
-    fn a_sinergia_nao_depende_da_ordem_do_par() {
+    fn a_chave_de_sinergia_nao_depende_da_ordem_do_par() {
         let mut c = Counts::default();
         c.add(&partida(true), &filtro()).unwrap();
         assert_eq!(c.synergy[&synergy_key(2, 1)], c.synergy[&synergy_key(1, 2)]);

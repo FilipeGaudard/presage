@@ -90,6 +90,8 @@ dado e não só sem dado, teste primeiro contra o código velho) está em
 | T-ENTRADA-43 | `a_ordem_das_visiveis_e_a_do_overlay` | unidade | Sem `Objectives`, `visible() == [Gold, Damage, Priority, Skirmish, NextItem]` | R-15 |
 | T-ENTRADA-44 | `secao_nova_nasce_visivel_para_quem_ja_tinha_configuracao`, `sobrevive_a_ida_e_volta_em_json` | unidade | `{"hidden":["gold"]}`, salvo antes de `skirmish` existir, esconde `Gold` e mostra `Skirmish`; `Gold` e `NextItem` desligados voltam iguais do JSON | R-15 |
 | T-ENTRADA-45 | `toda_secao_tem_rotulo_e_explicacao` | unidade | Toda seção de `Section::ALL` tem `label()` e `detail()` não vazios | R-15 |
+| T-ENTRADA-46 | `le_os_nomes_de_campo_do_lcu` | fronteira | JSON de `/lol-champ-select/v1/session` e do invocador com os nomes do cliente (`actorCellId`, `type`, `championPickIntent`, `assignedPosition`, `spell1Id`, `adjustedTimeLeftInPhase`, `isSpectating`, `gameName`, `tagLine`…): cada campo chega com o valor escrito, nenhum no padrão | R-18, A19 |
+| T-ENTRADA-47 | `le_os_nomes_de_campo_da_live_client` | fronteira | JSON de um jogador de `/liveclientdata/playerlist` (`rawChampionName`, `riotId`, `isDead`, `respawnTimer`, `itemID`, `creepScore`, `wardScore`…): cada campo chega com o valor escrito | R-11, R-12, A19 |
 
 ### 2.2 Coletor — opções, estado, cliente da Riot, agregação e limite de taxa
 
@@ -111,7 +113,7 @@ dado e não só sem dado, teste primeiro contra o código velho) está em
 | T-COLETOR-14 | `o_patch_sai_das_duas_primeiras_partes` | unidade | `15.21.704.1234` dá `15.21`; `9.3.1` dá `9.3`; `lixo` e `""` dão `""` | R-20 |
 | T-COLETOR-15 | `uma_partida_rende_dez_linhas_de_base`, `duas_partidas_somam_na_mesma_chave` | unidade | Uma partida dá `matches == 1`, dez linhas de base, `1:Top` com (1, 1) e `11:Top` com (1, 0); uma vitória e uma derrota dão `1:Top` (2, 1) e `1:11:Top` (2, 1) | R-21 |
 | T-COLETOR-16 | `o_matchup_e_direcional_e_sai_nas_duas_direcoes` | unidade | Uma partida dá dez linhas de matchup: `3:13:Mid` com (1, 1) e `13:3:Mid` com (1, 0) | R-21 |
-| T-COLETOR-17 | `a_sinergia_e_so_entre_companheiros`, `a_sinergia_nao_depende_da_ordem_do_par` | unidade | Uma partida dá 20 pares: `1:2` (1, 1), `11:12` (1, 0) e nenhum `1:11`; `synergy_key(2, 1)` e `(1, 2)` são a mesma linha | R-21 |
+| T-COLETOR-17 | `a_sinergia_e_so_entre_companheiros`, `a_chave_de_sinergia_nao_depende_da_ordem_do_par` | unidade | Uma partida dá 20 pares: `1:2` (1, 1), `11:12` (1, 0) e nenhum `1:11`; `synergy_key(2, 1)` e `(1, 2)` são a mesma linha | R-21 |
 | T-COLETOR-18 | `uma_partida_rende_cinquenta_linhas_de_contra` | unidade | Uma partida dá 50 linhas de contra; `1:11` e `11:1` somam uma vitória; `3:11`, de rotas diferentes, existe | R-21, ADR-0019 |
 | T-COLETOR-19 | `a_duracao_vai_para_a_faixa_da_partida` | unidade | Partida de 1800 s dá dez linhas de duração, com `1:Top:Media` em (1, 1) | R-21, ADR-0018 |
 | T-COLETOR-20 | `remake_fica_de_fora`, `partida_curta_fica_de_fora_mesmo_sem_a_flag`, `fila_diferente_fica_de_fora`, `modo_que_nao_e_a_fenda_fica_de_fora`, `partida_terminada_por_erro_fica_de_fora` | unidade | Um participante com `gameEndedInEarlySurrender` dá `Remake` com `matches == 0` e base vazia; 240 s dá `Curta`; fila 450 dá `Fila`; `ARAM` dá `Modo`; `Abort_Unexpected` dá `Terminada` | R-20, ADR-0006, L-5 |
@@ -153,7 +155,7 @@ confere saem da mesma conta, feita à parte.
 | T-DRAFT-8 | `historico_pessoal_nao_preenche_matchup` | unidade | 200 vitórias suas no Mago deixam `sample = 0` e não criam razão "na rota" | RNF-1, R-1, ADR-0007 |
 | T-DRAFT-9 | `sem_dados_o_intervalo_e_largo`, `com_dados_o_intervalo_encolhe` | unidade | Sem base, o primeiro da lista tem `confidence > 8` (11,2pp pela conta) e `sample = 0`. Com 20000 partidas de base e 5000 de matchup, o `±` do Mago encolhe (8,4pp pela conta) e `sample = 20000` | RNF-2, ADR-0007, ADR-0009 |
 | T-DRAFT-10 | `sem_estatistica_o_ranking_vem_da_composicao`, `frontline_pesa_mais_que_dano_em_time_sem_tanque` | unidade | Com aliados Lutador, Assassino e Atirador e sem base, Mago e Tanque ficam acima de 50%, e o Tanque, que preenche a frontline (≈51,4%), vem antes do Mago, que equilibra o dano (≈50,6%) | R-1, RNF-1, ADR-0007 |
-| T-DRAFT-11 | `sem_estatistica_a_razao_diz_isso` | unidade | Sem base e com o time sem frontline, uma razão do Tanque contém "frontline". O corpo não confere a razão "Sem base estatística ainda" | R-1 |
+| T-DRAFT-11 | `sem_estatistica_a_razao_diz_isso` | unidade | Sem aliado, sem inimigo e sem base, todo candidato do ranking traz a razão "Sem base estatística ainda — ordenado só por composição". Antes o teste conferia a razão de frontline, e esta podia sumir | R-1, RNF-1, A20 |
 | T-DRAFT-12 | `matchup_favoravel_vira_razao` | unidade | Um Mago a 60% em 5000 partidas contra o mago deles ganha a razão que começa com "Vence Inimigo" (+4,8pp pela conta) | R-1, R-21 |
 | T-DRAFT-13 | `o_oponente_de_rota_e_achado_sem_posicao` | regressão | Com a posição do mago deles apagada, ele é inferido no meio, e o Mago continua com a razão "Vence Inimigo" | R-1, R-4, ADR-0017, L-25 |
 | T-DRAFT-14 | `quem_nao_joga_a_rota_fica_de_fora` | regressão | No meio e sem pool, o atirador disponível (id 7) não aparece no ranking | R-1, ADR-0017, L-23 |
@@ -190,9 +192,9 @@ confere saem da mesma conta, feita à parte.
 | T-DRAFT-45 | `a_funcao_de_valor_e_simetrica` | propriedade | `team_value(A, B) + team_value(B, A) = 1`, com tolerância de 1e-9 | R-2 |
 | T-DRAFT-46 | `exposicao_nunca_e_negativa`, `ordena_pelo_valor_depois_da_resposta` | propriedade | Com o Lutador aliado e o Atirador deles, toda `exposure` é ≥ 0, e `after_response` não cresce ao longo da lista | R-2, C-5 |
 | T-DRAFT-47 | `indisponiveis_nao_entram_nem_como_pick_nem_como_resposta` | unidade | Com o Lutador aliado e o Atirador deles, nenhum dos dois volta como pick, e o Lutador nunca é `best_response` | R-2 |
-| T-DRAFT-48 | `breadth_limita_quantos_candidatos_voltam` | unidade | Draft vazio no meio com `breadth = 2`: voltam 2 picks. O índice só tem dois candidatos de meio (Mago e Assassino), então o teste também passa sem a poda | R-2, RNF-4 |
+| T-DRAFT-48 | `breadth_limita_quantos_candidatos_voltam` | unidade | Draft vazio no meio, com dois candidatos no índice: largura 1 devolve 1, largura 5 devolve os 2. Antes o teste pedia largura 2 e passava sem poda nenhuma | R-2, RNF-4, A20 |
 | T-DRAFT-49 | `pool_e_marcado_sem_mudar_a_ordem` | unidade | O Mago na pool liga `in_pool`, e a ordem dos ids fica igual à de sem pool | R-2 |
-| T-DRAFT-50 | `so_entra_quem_joga_a_rota` | unidade | No meio, só Mago e Assassino voltam do `minimax`. É o teste de `minimax.rs`; `poolgap.rs` tem outro com o mesmo nome | R-2, ADR-0017, L-23 |
+| T-DRAFT-50 | `o_minimax_so_traz_quem_joga_a_sua_rota` | unidade | No meio, só Mago e Assassino voltam do `minimax`. É o teste de `minimax.rs`; `poolgap.rs` tem outro com o mesmo nome | R-2, ADR-0017, L-23 |
 | T-DRAFT-51 | `a_resposta_varre_todos_os_campeoes` | regressão | Com 40 lutadores de id 10 a 49, um mago-suporte de id 999 e o atirador deles travado, algum pick tem `best_response = 999` | R-2, L-24 |
 | T-DRAFT-52 | `resultado_e_deterministico` | propriedade | Duas chamadas com a mesma entrada devolvem o mesmo vetor | R-2 |
 | T-DRAFT-53 | `sem_pick_deles_nao_ha_ban_a_sugerir` | unidade | Draft sem campeão nenhum: `suggest_bans` devolve vazio | R-3, ADR-0007, ADR-0013 |
@@ -311,6 +313,7 @@ em tropas aos 10.
 | T-PERFIL-6 | `metrica_que_falta_nao_entra_na_conta` | unidade | Seis partidas de meio com tropa e seis de suporte sem tropa: o geral de `Cs10` tem 6 partidas, o suporte não tem leitura de `Cs10` e o campeão dele conta 6 partidas | R-17, L-27 |
 | T-PERFIL-7 | `espalhamento_conta_so_o_que_passa_do_ruido` | unidade | Médias +5 e −5 de 10 partidas com ruído 10 dão τ² = 49; médias +0,5 e −0,5 dão 0; um grupo de uma célula dá 0 | R-17, 04 §4 |
 | T-PERFIL-8 | `a_razao_sai_da_leitura_mais_segura` | unidade | Com +10 e −10 em 20 partidas cada, a leitura mais clara do primeiro campeão é `Cs10`, com valor positivo | R-1, ADR-0011 |
+| T-PERFIL-9 | `o_perfil_nao_resume_o_jogador_num_numero` | arquitetura | Perfil de 24 partidas em dois campeões: nenhuma chave com um número sozinho se chama nota, rating, MMR, elo, score, overall, tier ou rank. `overall` existe, mas é a lista de leituras por métrica | C-7, RNF-11 |
 
 ### 2.9 Sua rota ao vivo
 
@@ -321,7 +324,7 @@ em tropas aos 10.
 | T-RIVAL-1 | `suporte_ao_vivo_e_comparado_pela_visao_e_nunca_por_tropas` | regressão | Aos 10 minutos, o suporte com 10 tropas e 15 de visão contra 40 tropas e 8 de visão é comparado por visão: 1,5 contra 0,8 por minuto | R-11, L-27 |
 | T-RIVAL-2 | `quem_farma_e_comparado_em_tropas_contra_o_da_mesma_rota` | unidade | O meio com 70 tropas aos 10 minutos é comparado com o meio inimigo (85), não com o topo (95): 7,0 contra 8,5 por minuto | R-11 |
 | T-RIVAL-3 | `sem_oponente_na_rota_ou_sem_rota_nao_ha_painel` | unidade | Sem inimigo na sua rota, ou com a sua posição em branco, `report` devolve `None` | R-11 |
-| T-RIVAL-4 | `antes_de_um_minuto_e_meio_a_taxa_e_ruido` | unidade | Com 1:00 de partida, `report` devolve `None` | R-11 |
+| T-RIVAL-4 | `antes_de_um_minuto_e_meio_a_taxa_e_ruido` | unidade | Na borda de `MIN_SECONDS`: aos 89 s não há painel; aos 90 s há. Antes o teste usava 1:00, e o limite podia ir a 61 s sem ninguém ver | R-11, A20 |
 | T-RIVAL-5 | `na_frente_pelo_ouro_em_itens_com_piso_e_proporcao` | unidade | Contra 1000 de ouro em itens, +300 é na frente, +299 igual e −300 atrás; contra 10 000, +500 é igual e +1000 na frente | R-11 |
 
 ### 2.10 Jogo — campeão, itens e dano
@@ -358,7 +361,7 @@ Bastão (120 de AP), a 3000.
 |---|---|---|---|---|
 | T-BUILD-1 | `time_inimigo_ad_puxa_armadura_acima_de_resistencia_magica`, `inimigo_comprando_ap_inverte_a_prioridade` | unidade | Contra dois atiradores com Lâmina, a Placas fica acima do Manto no ranking; contra dois magos com Bastão, o Manto fica acima da Placas | R-10, C-6 |
 | T-BUILD-2 | `penetracao_inimiga_derruba_o_valor_da_armadura` | unidade | Os mesmos dois atiradores trocando a Lâmina pela Perfurante baixam o `value_per_1000g` da Placas: mesmo time, mesma divisão de dano, só a penetração muda | R-10, C-6, ADR-0015 |
-| T-BUILD-3 | `contra_letalidade_vida_sobe_em_relacao_a_armadura` | unidade | Contra dois atiradores com Perfurante, `enemy_armor_pen_percent > 0` e a Vitalidade fica acima da Placas. O fixture não tem letalidade, e a mesma ordem sai sem penetração nenhuma: o teste não prova que a penetração causa a troca | R-10 |
+| T-BUILD-3 | `contra_penetracao_percentual_vida_ganha_da_armadura` | unidade | A mesma dupla de atiradores sem penetração e com 35% de penetração de armadura (`enemy_armor_pen_percent` de 0 para mais de 0): a razão vida/armadura no valor por 1000 de ouro sobe. Antes se chamava "contra letalidade", não tinha letalidade, e a ordem saía igual sem penetração | R-10, A20 |
 | T-BUILD-4 | `inimigo_com_armadura_valoriza_penetracao_para_mim` | unidade | Um atirador inimigo que troca a Lâmina pela Placas sobe o `value_per_1000g` da Perfurante na sua lista | R-10, C-6 |
 | T-BUILD-5 | `sem_itens_inimigos_cai_no_prior_da_classe`, `share_anda_quando_o_inimigo_compra` | unidade | Sem itens, `incoming_physical_share` passa de 0,7 contra o atirador e fica abaixo de 0,5 contra o mago (o prior de classe); o mesmo atirador com Bastão faz a fração cair | R-10, C-6 |
 | T-BUILD-6 | `item_que_ja_tenho_sai_da_lista` | unidade | Com a Placas no seu inventário, nenhuma sugestão tem o `item_id` dela | R-10 |
@@ -415,7 +418,7 @@ lado.
 | T-OURO-5 | `o_ouro_parado_e_a_diferenca_entre_ganho_e_gasto` | unidade | Aos 1500 s, com 200 tropas, 5 abates, 5 assistências e 1000 investidos: `unspent > 0` e `earned − invested − unspent = 0` (±1e−9) | R-12 |
 | T-OURO-6 | `avisa_quando_ha_ouro_sobrando_no_bolso`, `nao_avisa_quando_o_ouro_esta_todo_investido` | unidade | Aos 1800 s, com 250 tropas, 8 abates, 6 assistências e nada investido: uma nota contém "para gastar"; com 99 000 investidos aos 600 s, nenhuma nota assim e `unspent = 0` | R-12 |
 | T-OURO-7 | `sem_jogador_local_nao_inventa_um_lado` | unidade | Dois jogadores, nenhum local: `ours_invested = 0`, `notes` vazio e ninguém com `is_ally` | R-12 |
-| T-OURO-8 | `ouro_por_minuto_nao_explode_no_segundo_zero` | unidade | Com `game_time = 0`, `gold_per_minute` é finito, pelo piso de 1 s no divisor. Não trava o valor, que é 30 000 por minuto | R-12 |
+| T-OURO-8 | `ouro_por_minuto_nao_explode_no_segundo_zero` | unidade | Com `game_time = 0` e só o ouro inicial, `gold_per_minute` é exatamente 30 000: 500 sobre o piso de 1 s no divisor. Antes o teste só conferia `is_finite` | R-12, A20 |
 | T-OURO-9 | `aponta_o_inimigo_mais_adiantado` | unidade | Inimigos com 4000 e 8000 investidos: alguma nota cita o de 8000 (Viego) | R-12 |
 | T-OURO-10 | `so_o_jogador_local_tem_ouro_em_mao` | regressão | Você (ORDER, local, 1000 investidos) e Zed (CHAOS, 2000 investidos, 150 tropas e 3 abates aos 1200 s): só o seu `unspent` existe; o de Zed é `None`, mesmo com a estimativa dele bem acima do investido. Antes da correção, Zed saía com `unspent = 4773,6`, e a tela o desenhava | C-4, R-12 |
 
@@ -443,6 +446,8 @@ Os testes de `core/src/engine/timeline.rs`. Os jogadores são `eu#BR1` e
 | T-OBJETIVO-14 | `abate_visto_tarde_mostra_o_tempo_sem_inventar_quem_tem` | unidade | `BaronKill` aos 1300 s lido pela primeira vez aos 1340 s (40 s > 5 s): `holders = None`, `seconds_left = 140` | R-13, RNF-1 |
 | T-OBJETIVO-15 | `dragao_comum_nao_da_buff_de_anciao` | unidade | `DragonKill` de `Fire` não cria buff | R-13 |
 | T-OBJETIVO-16 | `mudar_a_constante_nao_quebra_a_logica` | unidade | Com `baron_first = 1500`, o Barão sai aos 1500 s: a lógica não depende do valor da constante | R-13 |
+| T-OBJETIVO-17 | `nenhum_timer_e_de_habilidade` | arquitetura | Todo evento da Live Client, e um `SpellCast` inventado, passam pela timeline e pelos buffs: nenhuma chave do JSON que sai fala de recarga, suprema, feitiço ou habilidade, e todo timer é de objetivo (Dragão, Ancião, Barão, Arauto, Grubs) ou de estrutura (Inibidor, Torre do nexo) | C-1, R-13 |
+| T-OBJETIVO-18 | `le_os_nomes_de_campo_dos_eventos` | fronteira | JSON de `/liveclientdata/eventdata` com `EventName`, `EventTime`, `DragonType`, `KillerName`, `VictimName`, `TurretKilled`, `InhibKilled`, `Result` e `Events`: cada campo chega com o valor escrito | R-13, A19 |
 
 ### 2.15 Prioridade
 
@@ -496,6 +501,7 @@ só o que diz.
 | T-POS-22 | `os_abates_do_time_contam_uma_vez_cada` | unidade | Um abate a cada 300 s em 1800 s dá 6 instantes em `team_kills` | R-16 |
 | T-POS-23 | `gravacao_que_comeca_tarde_usa_o_relogio_da_partida` | regressão | Gravação dos 20:00 aos 30:00, com 270 tropas contra 300 e o Rabadon já no primeiro quadro: `duration = 1800`, a nota de farm é "9.0 tropas por minuto contra 10.0" e nenhuma nota de primeiro item grande. Antes da correção, `duration = 600` e a taxa saía sobre 10 minutos (27 contra 30) | R-16, A9 |
 | T-POS-24 | `so_partida_de_verdade_vale_leitura` | unidade | `worth_reviewing` é falso para um remake de 3:00 (181 quadros) e para 30 quadros no fim de uma partida de 30 minutos, verdadeiro para 5:00 de partida gravada, e falso para a gravação vazia | R-16, A6 |
+| T-POS-25 | `o_pos_jogo_nao_da_nota` | arquitetura | Leitura de 30 minutos com farm atrás do rival: nenhuma chave com um número sozinho se chama nota, rating, MMR, elo, score, overall, tier ou rank; o `weight` de cada observação existe e só ordena | C-7, RNF-11 |
 
 ### 2.17 Casca — fonte da análise, descoberta do cliente, atualizador e gravação
 

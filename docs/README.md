@@ -116,7 +116,7 @@ build/                                   recibos, fora de docs/
 | `A`n, `B`n, `D`n, `P`n | Linha da auditoria: defeito no que está construído (`A`), requisito sem prova (`B`), doc que o código desmentia (`D`), item prático (`P`). `P1` ali não é `P-1` | `build/audit.md` |
 
 Testes são citados pelo nome da função (`popularidade_nao_vira_matchup`): o nome
-é a regra, e `cargo test <nome>` roda só ele (salvo dois nomes repetidos entre módulos, P1 do `build/audit.md`). O T-ID do catálogo agrupa os nomes
+é a regra, e `cargo test <nome>` roda só ele. O T-ID do catálogo agrupa os nomes
 e é o que a matriz cita ([ADR-0021](adr/0021-o-id-do-teste-nomeia-a-funcao.md)).
 
 ### Confiança do número

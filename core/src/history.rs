@@ -408,6 +408,7 @@ mod tests {
                       "teamPosition": "MIDDLE", "win": true,
                       "gameEndedInEarlySurrender": false, "deaths": 2,
                       "challenges": { "laneMinionsFirst10Minutes": 81,
+                                      "jungleCsBefore10Minutes": 12,
                                       "killParticipation": 0.64,
                                       "teamDamagePercentage": 0.31,
                                       "visionScorePerMinute": 0.9 } },
@@ -431,5 +432,7 @@ mod tests {
         assert!((rota.diffs[&Metric::DamageShare] - 6.0).abs() < 1e-9);
         assert!((rota.diffs[&Metric::VisionPerMinute] - 0.2).abs() < 1e-9);
         assert_eq!(rota.diffs[&Metric::Deaths], -4.0);
+        let eu = m.info.participants.iter().find(|p| p.puuid == "eu").unwrap();
+        assert_eq!(eu.challenges.as_ref().unwrap().jungle_cs_before_10, Some(12.0));
     }
 }

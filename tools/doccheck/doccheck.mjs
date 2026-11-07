@@ -337,7 +337,13 @@ export function resolveAll(inv, code, deferred, warn) {
     byKey.get(k).push(x);
   }
   const testsByName = new Map();
-  for (const t of code.tests) if (!testsByName.has(t.name)) testsByName.set(t.name, t);
+  for (const t of code.tests) {
+    const outro = testsByName.get(t.name);
+    // O nome é a chave do catálogo e o argumento do `cargo test` (ADR-0021):
+    // dois testes com o mesmo nome não se distinguem em nenhum dos dois.
+    if (outro) warn(`${where(t)}: teste com o mesmo nome de ${where(outro)}: \`${t.name}\``);
+    else testsByName.set(t.name, t);
+  }
   const commands = new Map(code.commands.map((c) => [c.name, c]));
   const handlers = new Set(code.handlers);
   const invoked = new Set(code.ts.invokes.map((x) => x.name));

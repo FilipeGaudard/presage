@@ -925,6 +925,41 @@ mod tests {
     }
 
     #[test]
+    fn o_pos_jogo_nao_da_nota() {
+        // C-7 e RNF-11: o pós-jogo diz o que foi bem e o que foi mal, e não
+        // resume a partida num número. O `weight` de cada observação só ordena.
+        let rec = gravar(
+            |t| Quadro {
+                cs: (t / 12.0) as i64,
+                rival_cs: (t / 7.0) as i64,
+                ..reta(t)
+            },
+            1800.0,
+        );
+        // As chaves que guardam um número sozinho, em qualquer nível.
+        fn chaves_de_numero(v: &serde_json::Value, out: &mut Vec<String>) {
+            match v {
+                serde_json::Value::Object(m) => {
+                    for (k, x) in m {
+                        if x.is_number() {
+                            out.push(k.to_lowercase());
+                        }
+                        chaves_de_numero(x, out);
+                    }
+                }
+                serde_json::Value::Array(xs) => xs.iter().for_each(|x| chaves_de_numero(x, out)),
+                _ => {}
+            }
+        }
+        let mut ks = Vec::new();
+        chaves_de_numero(&serde_json::to_value(review(&rec, &items())).unwrap(), &mut ks);
+        assert!(ks.contains(&"weight".to_string()), "{ks:?}");
+        for k in ["grade", "rating", "nota", "mmr", "elo", "score", "overall", "tier", "rank"] {
+            assert!(!ks.contains(&k.to_string()), "o pós-jogo carrega uma nota: {k}");
+        }
+    }
+
+    #[test]
     fn so_partida_de_verdade_vale_leitura() {
         // Remake de 3:00, um quadro por segundo: quadros bastam, partida não.
         assert!(!worth_reviewing(&gravar(reta, 180.0)));
