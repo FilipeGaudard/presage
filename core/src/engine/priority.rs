@@ -163,8 +163,9 @@ fn score_lane(
     let mut score = odds * 100.0;
     let mut reasons = Vec::new();
 
+    // A chance e de que lado ela é, sem dizer "a seu favor" quando é 30% (A23).
     reasons.push(format!(
-        "{}v{} a seu favor em {:.0}%",
+        "{}v{}: {:.0}% para o seu lado",
         our_side.len(),
         their_side.len(),
         odds * 100.0
@@ -203,7 +204,8 @@ fn score_lane(
         reasons.push(format!("{} em {:.0}s", spawn.name, spawn.seconds_left));
     }
 
-    reasons.truncate(3);
+    // Todo ponto do placar tem a razão dele na tela: são no máximo cinco
+    // sinais, e cortar a razão deixava os pontos sem explicação (A23).
 
     LanePriority {
         lane: lane.name.to_string(),
@@ -420,6 +422,27 @@ mod tests {
         // Aliado + jungler contra ninguém: 2v0.
         assert!(lane(&report, "TOP").reasons[0].starts_with("2v0"));
         assert_eq!(lane(&report, "TOP").skirmish_odds, 1.0);
+    }
+
+    #[test]
+    fn todo_ponto_da_prioridade_tem_razao() {
+        // Os cinco sinais na rota de baixo: a briga, o atirador deles morto, o
+        // jungler deles morto, 30 de CS à frente e o dragão em 20 s. Cada um soma
+        // ponto no placar, então cada um aparece como razão (A23: o corte em três
+        // tirava a razão e deixava os pontos).
+        let mut game = base_game();
+        game.players[7] = player("IniBot", "CHAOS", "BOTTOM", false, true, 30.0, 70);
+        game.players[4] = player("IniJg", "CHAOS", "JUNGLE", false, true, 25.0, 80);
+        let report = report(&game, &timeline(vec![spawn("Dragão", 20.0)]), &champions(), &items());
+        let bot = lane(&report, "BOT");
+
+        assert_eq!(bot.reasons.len(), 5, "{:?}", bot.reasons);
+        for sinal in ["morto por", "Jungler inimigo morto", "de CS atrás", "Dragão em"] {
+            assert!(bot.reasons.iter().any(|r| r.contains(sinal)), "falta {sinal}: {:?}", bot.reasons);
+        }
+        // A briga vem primeiro, e não diz "a seu favor" quando a chance é baixa:
+        // ela diz a chance, e de que lado.
+        assert!(bot.reasons[0].ends_with("para o seu lado"), "{}", bot.reasons[0]);
     }
 
     #[test]

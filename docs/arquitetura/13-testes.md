@@ -468,6 +468,7 @@ rota e 80 na selva.
 | T-PRIORIDADE-8 | `foco_marca_quando_o_numero_e_estimado` | unidade | Barão a 40 s com `observed = false` dá um `focus` com `estimado` | R-14, R-13, RNF-1 |
 | T-PRIORIDADE-9 | `objetivo_distante_nao_vira_foco` | unidade | Barão a 400 s (> 90 s) deixa `focus = None` | R-14 |
 | T-PRIORIDADE-10 | `placar_fica_na_faixa` | propriedade | Com o jungler e o topo inimigos mortos por 90 s, o topo deles com 0 tropas e o Barão a 0 s, todo `score` fica em [0, 100] | R-14 |
+| T-PRIORIDADE-11 | `todo_ponto_da_prioridade_tem_razao` | regressão | Na rota de baixo com o atirador deles morto, o jungler deles morto, 30 de CS à frente e o dragão em 20 s, saem as cinco razões, e a primeira é a briga terminando em "para o seu lado". Antes da correção saíam três ("2v0 a seu favor em 100%", o morto, o jungler): o CS e o dragão somavam ponto sem razão | R-14, A23 |
 
 ### 2.16 Pós-partida
 

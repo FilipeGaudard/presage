@@ -648,12 +648,13 @@ const OBJECTIVE_WINDOW: f64 = 90.0;
 - **Regra:** a base do placar é a chance de escaramuça × 100. Somam: inimigo da
   rota morto, metade do tempo de respawn até 25; caçador inimigo morto, 12;
   tropas deles atrás, até 10, cheio com 20 de diferença; objetivo do lado da rota
-  a até 90 s, até 15, linear na urgência. Placar em [0; 100]; até três razões.
+  a até 90 s, até 15, linear na urgência. Placar em [0; 100]; uma razão por
+  sinal que somou ponto, até cinco (A23: o corte em três deixava pontos sem razão).
 - **Origem:** escolha à mão.
 - **Confiança:** fraca. São pesos de exibição, e a prioridade não tem etiqueta na
   tela.
-- **Onde:** `core/src/engine/priority.rs:24-30`, as somas em
-  `priority.rs:163-202`, o corte das razões em `priority.rs:206`; 10 §30.
+- **Onde:** `core/src/engine/priority.rs:24-30`, as somas e as razões em
+  `score_lane`; 10 §30.
   As razões são cortadas depois de somar os pontos (defeito no `build/audit.md`).
 - **Quando a base existir:** um modelo de valor por rota ajustado contra o
   resultado de escaramuça e objetivo.

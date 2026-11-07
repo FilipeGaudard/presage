@@ -12,15 +12,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 353 | 353 | 0 | 0 |
+| test | 354 | 354 | 0 | 0 |
 | ui-test | 43 | 10 | 33 | 0 |
 | trace | 43 | 37 | 6 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 481; nomes no catálogo (13): 481; fora dele: 0
+- testes no código: 482; nomes no catálogo (13): 482; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 2941
+- IDs citados conferidos: 2945
 
 ## type
 
@@ -828,16 +828,17 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-PREVIA-7` | arquitetura/13-testes §2 | done | core/src/engine/wincon.rs:320 |
 | `T-PREVIA-8` | arquitetura/13-testes §2 | done | core/src/engine/wincon.rs:329 |
 | `T-PREVIA-9` | arquitetura/13-testes §2 | done | core/src/engine/wincon.rs:335 |
-| `T-PRIORIDADE-1` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:335 |
-| `T-PRIORIDADE-10` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:464 |
-| `T-PRIORIDADE-2` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:345 |
-| `T-PRIORIDADE-3` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:354 |
-| `T-PRIORIDADE-4` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:370 |
-| `T-PRIORIDADE-5` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:385 |
-| `T-PRIORIDADE-6` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:414 |
-| `T-PRIORIDADE-7` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:425 |
-| `T-PRIORIDADE-8` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:445 |
-| `T-PRIORIDADE-9` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:453 |
+| `T-PRIORIDADE-1` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:337 |
+| `T-PRIORIDADE-10` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:487 |
+| `T-PRIORIDADE-11` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:427 |
+| `T-PRIORIDADE-2` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:347 |
+| `T-PRIORIDADE-3` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:356 |
+| `T-PRIORIDADE-4` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:372 |
+| `T-PRIORIDADE-5` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:387 |
+| `T-PRIORIDADE-6` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:416 |
+| `T-PRIORIDADE-7` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:448 |
+| `T-PRIORIDADE-8` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:468 |
+| `T-PRIORIDADE-9` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:476 |
 | `T-RIVAL-1` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:158 |
 | `T-RIVAL-2` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:176 |
 | `T-RIVAL-3` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:193 |
@@ -1095,4 +1096,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 41 | 21 | 0 | 38 |
+| 40 | 22 | 0 | 38 |

@@ -1196,7 +1196,7 @@ tropas.
 | Estrutura | Inibidor do meio, deles, volta em 2:23 | `Respawn`: caído aos 16:30 + 5:00 |
 | Buff | Barão do seu time, 2:13, com Ahri, Garen e Ashe | `BuffTracker::update`: 18:20 + 3:00; Lee Sin e Thresh já não estão em `holders` |
 | Placar | dragões 2–1 (Fire, Ocean, Cloud), torres 3–1, abates 11–8 | `timeline::build` |
-| Prioridade | BOT 78,4 ("3v2 a seu favor em 61%", "Jungler inimigo morto por 23s", "Dragão em 43s"), TOP 61,2, MID 54,8 | `priority::report` |
+| Prioridade | BOT 78,4 ("3v2: 61% para o seu lado", "Jungler inimigo morto por 23s", "Dragão em 43s"), TOP 61,2, MID 54,8 | `priority::report` |
 | Ouro | −2.950 em itens: 19.200 contra 22.150 | `gold::report` |
 | Build | 81% do dano que vem é físico; vida efetiva 3.240; 35% de penetração de armadura e 18 de letalidade deles | `build::suggest`, o `BuildContext` |
 | Próximo item | Zhonya 6,8 por 1000 de ouro, Rylai 5,4, Cajado do Vazio 4,9, Rabadon 3,6 | `build::suggest`, a lista |
@@ -1225,7 +1225,7 @@ mesma leitura e tudo visível, ele mostraria:
 - **ouro:** −2.950, em vermelho, sem a coluna de ouro em mão;
 - **dano:** 81% físico, vida efetiva 3.240, 35% de penetração de armadura deles;
 - **objetivos:** Dragão 0:43 e Barão 5:13;
-- **prioridade:** BOT, com "3v2 a seu favor em 61%";
+- **prioridade:** BOT, com "3v2: 61% para o seu lado";
 - **escaramuça:** `lanes::focus` acha o Dragão a 43 s, dentro dos 90 s, e escolhe
   o grupo `dragao`, JG+ADC+SUP, a 61%, porque "Dragão em 0:43";
 - **próximo item:** Zhonya (3.250) e Rylai (2.600), com o primeiro motivo.

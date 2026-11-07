@@ -1807,13 +1807,13 @@ pub fn report(
   Para cada uma:
   1. Monta a escaramuça. De um lado, os vivos do seu time naquela rota, mais
      você se não for dela e estiver vivo. Do outro, os vivos deles na rota.
-     `score = skirmish_odds × 100`.
+     `score = skirmish_odds × 100`, e a razão `NvM: X% para o seu lado`.
   2. Primeiro inimigo morto da rota: `+ min(respawn_timer / 2, 25)`.
   3. Jungler inimigo morto: `+ 12` em todas as rotas.
   4. Seu time à frente em tropas na rota: `+ min(diferença / 20 × 10, 10)`.
   5. Objetivo da rota a até 90 s: `+ (1 − faltam / 90) × 15`.
-  6. Corta o placar em [0, 100], arredonda a 0,1 e guarda as três primeiras
-     razões.
+  6. Corta o placar em [0, 100] e arredonda a 0,1. Cada sinal que somou ponto
+     deixa a sua razão, até cinco.
 
   As rotas saem do maior placar ao menor. `focus` é o primeiro de
   `timeline.upcoming` a até 90 s, com ` (estimado)` quando ele não é observado.
@@ -1827,8 +1827,9 @@ pub fn report(
 - **Atende:** R-14, C-4, C-5
 
 As razões dizem que a rota vale mais e por quê, nunca onde o inimigo está
-([03 §7](03-motor-da-partida.md#7-prioridade)). Com mais de três sinais, as
-razões a mais são cortadas, mas os pontos delas continuam no `score`.
+([03 §7](03-motor-da-partida.md#7-prioridade)). Todo ponto do `score` tem a
+razão dele: até a 0.7.0 as razões eram cortadas em três e os pontos ficavam
+(A23, T-PRIORIDADE-11).
 
 ## 31. `core::engine::coach` — Leitura pós-partida (`core`, pura)
 

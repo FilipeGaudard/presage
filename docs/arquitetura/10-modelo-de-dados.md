@@ -2344,7 +2344,7 @@ pub struct LanePriority {
     pub lane: String,         // `TOP`, `MID` ou `BOT`, escrito à mão na tabela privada `LANES`
     pub score: f64,           // placar 0–100, uma casa decimal: peso de exibição, não probabilidade
     pub skirmish_odds: f64,   // fração 0–1: chance de ganhar a luta na rota, de `build::skirmish_odds`
-    pub reasons: Vec<String>, // até 3 frases; a primeira é sempre `NvM a seu favor em X%`
+    pub reasons: Vec<String>, // uma frase por sinal que somou ponto, até 5; a primeira é sempre `NvM: X% para o seu lado` (A23)
 }
 ```
 
