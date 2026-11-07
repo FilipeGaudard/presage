@@ -263,11 +263,12 @@ regras citam, com os ids e as árvores do Data Dragon.
 | T-RUNAS-2 | `corpo_a_corpo_contra_distancia_recebe_sustentacao` | unidade | Tanque corpo a corpo (alcance 150) contra Mago à distância (550) no topo: `GraspOfTheUndying` está entre as principais | R-7 |
 | T-RUNAS-3 | `atirador_contra_frontline_quer_troca_longa`, `atirador_contra_alvo_fragil_quer_troca_curta`, `o_mesmo_campeao_muda_de_runa_conforme_o_oponente` | unidade | O mesmo Atirador no bot: contra o Tanque a primeira é `LethalTempo`; contra o Mago, `PressTheAttack` está na lista; e a primeira das duas listas é diferente | R-7, C-6 |
 | T-RUNAS-4 | `assassino_contra_alvo_fragil_quer_explosao` | unidade | Assassino corpo a corpo (alcance 150) contra Mago no meio: a primeira é `Electrocute` | R-7 |
-| T-RUNAS-5 | `contra_quem_explode_a_secundaria_corta_a_explosao`, `contra_desgaste_de_longe_a_secundaria_regenera` | unidade | Lutador contra Assassino no topo: a secundária é `BonePlating`; Lutador contra Mago à distância no topo: `SecondWind` | R-7 |
+| T-RUNAS-5 | `contra_quem_explode_a_secundaria_corta_a_explosao`, `contra_desgaste_de_longe_a_secundaria_regenera` | unidade | Lutador contra Assassino no topo: a secundária é `BonePlating`; Assassino corpo a corpo contra Mago à distância no meio, com a principal fora de Determinação: `SecondWind` | R-7 |
 | T-RUNAS-6 | `runa_que_sumiu_do_patch_nao_e_sugerida` | regressão | Com `Electrocute` tirada do índice, o Assassino contra o Mago no meio recebe um plano sem ela, e toda principal sugerida existe no índice | R-7, L-17 |
 | T-RUNAS-7 | `nunca_sai_mais_que_o_teto_de_sugestoes`, `a_lista_sai_ordenada`, `toda_runa_sugerida_vem_com_motivo` | unidade | Lutador contra Tanque no topo: no máximo 3 principais (`MAX_SUGGESTIONS`); Atirador contra Tanque no bot: `score` não cresce ao descer a lista; Assassino contra Atirador no meio: toda principal tem motivo | R-7, C-5, RNF-1 |
 | T-RUNAS-8 | `o_plano_nunca_se_apresenta_como_estatistica` | limitação | Lutador contra Mago no topo: `from_data` é falso. Deve mudar quando a base de partidas entrar em `plan` | R-7, RNF-1 |
 | T-RUNAS-9 | `o_confronto_aparece_escrito` | unidade | Lutador contra Mago no topo: `matchup` é exatamente "Lutador contra Mago" | R-7 |
+| T-RUNAS-10 | `a_secundaria_nunca_e_da_arvore_da_principal` | regressão | Tanque corpo a corpo contra Mago à distância no topo: a principal é `GraspOfTheUndying` (Determinação), e a secundária, se houver, é de outra árvore. Antes da correção, saía `SecondWind`, também de Determinação, que o cliente não aceita | R-7, A10 |
 
 ### 2.7 Estatística — shrinkage, referência e a base de partidas
 

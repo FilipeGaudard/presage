@@ -455,7 +455,7 @@ Valor no código, não conferido pelo doccheck (`REGRAS`, na ordem):
 |---|---|---|
 | `GraspOfTheUndying` | 1,0 | você corpo a corpo, tanque ou lutador; ele à distância |
 | `Conqueror` | 1,0 | você lutador corpo a corpo; ele corpo a corpo |
-| `Conqueror` | 0,8 | você lutador (ou "Juggernaut", classe que o Data Dragon não tem); ele linha de frente. Soma com a de cima |
+| `Conqueror` | 0,8 | você lutador; ele linha de frente. Soma com a de cima. (A condição "ou Juggernaut" saiu: o Data Dragon não tem essa classe, e ela nunca disparava) |
 | `LethalTempo` | 0,9 | você atirador; ele linha de frente |
 | `PressTheAttack` | 0,85 | você atirador; ele não é linha de frente |
 | `Electrocute` | 1,0 | você assassino; ele não é linha de frente |

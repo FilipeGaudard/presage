@@ -138,7 +138,7 @@ const REGRAS: &[Regra] = &[
         runa: "Conqueror",
         peso: 0.8,
         motivo: "contra alguém que aguenta apanhar, o dano cresce com o tempo de luta",
-        quando: |eu, ele, _| (lutador(eu) || tem(eu, "Juggernaut")) && ele.is_frontline(),
+        quando: |eu, ele, _| lutador(eu) && ele.is_frontline(),
     },
     Regra {
         runa: "LethalTempo",
@@ -281,14 +281,19 @@ pub fn plan(
     keystones.sort_by(|a, b| b.score.total_cmp(&a.score).then_with(|| a.name.cmp(&b.name)));
     keystones.truncate(MAX_SUGGESTIONS);
 
+    // A secundária sai de outra árvore: o cliente não aceita a principal e a
+    // secundária da mesma (A10). Sem regra que case numa outra árvore, não há
+    // secundária, em vez de uma combinação que o cliente recusa.
+    let arvore_principal = keystones
+        .first()
+        .and_then(|k| runes.get(&k.key))
+        .map(|r| r.tree_key.as_str());
     let secondary = SECUNDARIAS
         .iter()
-        .find(|regra| (regra.quando)(eu, ele) && runes.get(regra.runa).is_some())
-        .and_then(|regra| {
-            runes
-                .get(regra.runa)
-                .map(|r| para_sugestao(r, 1.0, vec![regra.motivo.to_string()]))
-        });
+        .filter(|regra| (regra.quando)(eu, ele))
+        .filter_map(|regra| runes.get(regra.runa).map(|r| (regra, r)))
+        .find(|(_, r)| Some(r.tree_key.as_str()) != arvore_principal)
+        .map(|(regra, r)| para_sugestao(r, 1.0, vec![regra.motivo.to_string()]));
 
     Some(RunePlan {
         keystones,
@@ -373,6 +378,25 @@ mod tests {
     }
 
     #[test]
+    fn a_secundaria_nunca_e_da_arvore_da_principal() {
+        // Tanque corpo a corpo contra mago à distância no topo: a principal é
+        // Grasp (Determinação), e a primeira secundária que casa, SecondWind,
+        // também é de Determinação. O cliente não aceita as duas da mesma
+        // árvore (A10).
+        let idx = indice(vec![tanque_melee(1), mago_ranged(2)]);
+        let p = plan(1, 2, Role::Top, &idx, &runas()).unwrap();
+        let principal = &p.keystones[0];
+        assert_eq!(principal.key, "GraspOfTheUndying");
+        if let Some(secundaria) = &p.secondary {
+            assert_ne!(
+                secundaria.tree_name, principal.tree_name,
+                "principal {} e secundária {} na mesma árvore",
+                principal.key, secundaria.key
+            );
+        }
+    }
+
+    #[test]
     fn sem_indice_de_runas_nao_ha_plano() {
         let idx = indice(vec![lutador_melee(1), mago_ranged(2)]);
         assert!(plan(1, 2, Role::Top, &idx, &RuneIndex::default()).is_none());
@@ -443,8 +467,12 @@ mod tests {
 
     #[test]
     fn contra_desgaste_de_longe_a_secundaria_regenera() {
-        let idx = indice(vec![lutador_melee(1), mago_ranged(2)]);
-        let plano = plan(1, 2, Role::Top, &idx, &runas()).unwrap();
+        // Corpo a corpo contra mago à distância, com a principal fora de
+        // Determinação: a secundária é SecondWind. Com Grasp na principal ela
+        // não pode ser, porque as duas seriam da mesma árvore (A10).
+        let idx = indice(vec![assassino_melee(1), mago_ranged(2)]);
+        let plano = plan(1, 2, Role::Mid, &idx, &runas()).unwrap();
+        assert_ne!(plano.keystones[0].tree_name, "Resolve", "{:?}", plano.keystones);
         assert_eq!(plano.secondary.unwrap().key, "SecondWind");
     }
 

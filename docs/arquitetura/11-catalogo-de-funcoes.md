@@ -974,8 +974,9 @@ pub fn plan(
      motivo às razões.
   2. Ordena por soma decrescente, depois nome; ficam 3 (`MAX_SUGGESTIONS`).
   3. A secundária é a primeira de `SECUNDARIAS` (`SecondWind`, `BonePlating`,
-     `TasteOfBlood`) que casa e existe no índice, com `score` 1. Ela não olha a
-     árvore da principal.
+     `TasteOfBlood`) que casa, existe no índice e é de **outra árvore** que a
+     primeira principal, com `score` 1. Sem nenhuma assim, `None`: o cliente não
+     aceita principal e secundária da mesma árvore (A10).
   4. `from_data = false`.
 - **Params:** `mine` e `opponent` são ids do Data Dragon da sua rota (na casca,
   `LaneOutlook::ally` e `LaneOutlook::enemy`). `role` é a sua rota; só

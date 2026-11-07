@@ -12,15 +12,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 340 | 340 | 0 | 0 |
+| test | 341 | 341 | 0 | 0 |
 | ui-test | 41 | 3 | 38 | 0 |
 | trace | 43 | 33 | 10 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 2 | 0 | 2 | 0 |
 
-- testes no código: 467; nomes no catálogo (13): 465; fora dele: 0
+- testes no código: 468; nomes no catálogo (13): 466; fora dele: 0
 - links relativos conferidos: 869
-- IDs citados conferidos: 2845
+- IDs citados conferidos: 2848
 
 ## type
 
@@ -857,15 +857,16 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-ROTA-7` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:811 |
 | `T-ROTA-8` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:821 |
 | `T-ROTA-9` | arquitetura/13-testes §2 | done | core/src/engine/lanes.rs:864 |
-| `T-RUNAS-1` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:375 |
-| `T-RUNAS-2` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:387 |
-| `T-RUNAS-3` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:399 |
-| `T-RUNAS-4` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:413 |
-| `T-RUNAS-5` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:437 |
-| `T-RUNAS-6` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:451 |
-| `T-RUNAS-7` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:467 |
-| `T-RUNAS-8` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:493 |
-| `T-RUNAS-9` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:502 |
+| `T-RUNAS-1` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:399 |
+| `T-RUNAS-10` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:380 |
+| `T-RUNAS-2` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:411 |
+| `T-RUNAS-3` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:423 |
+| `T-RUNAS-4` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:437 |
+| `T-RUNAS-5` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:461 |
+| `T-RUNAS-6` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:479 |
+| `T-RUNAS-7` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:495 |
+| `T-RUNAS-8` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:521 |
+| `T-RUNAS-9` | arquitetura/13-testes §2 | done | core/src/engine/runes.rs:530 |
 | `T-STATS-1` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:294 |
 | `T-STATS-10` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:380 |
 | `T-STATS-11` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:412 |
@@ -1079,4 +1080,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 58 | 4 | 0 | 38 |
+| 57 | 5 | 0 | 38 |

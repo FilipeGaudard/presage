@@ -264,6 +264,10 @@ regras mecânicas — quem alcança quem, quem aguenta troca longa, quem morre d
 explosão. **Não sai de winrate**, e `from_data` é `false` para a tela não
 escrever "segundo N partidas".
 
+A secundária sai de uma árvore diferente da principal, como o cliente exige.
+Quando nenhuma regra de secundária casa numa outra árvore, não há secundária: é
+melhor do que sugerir uma combinação que o cliente recusa (A10, T-RUNAS-10).
+
 As runas são referenciadas pela **chave textual** do Data Dragon (`Conqueror`,
 `GraspOfTheUndying`), nunca pelo id numérico. Id muda de patch e vira ícone
 errado em silêncio; a chave é estável, e uma chave que suma simplesmente deixa de
