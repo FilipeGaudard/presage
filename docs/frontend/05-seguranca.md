@@ -48,9 +48,9 @@ do ponto de vista da tela.
   janela chamar os 26. O overlay usa cinco: `get_overlay_prefs`, `get_live`,
   `build_suggestions`, `gold_report`, `skirmish_focus`. Os outros, `set_pool` e
   `set_autostart` inclusive, também estão ao alcance dele.
-- **Não há arrasto de janela.** `core:default` não inclui
-  `core:window:allow-start-dragging`, e é por isso que, mesmo clicável, o overlay
-  não se move ([04 §1](04-overlay.md#1-a-janela)).
+- **Arrasto de janela só no overlay.** `core:default` não inclui
+  `core:window:allow-start-dragging`; a capability do overlay o põe à parte, para
+  a cabeça arrastar a janela ([04 §1](04-overlay.md#1-a-janela), A15).
 
 As duas janelas carregam só o nosso código, então o risco é baixo; o defeito é
 de mínimo privilégio ([GC-13](07-lacunas-da-casca.md)).

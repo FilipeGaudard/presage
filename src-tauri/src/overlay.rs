@@ -7,12 +7,15 @@
 //!
 //! Por padrão o overlay é atravessável pelo mouse, senão ele comeria cliques no
 //! meio da partida. `Ctrl+Shift+O` torna a janela clicável quando você quiser
-//! mexer nela.
+//! arrastá-la pela cabeça, e só enquanto ela mostra algo (A15).
 
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 
 use tauri::{AppHandle, Manager};
 use tauri_plugin_global_shortcut::{Code, Modifiers, Shortcut};
+
+use crate::watcher::Shared;
 
 pub const LABEL: &str = "overlay";
 
@@ -29,9 +32,28 @@ pub fn interact_shortcut() -> Shortcut {
 
 /// Deixa a janela atravessável antes de qualquer exibição.
 pub fn prepare(app: &AppHandle) {
-    if let Some(window) = app.get_webview_window(LABEL) {
-        let _ = window.set_ignore_cursor_events(true);
-    }
+    aplicar(app);
+}
+
+/// Põe a janela no modo de clique que a regra do core manda
+/// (`OverlayPrefs::atravessa_o_mouse`): pega clique só com o atalho ligado, na
+/// partida e com alguma seção à mostra. Fora disso a janela não desenha nada, e
+/// um retângulo invisível comeria o clique do jogo (A15). Quem muda qualquer um
+/// dos três chama de novo: o atalho, o começo e o fim da partida, as seções.
+pub fn aplicar(app: &AppHandle) {
+    let Some(window) = app.get_webview_window(LABEL) else {
+        return;
+    };
+    let atravessa = match app.try_state::<Arc<Shared>>() {
+        Some(shared) => {
+            let em_partida = shared.live.lock().unwrap().is_some();
+            let prefs = shared.overlay_prefs.read().unwrap();
+            prefs.atravessa_o_mouse(INTERACTIVE.load(Ordering::Relaxed), em_partida)
+        }
+        // Sem o estado ainda, o lado seguro: atravessa.
+        None => true,
+    };
+    let _ = window.set_ignore_cursor_events(atravessa);
 }
 
 pub fn toggle_visible(app: &AppHandle) {
@@ -52,13 +74,9 @@ pub fn toggle_visible(app: &AppHandle) {
 }
 
 pub fn toggle_interactive(app: &AppHandle) {
-    let Some(window) = app.get_webview_window(LABEL) else {
-        return;
-    };
-
     let interactive = !INTERACTIVE.load(Ordering::Relaxed);
     INTERACTIVE.store(interactive, Ordering::Relaxed);
-    let _ = window.set_ignore_cursor_events(!interactive);
+    aplicar(app);
 
     tracing::debug!(interactive, "overlay: modo de clique alternado");
 }

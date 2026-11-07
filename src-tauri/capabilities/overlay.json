@@ -1,9 +1,10 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "overlay",
-  "description": "O overlay por cima do jogo: só o padrão do Tauri (comandos e eventos). Ele não atualiza nem reinicia o app (A33)",
+  "description": "O overlay por cima do jogo: o padrão do Tauri (comandos e eventos) e arrastar a janela pela cabeça (A15). Ele não atualiza nem reinicia o app (A33)",
   "windows": ["overlay"],
   "permissions": [
-    "core:default"
+    "core:default",
+    "core:window:allow-start-dragging"
   ]
 }

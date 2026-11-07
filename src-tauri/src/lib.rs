@@ -470,6 +470,8 @@ fn set_overlay_prefs(
     storage::write_json(PREFS_CACHE, &prefs).map_err(|err| err.to_string())?;
     *shared.overlay_prefs.write().unwrap() = prefs.clone();
     let _ = app.emit(watcher::EVENT_PREFS, &prefs);
+    // Tudo desligado, a janela não desenha nada e não pode pegar clique (A15).
+    overlay::aplicar(&app);
     Ok(())
 }
 

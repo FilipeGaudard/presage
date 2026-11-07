@@ -397,9 +397,10 @@ lista de bans.
 - Tudo desligado: "Tudo desligado: o overlay não vai aparecer. O painel continua
   funcionando normalmente."
 - Rodapé: "O overlay abre e fecha com Ctrl+Shift+P. Ele nasce atravessável pelo
-  mouse, então não come clique; Ctrl+Shift+O deixa a janela clicável quando você
-  quiser arrastá-la." Arrastar não funciona: a janela não tem região de arrasto
-  ([GC-8](07-lacunas-da-casca.md)).
+  mouse, então não come clique; na partida, Ctrl+Shift+O deixa a janela clicável
+  para você arrastá-la pela cabeça (PRESAGE e o relógio), e de novo devolve o
+  clique ao jogo. Fora da partida, ou com tudo desligado, ela continua
+  atravessável." (A15; a posição não é gravada, [GC-8](07-lacunas-da-casca.md)).
 - Autostart: "Desligado até você ligar. O ícone na bandeja traz a janela de
   volta."
 

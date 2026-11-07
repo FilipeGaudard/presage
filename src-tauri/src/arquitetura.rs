@@ -178,3 +178,21 @@ fn cada_janela_tem_so_o_que_precisa() {
     let da_main: Vec<&String> = por_janela.iter().filter(|(j, _)| j == "main").flat_map(|(_, p)| p).collect();
     assert!(da_main.iter().any(|p| p.starts_with("updater:")), "a janela principal perdeu o atualizador");
 }
+
+#[test]
+fn o_overlay_arrasta_pela_cabeca_e_so_pega_clique_quando_mostra_algo() {
+    // A15: Ajustes promete arrastar o overlay com Ctrl+Shift+O. Para isso a
+    // cabeça é região de arrasto, e a capability do overlay deixa arrastar.
+    let cap = ler(&raiz().join("capabilities").join("overlay.json"));
+    assert!(cap.contains("\"core:window:allow-start-dragging\""), "o overlay não pode arrastar");
+    let tela = ler(&raiz().join("..").join("src").join("overlay.tsx"));
+    let cabeca = tela.find("className=\"hud-head\"").expect("sem a cabeça do overlay");
+    let inicio = tela[..cabeca].rfind('<').unwrap();
+    let fim = cabeca + tela[cabeca..].find('>').unwrap();
+    assert!(tela[inicio..fim].contains("data-tauri-drag-region"), "a cabeça não é região de arrasto: {}", &tela[inicio..fim]);
+    // Clicável, a janela inteira pega clique, desenhe ela algo ou não. Quem
+    // decide é a regra do core, que olha a partida e as seções, e não só o atalho.
+    let overlay = ler(&raiz().join("src").join("overlay.rs"));
+    assert!(overlay.contains("atravessa_o_mouse("), "o clique do overlay não segue OverlayPrefs::atravessa_o_mouse");
+    assert_eq!(overlay.matches("set_ignore_cursor_events(").count(), 1, "outro lugar muda o clique sem a regra");
+}

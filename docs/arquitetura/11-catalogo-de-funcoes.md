@@ -370,6 +370,7 @@ impl OverlayPrefs {
     pub fn set(&mut self, section: Section, visible: bool);
     pub fn anything_visible(&self) -> bool;
     pub fn visible(&self) -> Vec<Section>;
+    pub fn atravessa_o_mouse(&self, interativo: bool, em_partida: bool) -> bool;
 }
 ```
 
@@ -379,6 +380,7 @@ impl OverlayPrefs {
 | `set` | Tira a seção de `hidden` e, se `visible` é falso, põe de volta no fim. Nunca duplica | R-15 |
 | `anything_visible` | Alguma seção de `Section::ALL` aparece. Com tudo desligado, quem chama decide o que fazer com a janela | R-15 |
 | `visible` | As seções que aparecem, na ordem de `Section::ALL` | R-15 |
+| `atravessa_o_mouse` | Falso só com o atalho ligado (`interativo`), na partida e com `anything_visible`. Clicável, a janela inteira pega clique; fora da partida ou com tudo desligado ela não desenha nada, e um retângulo invisível comeria o clique do jogo. A casca chama por `overlay::aplicar` a cada mudança do atalho, da partida e das seções (A15, T-ENTRADA-50) | R-15, C-3 |
 
 ## 9. `core::engine` — Ranking do draft (`core`, pura)
 

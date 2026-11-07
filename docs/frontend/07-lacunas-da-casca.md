@@ -25,7 +25,7 @@ de vir da casca, e não ser adivinhado ou copiado no TypeScript.
 | GC-5 | A rota que o motor usou não volta para a tela | P1 | aberta |
 | GC-6 | Dois vocabulários de rota na mesma ponte | P1 | parcial: os comandos aceitam os dois (T-JOGO-15); unificar a ponte fica |
 | GC-7 | Motor sem campeões fica "carregando" para sempre | P1 | parcial: campeões e itens dizem o motivo (A32); runas ainda falham só no log |
-| GC-8 | O overlay não arrasta e não diz o próprio estado | P1 | aberta |
+| GC-8 | O overlay não arrasta e não diz o próprio estado | P1 | parcial: arrasta pela cabeça e não come clique vazio (A15); posição, estado e atalhos ficam |
 | GC-9 | Regras do core copiadas no front | P1 | aberta |
 | GC-10 | Rótulos escritos dos dois lados | P2 | aberta |
 | GC-11 | O número de seções do overlay escrito à mão | P2 | aberta |
@@ -199,7 +199,11 @@ item e de runa separado do de campeão.
 - Um comando que diga quais atalhos foram registrados, para Ajustes avisar.
 - Prova: TF-OVERLAY-5.
 
-**Enquanto isso:** o overlay fica onde nasceu.
+**Feito (A15):** a cabeça é região de arrasto, com a permissão na capability do
+overlay; e a janela só pega clique com o atalho ligado, na partida e com alguma
+seção à mostra (`OverlayPrefs::atravessa_o_mouse`, aplicada por
+`overlay::aplicar`). Falta: gravar a posição, o evento de estado e o comando dos
+atalhos.
 
 ## GC-9 — Regras do core copiadas no front (P1)
 

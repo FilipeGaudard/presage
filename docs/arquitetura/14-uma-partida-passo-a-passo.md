@@ -161,7 +161,8 @@ atalhos, Bandeja).
 - Ícone que não sobe ou atalho já registrado por outro app viram só um aviso no
   log. Ajustes continua prometendo `Ctrl+Shift+P`
   ([GC-8](../frontend/07-lacunas-da-casca.md)).
-- O overlay não arrasta: a janela fica em (24, 120) (GC-8).
+- O overlay arrasta pela cabeça na partida, com `Ctrl+Shift+O` (A15), mas a
+  posição não é gravada: cada abertura começa em (24, 120) (GC-8).
 
 ### 3.4 As três tarefas de fundo
 

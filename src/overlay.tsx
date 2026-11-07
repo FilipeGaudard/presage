@@ -109,7 +109,8 @@ function Overlay() {
 
   return (
     <div className="hud">
-      <div className="hud-head">
+      {/* Clicável (Ctrl+Shift+O), a cabeça arrasta a janela (A15). */}
+      <div className="hud-head" data-tauri-drag-region>
         <span className="hud-brand">PRESAGE</span>
         <span className="hud-clock">{clock(snapshot.timeline.gameTime)}</span>
       </div>

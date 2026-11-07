@@ -94,6 +94,7 @@ dado e não só sem dado, teste primeiro contra o código velho) está em
 | T-ENTRADA-47 | `le_os_nomes_de_campo_da_live_client` | fronteira | JSON de um jogador de `/liveclientdata/playerlist` (`rawChampionName`, `riotId`, `isDead`, `respawnTimer`, `itemID`, `creepScore`, `wardScore`…): cada campo chega com o valor escrito | R-11, R-12, A19 |
 | T-ENTRADA-48 | `secao_desconhecida_ou_repetida_nao_derruba_a_escolha` | regressão | `{"hidden": ["gold", "radar", "gold", "nextItem"]}` lê como `[Gold, NextItem]`. Antes, a seção desconhecida derrubava a leitura inteira e tudo voltava a aparecer | R-15, A31 |
 | T-ENTRADA-49 | `a_pool_gravada_guarda_os_invariantes` | unidade | Uma pool com o Mid 103 duas vezes (core e situacional), um id 0, o 103 sem rota, e os bans `[1, 2, 2, 0, 3, -4, 5, 6, 7]`: `normalized` deixa o 103 do meio situacional e o 103 sem rota, e os bans `[1, 2, 3, 5, 6]` | R-3, R-9, A29 |
+| T-ENTRADA-50 | `o_overlay_so_pega_clique_quando_mostra_algo` | unidade | Com o atalho e na partida, `atravessa_o_mouse` é falso com tudo ligado e com só uma seção ligada; sem o atalho, fora da partida ou com as seis desligadas, é verdadeiro | R-15, A15 |
 
 ### 2.2 Coletor — opções, estado, cliente da Riot, agregação e limite de taxa
 
@@ -552,6 +553,7 @@ pedem a árvore do Tauri para compilar ([08 §4](08-desenvolvimento-e-testes.md#
 | T-CASCA-28 | `fechar_a_janela_principal_esconde_em_vez_de_destruir` | arquitetura | O `on_window_event` da casca pega `CloseRequested` da `main`, chama `prevent_close` e esconde a janela | R-19, A16 |
 | T-CASCA-29 | `cada_janela_tem_so_o_que_precisa` | arquitetura | Nas capabilities, o overlay não tem permissão de `updater:` nem de `process:`, e a janela principal tem o atualizador | A33 |
 | T-CASCA-30 | `uma_carga_que_falha_diz_por_que_e_nao_apaga_o_indice` | unidade | Uma carga de campeões com erro `"Data Dragon e cache"` sobre `"sem rede"` deixa `ready` falso e `champions_error` = `"Data Dragon e cache: sem rede"`, sem tocar em `items_error`; uma falha depois de um índice da 16.21.1 mantém a versão, e uma carga que dá certo limpa o motivo | R-1, R-10, RNF-1, A32 |
+| T-CASCA-31 | `o_overlay_arrasta_pela_cabeca_e_so_pega_clique_quando_mostra_algo` | arquitetura | `capabilities/overlay.json` tem `core:window:allow-start-dragging`; a tag de `className="hud-head"` em `src/overlay.tsx` tem `data-tauri-drag-region`; `overlay.rs` chama `atravessa_o_mouse(` e tem um `set_ignore_cursor_events(` só. Falhou antes da A15 pela permissão | R-15, A15 |
 
 ## 3. Rodando um teste
 

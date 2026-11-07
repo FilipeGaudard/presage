@@ -46,11 +46,15 @@ sombra, sem redimensionar, `focus: false` e `visible: false`.
   app`); a tela não sabe ([GC-8](07-lacunas-da-casca.md)).
 - **Janela sem bordas no jogo.** Em tela cheia exclusiva nenhuma janela externa
   aparece por cima. Não dá para contornar.
-- **Não arrasta.** O texto de Ajustes diz que `Ctrl+Shift+O` deixa a janela
-  clicável "quando você quiser arrastá-la", mas a janela não tem decoração, o
-  front não marca região de arrasto (`data-tauri-drag-region`) e a capability
-  não dá `start-dragging`. Clicável, ela só recebe clique. A posição também não
-  é gravada ([GC-8](07-lacunas-da-casca.md)).
+- **Arrasta pela cabeça.** Na partida, `Ctrl+Shift+O` deixa a janela clicável,
+  e a cabeça (PRESAGE e o relógio) é região de arrasto (`data-tauri-drag-region`,
+  com `core:window:allow-start-dragging` na capability do overlay). Fora da
+  partida, ou com tudo desligado, a janela não desenha nada e continua
+  atravessável mesmo com o atalho: quem decide é
+  `OverlayPrefs::atravessa_o_mouse`, por `overlay::aplicar` (A15, T-CASCA-31,
+  T-ENTRADA-50). Até a 0.7.0 ela não arrastava, e clicável sem nada na tela era
+  um retângulo invisível que comia clique. A posição ainda não é gravada
+  ([GC-8](07-lacunas-da-casca.md)).
 
 ## 2. As seis seções
 

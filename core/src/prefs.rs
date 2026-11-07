@@ -115,6 +115,15 @@ impl OverlayPrefs {
     pub fn visible(&self) -> Vec<Section> {
         Section::ALL.iter().copied().filter(|s| self.shows(*s)).collect()
     }
+
+    /// Se o mouse atravessa a janela do overlay. Clicável, a janela inteira pega
+    /// clique, desenhe ela algo ou não: fora da partida, ou com tudo desligado,
+    /// ela não desenha nada, e um retângulo invisível comeria o clique do jogo.
+    /// Então só pega clique com o atalho ligado (`interativo`), na partida e com
+    /// alguma seção à mostra (A15).
+    pub fn atravessa_o_mouse(&self, interativo: bool, em_partida: bool) -> bool {
+        !(interativo && em_partida && self.anything_visible())
+    }
 }
 
 /// Preferências do draft.
@@ -156,6 +165,18 @@ mod tests {
         p.set(Section::Skirmish, false);
         p.set(Section::Skirmish, false);
         assert_eq!(p.hidden.len(), 1);
+    }
+
+    #[test]
+    fn o_overlay_so_pega_clique_quando_mostra_algo() {
+        let tudo = OverlayPrefs::default();
+        let nada = OverlayPrefs { hidden: Section::ALL.to_vec() };
+        let so_ouro = OverlayPrefs { hidden: Section::ALL.iter().copied().filter(|s| *s != Section::ALL[0]).collect() };
+        assert!(!tudo.atravessa_o_mouse(true, true), "com o atalho, na partida, pega clique");
+        assert!(!so_ouro.atravessa_o_mouse(true, true), "uma seção à mostra basta");
+        assert!(tudo.atravessa_o_mouse(false, true), "sem o atalho, atravessa");
+        assert!(tudo.atravessa_o_mouse(true, false), "fora da partida a janela não desenha nada");
+        assert!(nada.atravessa_o_mouse(true, true), "tudo desligado: a janela não desenha nada");
     }
 
     #[test]

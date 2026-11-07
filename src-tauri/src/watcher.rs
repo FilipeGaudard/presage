@@ -384,7 +384,11 @@ pub async fn run(app: AppHandle, shared: Arc<Shared>) {
                     if changed {
                         let _ = app.emit(EVENT_LIVE, &snapshot);
                     }
-                    *shared.live.lock().unwrap() = Some(snapshot);
+                    let comecou = shared.live.lock().unwrap().replace(snapshot).is_none();
+                    if comecou {
+                        // A partida começou: o overlay passa a ter o que mostrar (A15).
+                        crate::overlay::aplicar(&app);
+                    }
                 }
                 // Carregando a partida, ou já acabou. Nenhum dos dois é erro.
                 Err(err) => tracing::trace!(%err, "Live Client ainda não responde"),
@@ -396,6 +400,8 @@ pub async fn run(app: AppHandle, shared: Arc<Shared>) {
             buff_tracker = BuffTracker::default();
             if shared.live.lock().unwrap().take().is_some() {
                 let _ = app.emit::<Option<LiveSnapshot>>(EVENT_LIVE, None);
+                // Sem partida, o overlay não desenha nada: volta a atravessar (A15).
+                crate::overlay::aplicar(&app);
             }
 
             // Saímos de `InProgress`: a partida acabou. Fecha a gravação e

@@ -66,8 +66,10 @@ export default function OverlayPrefsPanel({ prefs, onChange }: Props) {
 
       <p className="faint">
         O overlay abre e fecha com <b>Ctrl+Shift+P</b>. Ele nasce atravessável
-        pelo mouse, então não come clique; <b>Ctrl+Shift+O</b> deixa a janela
-        clicável quando você quiser arrastá-la.
+        pelo mouse, então não come clique; na partida, <b>Ctrl+Shift+O</b> deixa
+        a janela clicável para você arrastá-la pela cabeça (PRESAGE e o relógio),
+        e de novo devolve o clique ao jogo. Fora da partida, ou com tudo
+        desligado, ela continua atravessável.
       </p>
     </div>
   );
