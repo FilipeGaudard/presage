@@ -19,9 +19,112 @@ use serde::Serialize;
 use super::champion::{Champion, ChampionIndex};
 use super::damage::{damage_multiplier, effective_resist, Penetration};
 use super::items::{ItemIndex, ItemStats};
+use super::champion::Role;
+use super::dataset::{base_key, Dataset};
+use super::stats::{shrink, strength_for_sd};
 
 /// Abaixo disto são consumíveis, totens e componentes baratos.
 const MIN_ITEM_COST: f64 = 1000.0;
+
+/// Partidas do campeão na rota abaixo das quais a base não diz o que ele compra.
+pub const MIN_BOUGHT_GAMES: u32 = 100;
+/// Desvio padrão do efeito de um item na vitória, em fração: a crença antes da
+/// amostra. Escolha à mão, como `MATCHUP_PRIOR_SD` (RN-34).
+pub const ITEM_PRIOR_SD: f64 = 0.03;
+
+/// O que os jogadores do campeão, na rota, terminam a partida tendo: um item.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BoughtItem {
+    pub item_id: i64,
+    pub name: String,
+    pub cost: f64,
+    /// Partidas em que ele estava no inventário final.
+    pub games: u32,
+    /// Fração das partidas do campeão na rota que terminaram com ele.
+    pub share: f64,
+    /// Vitória com ele, encolhida para a do campeão na rota (`ITEM_PRIOR_SD`).
+    pub winrate: f64,
+}
+
+/// A build da base para um campeão numa rota.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BoughtReport {
+    pub champion_id: i64,
+    pub role: Role,
+    /// Partidas do campeão na rota, o denominador de `share`.
+    pub games: u32,
+    /// Vitória do campeão na rota, a referência de `winrate`.
+    pub winrate: f64,
+    pub items: Vec<BoughtItem>,
+}
+
+/// O que se compra com o campeão na rota, segundo a base: os itens que a loja da
+/// Fenda vende (`Item::purchasable`) e custam ao menos `MIN_ITEM_COST`, do mais
+/// comprado ao menos, até `limit`. Com `Role::Unknown` (o treino não informa a
+/// rota) usa a rota em que o campeão mais joga na base. `None` sem base para o
+/// campeão ou com menos de `MIN_BOUGHT_GAMES` partidas: aí a tela fica com a
+/// conta de atributos, e diz isso.
+///
+/// A vitória com um item vem do inventário final, e quem ganha termina com mais
+/// itens: todo item sai acima da média do campeão. Serve para comparar um item
+/// com outro, não como chance (RN-34).
+pub fn bought_by(
+    champion_id: i64,
+    role: Role,
+    dataset: &Dataset,
+    items: &ItemIndex,
+    limit: usize,
+) -> Option<BoughtReport> {
+    let role = if role == Role::Unknown {
+        super::roles::ROLES
+            .iter()
+            .copied()
+            .filter_map(|r| dataset.base.get(&base_key(champion_id, r)).map(|rec| (r, rec.games)))
+            .max_by_key(|(_, g)| *g)?
+            .0
+    } else {
+        role
+    };
+    let base = *dataset.base.get(&base_key(champion_id, role))?;
+    if base.games < MIN_BOUGHT_GAMES {
+        return None;
+    }
+    let referencia = base.wins as f64 / base.games as f64;
+    let prefixo = format!("{}:", base_key(champion_id, role));
+    let forca = strength_for_sd(ITEM_PRIOR_SD);
+
+    let mut lista: Vec<BoughtItem> = dataset
+        .items
+        .iter()
+        .filter_map(|(chave, rec)| {
+            let id: i64 = chave.strip_prefix(&prefixo)?.parse().ok()?;
+            let item = items.get(id)?;
+            if !item.purchasable || item.cost < MIN_ITEM_COST {
+                return None;
+            }
+            Some(BoughtItem {
+                item_id: id,
+                name: item.name.clone(),
+                cost: item.cost,
+                games: rec.games,
+                share: rec.games as f64 / base.games as f64,
+                winrate: shrink(Some(*rec), referencia, forca).rate,
+            })
+        })
+        .collect();
+    lista.sort_by(|a, b| b.games.cmp(&a.games).then(a.item_id.cmp(&b.item_id)));
+    lista.truncate(limit);
+
+    Some(BoughtReport {
+        champion_id,
+        role,
+        games: base.games,
+        winrate: referencia,
+        items: lista,
+    })
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Combatant {
@@ -381,6 +484,8 @@ fn round1(value: f64) -> f64 {
 mod tests {
     use super::super::champion::fake;
     use super::super::items::{parse_stats, Item};
+    use super::super::dataset::item_key;
+    use super::super::stats::Record;
     use super::*;
     use std::collections::HashMap;
 
@@ -414,6 +519,59 @@ mod tests {
             version: "test".into(),
             by_id: all.into_iter().map(|i| (i.id, i)).collect::<HashMap<_, _>>(),
         }
+    }
+
+    /// Uma base com o campeão 42 no meio (1000 partidas, 500 vitórias) e no topo
+    /// (150), e o que ele terminou tendo no meio.
+    fn base_de_itens() -> Dataset {
+        let mut d = Dataset { patch: "16.22".into(), matches: 5000, ..Default::default() };
+        d.base.insert(base_key(42, Role::Mid), Record::new(1000, 500));
+        d.base.insert(base_key(42, Role::Top), Record::new(150, 70));
+        for (id, games, wins) in [(PODER, 700, 380), (VIDA, 300, 140), (DANO, 40, 30), (ARMADURA, 900, 470)] {
+            d.items.insert(item_key(42, Role::Mid, id), Record::new(games, wins));
+        }
+        d.items.insert(item_key(42, Role::Top, DANO), Record::new(120, 60));
+        d
+    }
+
+    #[test]
+    fn a_build_da_base_e_o_que_se_compra_na_fenda_do_mais_comprado_ao_menos() {
+        let mut idx = items();
+        // As placas não se vendem na Fenda (uma cópia da Arena, A54); um componente
+        // barato também fica de fora.
+        idx.by_id.get_mut(&ARMADURA).unwrap().purchasable = false;
+        idx.by_id.insert(77, item(77, "Espada longa", 350.0, ""));
+        let mut d = base_de_itens();
+        d.items.insert(item_key(42, Role::Mid, 77), Record::new(800, 400));
+
+        let r = bought_by(42, Role::Mid, &d, &idx, 8).unwrap();
+        assert_eq!((r.role, r.games), (Role::Mid, 1000));
+        assert!((r.winrate - 0.5).abs() < 1e-9);
+        let ids: Vec<i64> = r.items.iter().map(|i| i.item_id).collect();
+        assert_eq!(ids, vec![PODER, VIDA, DANO], "mais comprado primeiro, só o da Fenda e fechado");
+        assert!((r.items[0].share - 0.7).abs() < 1e-9);
+
+        // 380 de 700 é 54,3%; encolhido para os 50% do campeão, fica entre os dois.
+        let poder = r.items[0].winrate;
+        assert!(poder > 0.5 && poder < 380.0 / 700.0, "{poder}");
+        // 30 de 40 é 75%, mas com 40 partidas fica perto dos 50% (53,2%).
+        assert!(r.items[2].winrate < 0.55, "{}", r.items[2].winrate);
+
+        assert_eq!(bought_by(42, Role::Mid, &d, &idx, 1).unwrap().items.len(), 1);
+    }
+
+    #[test]
+    fn sem_amostra_a_base_nao_diz_a_build() {
+        let d = base_de_itens();
+        let idx = items();
+        // O topo tem 150 partidas, acima do mínimo; com 99 não diz nada.
+        assert!(bought_by(42, Role::Top, &d, &idx, 8).is_some());
+        let mut pouca = d.clone();
+        pouca.base.insert(base_key(42, Role::Top), Record::new(MIN_BOUGHT_GAMES - 1, 40));
+        assert!(bought_by(42, Role::Top, &pouca, &idx, 8).is_none());
+        assert!(bought_by(99, Role::Mid, &d, &idx, 8).is_none(), "campeão fora da base");
+        // Sem rota (o treino), vale a rota em que ele mais joga.
+        assert_eq!(bought_by(42, Role::Unknown, &d, &idx, 8).unwrap().role, Role::Mid);
     }
 
     fn champions() -> ChampionIndex {

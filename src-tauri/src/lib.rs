@@ -296,6 +296,19 @@ fn build_suggestions(
     ))
 }
 
+/// O que se compra com o seu campeão, na sua rota, segundo a base de partidas:
+/// os itens da loja da Fenda, do mais comprado ao menos. `None` fora da partida,
+/// sem base, ou com o campeão sem amostra na base (R-10, R-21).
+#[tauri::command]
+fn bought_items(limit: Option<usize>, shared: tauri::State<'_, Arc<Shared>>) -> Option<build::BoughtReport> {
+    let snapshot = shared.live.lock().unwrap().clone()?;
+    let me = snapshot.game.me()?;
+    let role = Role::from_lcu(&me.position);
+    let dataset = shared.dataset.read().unwrap();
+    let items = shared.items.read().unwrap();
+    build::bought_by(me.champion_id, role, dataset.as_ref()?, &items, limit.unwrap_or(6))
+}
+
 /// Chance de vitória por rota e em cada escaramuça.
 ///
 /// Serve o draft e a partida com a mesma chamada: durante o jogo os níveis e
@@ -810,6 +823,7 @@ fn montar(com_atualizador: bool) -> tauri::Builder<tauri::Wry> {
             set_pool,
             get_live,
             build_suggestions,
+            bought_items,
             lane_analysis,
             skirmish_focus,
             gold_report,

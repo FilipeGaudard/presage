@@ -14,7 +14,7 @@ os demais na seção do módulo do core). A forma de cada arquivo em disco está
 ### Transporte
 
 - **Comando:** a interface chama `invoke(nome, args)` (`@tauri-apps/api/core`).
-  Só alcança os 26 nomes de `generate_handler!` (`lib.rs:720`); não há canal
+  Só alcança os 27 nomes de `generate_handler!` (`lib.rs:720`); não há canal
   genérico ([07 §2](07-seguranca.md#a-webview)).
 - **Evento:** a casca empurra com `app.emit(nome, carga)`, que chega às duas
   janelas (`main` e `overlay`). A interface ouve com `listen` (`@tauri-apps/api/event`).
@@ -147,6 +147,7 @@ coluna. As linhas de "Quem chama" são de `src/`.
 | `minimax_draft` | — | `Vec<MinimaxPick>`, um por candidato; vazio sem draft | nenhum | `App.tsx:178`, junto com `rank_draft` |
 | `ban_suggestions` | — (10 sugestões, fixo em `lib.rs:237`) | `Vec<BanSuggestion>`; vazio sem draft | nenhum | `App.tsx:179`, junto com `rank_draft` |
 | `get_live` | — | `Option<LiveSnapshot>` (10 §32.3) | nenhum | `App.tsx:107`, `overlay.tsx:52`, ao montar |
+| `bought_items` | `limit: Option<usize>`, padrão 6 | `Option<BoughtReport>` → `BoughtReport \| null`; `None` sem partida, sem jogador local, sem base, ou com o campeão sem amostra (`bought_by`) | nenhum | `App.tsx`, junto com `build_suggestions` (`limit: 6`) |
 | `build_suggestions` | `limit: Option<usize>`, padrão 8 (`lib.rs:268`) | `Option<(BuildContext, Vec<ItemSuggestion>)>` → `[BuildContext, ItemSuggestion[]] \| null`; `None` sem partida ou sem jogador local | nenhum | `App.tsx:204` (`limit: 8`), `overlay.tsx:74` (`limit: 2`) |
 | `lane_analysis` | `candidate: Option<i64>`; com id, a prévia dele no seu lugar, e a partida é ignorada (`lib.rs:300`) | `Option<LaneReport>`; a partida ganha do draft (`analysis::report`) | nenhum | `App.tsx:231` (`candidate: null`, abas Rotas e Draft); `App.tsx:258` (a prévia, pedida pelo painel de recomendação) |
 | `skirmish_focus` | — | `Option<lanes::Focus>` → `SkirmishFocus`; `None` sem partida, sem jogador local ou sem escaramuça que caiba | nenhum | `overlay.tsx:76` |

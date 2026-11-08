@@ -79,6 +79,7 @@ com `mockIPC`, que é onde mora o tratamento de erro.
 | TF-PARTIDA-3 | componente | Hoje. Um inimigo com `unspent: 1200` não ganha `+1.200` na linha dele; o jogador local ainda ganha | C-4, R-12, GC-2 |
 | TF-PARTIDA-4 | componente | Hoje. A prioridade sempre traz "Ranking de valor, não de posição.", com ou sem rotas | R-14, C-4 |
 | TF-PARTIDA-5 | componente | Hoje. Sem contexto de build, a tela não diz "Carregando os dados de item": diz que precisa do seu campeão; com `itemsError`, diz "Não consegui os dados de item" com o motivo (A32) | R-10, RNF-1, A32 |
+| TF-PARTIDA-6 | componente | Hoje. Com um `BoughtReport` de 1.240 partidas, a build mostra "O que se compra" com o patch, as partidas, "70% compram" e "vence 53,4%", e a conta de atributos abaixo diz que é conta; sem base, não há a seção, e a lista diz "Sem base de partidas para este campeão" | R-10, R-21, RNF-1 |
 | TF-POS-1 | componente | Hoje. `review: null` mostra "Nenhuma partida lida ainda" | R-16 |
 | TF-POS-2 | componente | Hoje. `role: "Support"` desenha "Visão, você menos o outro suporte" e não desenha "Tropas, você menos o seu oponente" | R-16, L-27 |
 | TF-POS-3 | componente | Hoje. No perfil, `value: 3, sd: 1` ganha `good`, `value: 1, sd: 1` fica `even`, e `deaths` com `value: 3, sd: 1` ganha `bad`; nenhuma linha soma as métricas | R-17, C-7, RNF-11 |

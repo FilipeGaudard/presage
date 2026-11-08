@@ -1609,6 +1609,31 @@ chance que sai daqui é **fraca como probabilidade**
 ([visão geral §2](../produto/visao-geral.md#2-de-onde-vem-cada-número)).
 Atendem R-10 e R-11.
 
+### 26.5 `bought_by`
+
+```rust
+pub fn bought_by(
+    champion_id: i64,
+    role: Role,
+    dataset: &Dataset,
+    items: &ItemIndex,
+    limit: usize,
+) -> Option<BoughtReport>;
+```
+
+- **Faz:** o que os jogadores do campeão, na rota, terminam a partida tendo,
+  segundo a base (`Dataset::items`, `item_key`). Fica com os itens que a loja da
+  Fenda vende (`Item::purchasable`, A54) e custam ao menos `MIN_ITEM_COST`; ordena
+  por partidas com o item, empate por id; corta em `limit`. A fração é sobre as
+  partidas do campeão na rota (`base_key`); a vitória, encolhida para a dele com
+  `strength_for_sd(ITEM_PRIOR_SD)`. Com `Role::Unknown` usa a rota de mais
+  partidas na base.
+- **Retorno:** `None` sem o campeão na base ou com menos de `MIN_BOUGHT_GAMES`
+  partidas na rota: a tela fica com a conta de atributos e diz isso.
+- **Quem usa:** o comando `bought_items` (12 §1).
+- **Confiança:** fraca na vitória (RN-34); a fração é medição.
+- **Atende:** R-10, R-21
+
 ## 27. `core::engine::lanes` — Rotas e escaramuças (`core`, pura)
 
 ### 27.1 `lane_outlooks`

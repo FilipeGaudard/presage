@@ -1,5 +1,9 @@
 import { itemIcon, type StaticData } from "../lib/ddragon";
-import type { BuildContext, ItemSuggestion, LiveGame } from "../lib/types";
+import type { BoughtReport, BuildContext, ItemSuggestion, LiveGame } from "../lib/types";
+
+const BR = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+const PCT = new Intl.NumberFormat("pt-BR", { style: "percent", maximumFractionDigits: 1 });
+const ROTA: Record<string, string> = { Top: "topo", Jungle: "selva", Mid: "meio", Bot: "atirador", Support: "suporte" };
 
 interface Props {
   game: LiveGame;
@@ -8,9 +12,13 @@ interface Props {
   staticData: StaticData | null;
   /** Por que os itens não vieram (`EngineStatus.itemsError`). */
   itemsError?: string | null;
+  /** O que se compra com o seu campeão, segundo a base (`bought_items`). */
+  bought?: BoughtReport | null;
+  /** O patch da base (`EngineStatus.globalPatch`). */
+  patch?: string | null;
 }
 
-export default function LiveBuild({ game, context, suggestions, staticData, itemsError = null }: Props) {
+export default function LiveBuild({ game, context, suggestions, staticData, itemsError = null, bought = null, patch = null }: Props) {
   if (!context) {
     // `build_suggestions` só volta nulo sem partida ou sem o jogador local (A32).
     return (
@@ -69,8 +77,50 @@ export default function LiveBuild({ game, context, suggestions, staticData, item
         </div>
       </div>
 
+      {bought && bought.items.length > 0 && (
+        <div className="section">
+          <h3>O que se compra com {me?.championKey ?? "o seu campeão"} no {ROTA[bought.role] ?? bought.role}</h3>
+          <p className="muted">
+            Base de partidas{patch ? ` do patch ${patch}` : ""}: {BR.format(bought.games)} partidas dele na rota,
+            vence {PCT.format(bought.winrate)}. Do mais comprado ao menos; a vitória é de quem terminou com o item, e
+            quem ganha termina com mais itens, então serve para comparar um com outro.
+          </p>
+          <ol className="build-list">
+            {bought.items.map((item, index) => (
+              <li className="build-item" key={item.itemId}>
+                <span className="reco-rank">{index + 1}</span>
+                <div className="cell-portrait build-portrait">
+                  {staticData ? (
+                    <img src={itemIcon(staticData.version, item.itemId)} alt={item.name} loading="lazy" />
+                  ) : (
+                    <span>?</span>
+                  )}
+                </div>
+                <div className="reco-body">
+                  <div className="reco-title">
+                    <span className="reco-name">{item.name}</span>
+                    <span className="muted">{Math.round(item.cost)} ouro</span>
+                  </div>
+                </div>
+                <div className="reco-score">
+                  <span className="score-value">{Math.round(item.share * 100)}% compram</span>
+                  <span className="score-conf">
+                    vence {PCT.format(item.winrate)} · n={BR.format(item.games)}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
       <div className="section">
-        <h3>Próximo item</h3>
+        <h3>Próximo item, pela conta de atributos</h3>
+        <p className="muted">
+          {bought && bought.items.length > 0
+            ? "A conta de atributos: vida efetiva e dano contra o que eles têm agora, por ouro. Não usa a base."
+            : "Sem base de partidas para este campeão: a lista é a conta de atributos (vida efetiva e dano contra o que eles têm agora, por ouro), não o que os jogadores compram."}
+        </p>
         {suggestions.length === 0 ? (
           <p className="muted">Sem dados de item carregados.</p>
         ) : (

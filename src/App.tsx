@@ -12,6 +12,7 @@ import type {
   DraftState,
   EngineStatus,
   GoldReport,
+  BoughtReport,
   ItemSuggestion,
   LaneProfile,
   LaneReport,
@@ -76,6 +77,7 @@ export default function App() {
   const [live, setLive] = useState<LiveSnapshot | null>(null);
   const [buildContext, setBuildContext] = useState<BuildContext | null>(null);
   const [suggestions, setSuggestions] = useState<ItemSuggestion[]>([]);
+  const [bought, setBought] = useState<BoughtReport | null>(null);
   const [lanes, setLanes] = useState<LaneReport | null>(null);
   const [goldReport, setGoldReport] = useState<GoldReport | null>(null);
   const [review, setReview] = useState<CoachReport | null>(null);
@@ -240,6 +242,7 @@ export default function App() {
     if (!live) {
       setBuildContext(null);
       setSuggestions([]);
+      setBought(null);
       setGoldReport(null);
       return;
     }
@@ -248,7 +251,8 @@ export default function App() {
     Promise.all([
       chamar<[BuildContext, ItemSuggestion[]] | null>("ler a build", "build_suggestions", { limit: 8 }),
       chamar<GoldReport | null>("ler o ouro", "gold_report"),
-    ]).then(([build, gold]) => {
+      chamar<BoughtReport | null>("ler a build da base", "bought_items", { limit: 6 }),
+    ]).then(([build, gold, base]) => {
       if (cancelled) return;
       if (!build.ok) {
         setBuildContext(null);
@@ -258,6 +262,7 @@ export default function App() {
         setSuggestions(build.valor[1]);
       }
       setGoldReport(gold.ok ? gold.valor : null);
+      setBought(base.ok ? base.valor : null);
     });
 
     return () => {
@@ -565,6 +570,8 @@ export default function App() {
                 suggestions={suggestions}
                 staticData={staticData}
                 itemsError={engine?.itemsError ?? null}
+                bought={bought}
+                patch={engine?.globalPatch ?? null}
               />
             </section>
           </main>

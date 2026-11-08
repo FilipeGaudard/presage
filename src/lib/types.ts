@@ -158,6 +158,27 @@ export interface BuildContext {
   yourEffectiveHp: number;
 }
 
+/** Um item que os jogadores do campeão, na rota, terminam a partida tendo (base de partidas). */
+export interface BoughtItem {
+  itemId: number;
+  name: string;
+  cost: number;
+  games: number;
+  /** Fração das partidas do campeão na rota que terminaram com ele. */
+  share: number;
+  /** Vitória com ele, encolhida para a do campeão na rota. */
+  winrate: number;
+}
+
+/** A build da base para um campeão numa rota (`bought_items`). */
+export interface BoughtReport {
+  championId: number;
+  role: Role;
+  games: number;
+  winrate: number;
+  items: BoughtItem[];
+}
+
 export interface ItemSuggestion {
   itemId: number;
   name: string;

@@ -25,6 +25,7 @@
     "allow-set-pool",
     "allow-get-live",
     "allow-build-suggestions",
+    "allow-bought-items",
     "allow-lane-analysis",
     "allow-skirmish-focus",
     "allow-gold-report",

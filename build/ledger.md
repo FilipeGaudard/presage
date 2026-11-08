@@ -4,24 +4,24 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Tipo | Total | Feito | Adiado | Pendente |
 |---|---|---|---|---|
-| type | 114 | 114 | 0 | 0 |
-| func | 169 | 169 | 0 | 0 |
-| const | 84 | 84 | 0 | 0 |
-| wire | 55 | 55 | 0 | 0 |
+| type | 116 | 116 | 0 | 0 |
+| func | 170 | 170 | 0 | 0 |
+| const | 86 | 86 | 0 | 0 |
+| wire | 57 | 57 | 0 | 0 |
 | mirror | 4 | 4 | 0 | 0 |
-| command | 26 | 26 | 0 | 0 |
+| command | 27 | 27 | 0 | 0 |
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 378 | 378 | 0 | 0 |
-| ui-test | 48 | 15 | 33 | 0 |
+| test | 380 | 380 | 0 | 0 |
+| ui-test | 49 | 16 | 33 | 0 |
 | trace | 43 | 39 | 4 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 3 | 0 | 3 | 0 |
 
-- testes no código: 507; nomes no catálogo (13): 507; fora dele: 0
-- links relativos conferidos: 871
-- IDs citados conferidos: 3093
+- testes no código: 509; nomes no catálogo (13): 509; fora dele: 0
+- links relativos conferidos: 872
+- IDs citados conferidos: 3121
 
 ## type
 
@@ -29,7 +29,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 |---|---|---|---|
 | `casca::EngineStatus` | arquitetura/10-modelo-de-dados §32.1 | done | src-tauri/src/lib.rs:48 |
 | `casca::live::LiveSnapshot` | arquitetura/10-modelo-de-dados §32.3 | done | src-tauri/src/live.rs:17 |
-| `casca::PoolPlan` | arquitetura/10-modelo-de-dados §32.2 | done | src-tauri/src/lib.rs:371 |
+| `casca::PoolPlan` | arquitetura/10-modelo-de-dados §32.2 | done | src-tauri/src/lib.rs:384 |
 | `casca::watcher::Identity` | arquitetura/10-modelo-de-dados §32.4 | done | src-tauri/src/watcher.rs:52 |
 | `casca::watcher::Shared` | arquitetura/10-modelo-de-dados §32.5 | done | src-tauri/src/watcher.rs:60 |
 | `core::draft::ConnStatus` | arquitetura/10-modelo-de-dados §3.8 | done | core/src/draft.rs:116 |
@@ -44,10 +44,12 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::draft::LcuSession` | arquitetura/10-modelo-de-dados §3.1 | done | core/src/draft.rs:15 |
 | `core::draft::LcuSummoner` | arquitetura/10-modelo-de-dados §3.5 | done | core/src/draft.rs:63 |
 | `core::draft::LcuTimer` | arquitetura/10-modelo-de-dados §3.4 | done | core/src/draft.rs:54 |
-| `core::engine::build::BuildContext` | arquitetura/10-modelo-de-dados §26.3 | done | core/src/engine/build.rs:45 |
-| `core::engine::build::Combatant` | arquitetura/10-modelo-de-dados §26.1 | done | core/src/engine/build.rs:26 |
-| `core::engine::build::ItemSuggestion` | arquitetura/10-modelo-de-dados §26.4 | done | core/src/engine/build.rs:56 |
-| `core::engine::build::Loadout` | arquitetura/10-modelo-de-dados §26.2 | done | core/src/engine/build.rs:33 |
+| `core::engine::build::BoughtItem` | arquitetura/10-modelo-de-dados §26.5 | done | core/src/engine/build.rs:36 |
+| `core::engine::build::BoughtReport` | arquitetura/10-modelo-de-dados §26.6 | done | core/src/engine/build.rs:51 |
+| `core::engine::build::BuildContext` | arquitetura/10-modelo-de-dados §26.3 | done | core/src/engine/build.rs:148 |
+| `core::engine::build::Combatant` | arquitetura/10-modelo-de-dados §26.1 | done | core/src/engine/build.rs:129 |
+| `core::engine::build::ItemSuggestion` | arquitetura/10-modelo-de-dados §26.4 | done | core/src/engine/build.rs:159 |
+| `core::engine::build::Loadout` | arquitetura/10-modelo-de-dados §26.2 | done | core/src/engine/build.rs:136 |
 | `core::engine::champion::BaseStats` | arquitetura/10-modelo-de-dados §23.2 | done | core/src/engine/champion.rs:57 |
 | `core::engine::champion::Champion` | arquitetura/10-modelo-de-dados §23.3 | done | core/src/engine/champion.rs:85 |
 | `core::engine::champion::ChampionIndex` | arquitetura/10-modelo-de-dados §23.4 | done | core/src/engine/champion.rs:135 |
@@ -149,14 +151,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::draft::DraftState::normalized` | arquitetura/11-catalogo-de-funcoes §3.2 | done | core/src/draft.rs:234 |
 | `core::draft::selectable` | arquitetura/11-catalogo-de-funcoes §3.3 | done | core/src/draft.rs:280 |
 | `core::draft::to_draft_state` | arquitetura/11-catalogo-de-funcoes §3.1 | done | core/src/draft.rs:129 |
-| `core::engine::build::effective_hp_against` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:94 |
-| `core::engine::build::incoming_physical_share` | arquitetura/11-catalogo-de-funcoes §26.3 | done | core/src/engine/build.rs:152 |
-| `core::engine::build::loadout` | arquitetura/11-catalogo-de-funcoes §26.2 | done | core/src/engine/build.rs:69 |
-| `core::engine::build::offense_against` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:112 |
-| `core::engine::build::side_power` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:186 |
-| `core::engine::build::skirmish_odds` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:213 |
-| `core::engine::build::suggest` | arquitetura/11-catalogo-de-funcoes §26.1 | done | core/src/engine/build.rs:247 |
-| `core::engine::build::team_penetration` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:228 |
+| `core::engine::build::bought_by` | arquitetura/11-catalogo-de-funcoes §26.5 | done | core/src/engine/build.rs:73 |
+| `core::engine::build::effective_hp_against` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:197 |
+| `core::engine::build::incoming_physical_share` | arquitetura/11-catalogo-de-funcoes §26.3 | done | core/src/engine/build.rs:255 |
+| `core::engine::build::loadout` | arquitetura/11-catalogo-de-funcoes §26.2 | done | core/src/engine/build.rs:172 |
+| `core::engine::build::offense_against` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:215 |
+| `core::engine::build::side_power` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:289 |
+| `core::engine::build::skirmish_odds` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:316 |
+| `core::engine::build::suggest` | arquitetura/11-catalogo-de-funcoes §26.1 | done | core/src/engine/build.rs:350 |
+| `core::engine::build::team_penetration` | arquitetura/11-catalogo-de-funcoes §26.4 | done | core/src/engine/build.rs:331 |
 | `core::engine::champion::BaseStats::armor_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:74 |
 | `core::engine::champion::BaseStats::attack_damage_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:80 |
 | `core::engine::champion::BaseStats::health_at` | arquitetura/11-catalogo-de-funcoes §23.3 | done | core/src/engine/champion.rs:71 |
@@ -328,7 +331,9 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `coletor::aggregate::USEFUL` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:418 |
 | `core::draft::RANKED_QUEUES` | arquitetura/10-modelo-de-dados §3.13 | done | core/src/draft.rs:274 |
 | `core::engine::BASE_STRENGTH` | produto/regras-e-pesos RN-2 — A força da winrate base é escolhi | done | core/src/engine/mod.rs:36 |
-| `core::engine::build::MIN_ITEM_COST` | produto/regras-e-pesos RN-19 — O que entra na lista e como o it | done | core/src/engine/build.rs:24 |
+| `core::engine::build::ITEM_PRIOR_SD` | produto/regras-e-pesos RN-34 — A build da base (`bought_by`) | done | core/src/engine/build.rs:33 |
+| `core::engine::build::MIN_BOUGHT_GAMES` | produto/regras-e-pesos RN-34 — A build da base (`bought_by`) | done | core/src/engine/build.rs:30 |
+| `core::engine::build::MIN_ITEM_COST` | produto/regras-e-pesos RN-19 — O que entra na lista e como o it | done | core/src/engine/build.rs:27 |
 | `core::engine::coach::BUCKET` | produto/regras-e-pesos RN-27 — Os limiares das observações | done | core/src/engine/coach.rs:157 |
 | `core::engine::coach::CLUSTER_DEATHS` | produto/regras-e-pesos RN-27 — Os limiares das observações | done | core/src/engine/coach.rs:28 |
 | `core::engine::coach::CLUSTER_WINDOW` | produto/regras-e-pesos RN-27 — Os limiares das observações | done | core/src/engine/coach.rs:27 |
@@ -411,8 +416,10 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 |---|---|---|---|
 | `Analysis ↔ PoolAnalysis` | arquitetura/10-modelo-de-dados §17.4 | done | core/src/engine/poolgap.rs:250 |
 | `BanSuggestion ↔ BanSuggestion` | arquitetura/10-modelo-de-dados §12.2 | done | core/src/engine/minimax.rs:50 |
+| `BoughtItem ↔ BoughtItem` | arquitetura/10-modelo-de-dados §26.5 | done | core/src/engine/build.rs:36 |
+| `BoughtReport ↔ BoughtReport` | arquitetura/10-modelo-de-dados §26.6 | done | core/src/engine/build.rs:51 |
 | `Buff ↔ Buff` | arquitetura/10-modelo-de-dados §29.8 | done | core/src/engine/timeline.rs:216 |
-| `BuildContext ↔ BuildContext` | arquitetura/10-modelo-de-dados §26.3 | done | core/src/engine/build.rs:45 |
+| `BuildContext ↔ BuildContext` | arquitetura/10-modelo-de-dados §26.3 | done | core/src/engine/build.rs:148 |
 | `Candidate ↔ PoolCandidate` | arquitetura/10-modelo-de-dados §17.5 | done | core/src/engine/poolgap.rs:257 |
 | `ChampionLane ↔ ChampionLane` | arquitetura/10-modelo-de-dados §21.3 | done | core/src/engine/profile.rs:69 |
 | `ConnStatus ↔ ConnStatus` | arquitetura/10-modelo-de-dados §3.8 | done | core/src/draft.rs:116 |
@@ -424,7 +431,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `Focus ↔ SkirmishFocus` | arquitetura/10-modelo-de-dados §27.6 | done | core/src/engine/lanes.rs:466 |
 | `GoldPlayer ↔ GoldPlayer` | arquitetura/10-modelo-de-dados §28.1 | done | core/src/engine/gold.rs:41 |
 | `GoldReport ↔ GoldReport` | arquitetura/10-modelo-de-dados §28.2 | done | core/src/engine/gold.rs:61 |
-| `ItemSuggestion ↔ ItemSuggestion` | arquitetura/10-modelo-de-dados §26.4 | done | core/src/engine/build.rs:56 |
+| `ItemSuggestion ↔ ItemSuggestion` | arquitetura/10-modelo-de-dados §26.4 | done | core/src/engine/build.rs:159 |
 | `LaneOutlook ↔ LaneOutlook` | arquitetura/10-modelo-de-dados §27.3 | done | core/src/engine/lanes.rs:155 |
 | `LanePriority ↔ LanePriority` | arquitetura/10-modelo-de-dados §30.1 | done | core/src/engine/priority.rs:32 |
 | `LaneProfile ↔ LaneProfile` | arquitetura/10-modelo-de-dados §21.4 | done | core/src/engine/profile.rs:88 |
@@ -442,7 +449,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `Point ↔ WinPoint` | arquitetura/10-modelo-de-dados §15.3 | done | core/src/engine/wincon.rs:55 |
 | `Pool ↔ Pool` | arquitetura/10-modelo-de-dados §7.4 | done | core/src/pool.rs:44 |
 | `PoolEntry ↔ PoolEntry` | arquitetura/10-modelo-de-dados §7.2 | done | core/src/pool.rs:32 |
-| `PoolPlan ↔ PoolPlan` | arquitetura/10-modelo-de-dados §32.2 | done | src-tauri/src/lib.rs:371 |
+| `PoolPlan ↔ PoolPlan` | arquitetura/10-modelo-de-dados §32.2 | done | src-tauri/src/lib.rs:384 |
 | `PriorityReport ↔ PriorityReport` | arquitetura/10-modelo-de-dados §30.2 | done | core/src/engine/priority.rs:42 |
 | `RawScores ↔ LiveScores` | arquitetura/10-modelo-de-dados §4.3 | done | core/src/live.rs:44 |
 | `Reading ↔ LaneReading` | arquitetura/10-modelo-de-dados §21.1 | done | core/src/engine/profile.rs:37 |
@@ -469,41 +476,42 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Item | Fonte | Estado | Onde / motivo |
 |---|---|---|---|
-| `BAN_POOL_MAX ↔ core::pool::BAN_POOL_MAX` | src/lib/types.ts:458 | done | core/src/pool.rs:42 |
-| `CORE_SIZE ↔ core::engine::poolgap::CORE_SIZE` | src/lib/types.ts:335 | done | core/src/engine/poolgap.rs:26 |
-| `OVERLAY_SECTIONS ↔ core::prefs::Section::ALL` | src/lib/types.ts:413 | done | core/src/prefs.rs:26 |
-| `POOL_SIZE ↔ core::engine::poolgap::POOL_SIZE` | src/lib/types.ts:333 | done | core/src/engine/poolgap.rs:25 |
+| `BAN_POOL_MAX ↔ core::pool::BAN_POOL_MAX` | src/lib/types.ts:479 | done | core/src/pool.rs:42 |
+| `CORE_SIZE ↔ core::engine::poolgap::CORE_SIZE` | src/lib/types.ts:356 | done | core/src/engine/poolgap.rs:26 |
+| `OVERLAY_SECTIONS ↔ core::prefs::Section::ALL` | src/lib/types.ts:434 | done | core/src/prefs.rs:26 |
+| `POOL_SIZE ↔ core::engine::poolgap::POOL_SIZE` | src/lib/types.ts:354 | done | core/src/engine/poolgap.rs:25 |
 
 ## command
 
 | Item | Fonte | Estado | Onde / motivo |
 |---|---|---|---|
 | `ban_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:256 |
+| `bought_items` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:302 |
 | `build_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:273 |
 | `engine_status` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:129 |
-| `get_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:480 |
+| `get_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:493 |
 | `get_draft_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:223 |
 | `get_enemy_roles` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:205 |
 | `get_live` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:267 |
-| `get_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:455 |
-| `get_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:441 |
+| `get_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:468 |
+| `get_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:454 |
 | `get_snapshot` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:121 |
-| `gold_report` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:359 |
-| `lane_analysis` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:306 |
+| `gold_report` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:372 |
+| `lane_analysis` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:319 |
 | `lane_profile` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:237 |
-| `last_review` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:366 |
+| `last_review` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:379 |
 | `minimax_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:243 |
-| `pool_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:384 |
+| `pool_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:397 |
 | `rank_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:168 |
-| `rune_plan` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:408 |
-| `set_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:486 |
+| `rune_plan` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:421 |
+| `set_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:499 |
 | `set_draft_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:228 |
 | `set_draft_role` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:182 |
 | `set_enemy_role` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:191 |
-| `set_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:464 |
-| `set_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:446 |
+| `set_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:477 |
+| `set_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:459 |
 | `set_simulated_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:218 |
-| `skirmish_focus` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:337 |
+| `skirmish_focus` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:350 |
 
 ## event
 
@@ -562,22 +570,24 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Item | Fonte | Estado | Onde / motivo |
 |---|---|---|---|
-| `T-BUILD-1` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:473 |
-| `T-BUILD-10` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:451 |
-| `T-BUILD-2` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:487 |
-| `T-BUILD-3` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:502 |
-| `T-BUILD-4` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:527 |
-| `T-BUILD-5` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:551 |
-| `T-BUILD-6` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:541 |
-| `T-BUILD-7` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:571 |
-| `T-BUILD-8` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:588 |
-| `T-BUILD-9` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:597 |
+| `T-BUILD-1` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:631 |
+| `T-BUILD-10` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:609 |
+| `T-BUILD-11` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:537 |
+| `T-BUILD-12` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:563 |
+| `T-BUILD-2` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:645 |
+| `T-BUILD-3` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:660 |
+| `T-BUILD-4` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:685 |
+| `T-BUILD-5` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:709 |
+| `T-BUILD-6` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:699 |
+| `T-BUILD-7` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:729 |
+| `T-BUILD-8` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:746 |
+| `T-BUILD-9` | arquitetura/13-testes §2 | done | core/src/engine/build.rs:755 |
 | `T-CASCA-1` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:165 |
 | `T-CASCA-10` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:211 |
 | `T-CASCA-11` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:225 |
 | `T-CASCA-12` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:236 |
-| `T-CASCA-13` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:617 |
-| `T-CASCA-14` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:636 |
+| `T-CASCA-13` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:630 |
+| `T-CASCA-14` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:649 |
 | `T-CASCA-15` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:96 |
 | `T-CASCA-16` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:113 |
 | `T-CASCA-17` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:132 |
@@ -595,7 +605,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-CASCA-28` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:138 |
 | `T-CASCA-29` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:150 |
 | `T-CASCA-3` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:192 |
-| `T-CASCA-30` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:594 |
+| `T-CASCA-30` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:607 |
 | `T-CASCA-31` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:182 |
 | `T-CASCA-32` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:221 |
 | `T-CASCA-33` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:260 |
@@ -990,6 +1000,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `TF-OVERLAY-6` | frontend/06-testes §3 | done | src/estatico.test.ts:35 |
 | `TF-PARTIDA-3` | frontend/06-testes §3 | done | src/components/GoldTracker.test.tsx:40 |
 | `TF-PARTIDA-5` | frontend/06-testes §3 | done | src/components/LiveBuild.test.tsx:14 |
+| `TF-PARTIDA-6` | frontend/06-testes §3 | done | src/components/LiveBuild.test.tsx:35 |
 | `TF-POOL-4` | frontend/06-testes §3 | done | src/App.test.tsx:137 |
 | `TF-ROTAS-2` | frontend/06-testes §3 | done | src/components/Runas.test.tsx:16 |
 | `TF-ROTAS-3` | frontend/06-testes §3 | done | src/App.test.tsx:189 |

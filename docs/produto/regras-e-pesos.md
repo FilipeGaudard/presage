@@ -508,6 +508,31 @@ Valor no código, não conferido pelo doccheck:
 | razões por item | até 2 | `build.rs:337` |
 | chance de escaramuça | `nossa / (nossa + deles)`, razão de poderes | `build.rs:203-206` |
 
+### RN-34 — A build da base (`bought_by`)
+
+```rust
+pub const MIN_BOUGHT_GAMES: u32 = 100;
+pub const ITEM_PRIOR_SD: f64 = 0.03;
+```
+
+- **Regra:** com o campeão na rota com pelo menos 100 partidas na base, a tela
+  mostra os itens da loja da Fenda de 1000 de ouro ou mais (RN-19, A54) que eles
+  terminaram a partida tendo, do mais comprado ao menos: a fração das partidas
+  com o item e a vitória com ele, encolhida para a do campeão na rota com
+  desvio de 3pp. Sem rota informada (o treino), vale a rota em que o campeão mais
+  joga na base.
+- **Origem:** a fração e a vitória são medidas (match-v5, inventário final); o
+  mínimo de 100 e os 3pp, escolha à mão, como `MATCHUP_PRIOR_SD` (RN-3).
+- **Confiança:** medição na fração de compra; **fraca** na vitória: ela vem do
+  inventário final, e quem ganha termina com mais itens, então todo item sai
+  acima da média do campeão. Serve para comparar um item com outro, não como
+  chance, e a tela diz isso.
+- **Onde:** `core/src/engine/build.rs`, `bought_by`; o comando `bought_items`
+  (12 §1); a tabela `Dataset::items` (10 §20.1), que o coletor preenche (05).
+- **Quando a base existir em escala:** a ordem de compra (timeline) separa o
+  primeiro item do terceiro, e a vitória por item controlada pela duração da
+  partida tira o viés de quem ganha ter mais itens.
+
 ## 10. Rotas e escaramuças — `core::engine::lanes`
 
 ### RN-20 — O peso do duelo na chance da rota
@@ -886,3 +911,4 @@ Valor no código, não conferido pelo doccheck:
 | RN-31 | `RANKED_SOLO_QUEUE`, 60 partidas | escolha à mão | regra | fica |
 | RN-32 | cortes e limiares do coletor | mecânica / escolha à mão | regra | `strength_for_sd` |
 | RN-33 | cortes de cor da tela | escolha à mão | fraca | o `±` do motor |
+| RN-34 | `MIN_BOUGHT_GAMES`, `ITEM_PRIOR_SD` | medição / escolha à mão | fraca | ordem de compra; vitória controlada pela duração |

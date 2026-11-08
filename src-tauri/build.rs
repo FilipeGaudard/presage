@@ -19,6 +19,7 @@ const COMANDOS: &[&str] = &[
     "set_pool",
     "get_live",
     "build_suggestions",
+    "bought_items",
     "lane_analysis",
     "skirmish_focus",
     "gold_report",

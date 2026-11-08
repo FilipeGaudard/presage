@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import LiveBuild from "./LiveBuild";
-import type { BuildContext, LiveGame } from "../lib/types";
+import type { BoughtReport, BuildContext, ItemSuggestion, LiveGame } from "../lib/types";
 
 afterEach(cleanup);
 
@@ -30,5 +30,37 @@ describe("LiveBuild", () => {
     );
     expect(screen.getByText(/Não consegui os dados de item/)).toBeTruthy();
     expect(screen.getByText(/sem rede e sem cache/)).toBeTruthy();
+  });
+
+  it("TF-PARTIDA-6: com base, a build mostra o que se compra com o campeão; sem ela, diz que a lista é conta (R-10, R-21)", () => {
+    const conta: ItemSuggestion[] = [
+      { itemId: 3031, name: "Gume do Infinito", cost: 3450, valuePer1000g: 12.3, ehpGain: 0, offenseGainPercent: 4, reasons: [] },
+    ];
+    const comprado: BoughtReport = {
+      championId: 42,
+      role: "Mid",
+      games: 1240,
+      winrate: 0.51,
+      items: [
+        { itemId: 3078, name: "Força da Trindade", cost: 3333, games: 868, share: 0.7, winrate: 0.534 },
+        { itemId: 6676, name: "O Coletor", cost: 3200, games: 310, share: 0.25, winrate: 0.528 },
+      ],
+    };
+    const { unmount } = render(
+      <LiveBuild game={semVoce} context={contexto} suggestions={conta} staticData={null} bought={comprado} patch="16.22" />
+    );
+    const secao = screen.getByText(/O que se compra/).closest(".section") as HTMLElement;
+    expect(secao.textContent).toMatch(/1\.240 partidas/);
+    expect(secao.textContent).toMatch(/patch 16\.22/);
+    expect(secao.textContent).toMatch(/Força da Trindade/);
+    expect(secao.textContent).toMatch(/70% compram/);
+    expect(secao.textContent).toMatch(/vence 53,4%/);
+    // A conta de atributos continua, e diz que é conta.
+    expect(screen.getByText(/A conta de atributos: vida efetiva/)).toBeTruthy();
+    unmount();
+
+    render(<LiveBuild game={semVoce} context={contexto} suggestions={conta} staticData={null} bought={null} patch={null} />);
+    expect(screen.queryByText(/O que se compra/)).toBeNull();
+    expect(screen.getByText(/Sem base de partidas para este campeão/)).toBeTruthy();
   });
 });

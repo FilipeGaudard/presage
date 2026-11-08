@@ -1986,6 +1986,38 @@ pub struct ItemSuggestion {
 - A lista vem em `value_per_1000g` decrescente, empate por `item_id` crescente, e
   tem no máximo `limit` itens.
 
+### 26.5 `BoughtItem` ↔ `BoughtItem`
+
+```rust
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BoughtItem {
+    pub item_id: i64, // id do item no Data Dragon
+    pub name: String, // nome no idioma do usuário
+    pub cost: f64,    // ouro: `gold.total`
+    pub games: u32,   // partidas do campeão na rota que terminaram com o item (`Dataset::items`)
+    pub share: f64,   // fração 0–1: `games` sobre as partidas do campeão na rota
+    pub winrate: f64, // fração 0–1: vitória com o item, encolhida para a do campeão na rota (`ITEM_PRIOR_SD`); comparação entre itens, não chance (RN-34)
+}
+```
+
+### 26.6 `BoughtReport` ↔ `BoughtReport`
+
+```rust
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BoughtReport {
+    pub champion_id: i64,        // id do Data Dragon
+    pub role: Role,              // a rota lida; a de mais partidas na base quando a partida não informa
+    pub games: u32,              // partidas do campeão na rota, ao menos `MIN_BOUGHT_GAMES`
+    pub winrate: f64,            // fração 0–1: vitória do campeão na rota, a referência de `BoughtItem::winrate`
+    pub items: Vec<BoughtItem>,  // os da loja da Fenda de custo ≥ `MIN_ITEM_COST`, do mais comprado ao menos, até `limit`
+}
+```
+
+As constantes da regra, `MIN_BOUGHT_GAMES` e `ITEM_PRIOR_SD`, estão em
+[RN-34](../produto/regras-e-pesos.md).
+
 ## 27. `core::engine::lanes` — Rotas e escaramuças
 
 A chance de cada rota, as escaramuças de 2 e 3 contra 2 e 3, e a escaramuça que o
@@ -2628,7 +2660,7 @@ pub struct Identity {
 ### 32.5 `Shared` (`casca::watcher`)
 
 Em `watcher.rs:60`. Não cruza a ponte. É o estado que o watcher, as tarefas de
-carga e os 26 comandos dividem; quem escreve e quem lê cada campo está em 12 §1.
+carga e os 27 comandos dividem; quem escreve e quem lê cada campo está em 12 §1.
 
 ```rust
 pub struct Shared {

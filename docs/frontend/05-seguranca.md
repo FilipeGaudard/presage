@@ -15,7 +15,7 @@ está em [arquitetura 07](../arquitetura/07-seguranca.md).
 | CSP fechada | `tauri.conf.json`: script e tudo o mais só da própria origem; imagem e conexão também do Data Dragon (§4) | Script de fora; exfiltração para outro host |
 | URL de imagem sobre host fixo | O retrato e o ícone de item são `https://ddragon.leagueoflegends.com/cdn/{versão}/img/…` (`ddragon.ts:40`, `:52`); a runa é o mesmo host mais o caminho que a casca manda (`Runas.tsx:9`) | Uma resposta estranha apontar a imagem para outro servidor; a CSP recusa de qualquer jeito |
 | Sem link para fora | Nenhum `<a>`, `window.open` ou plugin de shell. As notas da versão (`update.body`) aparecem como texto | Notas de versão com link enganoso; navegar a webview para fora do app |
-| Comandos fechados, por janela | A webview só alcança os 26 comandos de `generate_handler!`, cada um com tipo de argumento ([12](../arquitetura/12-contrato-da-casca.md)), e cada janela só os que a capability dela libera: a principal, os 26; o overlay, os cinco que ele chama (A52, T-CASCA-32) | Um canal genérico para o processo nativo; o overlay gravar a pool ou ligar o autostart |
+| Comandos fechados, por janela | A webview só alcança os 27 comandos de `generate_handler!`, cada um com tipo de argumento ([12](../arquitetura/12-contrato-da-casca.md)), e cada janela só os que a capability dela libera: a principal, os 27; o overlay, os cinco que ele chama (A52, T-CASCA-32) | Um canal genérico para o processo nativo; o overlay gravar a pool ou ligar o autostart |
 | Permissões mínimas de plugin, por janela | `capabilities/main.json`: `core:default`, `updater:default`, `process:allow-restart`; `capabilities/overlay.json`: `core:default` e o arrasto da janela. Nada de shell, sistema de arquivos ou HTTP pelo front. Um teste de arquitetura trava isso (T-CASCA-29) | O front ler disco ou executar programa; o overlay atualizar ou reiniciar o app |
 | Nenhum dado no navegador | Nenhum `localStorage`, `sessionStorage` ou IndexedDB; o que persiste vai por `set_*` para `%LOCALAPPDATA%\Presage` | Dado do jogador num segundo lugar, fora do que a casca controla |
 | Riot ID de terceiros fora da tela | O `displayName` dos outros nove só vira `key` do React | Expor terceiros numa captura de tela ou numa transmissão |
@@ -44,9 +44,9 @@ do ponto de vista da tela.
 - **Uma capability por janela.** `main.json` tem o atualizador e o reinício;
   `overlay.json`, o padrão do Tauri e o arrasto (A33, A15).
 - **Cada janela alcança só os comandos que usa.** `src-tauri/build.rs` declara os
-  26 comandos num manifesto do app (`AppManifest::commands`), e o `tauri-build`
+  27 comandos num manifesto do app (`AppManifest::commands`), e o `tauri-build`
   gera um `allow-…` para cada um. Com o manifesto, o Tauri recusa o comando que a
-  capability da janela não libera: `main.json` libera os 26; `overlay.json`, os
+  capability da janela não libera: `main.json` libera os 27; `overlay.json`, os
   cinco que ele chama (`get_overlay_prefs`, `get_live`, `build_suggestions`,
   `gold_report`, `skirmish_focus`). Até a 0.7.0 não havia manifesto, e o overlay
   alcançava `set_pool` e `set_autostart` também (A52). T-CASCA-32 confere as

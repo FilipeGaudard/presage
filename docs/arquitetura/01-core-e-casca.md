@@ -128,7 +128,7 @@ mudar juntas.
 
 ### Comandos
 
-A interface chama 26 comandos por `invoke`, todos registrados em
+A interface chama 27 comandos por `invoke`, todos registrados em
 `generate_handler!` (`lib.rs`). Argumentos, retorno, erros e quem chama cada um
 estão no [contrato da casca](12-contrato-da-casca.md#2-comandos).
 

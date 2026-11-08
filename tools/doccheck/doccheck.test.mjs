@@ -318,7 +318,7 @@ test('constante do TS que espelha o core é comparada pelo valor (P3)', () => {
 test('o repositório real: o scanner não perde itens', () => {
   const { code } = run(ROOT, { write: false });
   assert.ok(code.tests.length >= 460, `testes: ${code.tests.length}`);
-  assert.equal(new Set(code.commands.map((c) => c.name)).size, 26);
+  assert.equal(new Set(code.commands.map((c) => c.name)).size, 27);
   assert.deepEqual([...new Set(code.handlers)].sort(), [...new Set(code.commands.map((c) => c.name))].sort());
   const corePub = code.items.filter((x) => x.crate === 'core' && x.isPub);
   assert.ok(corePub.filter((x) => ['struct', 'enum', 'trait', 'type'].includes(x.kind)).length >= 100);

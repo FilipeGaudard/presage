@@ -324,7 +324,7 @@ o documento afetado no mesmo commit.
 
 ## P-27 — Os comandos pesados devem ser `async`? 🟡
 
-- **Pergunta:** os 26 comandos são `fn` síncronos. `minimax_draft` com todo
+- **Pergunta:** os 27 comandos são `fn` síncronos. `minimax_draft` com todo
   candidato, `lane_analysis` e `rune_plan` rodam a cada mudança de draft, e na partida
   `lane_analysis` roda a cada segundo. Comando síncrono do Tauri roda fora da
   thread da janela?

@@ -116,7 +116,7 @@ nesta ordem:
    `Layered`, com a base (ou `None`) e sem histórico pessoal.
 4. `ultima-partida.json` → `last_review` (`lib.rs:636`).
 5. `draft.json` e `overlay.json` → as preferências (`lib.rs:640`, `lib.rs:644`).
-6. `app.manage` (`lib.rs:652`): o mesmo `Arc<Shared>` serve os 26 comandos e as
+6. `app.manage` (`lib.rs:652`): o mesmo `Arc<Shared>` serve os 27 comandos e as
    três tarefas de fundo.
 
 **Por quê.**
