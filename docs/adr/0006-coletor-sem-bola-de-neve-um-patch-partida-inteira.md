@@ -32,6 +32,10 @@ Três regras em `tools/ingest`:
   patch.
 - **Obrigatório:** os motivos de descarte sobrevivem a uma retomada; o histórico
   pessoal (`history::played`) aplica os mesmos cortes ([L-5](../arquitetura/09-licoes-do-prototipo.md)).
+- **Revisto em 2026-11-08:** o dono do produto escolheu uma janela dos últimos 30
+  dias para a primeira base, porque no começo do 16.22 a trava descartava 89% das
+  partidas. O coletor ganhou `--dias` (05 §1): sem trava de patch, com a lista
+  dos patches no cabeçalho e na tela. Sem `--dias`, a regra acima continua.
 
 ## Alternativas rejeitadas
 

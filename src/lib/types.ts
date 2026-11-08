@@ -573,6 +573,8 @@ export interface EngineStatus {
   personalGames: number;
   account: string | null;
   globalPatch: string | null;
+  /** Todos os patches da base, em ordem; mais de um numa base por janela de dias. */
+  globalPatches: string[];
   globalMatches: number;
   /** Por que não há campeões: o Data Dragon e o cache falharam. Nulo enquanto carrega e depois de carregar. */
   championsError: string | null;

@@ -14,7 +14,7 @@ interface Props {
   itemsError?: string | null;
   /** O que se compra com o seu campeão, segundo a base (`bought_items`). */
   bought?: BoughtReport | null;
-  /** O patch da base (`EngineStatus.globalPatch`). */
+  /** De onde a base saiu: "do patch 16.22" ou "dos patches 16.21 e 16.22" (`rotuloDaBase`). */
   patch?: string | null;
 }
 
@@ -89,7 +89,7 @@ export default function LiveBuild({ game, context, suggestions, staticData, item
         <div className="section">
           <h3>O que se compra com {me?.championKey ?? "o seu campeão"} no {ROTA[bought.role] ?? bought.role}</h3>
           <p className="muted">
-            Base de partidas{patch ? ` do patch ${patch}` : ""}: {BR.format(bought.games)} partidas dele na rota,
+            Base de partidas{patch ? ` ${patch}` : ""}: {BR.format(bought.games)} partidas dele na rota,
             vence {PCT.format(bought.winrate)}. Do mais comprado ao menos; a vitória é de quem terminou com o item, e
             quem ganha termina com mais itens, então serve para comparar um com outro.
           </p>

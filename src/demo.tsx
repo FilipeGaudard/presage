@@ -98,6 +98,7 @@ const engine: EngineStatus = {
   personalGames: 47,
   account: "crit is back#split",
   globalPatch: "16.21",
+  globalPatches: ["16.21"],
   globalMatches: 1_240_000,
   championsError: null,
   itemsError: null,

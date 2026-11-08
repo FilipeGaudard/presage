@@ -38,7 +38,7 @@ import OverlayPrefsPanel from "./components/OverlayPrefsPanel";
 import PerfilDeRota from "./components/PerfilDeRota";
 import PoolBuilder from "./components/PoolBuilder";
 import PostGame from "./components/PostGame";
-import RecommendationPanel from "./components/RecommendationPanel";
+import RecommendationPanel, { rotuloDaBase } from "./components/RecommendationPanel";
 import Runas from "./components/Runas";
 import SimuladorDraft, { draftVazio } from "./components/SimuladorDraft";
 
@@ -571,7 +571,7 @@ export default function App() {
                 staticData={staticData}
                 itemsError={engine?.itemsError ?? null}
                 bought={bought}
-                patch={engine?.globalPatch ?? null}
+                patch={engine?.hasGlobal ? rotuloDaBase(engine) : null}
               />
             </section>
           </main>

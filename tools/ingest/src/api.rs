@@ -233,10 +233,8 @@ impl Riot {
         Ok(lista.unwrap_or_default().entries)
     }
 
-    pub async fn match_ids(&self, puuid: &str, queue: i64, count: u32) -> Result<Vec<String>> {
-        let path = format!(
-            "/lol/match/v5/matches/by-puuid/{puuid}/ids?queue={queue}&type=ranked&start=0&count={count}"
-        );
+    pub async fn match_ids(&self, puuid: &str, queue: i64, count: u32, desde: Option<i64>) -> Result<Vec<String>> {
+        let path = ids_path(puuid, queue, count, desde);
         Ok(self.get(Host::Regional, &path).await?.unwrap_or_default())
     }
 
@@ -244,6 +242,17 @@ impl Riot {
         self.get(Host::Regional, &format!("/lol/match/v5/matches/{id}"))
             .await
     }
+}
+
+/// O caminho da lista de partidas de um jogador. `desde`, em segundos Unix, pede
+/// só as partidas que começaram depois dele (`startTime` do match-v5): a coleta
+/// por janela de dias (`--dias`).
+pub fn ids_path(puuid: &str, queue: i64, count: u32, desde: Option<i64>) -> String {
+    let mut path = format!("/lol/match/v5/matches/by-puuid/{puuid}/ids?queue={queue}&type=ranked&start=0&count={count}");
+    if let Some(desde) = desde {
+        path.push_str(&format!("&startTime={desde}"));
+    }
+    path
 }
 
 /// 1s, 2s, 4s, 8s.
@@ -281,6 +290,19 @@ pub fn tiers_from(menor: &str) -> Option<Vec<&'static str>> {
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn a_janela_de_dias_vai_na_lista_de_partidas() {
+        assert_eq!(
+            ids_path("p", 420, 20, None),
+            "/lol/match/v5/matches/by-puuid/p/ids?queue=420&type=ranked&start=0&count=20"
+        );
+        assert_eq!(
+            ids_path("p", 420, 20, Some(1_760_000_000)),
+            "/lol/match/v5/matches/by-puuid/p/ids?queue=420&type=ranked&start=0&count=20&startTime=1760000000"
+        );
+    }
+
     use super::*;
 
     #[test]

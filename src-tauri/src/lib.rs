@@ -58,6 +58,9 @@ struct EngineStatus {
     /// Patch de onde a base de partidas saiu, quando existe. A interface mostra
     /// para ninguém confiar numa base de dois patches atrás sem saber.
     global_patch: Option<String>,
+    /// Todos os patches da base, em ordem; mais de um numa base por janela de
+    /// dias, e aí `global_patch` é o mais novo.
+    global_patches: Vec<String>,
     global_matches: u64,
     /// Por que não há campeões. Com `ready` falso e isto `None`, ainda carrega.
     champions_error: Option<String>,
@@ -102,6 +105,7 @@ fn engine_status_of(shared: &Shared) -> EngineStatus {
             .as_ref()
             .map(|id| id.riot_id.clone()),
         global_patch: dataset.as_ref().map(|d| d.patch.clone()),
+        global_patches: dataset.as_ref().map(|d| d.patches.clone()).unwrap_or_default(),
         global_matches: dataset.as_ref().map_or(0, |d| d.matches),
         champions_error: shared.champions_error.lock().unwrap().clone(),
         items_error: shared.items_error.lock().unwrap().clone(),

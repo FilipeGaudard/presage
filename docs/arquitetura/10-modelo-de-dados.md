@@ -1470,9 +1470,11 @@ histórico da conta. O desenho está em
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, rename_all = "camelCase")]
 pub struct Dataset {
-    pub patch: String,        // patch das partidas ("16.21"); a interface mostra, porque base de patch velho recomenda build velha
+    pub patch: String,        // patch das partidas ("16.21"), o mais novo numa base por janela de dias; a interface mostra, porque base de patch velho recomenda build velha
     pub region: String,       // plataforma da coleta ("BR1"); o motor não lê
     pub tier: String,         // faixa de elo semeada ("EMERALD+"); o motor não lê
+    #[serde(default)]
+    pub patches: Vec<String>, // todos os patches das partidas, em ordem de versão; mais de um com `--dias` (05 §1); vazio em base de coletor antigo
     pub generated_at: String, // ISO 8601, quando o coletor gravou; o motor não lê
     pub matches: u64,         // contagem de partidas que entraram na agregação
     #[serde(default)]
@@ -2576,7 +2578,8 @@ struct EngineStatus {
     has_personal: bool,            // o histórico pessoal tem ao menos um campeão (Riot Web API)
     personal_games: u32,           // contagem de partidas no histórico pessoal
     account: Option<String>,       // Riot ID `nome#tag` da conta do LCU; `None` antes de conectar
-    global_patch: Option<String>,  // patch da base de partidas (`Dataset::patch`); `None` sem base
+    global_patch: Option<String>,  // patch da base de partidas (`Dataset::patch`), o mais novo dela; `None` sem base
+    global_patches: Vec<String>,   // todos os patches da base (`Dataset::patches`), em ordem; vazio sem base ou de coletor antigo
     global_matches: u64,           // contagem de partidas da base; 0 sem base
     champions_error: Option<String>, // por que não há campeões: o Data Dragon e o cache falharam; `None` enquanto carrega e depois de carregar
     items_error: Option<String>,     // por que não há itens, do mesmo jeito

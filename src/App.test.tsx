@@ -44,6 +44,7 @@ const engine: EngineStatus = {
   personalGames: 0,
   account: null,
   globalPatch: null,
+  globalPatches: [],
   globalMatches: 0,
   championsError: null,
   itemsError: null,

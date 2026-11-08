@@ -12,16 +12,16 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | command | 27 | 27 | 0 | 0 |
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
-| flag | 16 | 16 | 0 | 0 |
-| test | 381 | 381 | 0 | 0 |
-| ui-test | 50 | 17 | 33 | 0 |
+| flag | 17 | 17 | 0 | 0 |
+| test | 383 | 383 | 0 | 0 |
+| ui-test | 51 | 18 | 33 | 0 |
 | trace | 43 | 39 | 4 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 3 | 0 | 3 | 0 |
 
-- testes no código: 510; nomes no catálogo (13): 510; fora dele: 0
+- testes no código: 512; nomes no catálogo (13): 512; fora dele: 0
 - links relativos conferidos: 872
-- IDs citados conferidos: 3132
+- IDs citados conferidos: 3143
 
 ## type
 
@@ -29,7 +29,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 |---|---|---|---|
 | `casca::EngineStatus` | arquitetura/10-modelo-de-dados §32.1 | done | src-tauri/src/lib.rs:48 |
 | `casca::live::LiveSnapshot` | arquitetura/10-modelo-de-dados §32.3 | done | src-tauri/src/live.rs:17 |
-| `casca::PoolPlan` | arquitetura/10-modelo-de-dados §32.2 | done | src-tauri/src/lib.rs:384 |
+| `casca::PoolPlan` | arquitetura/10-modelo-de-dados §32.2 | done | src-tauri/src/lib.rs:388 |
 | `casca::watcher::Identity` | arquitetura/10-modelo-de-dados §32.4 | done | src-tauri/src/watcher.rs:52 |
 | `casca::watcher::Shared` | arquitetura/10-modelo-de-dados §32.5 | done | src-tauri/src/watcher.rs:60 |
 | `core::draft::ConnStatus` | arquitetura/10-modelo-de-dados §3.8 | done | core/src/draft.rs:116 |
@@ -66,7 +66,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::context::Placed` | arquitetura/10-modelo-de-dados §10.2 | done | core/src/engine/context.rs:38 |
 | `core::engine::damage::Penetration` | arquitetura/10-modelo-de-dados §25.1 | done | core/src/engine/damage.rs:11 |
 | `core::engine::dataset::Dataset` | arquitetura/10-modelo-de-dados §20.1 | done | core/src/engine/dataset.rs:27 |
-| `core::engine::dataset::Layered` | arquitetura/10-modelo-de-dados §20.3 | done | core/src/engine/dataset.rs:145 |
+| `core::engine::dataset::Layered` | arquitetura/10-modelo-de-dados §20.3 | done | core/src/engine/dataset.rs:150 |
 | `core::engine::gold::GoldPlayer` | arquitetura/10-modelo-de-dados §28.1 | done | core/src/engine/gold.rs:41 |
 | `core::engine::gold::GoldReport` | arquitetura/10-modelo-de-dados §28.2 | done | core/src/engine/gold.rs:61 |
 | `core::engine::items::DdragonGold` | arquitetura/10-modelo-de-dados §24.4 | done | core/src/engine/items.rs:144 |
@@ -197,16 +197,16 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::damage::damage_multiplier` | arquitetura/11-catalogo-de-funcoes §25.2 | done | core/src/engine/damage.rs:45 |
 | `core::engine::damage::effective_hp` | arquitetura/11-catalogo-de-funcoes §25.3 | done | core/src/engine/damage.rs:54 |
 | `core::engine::damage::effective_resist` | arquitetura/11-catalogo-de-funcoes §25.1 | done | core/src/engine/damage.rs:24 |
-| `core::engine::dataset::base_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:81 |
-| `core::engine::dataset::Dataset::is_usable` | arquitetura/11-catalogo-de-funcoes §20.2 | done | core/src/engine/dataset.rs:109 |
-| `core::engine::dataset::item_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:104 |
-| `core::engine::dataset::Layered::matches` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:161 |
-| `core::engine::dataset::Layered::patch` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:157 |
-| `core::engine::dataset::Layered::with_global` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:152 |
-| `core::engine::dataset::length_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:100 |
-| `core::engine::dataset::matchup_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:85 |
-| `core::engine::dataset::synergy_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:90 |
-| `core::engine::dataset::versus_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:96 |
+| `core::engine::dataset::base_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:86 |
+| `core::engine::dataset::Dataset::is_usable` | arquitetura/11-catalogo-de-funcoes §20.2 | done | core/src/engine/dataset.rs:114 |
+| `core::engine::dataset::item_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:109 |
+| `core::engine::dataset::Layered::matches` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:166 |
+| `core::engine::dataset::Layered::patch` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:162 |
+| `core::engine::dataset::Layered::with_global` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:157 |
+| `core::engine::dataset::length_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:105 |
+| `core::engine::dataset::matchup_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:90 |
+| `core::engine::dataset::synergy_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:95 |
+| `core::engine::dataset::versus_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:101 |
 | `core::engine::gold::earned_at` | arquitetura/11-catalogo-de-funcoes §28.1 | done | core/src/engine/gold.rs:77 |
 | `core::engine::gold::report` | arquitetura/11-catalogo-de-funcoes §28.2 | done | core/src/engine/gold.rs:90 |
 | `core::engine::items::DdragonItem::sold_on_rift` | arquitetura/11-catalogo-de-funcoes §24.4 | done | core/src/engine/items.rs:155 |
@@ -325,10 +325,10 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 |---|---|---|---|
 | `casca::recorder::MAX_FRAMES` | produto/regras-e-pesos RN-28 — O teto e o piso da gravação (`ca | done | src-tauri/src/recorder.rs:23 |
 | `casca::riot::RANKED_SOLO_QUEUE` | produto/regras-e-pesos RN-31 — O histórico pessoal da casca (`c | done | src-tauri/src/riot.rs:26 |
-| `coletor::aggregate::MIN_SPREAD_ENTRIES` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:370 |
+| `coletor::aggregate::MIN_SPREAD_ENTRIES` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:392 |
 | `coletor::aggregate::PARTICIPANTS` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:36 |
 | `coletor::aggregate::TEAM_SIZE` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:35 |
-| `coletor::aggregate::USEFUL` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:418 |
+| `coletor::aggregate::USEFUL` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:440 |
 | `core::draft::RANKED_QUEUES` | arquitetura/10-modelo-de-dados §3.13 | done | core/src/draft.rs:274 |
 | `core::engine::BASE_STRENGTH` | produto/regras-e-pesos RN-2 — A força da winrate base é escolhi | done | core/src/engine/mod.rs:36 |
 | `core::engine::build::ITEM_PRIOR_SD` | produto/regras-e-pesos RN-34 — A build da base (`bought_by`) | done | core/src/engine/build.rs:33 |
@@ -449,7 +449,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `Point ↔ WinPoint` | arquitetura/10-modelo-de-dados §15.3 | done | core/src/engine/wincon.rs:55 |
 | `Pool ↔ Pool` | arquitetura/10-modelo-de-dados §7.4 | done | core/src/pool.rs:44 |
 | `PoolEntry ↔ PoolEntry` | arquitetura/10-modelo-de-dados §7.2 | done | core/src/pool.rs:32 |
-| `PoolPlan ↔ PoolPlan` | arquitetura/10-modelo-de-dados §32.2 | done | src-tauri/src/lib.rs:384 |
+| `PoolPlan ↔ PoolPlan` | arquitetura/10-modelo-de-dados §32.2 | done | src-tauri/src/lib.rs:388 |
 | `PriorityReport ↔ PriorityReport` | arquitetura/10-modelo-de-dados §30.2 | done | core/src/engine/priority.rs:42 |
 | `RawScores ↔ LiveScores` | arquitetura/10-modelo-de-dados §4.3 | done | core/src/live.rs:44 |
 | `Reading ↔ LaneReading` | arquitetura/10-modelo-de-dados §21.1 | done | core/src/engine/profile.rs:37 |
@@ -485,33 +485,33 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Item | Fonte | Estado | Onde / motivo |
 |---|---|---|---|
-| `ban_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:256 |
-| `bought_items` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:302 |
-| `build_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:273 |
-| `engine_status` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:129 |
-| `get_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:493 |
-| `get_draft_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:223 |
-| `get_enemy_roles` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:205 |
-| `get_live` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:267 |
-| `get_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:468 |
-| `get_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:454 |
-| `get_snapshot` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:121 |
-| `gold_report` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:372 |
-| `lane_analysis` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:319 |
-| `lane_profile` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:237 |
-| `last_review` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:379 |
-| `minimax_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:243 |
-| `pool_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:397 |
-| `rank_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:168 |
-| `rune_plan` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:421 |
-| `set_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:499 |
-| `set_draft_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:228 |
-| `set_draft_role` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:182 |
-| `set_enemy_role` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:191 |
-| `set_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:477 |
-| `set_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:459 |
-| `set_simulated_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:218 |
-| `skirmish_focus` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:350 |
+| `ban_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:260 |
+| `bought_items` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:306 |
+| `build_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:277 |
+| `engine_status` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:133 |
+| `get_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:497 |
+| `get_draft_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:227 |
+| `get_enemy_roles` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:209 |
+| `get_live` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:271 |
+| `get_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:472 |
+| `get_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:458 |
+| `get_snapshot` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:125 |
+| `gold_report` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:376 |
+| `lane_analysis` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:323 |
+| `lane_profile` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:241 |
+| `last_review` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:383 |
+| `minimax_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:247 |
+| `pool_suggestions` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:401 |
+| `rank_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:172 |
+| `rune_plan` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:425 |
+| `set_autostart` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:503 |
+| `set_draft_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:232 |
+| `set_draft_role` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:186 |
+| `set_enemy_role` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:195 |
+| `set_overlay_prefs` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:481 |
+| `set_pool` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:463 |
+| `set_simulated_draft` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:222 |
+| `skirmish_focus` | arquitetura/12-contrato-da-casca §2 | done | src-tauri/src/lib.rs:354 |
 
 ## event
 
@@ -531,7 +531,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `base-de-partidas.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/lib.rs:46 |
 | `champion.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:142 |
 | `champions.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:11 |
-| `coleta-em-andamento.json` | arquitetura/12-contrato-da-casca §6 | done | tools/ingest/src/main.rs:95 |
+| `coleta-em-andamento.json` | arquitetura/12-contrato-da-casca §6 | done | tools/ingest/src/main.rs:98 |
 | `draft.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/lib.rs:43 |
 | `gravacao.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/recorder.rs:19 |
 | `item.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:260 |
@@ -549,22 +549,23 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Item | Fonte | Estado | Onde / motivo |
 |---|---|---|---|
-| `--ajuda` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:149 |
-| `--estado` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:145 |
-| `--fila` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:139 |
-| `--help` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:149 |
-| `--jogadores` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:137 |
-| `--limite` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:143 |
-| `--min-jogos` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:141 |
-| `--paralelo` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:142 |
-| `--patch` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:140 |
-| `--plano` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:147 |
-| `--por-jogador` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:138 |
-| `--regiao` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:135 |
-| `--retomar` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:146 |
-| `--saida` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:144 |
-| `--tier` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:136 |
-| `--verificar` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:148 |
+| `--ajuda` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:157 |
+| `--dias` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:145 |
+| `--estado` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:153 |
+| `--fila` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:143 |
+| `--help` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:157 |
+| `--jogadores` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:141 |
+| `--limite` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:151 |
+| `--min-jogos` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:149 |
+| `--paralelo` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:150 |
+| `--patch` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:144 |
+| `--plano` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:155 |
+| `--por-jogador` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:142 |
+| `--regiao` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:139 |
+| `--retomar` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:154 |
+| `--saida` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:152 |
+| `--tier` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:140 |
+| `--verificar` | arquitetura/05-coletor §1 | done | tools/ingest/src/main.rs:156 |
 
 ## test
 
@@ -586,8 +587,8 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-CASCA-10` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:211 |
 | `T-CASCA-11` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:225 |
 | `T-CASCA-12` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:236 |
-| `T-CASCA-13` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:630 |
-| `T-CASCA-14` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:649 |
+| `T-CASCA-13` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:634 |
+| `T-CASCA-14` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:653 |
 | `T-CASCA-15` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:96 |
 | `T-CASCA-16` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:113 |
 | `T-CASCA-17` | arquitetura/13-testes §2 | done | src-tauri/src/recorder.rs:132 |
@@ -605,7 +606,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-CASCA-28` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:138 |
 | `T-CASCA-29` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:150 |
 | `T-CASCA-3` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:192 |
-| `T-CASCA-30` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:607 |
+| `T-CASCA-30` | arquitetura/13-testes §2 | done | src-tauri/src/lib.rs:611 |
 | `T-CASCA-31` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:182 |
 | `T-CASCA-32` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:221 |
 | `T-CASCA-33` | arquitetura/13-testes §2 | done | src-tauri/src/arquitetura.rs:260 |
@@ -615,29 +616,29 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-CASCA-7` | arquitetura/13-testes §2 | done | src-tauri/src/analysis.rs:255 |
 | `T-CASCA-8` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:181 |
 | `T-CASCA-9` | arquitetura/13-testes §2 | done | src-tauri/src/lcu/credentials.rs:192 |
-| `T-COLETOR-1` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:717 |
-| `T-COLETOR-10` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:303 |
-| `T-COLETOR-11` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:321 |
-| `T-COLETOR-12` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:328 |
-| `T-COLETOR-13` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:338 |
-| `T-COLETOR-14` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:477 |
-| `T-COLETOR-15` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:581 |
-| `T-COLETOR-16` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:592 |
-| `T-COLETOR-17` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:611 |
-| `T-COLETOR-18` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:485 |
-| `T-COLETOR-19` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:501 |
-| `T-COLETOR-2` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:760 |
-| `T-COLETOR-20` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:668 |
-| `T-COLETOR-21` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:715 |
-| `T-COLETOR-22` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:726 |
-| `T-COLETOR-23` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:757 |
-| `T-COLETOR-24` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:794 |
-| `T-COLETOR-25` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:565 |
-| `T-COLETOR-26` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:810 |
-| `T-COLETOR-27` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:825 |
-| `T-COLETOR-28` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:847 |
-| `T-COLETOR-29` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:531 |
-| `T-COLETOR-3` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:786 |
+| `T-COLETOR-1` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:735 |
+| `T-COLETOR-10` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:325 |
+| `T-COLETOR-11` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:343 |
+| `T-COLETOR-12` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:350 |
+| `T-COLETOR-13` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:360 |
+| `T-COLETOR-14` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:527 |
+| `T-COLETOR-15` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:631 |
+| `T-COLETOR-16` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:642 |
+| `T-COLETOR-17` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:661 |
+| `T-COLETOR-18` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:535 |
+| `T-COLETOR-19` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:551 |
+| `T-COLETOR-2` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:778 |
+| `T-COLETOR-20` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:718 |
+| `T-COLETOR-21` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:765 |
+| `T-COLETOR-22` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:776 |
+| `T-COLETOR-23` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:807 |
+| `T-COLETOR-24` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:845 |
+| `T-COLETOR-25` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:615 |
+| `T-COLETOR-26` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:861 |
+| `T-COLETOR-27` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:876 |
+| `T-COLETOR-28` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:898 |
+| `T-COLETOR-29` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:581 |
+| `T-COLETOR-3` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:804 |
 | `T-COLETOR-30` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:161 |
 | `T-COLETOR-31` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:169 |
 | `T-COLETOR-32` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:183 |
@@ -646,17 +647,19 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-COLETOR-35` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:226 |
 | `T-COLETOR-36` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:244 |
 | `T-COLETOR-37` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:274 |
-| `T-COLETOR-38` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:750 |
-| `T-COLETOR-39` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:729 |
-| `T-COLETOR-4` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:804 |
-| `T-COLETOR-40` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:738 |
-| `T-COLETOR-41` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:624 |
-| `T-COLETOR-42` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:543 |
-| `T-COLETOR-5` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:827 |
-| `T-COLETOR-6` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:859 |
-| `T-COLETOR-7` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:890 |
-| `T-COLETOR-8` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:286 |
-| `T-COLETOR-9` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:295 |
+| `T-COLETOR-38` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:768 |
+| `T-COLETOR-39` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:747 |
+| `T-COLETOR-4` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:822 |
+| `T-COLETOR-40` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:756 |
+| `T-COLETOR-41` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:674 |
+| `T-COLETOR-42` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:593 |
+| `T-COLETOR-43` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:500 |
+| `T-COLETOR-44` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:294 |
+| `T-COLETOR-5` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:845 |
+| `T-COLETOR-6` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:877 |
+| `T-COLETOR-7` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:908 |
+| `T-COLETOR-8` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:308 |
+| `T-COLETOR-9` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:317 |
 | `T-DRAFT-1` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:781 |
 | `T-DRAFT-10` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:565 |
 | `T-DRAFT-11` | arquitetura/13-testes §2 | done | core/src/engine/mod.rs:576 |
@@ -936,14 +939,14 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-STATS-11` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:427 |
 | `T-STATS-12` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:452 |
 | `T-STATS-13` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:461 |
-| `T-STATS-14` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:256 |
-| `T-STATS-15` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:282 |
-| `T-STATS-16` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:289 |
-| `T-STATS-17` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:298 |
-| `T-STATS-18` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:338 |
-| `T-STATS-19` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:273 |
+| `T-STATS-14` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:262 |
+| `T-STATS-15` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:288 |
+| `T-STATS-16` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:295 |
+| `T-STATS-17` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:304 |
+| `T-STATS-18` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:344 |
+| `T-STATS-19` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:279 |
 | `T-STATS-2` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:322 |
-| `T-STATS-20` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:228 |
+| `T-STATS-20` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:234 |
 | `T-STATS-3` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:335 |
 | `T-STATS-4` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:342 |
 | `T-STATS-5` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:357 |
@@ -989,23 +992,24 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `TF-SIM-1` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-SIM-2` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
 | `TF-SIM-3` | frontend/06-testes §3 | deferred | P-16: teste do front ainda não escrito |
-| `TF-CASCA-4` | frontend/06-testes §3 | done | src/App.test.tsx:164 |
+| `TF-CASCA-4` | frontend/06-testes §3 | done | src/App.test.tsx:165 |
 | `TF-CASCA-5` | frontend/06-testes §3 | done | src/estatico.test.ts:22 |
 | `TF-CASCA-7` | frontend/06-testes §3 | done | src/estatico.test.ts:47 |
-| `TF-DRAFT-10` | frontend/06-testes §3 | done | src/App.test.tsx:221 |
-| `TF-DRAFT-11` | frontend/06-testes §3 | done | src/App.test.tsx:261 |
+| `TF-DRAFT-10` | frontend/06-testes §3 | done | src/App.test.tsx:222 |
+| `TF-DRAFT-11` | frontend/06-testes §3 | done | src/App.test.tsx:262 |
 | `TF-DRAFT-12` | frontend/06-testes §3 | done | src/components/RecommendationPanel.test.tsx:41 |
 | `TF-DRAFT-13` | frontend/06-testes §3 | done | src/components/RecommendationPanel.test.tsx:69 |
 | `TF-DRAFT-14` | frontend/06-testes §3 | done | src/components/RecommendationPanel.test.tsx:92 |
-| `TF-DRAFT-7` | frontend/06-testes §3 | done | src/App.test.tsx:243 |
+| `TF-DRAFT-15` | frontend/06-testes §3 | done | src/components/RecommendationPanel.test.tsx:121 |
+| `TF-DRAFT-7` | frontend/06-testes §3 | done | src/App.test.tsx:244 |
 | `TF-OVERLAY-6` | frontend/06-testes §3 | done | src/estatico.test.ts:35 |
 | `TF-PARTIDA-3` | frontend/06-testes §3 | done | src/components/GoldTracker.test.tsx:40 |
 | `TF-PARTIDA-5` | frontend/06-testes §3 | done | src/components/LiveBuild.test.tsx:14 |
 | `TF-PARTIDA-6` | frontend/06-testes §3 | done | src/components/LiveBuild.test.tsx:35 |
 | `TF-PARTIDA-7` | frontend/06-testes §3 | done | src/components/LiveBuild.test.tsx:67 |
-| `TF-POOL-4` | frontend/06-testes §3 | done | src/App.test.tsx:137 |
+| `TF-POOL-4` | frontend/06-testes §3 | done | src/App.test.tsx:138 |
 | `TF-ROTAS-2` | frontend/06-testes §3 | done | src/components/Runas.test.tsx:16 |
-| `TF-ROTAS-3` | frontend/06-testes §3 | done | src/App.test.tsx:189 |
+| `TF-ROTAS-3` | frontend/06-testes §3 | done | src/App.test.tsx:190 |
 
 ## trace
 

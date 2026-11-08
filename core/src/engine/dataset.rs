@@ -32,6 +32,11 @@ pub struct Dataset {
     pub patch: String,
     pub region: String,
     pub tier: String,
+    /// Todos os patches de onde as partidas saíram, em ordem crescente. Uma base
+    /// por janela de dias junta mais de um, e `patch` é o mais novo; uma base de
+    /// coletor antigo não tem a lista.
+    #[serde(default)]
+    pub patches: Vec<String>,
     /// ISO 8601.
     pub generated_at: String,
     /// Quantas partidas entraram na agregação.
@@ -208,6 +213,7 @@ mod tests {
             patch: "16.21".into(),
             region: "BR1".into(),
             tier: "EMERALD+".into(),
+            patches: vec!["16.21".into()],
             generated_at: "2026-10-27T00:00:00Z".into(),
             matches: 1_200_000,
             base: HashMap::from([(base_key(103, Role::Mid), Record::new(40_000, 21_000))]),

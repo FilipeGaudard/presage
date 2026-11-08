@@ -35,6 +35,7 @@ ele não conhece é erro, e a mensagem traz a ajuda.
 | `--por-jogador` | `20` | Quantas partidas pedir a cada jogador semeado (`count` do `match-v5`) |
 | `--fila` | `420` | A fila da base: 420 (solo/duo) ou 440 (flex). Escolhe a liga semeada (`liga_da_fila`: `RANKED_SOLO_5x5` ou `RANKED_FLEX_SR`), vai na busca (`queue=`, com `type=ranked`) e no descarte (`Skip::Fila`). Outra fila é erro na partida, antes de coletar (A28) |
 | `--patch` | o da 1ª partida aceita | Trava o patch (`15.21`). Partida de outro patch é descartada (`Skip::Patch`) |
+| `--dias` | desligado | Janela em dias: a lista de partidas de cada jogador pede só as que começaram nos últimos N dias (`startTime`, `ids_path`), e a base aceita qualquer patch, guardando todos em `Dataset::patches` e o mais novo em `patch`. Vence `--patch`. Zero é erro |
 | `--min-jogos` | `20` | Na hora de gravar, corta as entradas com menos partidas que isto (§7). O total de partidas do cabeçalho não é podado |
 | `--paralelo` | `8` | Quantas partidas baixar ao mesmo tempo, por lote. Abaixo de 1 vira 1 |
 | `--limite` | `20:1,100:120` | Limite inicial, no formato do `X-App-Rate-Limit`; a primeira resposta da Riot o troca pelo real (§4). Limite ilegível é erro antes da primeira chamada |
@@ -125,9 +126,14 @@ e expandir a partir deles — cresce muito mais rápido. Mas aí a amostra escor
 para fora do elo semeado, e o `tier` do cabeçalho passa a mentir sobre de quem
 são aquelas partidas. Só os jogadores semeados são expandidos.
 
-**Um patch por base.** A primeira partida aceita trava o patch; as de outro são
-recusadas e contadas no relatório. Misturar patch é o jeito mais fácil de uma
-base parecer grande e recomendar item que mudou de preço.
+**Um patch por base, a não ser com `--dias`.** A primeira partida aceita trava o
+patch; as de outro são recusadas e contadas no relatório. Misturar patch é o
+jeito mais fácil de uma base parecer grande e recomendar item que mudou de preço.
+Mas no começo de um patch quase nada é dele: em 2026-11-08, travada no 16.22,
+a coleta descartou 1.786 de 2.002 partidas (89%) por serem do 16.21, e a chave de
+desenvolvimento acabaria com ~3 mil partidas. Com `--dias 30` a base junta os
+patches da janela, diz quais são (`Dataset::patches`), e a tela mostra todos
+("Base dos patches 16.21 e 16.22").
 
 **Partida ou entra inteira ou não entra.** Fila diferente, modo que não é a
 Fenda, partida terminada por erro, menos de dez participantes ou times que não

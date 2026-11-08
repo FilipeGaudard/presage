@@ -47,7 +47,7 @@ describe("LiveBuild", () => {
       ],
     };
     const { unmount } = render(
-      <LiveBuild game={semVoce} context={contexto} suggestions={conta} staticData={null} bought={comprado} patch="16.22" />
+      <LiveBuild game={semVoce} context={contexto} suggestions={conta} staticData={null} bought={comprado} patch="do patch 16.22" />
     );
     const secao = screen.getByText(/O que se compra/).closest(".section") as HTMLElement;
     expect(secao.textContent).toMatch(/1\.240 partidas/);

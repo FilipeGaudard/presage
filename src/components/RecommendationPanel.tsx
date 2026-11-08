@@ -33,6 +33,15 @@ interface Props {
 
 const OVERALL_COUNT = 15;
 
+/** "do patch 16.22", ou "dos patches 16.21 e 16.22" numa base por janela de dias. */
+export function rotuloDaBase(engine: { globalPatch: string | null; globalPatches?: string[] }): string {
+  const patches = engine.globalPatches ?? [];
+  if (patches.length > 1) {
+    return `dos patches ${patches.slice(0, -1).join(", ")} e ${patches[patches.length - 1]}`;
+  }
+  return `do patch ${engine.globalPatch ?? patches[0] ?? "?"}`;
+}
+
 function deltaClass(delta: number): string {
   if (delta >= 2) return "delta-strong";
   if (delta >= 1) return "delta-ok";
@@ -183,10 +192,8 @@ export default function RecommendationPanel({
           }
         >
           {engine.version.startsWith(engine.globalPatch)
-            ? `Base do patch ${engine.globalPatch}, ${engine.globalMatches.toLocaleString(
-                "pt-BR"
-              )} partidas.`
-            : `A base é do patch ${engine.globalPatch} e o jogo está no ${engine.version}. Os números são de outro patch.`}
+            ? `Base ${rotuloDaBase(engine)}, ${engine.globalMatches.toLocaleString("pt-BR")} partidas.`
+            : `A base é ${rotuloDaBase(engine)} e o jogo está no ${engine.version}. Os números são de outro patch.`}
         </p>
       )}
 

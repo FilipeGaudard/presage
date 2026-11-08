@@ -100,6 +100,7 @@ describe("RecommendationPanel", () => {
         personalGames: 0,
         account: null,
         globalPatch: null,
+        globalPatches: [],
         globalMatches: 0,
         championsError,
         itemsError: null,
@@ -115,5 +116,25 @@ describe("RecommendationPanel", () => {
     expect(screen.queryByText("Carregando dados de campeões…")).toBeNull();
     expect(screen.getByText(/Não consegui os dados de campeão/)).toBeTruthy();
     expect(screen.getByText(/Data Dragon fora do ar, e não há cache/)).toBeTruthy();
+  });
+
+  it("TF-DRAFT-15: base de dois patches diz os dois, e não só o mais novo", () => {
+    const motor = {
+      ready: true,
+      version: "16.22.1",
+      champions: 170,
+      hasGlobal: true,
+      hasPersonal: false,
+      personalGames: 0,
+      account: null,
+      globalPatch: "16.22",
+      globalPatches: ["16.21", "16.22"],
+      globalMatches: 41000,
+      championsError: null,
+      itemsError: null,
+    } as EngineStatus;
+    render(<RecommendationPanel recommendations={[]} minimax={[]} bans={[]} staticData={null} draft={draft} engine={motor} />);
+    expect(screen.getByText(/Base dos patches 16\.21 e 16\.22/)).toBeTruthy();
+    expect(screen.queryByText(/Base do patch 16\.22,/)).toBeNull();
   });
 });

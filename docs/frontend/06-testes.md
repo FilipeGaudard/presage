@@ -68,6 +68,7 @@ com `mockIPC`, que é onde mora o tratamento de erro.
 | TF-DRAFT-12 | componente | Hoje. Com 16 candidatos fora da pool e o 16º o menos exposto de todos, "Menos expostos ao contra-pick" traz os campeões 1 a 5, sem o 16º, que não está na tela; abrir o 15º mostra a linha "Melhor resposta deles". Até a 0.7.0 o 16º vinha primeiro (A21) | R-2, A21 |
 | TF-DRAFT-13 | componente | Hoje. A seção "Menos expostos ao contra-pick" diz que o número é da composição, e o detalhe de um candidato com exposição 0,019 diz "tira 1.9 pontos da composição", sem "pp". Até a 0.7.0 dizia "custa 1.9pp", logo abaixo da chance do ranking em % (A22) | RNF-1, R-2, A22 |
 | TF-DRAFT-14 | componente | Hoje. Com `ready: false` e `championsError: null`, a faixa diz "Carregando dados de campeões…"; com `championsError` preenchido, diz "Não consegui os dados de campeão" com o motivo, e não "Carregando". Até a 0.7.0 dizia "Carregando" para sempre (A32) | R-1, RNF-1, A32 |
+| TF-DRAFT-15 | componente | Hoje. Com `globalPatches: ["16.21", "16.22"]`, a faixa diz "Base dos patches 16.21 e 16.22", e não "Base do patch 16.22," | RNF-1, R-21 |
 | TF-SIM-1 | componente | Hoje. Abrir a aba chama `set_simulated_draft` com o draft da tela, e `rank_draft` só é chamado depois que ele resolve | R-8 |
 | TF-SIM-2 | componente | Hoje. Trocar para a aba Draft chama `set_simulated_draft` com `{ draft: null }` | R-8 |
 | TF-SIM-3 | componente | Hoje. Digitar "Ahri" e sair do campo grava `championId: 103` e `locked: true`; "Ahrii" não muda nada | R-8 |

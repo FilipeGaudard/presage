@@ -28,7 +28,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{anyhow, bail, Context, Result};
 use serde::{Deserialize, Serialize};
 use tokio::task::JoinSet;
 
@@ -62,6 +62,8 @@ struct Opcoes {
     por_jogador: u32,
     fila: i64,
     patch: Option<String>,
+    /// Janela em dias: só partidas desde então, de qualquer patch.
+    dias: Option<u32>,
     min_jogos: u32,
     paralelo: usize,
     limite: String,
@@ -87,6 +89,7 @@ impl Default for Opcoes {
             por_jogador: 20,
             fila: 420,
             patch: None,
+            dias: None,
             min_jogos: 20,
             paralelo: 8,
             limite: LIMITE_PADRAO.into(),
@@ -109,6 +112,7 @@ Coletor da base de partidas do Presage.
   --por-jogador <20>      partidas pedidas por jogador
   --fila <420>            420 = ranqueada solo/duo, 440 = flex
   --patch <15.21>         trava o patch; sem isto, trava no da 1ª partida
+  --dias <30>             só partidas dos últimos N dias, de qualquer patch (vence --patch)
   --min-jogos <20>        corta entradas com amostra menor que isto
   --paralelo <8>          chamadas simultâneas
   --limite <20:1,100:120> limite inicial, no formato do cabeçalho da Riot
@@ -138,6 +142,10 @@ fn ler_opcoes() -> Result<Opcoes> {
             "--por-jogador" => o.por_jogador = valor()?.parse().context("--por-jogador")?,
             "--fila" => o.fila = valor()?.parse().context("--fila")?,
             "--patch" => o.patch = Some(valor()?),
+            "--dias" => {
+                let v = valor()?;
+                o.dias = Some(v.parse().ok().filter(|d: &u32| *d > 0).ok_or_else(|| anyhow!("--dias precisa de um número de dias maior que zero, não {v}"))?)
+            }
             "--min-jogos" => o.min_jogos = valor()?.parse().context("--min-jogos")?,
             "--paralelo" => o.paralelo = valor()?.parse::<usize>().context("--paralelo")?.max(1),
             "--limite" => o.limite = valor()?,
@@ -461,6 +469,7 @@ async fn coletar(riot: Arc<Riot>, o: &Opcoes, estado: &mut Estado) -> Result<()>
     let filtro = Filter {
         queue: o.fila,
         patch: o.patch.clone(),
+        any_patch: o.dias.is_some(),
     };
     let comeco = Instant::now();
     let mut desde_o_salvamento = 0u64;
@@ -469,7 +478,8 @@ async fn coletar(riot: Arc<Riot>, o: &Opcoes, estado: &mut Estado) -> Result<()>
         let puuid = estado.jogadores[estado.proximo].clone();
         estado.proximo += 1;
 
-        let ids = match riot.match_ids(&puuid, o.fila, o.por_jogador).await {
+        let desde = o.dias.map(|d| agora_unix() - i64::from(d) * 86_400);
+        let ids = match riot.match_ids(&puuid, o.fila, o.por_jogador, desde).await {
             Ok(ids) => ids,
             Err(err) => {
                 // Um jogador que falha não pode derrubar o crawl inteiro.
@@ -681,6 +691,14 @@ async fn main() -> Result<()> {
 }
 
 /// ISO 8601 em UTC, sem puxar uma biblioteca de data só para isto.
+/// Agora, em segundos Unix.
+fn agora_unix() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs() as i64)
+        .unwrap_or(0)
+}
+
 fn agora_iso() -> String {
     let segundos = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)

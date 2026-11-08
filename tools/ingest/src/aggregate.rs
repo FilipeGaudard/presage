@@ -126,6 +126,12 @@ impl Skip {
 }
 
 /// `15.21.704.1234` → `15.21`
+/// `"15.21"` como (15, 21): a ordem de versão, em que 15.9 vem antes de 15.21.
+fn ordem_do_patch(patch: &str) -> (u32, u32) {
+    let mut partes = patch.split('.').map(|p| p.parse::<u32>().unwrap_or(0));
+    (partes.next().unwrap_or(0), partes.next().unwrap_or(0))
+}
+
 pub fn patch_of(game_version: &str) -> String {
     let mut partes = game_version.split('.');
     match (partes.next(), partes.next()) {
@@ -141,6 +147,9 @@ pub struct Filter {
     pub queue: i64,
     /// `None` trava no patch da primeira partida aceita.
     pub patch: Option<String>,
+    /// Aceita partida de qualquer patch: a coleta por janela de dias
+    /// (`--dias`), que junta os patches dela. Vence `patch`.
+    pub any_patch: bool,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -161,8 +170,11 @@ pub struct Counts {
     /// Partidas que entraram também em `items`. Um estado de antes da tabela de
     /// itens tem menos que `matches`, e não é retomado.
     pub items_matches: u64,
-    /// O patch travado, assim que a primeira partida é aceita.
+    /// O patch travado, assim que a primeira partida é aceita. Com
+    /// `any_patch`, o mais novo que entrou.
     pub patch: String,
+    /// Todo patch que entrou, em ordem crescente.
+    pub patches: Vec<String>,
     pub skipped: HashMap<Skip, u64>,
 }
 
@@ -196,11 +208,15 @@ impl Counts {
         }
 
         let patch = patch_of(&info.game_version);
-        let esperado = filter.patch.as_deref().or(if self.patch.is_empty() {
+        let esperado = if filter.any_patch {
             None
         } else {
-            Some(self.patch.as_str())
-        });
+            filter.patch.as_deref().or(if self.patch.is_empty() {
+                None
+            } else {
+                Some(self.patch.as_str())
+            })
+        };
         if let Some(esperado) = esperado {
             if patch != esperado {
                 return skip(self, Skip::Patch);
@@ -234,7 +250,12 @@ impl Counts {
         }
 
         // Daqui para baixo a partida está aceita e nada mais pode falhar.
-        if self.patch.is_empty() {
+        if !self.patches.contains(&patch) {
+            self.patches.push(patch.clone());
+            self.patches.sort_by_key(|p| ordem_do_patch(p));
+        }
+        if self.patch.is_empty() || ordem_do_patch(&patch) > ordem_do_patch(&self.patch) {
+            // Sem janela, o primeiro trava e nenhum outro chega aqui.
             self.patch = patch;
         }
         self.matches += 1;
@@ -345,6 +366,7 @@ impl Counts {
             versus: podar(self.versus),
             length: podar(self.length),
             items: podar(self.items),
+            patches: self.patches,
         }
     }
 }
@@ -471,7 +493,35 @@ mod tests {
         Filter {
             queue: 420,
             patch: None,
+            any_patch: false,
         }
+    }
+
+    #[test]
+    fn a_janela_de_dias_junta_os_patches_e_diz_quais() {
+        let qualquer = Filter { any_patch: true, ..filtro() };
+        let mut c = Counts::default();
+        for versao in ["15.21.704.1", "15.22.705.1", "15.9.1.1", "15.22.706.3"] {
+            let mut info = partida(true);
+            info.game_version = versao.into();
+            assert!(c.add(&info, &qualquer).is_ok(), "{versao}");
+        }
+        assert_eq!(c.matches, 4);
+        assert_eq!(c.patches, vec!["15.9", "15.21", "15.22"], "em ordem de versão, não de texto");
+        assert_eq!(c.patch, "15.22", "o mais novo");
+        let base = c.into_dataset("br1".into(), "EMERALD".into(), "agora".into(), 1);
+        assert_eq!(base.patches, vec!["15.9", "15.21", "15.22"]);
+        assert_eq!(base.patch, "15.22");
+
+        // Sem a janela, continua um patch só.
+        let mut um = Counts::default();
+        let mut a = partida(true);
+        a.game_version = "15.21.1.1".into();
+        let mut b = partida(true);
+        b.game_version = "15.22.1.1".into();
+        assert!(um.add(&a, &filtro()).is_ok());
+        assert_eq!(um.add(&b, &filtro()), Err(Skip::Patch));
+        assert_eq!(um.patches, vec!["15.21"]);
     }
 
     #[test]
@@ -771,6 +821,7 @@ mod tests {
         let filtro = Filter {
             queue: 420,
             patch: Some("15.22".into()),
+            any_patch: false,
         };
         let mut c = Counts::default();
 
