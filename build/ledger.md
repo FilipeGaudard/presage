@@ -13,15 +13,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 380 | 380 | 0 | 0 |
-| ui-test | 49 | 16 | 33 | 0 |
+| test | 381 | 381 | 0 | 0 |
+| ui-test | 50 | 17 | 33 | 0 |
 | trace | 43 | 39 | 4 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 3 | 0 | 3 | 0 |
 
-- testes no código: 509; nomes no catálogo (13): 509; fora dele: 0
+- testes no código: 510; nomes no catálogo (13): 510; fora dele: 0
 - links relativos conferidos: 872
-- IDs citados conferidos: 3121
+- IDs citados conferidos: 3132
 
 ## type
 
@@ -877,17 +877,18 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-PREVIA-7` | arquitetura/13-testes §2 | done | core/src/engine/wincon.rs:320 |
 | `T-PREVIA-8` | arquitetura/13-testes §2 | done | core/src/engine/wincon.rs:329 |
 | `T-PREVIA-9` | arquitetura/13-testes §2 | done | core/src/engine/wincon.rs:335 |
-| `T-PRIORIDADE-1` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:337 |
-| `T-PRIORIDADE-10` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:487 |
-| `T-PRIORIDADE-11` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:427 |
-| `T-PRIORIDADE-2` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:347 |
-| `T-PRIORIDADE-3` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:356 |
-| `T-PRIORIDADE-4` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:372 |
-| `T-PRIORIDADE-5` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:387 |
-| `T-PRIORIDADE-6` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:416 |
-| `T-PRIORIDADE-7` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:448 |
-| `T-PRIORIDADE-8` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:468 |
-| `T-PRIORIDADE-9` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:476 |
+| `T-PRIORIDADE-1` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:354 |
+| `T-PRIORIDADE-10` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:504 |
+| `T-PRIORIDADE-11` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:444 |
+| `T-PRIORIDADE-12` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:300 |
+| `T-PRIORIDADE-2` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:364 |
+| `T-PRIORIDADE-3` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:373 |
+| `T-PRIORIDADE-4` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:389 |
+| `T-PRIORIDADE-5` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:404 |
+| `T-PRIORIDADE-6` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:433 |
+| `T-PRIORIDADE-7` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:465 |
+| `T-PRIORIDADE-8` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:485 |
+| `T-PRIORIDADE-9` | arquitetura/13-testes §2 | done | core/src/engine/priority.rs:493 |
 | `T-RIVAL-1` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:158 |
 | `T-RIVAL-2` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:176 |
 | `T-RIVAL-3` | arquitetura/13-testes §2 | done | core/src/engine/rival.rs:193 |
@@ -1001,6 +1002,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `TF-PARTIDA-3` | frontend/06-testes §3 | done | src/components/GoldTracker.test.tsx:40 |
 | `TF-PARTIDA-5` | frontend/06-testes §3 | done | src/components/LiveBuild.test.tsx:14 |
 | `TF-PARTIDA-6` | frontend/06-testes §3 | done | src/components/LiveBuild.test.tsx:35 |
+| `TF-PARTIDA-7` | frontend/06-testes §3 | done | src/components/LiveBuild.test.tsx:67 |
 | `TF-POOL-4` | frontend/06-testes §3 | done | src/App.test.tsx:137 |
 | `TF-ROTAS-2` | frontend/06-testes §3 | done | src/components/Runas.test.tsx:16 |
 | `TF-ROTAS-3` | frontend/06-testes §3 | done | src/App.test.tsx:189 |

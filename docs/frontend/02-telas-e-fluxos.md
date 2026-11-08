@@ -258,7 +258,9 @@ os próximos itens e os itens de cada inimigo.
 - Sem objetivo: "Nenhum objetivo na fila."; primeiro spawn: "estimado"; nada
   disponível: "disponível"; estrutura: "seu, caído" ou "deles, caído"; buff de
   abate anterior ao app: "quem tem: abate antes de o app olhar".
-- Sem prioridade: "Sem dados de rota."; sempre: "Ranking de valor, não de
+- Sem prioridade: "Sem dados de rota."; sem inimigo na partida (o treino): "Sem
+  inimigos na partida: a prioridade compara os dois lados.", e o dano que vem
+  contra você diz "Sem inimigos na partida: nada vem contra você ainda."; sempre: "Ranking de valor, não de
   posição. A API da Riot não entrega onde os campeões estão, e o Presage não
   tenta adivinhar."
 - Sua rota: `Ouro em itens é exato. "À frente" a partir de 300 ou de 10% do que

@@ -63,4 +63,20 @@ describe("LiveBuild", () => {
     expect(screen.queryByText(/O que se compra/)).toBeNull();
     expect(screen.getByText(/Sem base de partidas para este campeão/)).toBeTruthy();
   });
+
+  it("TF-PARTIDA-7: no treino, sem inimigo, a build não inventa a divisão do dano", () => {
+    const so_voce: LiveGame = {
+      gameTime: 120,
+      players: [
+        {
+          championKey: "Corki", championId: 42, displayName: "voce#BR1", team: "ORDER", position: "", level: 3,
+          items: [], goldInvested: 0, isDead: false, respawnTimer: 0, isLocal: true,
+          scores: { kills: 0, deaths: 0, assists: 0, creepScore: 10, wardScore: 0 },
+        },
+      ],
+    };
+    render(<LiveBuild game={so_voce} context={{ ...contexto, yourEffectiveHp: 793 } as BuildContext} suggestions={[]} staticData={null} />);
+    expect(screen.getByText(/Sem inimigos na partida/)).toBeTruthy();
+    expect(screen.queryByText(/50% físico/)).toBeNull();
+  });
 });

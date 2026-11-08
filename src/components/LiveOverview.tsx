@@ -100,7 +100,11 @@ export default function LiveOverview({
       <div className="section">
         <h3>Prioridade agora</h3>
         {priority.lanes.length === 0 ? (
-          <p className="muted">Sem dados de rota.</p>
+          <p className="muted">
+            {snapshot.game.players.some((p) => !p.isLocal && p.team !== snapshot.game.players.find((x) => x.isLocal)?.team)
+              ? "Sem dados de rota."
+              : "Sem inimigos na partida: a prioridade compara os dois lados."}
+          </p>
         ) : (
           <div className="lanes">
             {priority.lanes.map((lane) => (

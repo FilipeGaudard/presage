@@ -1882,7 +1882,9 @@ pub fn report(
 - **Params:** `timeline` vem do `timeline::build` da mesma leitura. O `focus`
   conta com `upcoming` já ordenado.
 - **Retorno:** as três rotas e o foco.
-- **Erros:** sem jogador local, `lanes` vazio e `focus` `None`.
+- **Erros:** sem jogador local, ou sem inimigo na partida (o treino), `lanes` vazio
+  e `focus` `None`: "1v0: 100%" em toda rota seria falta de outro lado, não
+  prioridade (T-PRIORIDADE-12).
 - **Confiança:**
   - alta em `skirmish_odds`, que é o motor de dano;
   - fraca em `score`, porque os pesos são de exibição e escolhidos à mão.

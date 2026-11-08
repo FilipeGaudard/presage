@@ -49,6 +49,13 @@ export default function LiveBuild({ game, context, suggestions, staticData, item
         </div>
       )}
 
+      {theirs.length === 0 ? (
+        <div className="section">
+          <h3>Dano que vem contra você</h3>
+          {/* O treino: sem outro lado, a divisão do dano e a vida efetiva contra ele não existem. */}
+          <p className="muted">Sem inimigos na partida: nada vem contra você ainda.</p>
+        </div>
+      ) : (
       <div className="section">
         <h3>Dano que vem contra você</h3>
         <div className="split">
@@ -76,6 +83,7 @@ export default function LiveBuild({ game, context, suggestions, staticData, item
           )}
         </div>
       </div>
+      )}
 
       {bought && bought.items.length > 0 && (
         <div className="section">

@@ -77,11 +77,16 @@ pub fn report(
     champions: &ChampionIndex,
     items: &ItemIndex,
 ) -> PriorityReport {
-    let Some(me) = game.me() else {
-        return PriorityReport {
-            lanes: Vec::new(),
-            focus: None,
-        };
+    // Sem você, ou sem ninguém do outro lado (o treino), não há o que comparar:
+    // "1v0: 100%" em toda rota seria falta de inimigo, não prioridade.
+    let me = match game.me() {
+        Some(me) if !game.enemies().is_empty() => me,
+        _ => {
+            return PriorityReport {
+                lanes: Vec::new(),
+                focus: None,
+            }
+        }
     };
 
     let enemy_jungler_down = game
@@ -290,6 +295,18 @@ mod tests {
                 ..Default::default()
             },
         }
+    }
+
+    #[test]
+    fn sem_inimigo_na_partida_nao_ha_prioridade() {
+        // O treino: só você na partida. "1v0: 100%" em toda rota não é
+        // prioridade, é falta de outro lado.
+        let game = LiveGame {
+            game_time: 120.0,
+            players: vec![player("Corki", "ORDER", "", true, false, 0.0, 10)],
+        };
+        let r = report(&game, &timeline(vec![]), &champions(), &items());
+        assert!(r.lanes.is_empty(), "{:?}", r.lanes);
     }
 
     fn timeline(upcoming: Vec<Spawn>) -> Timeline {

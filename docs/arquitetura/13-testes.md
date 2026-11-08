@@ -483,6 +483,7 @@ rota e 80 na selva.
 | T-PRIORIDADE-9 | `objetivo_distante_nao_vira_foco` | unidade | Barão a 400 s (> 90 s) deixa `focus = None` | R-14 |
 | T-PRIORIDADE-10 | `placar_fica_na_faixa` | propriedade | Com o jungler e o topo inimigos mortos por 90 s, o topo deles com 0 tropas e o Barão a 0 s, todo `score` fica em [0, 100] | R-14 |
 | T-PRIORIDADE-11 | `todo_ponto_da_prioridade_tem_razao` | regressão | Na rota de baixo com o atirador deles morto, o jungler deles morto, 30 de CS à frente e o dragão em 20 s, saem as cinco razões, e a primeira é a briga terminando em "para o seu lado". Antes da correção saíam três ("2v0 a seu favor em 100%", o morto, o jungler): o CS e o dragão somavam ponto sem razão | R-14, A23 |
+| T-PRIORIDADE-12 | `sem_inimigo_na_partida_nao_ha_prioridade` | unidade | Uma partida só com você (o treino) dá `lanes` vazio, e não "1v0: 100%" nas três rotas | R-14, RNF-1 |
 
 ### 2.16 Pós-partida
 
