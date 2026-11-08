@@ -1828,7 +1828,7 @@ pub struct Item {
     pub id: i64,           // id do item no Data Dragon (a chave de `item.json`)
     pub name: String,      // nome no idioma do usuário; o de en_US se faltar
     pub cost: f64,         // ouro: `gold.total`, o preço cheio com os componentes
-    pub purchasable: bool, // `gold.purchasable`
+    pub purchasable: bool, // vendido na loja da Fenda: `DdragonItem::sold_on_rift`, não só `gold.purchasable` (A54)
     pub stats: ItemStats,  // `parse_stats` da `description` em en_US
 }
 ```
@@ -1845,6 +1845,35 @@ pub struct ItemIndex {
 
 **Invariantes:**
 - A casca recusa índice vazio (`ddragon.rs:310`).
+- O índice guarda todo item do `item.json`, também as cópias da Arena e do ARAM
+  (o inventário de alguém pode ter qualquer um); `purchasable` só é verdadeiro no
+  que a loja da Fenda vende, e a sugestão de build só olha esses (A54).
+
+### 24.4 `DdragonItem`
+
+Uma entrada do `item.json` do Data Dragon, como vem, só com o que o Presage lê. A
+casca a desserializa e monta o `Item` dela.
+
+```rust
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct DdragonItem {
+    pub name: String,                 // nome no idioma do arquivo
+    pub description: String,          // em en_US, para `parse_stats`
+    pub gold: DdragonGold,            // preço e se é comprável em algum modo
+    pub maps: HashMap<String, bool>,  // mapa a mapa; `"11"` é a Fenda do Invocador
+    pub in_store: Option<bool>,       // `false` quando a loja não mostra; ausente quando mostra
+    pub required_champion: String,    // vazio, ou o campeão que pode comprar
+    pub required_ally: String,        // vazio, ou o aliado exigido (as versões de Ornn)
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(default)]
+pub struct DdragonGold {
+    pub total: f64,        // ouro, o preço cheio com os componentes
+    pub purchasable: bool, // comprável em algum modo: a Arena e o ARAM também dizem `true`
+}
+```
 
 ## 25. `core::engine::damage` — Dano e resistência
 

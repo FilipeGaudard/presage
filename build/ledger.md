@@ -4,8 +4,8 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Tipo | Total | Feito | Adiado | Pendente |
 |---|---|---|---|---|
-| type | 112 | 112 | 0 | 0 |
-| func | 168 | 168 | 0 | 0 |
+| type | 114 | 114 | 0 | 0 |
+| func | 169 | 169 | 0 | 0 |
 | const | 84 | 84 | 0 | 0 |
 | wire | 55 | 55 | 0 | 0 |
 | mirror | 4 | 4 | 0 | 0 |
@@ -13,15 +13,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 377 | 377 | 0 | 0 |
+| test | 378 | 378 | 0 | 0 |
 | ui-test | 48 | 15 | 33 | 0 |
 | trace | 43 | 39 | 4 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 3 | 0 | 3 | 0 |
 
-- testes no código: 506; nomes no catálogo (13): 506; fora dele: 0
+- testes no código: 507; nomes no catálogo (13): 507; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 3089
+- IDs citados conferidos: 3093
 
 ## type
 
@@ -67,6 +67,8 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::dataset::Layered` | arquitetura/10-modelo-de-dados §20.3 | done | core/src/engine/dataset.rs:145 |
 | `core::engine::gold::GoldPlayer` | arquitetura/10-modelo-de-dados §28.1 | done | core/src/engine/gold.rs:41 |
 | `core::engine::gold::GoldReport` | arquitetura/10-modelo-de-dados §28.2 | done | core/src/engine/gold.rs:61 |
+| `core::engine::items::DdragonGold` | arquitetura/10-modelo-de-dados §24.4 | done | core/src/engine/items.rs:144 |
+| `core::engine::items::DdragonItem` | arquitetura/10-modelo-de-dados §24.4 | done | core/src/engine/items.rs:129 |
 | `core::engine::items::Item` | arquitetura/10-modelo-de-dados §24.2 | done | core/src/engine/items.rs:84 |
 | `core::engine::items::ItemIndex` | arquitetura/10-modelo-de-dados §24.3 | done | core/src/engine/items.rs:94 |
 | `core::engine::items::ItemStats` | arquitetura/10-modelo-de-dados §24.1 | done | core/src/engine/items.rs:20 |
@@ -204,6 +206,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::dataset::versus_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:96 |
 | `core::engine::gold::earned_at` | arquitetura/11-catalogo-de-funcoes §28.1 | done | core/src/engine/gold.rs:77 |
 | `core::engine::gold::report` | arquitetura/11-catalogo-de-funcoes §28.2 | done | core/src/engine/gold.rs:90 |
+| `core::engine::items::DdragonItem::sold_on_rift` | arquitetura/11-catalogo-de-funcoes §24.4 | done | core/src/engine/items.rs:155 |
 | `core::engine::items::ItemIndex::get` | arquitetura/11-catalogo-de-funcoes §24.3 | done | core/src/engine/items.rs:101 |
 | `core::engine::items::ItemIndex::gold_invested` | arquitetura/11-catalogo-de-funcoes §24.3 | done | core/src/engine/items.rs:117 |
 | `core::engine::items::ItemIndex::is_empty` | arquitetura/11-catalogo-de-funcoes §24.3 | done | core/src/engine/items.rs:105 |
@@ -211,7 +214,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::items::ItemStats::magic_penetration` | arquitetura/11-catalogo-de-funcoes §24.2 | done | core/src/engine/items.rs:68 |
 | `core::engine::items::ItemStats::physical_penetration` | arquitetura/11-catalogo-de-funcoes §24.2 | done | core/src/engine/items.rs:59 |
 | `core::engine::items::ItemStats::plus` | arquitetura/11-catalogo-de-funcoes §24.2 | done | core/src/engine/items.rs:42 |
-| `core::engine::items::parse_stats` | arquitetura/11-catalogo-de-funcoes §24.1 | done | core/src/engine/items.rs:127 |
+| `core::engine::items::parse_stats` | arquitetura/11-catalogo-de-funcoes §24.1 | done | core/src/engine/items.rs:165 |
 | `core::engine::lanes::focus` | arquitetura/11-catalogo-de-funcoes §27.3 | done | core/src/engine/lanes.rs:505 |
 | `core::engine::lanes::lane_outlooks` | arquitetura/11-catalogo-de-funcoes §27.1 | done | core/src/engine/lanes.rs:258 |
 | `core::engine::lanes::Lineup::new` | arquitetura/11-catalogo-de-funcoes §27.4 | done | core/src/engine/lanes.rs:231 |
@@ -518,21 +521,21 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | Item | Fonte | Estado | Onde / motivo |
 |---|---|---|---|
 | `base-de-partidas.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/lib.rs:46 |
-| `champion.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:156 |
+| `champion.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:142 |
 | `champions.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:11 |
 | `coleta-em-andamento.json` | arquitetura/12-contrato-da-casca §6 | done | tools/ingest/src/main.rs:95 |
 | `draft.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/lib.rs:43 |
 | `gravacao.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/recorder.rs:19 |
-| `item.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:274 |
+| `item.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:260 |
 | `items.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:12 |
 | `LolClientInstalls.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/lcu/credentials.rs:85 |
 | `overlay.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/arquitetura.rs:186 |
 | `personal-v2.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/profile.rs:21 |
 | `pool.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/lib.rs:41 |
 | `runas.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:13 |
-| `runesReforged.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:221 |
+| `runesReforged.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:207 |
 | `ultima-partida.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/recorder.rs:18 |
-| `versions.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:112 |
+| `versions.json` | arquitetura/12-contrato-da-casca §6 | done | src-tauri/src/ddragon.rs:98 |
 
 ## flag
 
@@ -760,20 +763,21 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-ENTRADA-8` | arquitetura/13-testes §2 | done | core/src/draft.rs:394 |
 | `T-ENTRADA-9` | arquitetura/13-testes §2 | done | core/src/draft.rs:401 |
 | `T-JOGO-1` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:214 |
-| `T-JOGO-10` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:278 |
+| `T-JOGO-10` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:353 |
 | `T-JOGO-11` | arquitetura/13-testes §2 | done | core/src/engine/damage.rs:71 |
 | `T-JOGO-12` | arquitetura/13-testes §2 | done | core/src/engine/damage.rs:81 |
 | `T-JOGO-13` | arquitetura/13-testes §2 | done | core/src/engine/damage.rs:93 |
 | `T-JOGO-14` | arquitetura/13-testes §2 | done | core/src/engine/damage.rs:122 |
 | `T-JOGO-15` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:193 |
+| `T-JOGO-16` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:235 |
 | `T-JOGO-2` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:226 |
 | `T-JOGO-3` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:248 |
 | `T-JOGO-4` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:273 |
 | `T-JOGO-5` | arquitetura/13-testes §2 | done | core/src/engine/champion.rs:281 |
-| `T-JOGO-6` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:206 |
-| `T-JOGO-7` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:229 |
-| `T-JOGO-8` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:250 |
-| `T-JOGO-9` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:270 |
+| `T-JOGO-6` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:281 |
+| `T-JOGO-7` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:304 |
+| `T-JOGO-8` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:325 |
+| `T-JOGO-9` | arquitetura/13-testes §2 | done | core/src/engine/items.rs:345 |
 | `T-OBJETIVO-1` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:492 |
 | `T-OBJETIVO-10` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:754 |
 | `T-OBJETIVO-11` | arquitetura/13-testes §2 | done | core/src/engine/timeline.rs:792 |
@@ -1138,4 +1142,4 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 
 | Aberto | Feito | Adiado | Doc |
 |---|---|---|---|
-| 18 | 46 | 0 | 38 |
+| 19 | 46 | 0 | 38 |

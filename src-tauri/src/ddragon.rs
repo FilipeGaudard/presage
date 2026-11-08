@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::time::Duration;
 
 use presage_core::engine::champion::{BaseStats, Champion, ChampionIndex};
-use presage_core::engine::items::{parse_stats, Item, ItemIndex};
+use presage_core::engine::items::{parse_stats, DdragonItem, Item, ItemIndex};
 use presage_core::engine::runes::{Rune, RuneIndex};
 
 const BASE: &str = "https://ddragon.leagueoflegends.com";
@@ -56,21 +56,7 @@ struct ChampionStats {
 
 #[derive(Debug, Deserialize)]
 struct ItemPayload {
-    data: HashMap<String, ItemEntry>,
-}
-
-#[derive(Debug, Deserialize)]
-struct ItemEntry {
-    name: String,
-    #[serde(default)]
-    description: String,
-    gold: Gold,
-}
-
-#[derive(Debug, Deserialize)]
-struct Gold {
-    total: f64,
-    purchasable: bool,
+    data: HashMap<String, DdragonItem>,
 }
 
 /// `runesReforged.json` é uma lista de árvores, cada uma com fileiras de runas.
@@ -294,13 +280,17 @@ async fn fetch_items(locale: &str) -> Result<ItemIndex> {
         .into_iter()
         .filter_map(|(raw_id, entry)| {
             let id = raw_id.parse::<i64>().ok()?;
+            // O arquivo traz a Arena e o ARAM também, com cópias que se dizem
+            // compráveis. O índice guarda todos (o inventário de alguém pode ter
+            // qualquer um), mas só o da loja da Fenda é sugerido (A54).
+            let na_fenda = entry.sold_on_rift();
             Some((
                 id,
                 Item {
                     id,
                     name: names.get(&raw_id).cloned().unwrap_or(entry.name),
                     cost: entry.gold.total,
-                    purchasable: entry.gold.purchasable,
+                    purchasable: na_fenda,
                     stats: parse_stats(&entry.description),
                 },
             ))

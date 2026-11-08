@@ -1430,6 +1430,24 @@ impl ItemIndex {
 | `totals` | `plus` de todos os itens conhecidos da lista; id desconhecido é ignorado | R-10 |
 | `gold_invested` | soma de `cost` dos itens conhecidos, em ouro. Nenhum código de produção chama: o ouro em itens da partida vem do `price` da Live Client | R-12 |
 
+
+### 24.4 `DdragonItem::sold_on_rift`
+
+```rust
+impl DdragonItem {
+    pub fn sold_on_rift(&self) -> bool;
+}
+```
+
+- **Faz:** verdadeiro quando o jogador compra o item na loja da Fenda:
+  `gold.purchasable`, `maps["11"]`, `in_store` diferente de `Some(false)`, e
+  `required_champion` e `required_ally` vazios. O `item.json` traz as cópias da
+  Arena (mapa 30) e do ARAM (12), com outro id e outro preço, e elas se dizem
+  compráveis: a Espátula Dourada da Arena e a do ARAM eram as duas primeiras da
+  build do Corki (A54, T-JOGO-16).
+- **Quem usa:** `ddragon.rs`, que guarda o resultado em `Item::purchasable`.
+- **Atende:** R-10
+
 ## 25. `core::engine::damage` — Dano e resistência (`core`, pura)
 
 ### 25.1 `effective_resist`

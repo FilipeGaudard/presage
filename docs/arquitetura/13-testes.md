@@ -360,6 +360,7 @@ do Data Dragon, sem amostra.
 | T-JOGO-13 | `penetracao_plana_nao_negativa_a_resistencia`, `reducao_plana_negativa_a_resistencia`, `percentual_nao_mexe_em_resistencia_negativa`, `penetracao_percentual_acima_de_um_nao_inverte` | unidade | Com 30 de armadura, 50 de penetração plana deixam 0 e 50 de redução plana deixam −20, e 35% de penetração não mexem nesses −20; penetração de 500% sobre 100 não fica negativa | R-10, 03 §3 |
 | T-JOGO-14 | `ordem_importa_percentual_antes_da_plana`, `reducao_vem_antes_da_penetracao_percentual`, `dano_apos_resistencia_bate_com_a_conta_manual` | unidade | Com 100 de armadura, 35% e 18 de letalidade deixam 47, não 53,3; 30 de redução e depois 35% deixam 45,5; 1000 de dano bruto com 35% e 18 chegam como 1000 × 100/147 | R-10, 03 §3 |
 | T-JOGO-15 | `a_rota_aceita_os_dois_vocabularios` | regressão | `middle` e `Mid` dão `Mid`, `utility` e `Support` dão `Support`, `bottom` e `Bot` dão `Bot`, `TOP` e `Jungle` as suas; `radar` e o vazio dão `Unknown`. Antes, `Mid` virava `Unknown` e `set_draft_role("Mid")` apagava a escolha | R-1, R-4, A30 |
+| T-JOGO-16 | `so_entra_o_que_se_compra_na_fenda` | unidade | Com entradas de verdade do `item.json` 16.22.1: o Rylai da Fenda (3116, 2600) e as Grevas (3006) passam; o Rylai do ARAM (773116, 2900), a Espátula da Arena (224403) e a do ARAM (994403), a Espátula escondida (664403) e o Abraço Demoníaco fora da loja (4637) não; nem um item de campeão exigido, nem um escondido, nem um sem mapa | R-10, A54 |
 
 ### 2.11 Build adaptativa — valor por ouro contra os itens deles
 

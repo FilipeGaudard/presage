@@ -123,6 +123,44 @@ impl ItemIndex {
     }
 }
 
+/// Uma entrada do `item.json` do Data Dragon, como vem. O arquivo traz os itens de
+/// todos os modos: a Arena (mapa 30) e o ARAM (12) têm cópias próprias, com outro
+/// id e outro preço, e todas se dizem compráveis (A54).
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct DdragonItem {
+    pub name: String,
+    pub description: String,
+    pub gold: DdragonGold,
+    /// Mapa a mapa: `"11"` é a Fenda do Invocador.
+    pub maps: HashMap<String, bool>,
+    /// `false` nos itens que a loja não mostra (a versão de Ornn, um item que só
+    /// nasce de outro). Ausente quando a loja mostra.
+    pub in_store: Option<bool>,
+    pub required_champion: String,
+    pub required_ally: String,
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(default)]
+pub struct DdragonGold {
+    pub total: f64,
+    pub purchasable: bool,
+}
+
+impl DdragonItem {
+    /// Se o jogador compra este item na loja da Fenda do Invocador: comprável,
+    /// no mapa 11, visível na loja e sem campeão exigido. A sugestão de build só
+    /// oferece o que passa aqui (A54).
+    pub fn sold_on_rift(&self) -> bool {
+        self.gold.purchasable
+            && self.maps.get("11").copied().unwrap_or(false)
+            && self.in_store != Some(false)
+            && self.required_champion.is_empty()
+            && self.required_ally.is_empty()
+    }
+}
+
 /// Extrai os atributos do bloco `<stats>` de uma descrição em en_US.
 pub fn parse_stats(description: &str) -> ItemStats {
     let Some(block) = stats_block(description) else {
@@ -188,6 +226,43 @@ fn apply(stats: &mut ItemStats, raw: &str, label: &str) {
 
 #[cfg(test)]
 mod tests {
+
+    /// Entradas de verdade do `item.json` 16.22.1, só com os campos que contam.
+    fn entrada(json: &str) -> DdragonItem {
+        serde_json::from_str(json).unwrap()
+    }
+
+    #[test]
+    fn so_entra_o_que_se_compra_na_fenda() {
+        // A54: a Espátula da Arena e a do ARAM, a 2500, eram as duas primeiras da
+        // build do Corki; o Rylai do ARAM custa 2900, o da Fenda 2600.
+        let fenda = [
+            (3116, r#"{"name":"Rylai's Crystal Scepter","gold":{"total":2600,"purchasable":true},"maps":{"11":true,"12":true,"22":false,"30":false,"453":true}}"#),
+            (3006, r#"{"name":"Berserker's Greaves","gold":{"total":1100,"purchasable":true},"maps":{"11":true,"12":true,"22":false,"30":false,"453":true}}"#),
+        ];
+        let fora = [
+            (773116, r#"{"name":"Rylai's Crystal Scepter","gold":{"total":2900,"purchasable":true},"maps":{"11":false,"12":true,"22":false,"30":false,"453":true}}"#),
+            (224403, r#"{"name":"The Golden Spatula","gold":{"total":2500,"purchasable":true},"maps":{"11":false,"12":false,"22":false,"30":true,"453":false}}"#),
+            (994403, r#"{"name":"Golden Spatula","gold":{"total":2500,"purchasable":true},"maps":{"11":false,"12":true,"22":false,"30":false,"453":false}}"#),
+            (664403, r#"{"name":"The Golden Spatula","gold":{"total":2500,"purchasable":false},"maps":{"11":true,"12":false,"22":false,"30":false,"453":false},"inStore":false}"#),
+            (4637, r#"{"name":"Demonic Embrace","gold":{"total":3000,"purchasable":false},"maps":{"11":true,"12":true,"22":false,"30":false,"453":true},"inStore":false}"#),
+        ];
+        for (id, json) in fenda {
+            assert!(entrada(json).sold_on_rift(), "{id} se compra na Fenda");
+        }
+        for (id, json) in fora {
+            assert!(!entrada(json).sold_on_rift(), "{id} não se compra na Fenda");
+        }
+        // Visível e comprável na Fenda, mas de um campeão só, ou escondido da loja.
+        let mut so_dele = entrada(fenda[0].1);
+        so_dele.required_champion = "Kalista".into();
+        assert!(!so_dele.sold_on_rift());
+        let mut escondido = entrada(fenda[0].1);
+        escondido.in_store = Some(false);
+        assert!(!escondido.sold_on_rift());
+        assert!(entrada(r#"{"gold":{"purchasable":true}}"#).sold_on_rift() == false, "sem mapa, não");
+    }
+
     use super::*;
 
     // Descrições reais do patch 16.21.1.
