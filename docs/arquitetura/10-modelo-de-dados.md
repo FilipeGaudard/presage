@@ -1485,6 +1485,8 @@ pub struct Dataset {
     pub versus: HashMap<String, Record>,  // chave `versus_key`
     #[serde(default)]
     pub length: HashMap<String, Record>,  // chave `length_key`
+    #[serde(default)]
+    pub items: HashMap<String, Record>,   // chave `item_key`: partidas em que o campeão, na rota, terminou com o item nos espaços 0 a 5, e as vitórias. Todo item que apareceu; quem lê filtra os fechados da Fenda
 }
 ```
 

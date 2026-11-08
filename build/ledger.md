@@ -5,7 +5,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | Tipo | Total | Feito | Adiado | Pendente |
 |---|---|---|---|---|
 | type | 112 | 112 | 0 | 0 |
-| func | 167 | 167 | 0 | 0 |
+| func | 168 | 168 | 0 | 0 |
 | const | 84 | 84 | 0 | 0 |
 | wire | 55 | 55 | 0 | 0 |
 | mirror | 4 | 4 | 0 | 0 |
@@ -13,15 +13,15 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | event | 6 | 6 | 0 | 0 |
 | file | 16 | 16 | 0 | 0 |
 | flag | 16 | 16 | 0 | 0 |
-| test | 376 | 376 | 0 | 0 |
+| test | 377 | 377 | 0 | 0 |
 | ui-test | 48 | 15 | 33 | 0 |
 | trace | 43 | 39 | 4 | 0 |
 | itero | 83 | 83 | 0 | 0 |
 | todo | 3 | 0 | 3 | 0 |
 
-- testes no código: 505; nomes no catálogo (13): 505; fora dele: 0
+- testes no código: 506; nomes no catálogo (13): 506; fora dele: 0
 - links relativos conferidos: 871
-- IDs citados conferidos: 3084
+- IDs citados conferidos: 3089
 
 ## type
 
@@ -64,7 +64,7 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::context::Placed` | arquitetura/10-modelo-de-dados §10.2 | done | core/src/engine/context.rs:38 |
 | `core::engine::damage::Penetration` | arquitetura/10-modelo-de-dados §25.1 | done | core/src/engine/damage.rs:11 |
 | `core::engine::dataset::Dataset` | arquitetura/10-modelo-de-dados §20.1 | done | core/src/engine/dataset.rs:27 |
-| `core::engine::dataset::Layered` | arquitetura/10-modelo-de-dados §20.3 | done | core/src/engine/dataset.rs:136 |
+| `core::engine::dataset::Layered` | arquitetura/10-modelo-de-dados §20.3 | done | core/src/engine/dataset.rs:145 |
 | `core::engine::gold::GoldPlayer` | arquitetura/10-modelo-de-dados §28.1 | done | core/src/engine/gold.rs:41 |
 | `core::engine::gold::GoldReport` | arquitetura/10-modelo-de-dados §28.2 | done | core/src/engine/gold.rs:61 |
 | `core::engine::items::Item` | arquitetura/10-modelo-de-dados §24.2 | done | core/src/engine/items.rs:84 |
@@ -192,15 +192,16 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `core::engine::damage::damage_multiplier` | arquitetura/11-catalogo-de-funcoes §25.2 | done | core/src/engine/damage.rs:45 |
 | `core::engine::damage::effective_hp` | arquitetura/11-catalogo-de-funcoes §25.3 | done | core/src/engine/damage.rs:54 |
 | `core::engine::damage::effective_resist` | arquitetura/11-catalogo-de-funcoes §25.1 | done | core/src/engine/damage.rs:24 |
-| `core::engine::dataset::base_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:76 |
-| `core::engine::dataset::Dataset::is_usable` | arquitetura/11-catalogo-de-funcoes §20.2 | done | core/src/engine/dataset.rs:100 |
-| `core::engine::dataset::Layered::matches` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:152 |
-| `core::engine::dataset::Layered::patch` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:148 |
-| `core::engine::dataset::Layered::with_global` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:143 |
-| `core::engine::dataset::length_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:95 |
-| `core::engine::dataset::matchup_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:80 |
-| `core::engine::dataset::synergy_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:85 |
-| `core::engine::dataset::versus_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:91 |
+| `core::engine::dataset::base_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:81 |
+| `core::engine::dataset::Dataset::is_usable` | arquitetura/11-catalogo-de-funcoes §20.2 | done | core/src/engine/dataset.rs:109 |
+| `core::engine::dataset::item_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:104 |
+| `core::engine::dataset::Layered::matches` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:161 |
+| `core::engine::dataset::Layered::patch` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:157 |
+| `core::engine::dataset::Layered::with_global` | arquitetura/11-catalogo-de-funcoes §20.3 | done | core/src/engine/dataset.rs:152 |
+| `core::engine::dataset::length_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:100 |
+| `core::engine::dataset::matchup_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:85 |
+| `core::engine::dataset::synergy_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:90 |
+| `core::engine::dataset::versus_key` | arquitetura/11-catalogo-de-funcoes §20.1 | done | core/src/engine/dataset.rs:96 |
 | `core::engine::gold::earned_at` | arquitetura/11-catalogo-de-funcoes §28.1 | done | core/src/engine/gold.rs:77 |
 | `core::engine::gold::report` | arquitetura/11-catalogo-de-funcoes §28.2 | done | core/src/engine/gold.rs:90 |
 | `core::engine::items::ItemIndex::get` | arquitetura/11-catalogo-de-funcoes §24.3 | done | core/src/engine/items.rs:101 |
@@ -318,10 +319,10 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 |---|---|---|---|
 | `casca::recorder::MAX_FRAMES` | produto/regras-e-pesos RN-28 — O teto e o piso da gravação (`ca | done | src-tauri/src/recorder.rs:23 |
 | `casca::riot::RANKED_SOLO_QUEUE` | produto/regras-e-pesos RN-31 — O histórico pessoal da casca (`c | done | src-tauri/src/riot.rs:26 |
-| `coletor::aggregate::MIN_SPREAD_ENTRIES` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:342 |
+| `coletor::aggregate::MIN_SPREAD_ENTRIES` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:370 |
 | `coletor::aggregate::PARTICIPANTS` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:36 |
 | `coletor::aggregate::TEAM_SIZE` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:35 |
-| `coletor::aggregate::USEFUL` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:390 |
+| `coletor::aggregate::USEFUL` | produto/regras-e-pesos RN-32 — O que entra na base | done | tools/ingest/src/aggregate.rs:418 |
 | `core::draft::RANKED_QUEUES` | arquitetura/10-modelo-de-dados §3.13 | done | core/src/draft.rs:274 |
 | `core::engine::BASE_STRENGTH` | produto/regras-e-pesos RN-2 — A força da winrate base é escolhi | done | core/src/engine/mod.rs:36 |
 | `core::engine::build::MIN_ITEM_COST` | produto/regras-e-pesos RN-19 — O que entra na lista e como o it | done | core/src/engine/build.rs:24 |
@@ -606,23 +607,23 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-COLETOR-11` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:321 |
 | `T-COLETOR-12` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:328 |
 | `T-COLETOR-13` | arquitetura/13-testes §2 | done | tools/ingest/src/api.rs:338 |
-| `T-COLETOR-14` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:448 |
-| `T-COLETOR-15` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:526 |
-| `T-COLETOR-16` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:537 |
-| `T-COLETOR-17` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:556 |
-| `T-COLETOR-18` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:456 |
-| `T-COLETOR-19` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:472 |
+| `T-COLETOR-14` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:477 |
+| `T-COLETOR-15` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:581 |
+| `T-COLETOR-16` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:592 |
+| `T-COLETOR-17` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:611 |
+| `T-COLETOR-18` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:485 |
+| `T-COLETOR-19` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:501 |
 | `T-COLETOR-2` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:760 |
-| `T-COLETOR-20` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:613 |
-| `T-COLETOR-21` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:660 |
-| `T-COLETOR-22` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:671 |
-| `T-COLETOR-23` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:702 |
-| `T-COLETOR-24` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:739 |
-| `T-COLETOR-25` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:514 |
-| `T-COLETOR-26` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:755 |
-| `T-COLETOR-27` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:770 |
-| `T-COLETOR-28` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:792 |
-| `T-COLETOR-29` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:502 |
+| `T-COLETOR-20` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:668 |
+| `T-COLETOR-21` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:715 |
+| `T-COLETOR-22` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:726 |
+| `T-COLETOR-23` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:757 |
+| `T-COLETOR-24` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:794 |
+| `T-COLETOR-25` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:565 |
+| `T-COLETOR-26` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:810 |
+| `T-COLETOR-27` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:825 |
+| `T-COLETOR-28` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:847 |
+| `T-COLETOR-29` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:531 |
 | `T-COLETOR-3` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:786 |
 | `T-COLETOR-30` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:161 |
 | `T-COLETOR-31` | arquitetura/13-testes §2 | done | tools/ingest/src/limiter.rs:169 |
@@ -636,7 +637,8 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-COLETOR-39` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:729 |
 | `T-COLETOR-4` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:804 |
 | `T-COLETOR-40` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:738 |
-| `T-COLETOR-41` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:569 |
+| `T-COLETOR-41` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:624 |
+| `T-COLETOR-42` | arquitetura/13-testes §2 | done | tools/ingest/src/aggregate.rs:543 |
 | `T-COLETOR-5` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:827 |
 | `T-COLETOR-6` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:859 |
 | `T-COLETOR-7` | arquitetura/13-testes §2 | done | tools/ingest/src/main.rs:890 |
@@ -919,14 +921,14 @@ Gerado por `node tools/doccheck/doccheck.mjs`. Não edite à mão: a próxima ex
 | `T-STATS-11` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:427 |
 | `T-STATS-12` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:452 |
 | `T-STATS-13` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:461 |
-| `T-STATS-14` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:246 |
-| `T-STATS-15` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:272 |
-| `T-STATS-16` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:279 |
-| `T-STATS-17` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:288 |
-| `T-STATS-18` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:328 |
-| `T-STATS-19` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:263 |
+| `T-STATS-14` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:256 |
+| `T-STATS-15` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:282 |
+| `T-STATS-16` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:289 |
+| `T-STATS-17` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:298 |
+| `T-STATS-18` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:338 |
+| `T-STATS-19` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:273 |
 | `T-STATS-2` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:322 |
-| `T-STATS-20` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:218 |
+| `T-STATS-20` | arquitetura/13-testes §2 | done | core/src/engine/dataset.rs:228 |
 | `T-STATS-3` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:335 |
 | `T-STATS-4` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:342 |
 | `T-STATS-5` | arquitetura/13-testes §2 | done | core/src/engine/stats.rs:357 |

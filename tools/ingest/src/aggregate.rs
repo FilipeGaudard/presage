@@ -27,7 +27,7 @@ use serde::{Deserialize, Serialize};
 
 use presage_core::engine::champion::Role;
 use presage_core::engine::dataset::{
-    base_key, length_key, matchup_key, synergy_key, versus_key, Dataset,
+    base_key, item_key, length_key, matchup_key, synergy_key, versus_key, Dataset,
 };
 use presage_core::engine::stats::{expected_against, Length, Record};
 use presage_core::history;
@@ -70,6 +70,14 @@ pub struct Participant {
     pub team_position: String,
     pub win: bool,
     pub game_ended_in_early_surrender: bool,
+    /// O inventário no fim da partida: `item0` a `item5`. O `item6` é o
+    /// amuleto, e fica de fora.
+    pub item0: i64,
+    pub item1: i64,
+    pub item2: i64,
+    pub item3: i64,
+    pub item4: i64,
+    pub item5: i64,
 }
 
 /// Por que uma partida não entrou.
@@ -143,11 +151,16 @@ pub struct Counts {
     pub synergy: HashMap<String, Record>,
     pub versus: HashMap<String, Record>,
     pub length: HashMap<String, Record>,
+    /// `"id:Rota:item"`: o inventário final de cada um.
+    pub items: HashMap<String, Record>,
     pub matches: u64,
     /// Partidas que entraram também em `versus` e `length`. Um estado salvo
     /// antes delas existirem tem menos que `matches`, e retomar dele deixaria
     /// as tabelas novas contando menos partidas do que o cabeçalho diz.
     pub versus_matches: u64,
+    /// Partidas que entraram também em `items`. Um estado de antes da tabela de
+    /// itens tem menos que `matches`, e não é retomado.
+    pub items_matches: u64,
     /// O patch travado, assim que a primeira partida é aceita.
     pub patch: String,
     pub skipped: HashMap<Skip, u64>,
@@ -278,13 +291,27 @@ impl Counts {
         }
         self.versus_matches += 1;
 
+        // O inventário final de cada um, item repetido uma vez só. Fechado ou
+        // componente, da Fenda ou não: quem lê decide, com o Data Dragon.
+        for p in &info.participants {
+            let role = Role::from_lcu(&p.team_position);
+            let mut vistos: Vec<i64> = Vec::with_capacity(6);
+            for item in [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5] {
+                if item > 0 && !vistos.contains(&item) {
+                    vistos.push(item);
+                    bump(&mut self.items, item_key(p.champion_id, role, item), p.win);
+                }
+            }
+        }
+        self.items_matches += 1;
+
         Ok(())
     }
 
     /// O estado pode ser retomado: toda partida contada entrou também nas
     /// tabelas novas.
     pub fn resumable(&self) -> bool {
-        self.versus_matches == self.matches
+        self.versus_matches == self.matches && self.items_matches == self.matches
     }
 
     /// Fecha a base para o disco.
@@ -317,6 +344,7 @@ impl Counts {
             synergy: podar(self.synergy),
             versus: podar(self.versus),
             length: podar(self.length),
+            items: podar(self.items),
         }
     }
 }
@@ -418,6 +446,7 @@ mod tests {
             team_position: rota.into(),
             win,
             game_ended_in_early_surrender: false,
+            ..Default::default()
         }
     }
 
@@ -512,6 +541,28 @@ mod tests {
     }
 
     #[test]
+    fn o_inventario_final_entra_por_campeao_e_rota() {
+        // O campeão 1 no topo termina com dois Dorans (450), uma Lâmina (3153),
+        // botas (3006), dois espaços vazios e o amuleto no `item6`.
+        let mut info = partida(true);
+        let p = &mut info.participants[0];
+        (p.item0, p.item1, p.item2, p.item3) = (1055, 1055, 3153, 3006);
+        let mut c = Counts::default();
+        c.add(&info, &filtro()).unwrap();
+        assert_eq!(c.items.get(&item_key(1, Role::Top, 3153)), Some(&Record { games: 1, wins: 1 }));
+        assert_eq!(c.items.get(&item_key(1, Role::Top, 3006)), Some(&Record { games: 1, wins: 1 }));
+        assert_eq!(c.items.get(&item_key(1, Role::Top, 1055)), Some(&Record { games: 1, wins: 1 }), "repetido conta uma vez");
+        assert!(!c.items.keys().any(|k| k.ends_with(":0")), "espaço vazio não é item");
+        assert_eq!(c.items.len(), 3, "{:?}", c.items);
+        assert_eq!(c.items_matches, 1);
+
+        // E vai para a base, podada como as outras tabelas.
+        let base = c.clone().into_dataset("br1".into(), "EMERALD+".into(), "agora".into(), 1);
+        assert_eq!(base.items.len(), 3);
+        assert!(c.into_dataset("br1".into(), "EMERALD+".into(), "agora".into(), 2).items.is_empty());
+    }
+
+    #[test]
     fn estado_sem_as_tabelas_novas_nao_e_retomado() {
         let mut c = Counts::default();
         c.add(&partida(true), &filtro()).unwrap();
@@ -520,6 +571,10 @@ mod tests {
         // Como um estado salvo por uma versão anterior do coletor.
         c.versus_matches = 0;
         assert!(!c.resumable());
+        c.versus_matches = c.matches;
+        // Ou por uma de antes da tabela de itens.
+        c.items_matches = 0;
+        assert!(!c.resumable(), "sem a tabela de itens, a base mentiria o total");
         assert!(Counts::default().resumable(), "estado vazio sempre retoma");
     }
 

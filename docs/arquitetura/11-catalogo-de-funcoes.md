@@ -1165,6 +1165,7 @@ pub fn matchup_key(champion: i64, opponent: i64, role: Role) -> String;
 pub fn synergy_key(a: i64, b: i64) -> String;
 pub fn versus_key(champion: i64, opponent: i64) -> String;
 pub fn length_key(champion: i64, role: Role, bucket: Length) -> String;
+pub fn item_key(champion: i64, role: Role, item: i64) -> String;
 ```
 
 | Função | Faz | Atende |
@@ -1174,6 +1175,7 @@ pub fn length_key(champion: i64, role: Role, bucket: Length) -> String;
 | `synergy_key` | `"64:103"`: o menor id sempre antes, para o par não ter ordem | R-21 |
 | `versus_key` | `"103:64"`: direcional, o primeiro contra o segundo em qualquer rota inimiga | R-21, ADR-0019 |
 | `length_key` | `"103:Mid:Longa"`: id, rota e faixa, com os nomes escritos à mão em `rota` e `faixa` | R-21, ADR-0018 |
+| `item_key` | `"103:Mid:3089"`: id, rota e o id do item no Data Dragon. O coletor conta o inventário final (`item0` a `item5`, repetido uma vez), e quem lê compara com `base_key` para a taxa de compra | R-10, R-21 |
 
 O coletor grava com as mesmas funções (`aggregate.rs`), e o formato do arquivo está
 em 10 §20.2.

@@ -48,6 +48,11 @@ pub struct Dataset {
     /// `"id:Rota:Faixa"`: o resultado por duração da partida.
     #[serde(default)]
     pub length: HashMap<String, Record>,
+    /// `"id:Rota:item"`: as partidas em que o campeão naquela rota terminou com o
+    /// item no inventário (espaços 0 a 5), e quantas venceu. Todo item que
+    /// apareceu: o que é item fechado da Fenda decide quem lê, com o Data Dragon.
+    #[serde(default)]
+    pub items: HashMap<String, Record>,
 }
 
 /// O nome da rota na chave da base. Escrito à mão, e não `{role:?}`: o arquivo
@@ -94,6 +99,10 @@ pub fn versus_key(champion: i64, opponent: i64) -> String {
 
 pub fn length_key(champion: i64, role: Role, bucket: Length) -> String {
     format!("{champion}:{}:{}", rota(role), faixa(bucket))
+}
+
+pub fn item_key(champion: i64, role: Role, item: i64) -> String {
+    format!("{champion}:{}:{item}", rota(role))
 }
 
 impl Dataset {
@@ -212,6 +221,7 @@ mod tests {
                 length_key(103, Role::Mid, Length::Longa),
                 Record::new(9_000, 4_900),
             )]),
+            items: HashMap::from([(item_key(103, Role::Mid, 3089), Record::new(12_000, 6_600))]),
         }
     }
 

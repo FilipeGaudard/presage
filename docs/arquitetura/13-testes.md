@@ -141,6 +141,7 @@ dado e não só sem dado, teste primeiro contra o código velho) está em
 | T-COLETOR-39 | `so_resposta_definitiva_marca_a_partida_como_vista` | unidade | Partida contada (`Ok(Some)`) e recusada pela Riot (`Ok(None)`) marcam como vista; erro (`Err`, um 500 depois das tentativas) não | R-20, A26 |
 | T-COLETOR-40 | `estado_que_nao_le_e_erro_e_nao_comeco_do_zero` | unidade | Sem arquivo, `ler_estado` dá `None`; com `{ quebrado`, dá erro dizendo que não lê; com um `Estado` de verdade, dá o estado | R-20, A27 |
 | T-COLETOR-41 | `os_cortes_comuns_sao_os_do_historico` | unidade | A mesma partida pelo coletor e por `history::corte_comum`: `ARAM` dá `Modo` nos dois, `Abort_AntiCheatExit` dá `Terminada`, um remake dá `Remake`, 299 s dá `Curta`, e 300 s com fim vazio e 1500 s com `GameComplete` passam nos dois. Com `MIN_DURATION` em 240, o coletor deixa passar os 299 s | R-17, R-20, A18 |
+| T-COLETOR-42 | `o_inventario_final_entra_por_campeao_e_rota` | unidade | O campeão 1 no topo com dois Dorans (1055), a Lâmina (3153), botas (3006) e dois espaços vazios dá três entradas em `items`, cada uma com 1 jogo e 1 vitória: o repetido conta uma vez, o vazio e o amuleto (`item6`) não entram; `into_dataset` leva as três com mínimo 1 e nenhuma com mínimo 2. Um estado sem `items_matches` não é retomado | R-10, R-21 |
 
 ### 2.3 Draft — ranking, contexto, resposta e composição
 

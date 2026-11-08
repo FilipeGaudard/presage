@@ -97,7 +97,7 @@ sobrevive a uma interrupção:
 | `tiers_semeados` | Os tiers que de fato deram jogadores. O rótulo de elo do cabeçalho sai daqui: `EMERALD+` só quando a semeadura chegou ao topo |
 | `proximo` | Até onde a lista de jogadores já foi consumida |
 | `vistas` | Todo id de partida com resposta definitiva: contada, ou recusada pela Riot (404). Insistir numa partida que a Riot não entrega trava o crawl; já erro passageiro (rede, 5xx depois das tentativas, 429 seguidos) não marca, e a partida volta a ser pedida (A26) |
-| `contagens` | As tabelas em memória (`Counts`): base, matchup, sinergia, contra, duração, o total de partidas, `versus_matches`, o patch travado e os descartes por motivo |
+| `contagens` | As tabelas em memória (`Counts`): base, matchup, sinergia, contra, duração, itens (o inventário final, `item_key`), o total de partidas, `versus_matches`, `items_matches`, o patch travado e os descartes por motivo |
 
 **Quando é gravado:** logo depois da semeadura, para uma queda no começo não
 refazer a semeadura; a cada `SALVAR_A_CADA`, junto com a base; e no fim da
@@ -136,8 +136,8 @@ rota em branco, rotas que não fecham cinco por time: tudo descartado com motivo
 (`Skip`, nove motivos), antes de qualquer contagem. Meia partida contada é pior que partida nenhuma, e uma base que engole
 remake mede taxa de remake.
 
-Um estado salvo por uma versão do coletor anterior às tabelas de contra e
-duração não é retomado: as tabelas novas ficariam com menos partidas do que o
+Um estado salvo por uma versão do coletor anterior às tabelas de contra,
+duração e itens não é retomado: as tabelas novas ficariam com menos partidas do que o
 cabeçalho diz (`Counts::resumable`, `versus_matches`). O coletor recusa e pede
 para recomeçar.
 
